@@ -137,7 +137,7 @@ export const FranchisesMainSection: React.FC = () => {
       <div className="w-full">
         
         {/* Top line with SMALL GAP above Franchises heading matching screenshot */}
-        <div className="border-t border-slate-200 pt-2.5 sm:pt-3 pb-2 mb-5">
+        <div className="border-t border-slate-200 pt-2 pb-1.5 mb-4">
           <div className="flex items-center justify-between">
             <h2 className="my-0 text-[#020618] font-bold text-2xl sm:text-3xl font-serif leading-none tracking-tight">
               <Link href="/topic/franchises" className="hover:underline">
@@ -162,13 +162,13 @@ export const FranchisesMainSection: React.FC = () => {
           </div>
         </div>
 
-        {/* Sub-Navigation Pills (Exact 5 Centered Black Pills matching Screenshot) */}
-        <div className="flex items-center justify-start sm:justify-center gap-2 sm:gap-2.5 overflow-x-auto no-scrollbar pb-6 sm:pb-7">
+        {/* Sub-Navigation Pills (Exact 5 Centered Black Pills with 14px gap, 24px height, and symmetrical margins) */}
+        <div className="flex items-center justify-start sm:justify-center gap-[13px] sm:gap-[14px] overflow-x-auto no-scrollbar pb-6 sm:pb-7">
           {pills.map((pill) => (
             <Link
               key={pill.label}
               href={pill.href}
-              className="px-3.5 sm:px-4 py-1 sm:py-1.5 rounded-full font-bold text-[11px] sm:text-xs font-sans whitespace-nowrap bg-[#020618] text-white hover:bg-slate-800 transition-colors shadow-2xs flex items-center justify-center h-6 sm:h-[26px]"
+              className="px-3.5 py-1 rounded-full font-bold text-[11px] sm:text-xs font-sans whitespace-nowrap bg-[#020618] text-white hover:bg-slate-800 transition-colors shadow-2xs flex items-center justify-center h-6 leading-none"
             >
               {pill.label}
             </Link>
