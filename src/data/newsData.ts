@@ -2055,6 +2055,42 @@ export const ENTREPRENEURS_SECTION_ARTICLES: Article[] = [
   },
 ];
 
+export const AGENTIC_AI_SECTION_ARTICLES: Article[] = [
+  {
+    id: 'rushing-to-add-ai',
+    title: "Rushing to Add AI Is Wrecking Your Customer Experience. Here's How to Get It Right.",
+    category: 'Building a Business',
+    author: { name: 'David Boice', title: 'Contributor' },
+    date: 'October 14, 2026',
+    readTime: '5 min read',
+    excerpt: "Every new AI tool creates another touchpoint with your customer. If those tools don't talk to each other, neither does your business.",
+    imageUrl: '/images/rushing-ai-cx.jpg',
+    imageAspect: 'video',
+  },
+  {
+    id: 'why-coding-agents-work',
+    title: "Why Coding Agents Work and Go-to-Market Agents Don't (Yet)",
+    category: 'Tech',
+    author: { name: 'Henry Schuck', title: 'Contributor' },
+    date: 'October 14, 2026',
+    readTime: '6 min read',
+    excerpt: "Coding agents are transforming software teams overnight, but GTM agents are stuck. It's not an intelligence problem — it's a context problem.",
+    imageUrl: '/images/coding-agents.jpg',
+    imageAspect: 'video',
+  },
+  {
+    id: 'how-ai-agents-scale-marketing',
+    title: 'How AI Agents Are Helping Companies Scale Their Marketing',
+    category: 'Tech',
+    author: { name: 'Nuri Cankaya', title: 'Contributor' },
+    date: 'October 14, 2026',
+    readTime: '5 min read',
+    excerpt: "Here's how AI agents can help companies scale marketing by combining skills, tools and context into an agentic marketing operating model.",
+    imageUrl: '/images/ai-marketing-agents.jpg',
+    imageAspect: 'video',
+  },
+];
+
 export const ALL_ARTICLES: Article[] = [
   HERO_ARTICLE,
   ...LATEST_ARTICLES,
@@ -2066,6 +2102,7 @@ export const ALL_ARTICLES: Article[] = [
   ...AI_TECH_FEATURE_ARTICLES,
   ...DEEP_DIVE_ARTICLES,
   ...ENTREPRENEURS_SECTION_ARTICLES,
+  ...AGENTIC_AI_SECTION_ARTICLES,
   ...ALL_TOPIC_ARTICLES,
 ];
 

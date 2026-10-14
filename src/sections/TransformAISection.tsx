@@ -1,86 +1,137 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
 
 export const TransformAISection: React.FC = () => {
   const cards = [
     {
-      id: 'ai-1',
+      id: 'rushing-to-add-ai',
       category: 'BUILDING A BUSINESS',
-      title: 'This Breakthrough Technology Is Poised to Accelerate Your Company\'s Growth',
-      excerpt: 'Discover a breakthrough technology stacked on top of generative AI, now poised to revolutionize corporate operations.',
-      imageUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop',
+      title: 'Rushing to Add AI Is Wrecking Your Customer Experience. Here\'s How to Get It Right.',
+      excerpt: 'Every new AI tool creates another touchpoint with your customer. If those tools don\'t talk to each other, neither does your business.',
+      author: 'DAVID BOICE',
+      authorSlug: 'david-boice',
+      imageUrl: '/images/rushing-ai-cx.jpg',
+      remoteImageUrl: 'https://www.entrepreneur.com/wp-content/uploads/sites/2/2026/08/1787243973-rushing-ai-customer-experience-0826-g2290165837.jpg?resize=500,282',
     },
     {
-      id: 'ai-2',
+      id: 'why-coding-agents-work',
       category: 'TECH',
-      title: 'The Practical Way Agentic AI is Helping This Growing Beverage Brand Scale Fast',
-      excerpt: 'BERO\'s one-person data team used agentic AI to build an automated insights platform that runs their entire logistics.',
-      imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=800&auto=format&fit=crop',
+      title: 'Why Coding Agents Work and Go-to-Market Agents Don\'t (Yet)',
+      excerpt: 'Coding agents are transforming software teams overnight, but GTM agents are stuck. It\'s not an intelligence problem — it\'s a context problem.',
+      author: 'HENRY SCHUCK',
+      authorSlug: 'henry-schuck',
+      imageUrl: '/images/coding-agents.jpg',
+      remoteImageUrl: 'https://www.entrepreneur.com/wp-content/uploads/sites/2/2026/08/coding-agents-0826-g-1197242234.jpg?resize=500,282',
     },
     {
-      id: 'ai-3',
-      category: 'ENTREPRENEURS',
-      title: 'How AI Agents Are Changing the Way We Learn and Execute Strategy',
-      excerpt: 'AI agents are opening doors to personalized executive training that just a few years ago would have been unthinkable.',
-      imageUrl: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=800&auto=format&fit=crop',
+      id: 'how-ai-agents-scale-marketing',
+      category: 'TECH',
+      title: 'How AI Agents Are Helping Companies Scale Their Marketing',
+      excerpt: 'Here\'s how AI agents can help companies scale marketing by combining skills, tools and context into an agentic marketing operating model.',
+      author: 'NURI CANKAYA',
+      authorSlug: 'nuri-cankaya',
+      imageUrl: '/images/ai-marketing-agents.jpg',
+      remoteImageUrl: 'https://www.entrepreneur.com/wp-content/uploads/sites/2/2026/10/ai-agent-marketing-engine-1026_g2260005104.jpg?resize=500,282',
     },
   ];
 
   return (
-    <section className="bg-white py-10 md:py-12 border-b border-slate-200 w-full">
+    <section className="bg-white pt-10 md:pt-12 pb-12 md:pb-16 border-b border-slate-200 w-full">
       <div className="w-full">
         
-        {/* Header matching Screenshot 4 */}
-        <div className="mb-6 border-b border-slate-200 pb-3 flex items-center justify-between">
+        {/* Section Header */}
+        <div className="mb-6 flex items-start justify-between gap-4">
           <div>
-            <h2 className="my-0 text-[#020618] font-bold text-2xl sm:text-3xl font-serif leading-tight">
-              Transform Your Business with Agentic AI
+            <h2 className="my-0 text-[#020618] font-bold text-2xl sm:text-3xl font-serif leading-tight tracking-tight">
+              <Link
+                href="/topic/ai"
+                className="text-[#020618] no-underline hover:underline decoration-[#020618] decoration-1 underline-offset-[4px] transition-all"
+              >
+                Transform Your Business with Agentic AI
+              </Link>
             </h2>
-            <div className="text-xs text-slate-500 font-sans italic pt-1">
+            <div className="text-xs sm:text-sm text-slate-500 font-sans italic pt-1.5">
               Presented by Sapphire Reserve for Business
             </div>
           </div>
 
           <Link
             href="/topic/ai"
-            className="flex items-center gap-1.5 text-xs font-bold text-[#020618] hover:text-[#1642D0] uppercase tracking-wider font-sans group"
+            aria-label="Read more about Agentic AI"
+            className="flex items-center no-underline hover:underline text-xs sm:text-[13px] font-bold text-[#020618] uppercase tracking-wider group flex-shrink-0 pt-1"
           >
             <span>See All</span>
-            <span className="w-5 h-5 rounded-full bg-[#1642D0] text-white flex items-center justify-center transition-colors group-hover:bg-blue-800">
-              <ArrowRight className="w-3 h-3" />
-            </span>
+            <svg
+              aria-hidden="true"
+              fill="currentColor"
+              className="w-5 h-5 fill-current ml-1.5 text-[#1642D0] group-hover:scale-105 transition-transform"
+              viewBox="0 0 24 24"
+            >
+              <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12s4.48 10 10 10 10-4.48 10-10m-10 1H8v-2h4V8l4 4-4 4z" />
+            </svg>
           </Link>
         </div>
 
-        {/* 3-Column Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* 3-Column Cards Grid matching Reference Image */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-start">
           {cards.map((card) => (
-            <Link
-              key={card.id}
-              href={`/article/${card.id}`}
-              className="group flex flex-col space-y-3 cursor-pointer"
-            >
-              <div className="relative w-full aspect-[16/10] overflow-hidden rounded-2xl border border-slate-200 shadow-2xs">
-                <img
-                  src={card.imageUrl}
-                  alt={card.title}
-                  className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
-                />
+            <div key={card.id} className="group flex flex-col">
+              
+              {/* Card Image */}
+              <Link href={`/article/${card.id}`} className="block">
+                <div className="relative w-full aspect-[16/10] overflow-hidden rounded-xl border border-slate-200/90 shadow-2xs">
+                  <img
+                    src={card.imageUrl}
+                    alt={card.title}
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      if (!target.dataset.fallback) {
+                        target.dataset.fallback = 'true';
+                        target.src = card.remoteImageUrl;
+                      }
+                    }}
+                    className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                  />
+                </div>
+              </Link>
+
+              {/* Card Content */}
+              <div className="pt-3.5 space-y-2 flex-1 flex flex-col justify-between">
+                <div>
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#1642D0] font-sans block mb-1">
+                    {card.category}
+                  </span>
+
+                  <h3 className="text-base sm:text-lg font-serif font-bold text-[#020618] leading-snug tracking-tight mb-2">
+                    <Link
+                      href={`/article/${card.id}`}
+                      className="text-[#020618] no-underline hover:underline decoration-[#020618] decoration-1 underline-offset-[3px] transition-all"
+                    >
+                      {card.title}
+                    </Link>
+                  </h3>
+
+                  {/* Under Paragraph (Normal font weight text) */}
+                  <p className="text-xs sm:text-sm font-sans font-normal text-slate-600 leading-relaxed mb-3">
+                    {card.excerpt}
+                  </p>
+                </div>
+
+                {/* Byline */}
+                <div className="text-xs font-sans uppercase tracking-wider pt-1 flex items-center gap-1">
+                  <span className="text-slate-500 font-semibold">BY</span>
+                  <Link
+                    href={`/author/${card.authorSlug}`}
+                    className="text-[#1642D0] font-bold underline decoration-[#1642D0] underline-offset-2 hover:text-blue-800 transition-colors"
+                  >
+                    {card.author}
+                  </Link>
+                </div>
               </div>
 
-              <div className="space-y-2 flex-1">
-                <span className="text-xs font-extrabold uppercase tracking-widest text-[#1642D0] font-sans block">
-                  {card.category}
-                </span>
-                <h3 className="text-lg font-serif font-bold text-[#020618] group-hover:underline decoration-[#020618] decoration-1 underline-offset-[3px] transition-all leading-snug line-clamp-3">
-                  {card.title}
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed font-sans line-clamp-2">
-                  {card.excerpt}
-                </p>
-              </div>
-            </Link>
+            </div>
           ))}
         </div>
 
