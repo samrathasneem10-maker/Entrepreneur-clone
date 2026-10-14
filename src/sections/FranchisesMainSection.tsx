@@ -133,7 +133,7 @@ export const FranchisesMainSection: React.FC = () => {
   };
 
   return (
-    <section className="bg-white pb-12 md:pb-16 border-b border-slate-200 w-full">
+    <section className="bg-white pb-10 md:pb-12 w-full">
       <div className="w-full">
         
         {/* Top line with SMALL GAP above Franchises heading matching screenshot */}

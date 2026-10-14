@@ -1,154 +1,211 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
-import { Award, Building2, ChevronRight, DollarSign, TrendingUp, Key, CreditCard } from 'lucide-react';
-import { FRANCHISE_500_ITEMS } from '@/data/newsData';
 
 export const FranchiseSection: React.FC = () => {
-  const franchiseLists = [
+  const editorialItems = [
     {
       id: 'fastest-growing',
       title: 'Fastest-Growing Franchises',
+      underlined: true,
       description: 'Meet the companies scaling quickly across the U.S. and Canada in our annual ranking.',
-      icon: TrendingUp,
-      iconColor: 'text-purple-600 bg-purple-50',
+      icon: (
+        <svg
+          className="w-4 h-4 inline-block mr-2 -mt-0.5 flex-shrink-0"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <rect x="3" y="3" width="18" height="18" rx="2" stroke="#94A3B8" strokeWidth="1.5" />
+          <polyline points="7 15 12 10 17 14" stroke="#EF4444" strokeWidth="2.2" />
+          <polyline points="14 7 17 7 17 10" stroke="#EF4444" strokeWidth="2.2" />
+        </svg>
+      ),
     },
     {
       id: 'top-emerging',
       title: 'Top New & Emerging Franchises',
+      underlined: false,
       description: 'Get in on the ground floor with top companies franchising for five years or less.',
-      icon: Key,
-      iconColor: 'text-amber-600 bg-amber-50',
+      icon: (
+        <svg
+          className="w-4 h-4 inline-block mr-2 -mt-0.5 flex-shrink-0"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <circle cx="12" cy="12" r="10" stroke="#0284C7" strokeWidth="1.8" />
+          <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" stroke="#10B981" strokeWidth="1.8" />
+          <path d="M2 12h20" stroke="#0284C7" strokeWidth="1.8" />
+        </svg>
+      ),
     },
     {
       id: 'under-50k',
       title: 'Top Franchises for Less Than $50,000',
+      underlined: false,
       description: 'Looking for a franchise on a budget? Explore top options under $50,000.',
-      icon: CreditCard,
-      iconColor: 'text-blue-600 bg-blue-50',
+      icon: (
+        <svg
+          className="w-4 h-4 inline-block mr-2 -mt-0.5 flex-shrink-0"
+          viewBox="0 0 24 24"
+          fill="none"
+        >
+          <rect x="2" y="5" width="20" height="14" rx="2" fill="#F59E0B" />
+          <rect x="2" y="9" width="20" height="3" fill="#0F172A" />
+          <rect x="5" y="14" width="3" height="2" rx="0.5" fill="#FEF3C7" />
+        </svg>
+      ),
+    },
+  ];
+
+  const supplierCategories = [
+    {
+      title: 'Accounting',
+      ranked: '20 ranked',
+      logo: '/images/supplier-accounting.png',
+    },
+    {
+      title: 'Legal',
+      ranked: '20 ranked',
+      logo: '/images/supplier-legal.png',
+    },
+    {
+      title: 'Banking',
+      ranked: '10 ranked',
+      logo: '/images/supplier-banking.png',
+    },
+    {
+      title: 'Real Estate',
+      ranked: '10 ranked',
+      logo: '/images/supplier-realestate.png',
     },
   ];
 
   return (
-    <section className="bg-white py-10 md:py-12 border-b border-slate-200 w-full">
+    <section className="bg-white pt-2 pb-12 md:pb-16 border-b border-slate-200 w-full">
       <div className="w-full">
-        
-        {/* Header matching Screenshot 5 */}
-        <div className="mb-6 border-b border-slate-200 pb-3">
-          <h2 className="my-0 text-[#020618] font-bold text-2xl sm:text-3xl font-serif leading-none">
-            <Link href="/franchise500" className="hover:underline">Franchise Lists</Link>
+        {/* Section Heading: NO line above, NO line below, matching reference screenshot */}
+        <div className="mb-6">
+          <h2 className="my-0 text-[#020618] font-bold text-2xl sm:text-3xl font-serif leading-none tracking-tight">
+            <Link href="/topic/franchises" className="hover:underline">
+              Franchise Lists
+            </Link>
           </h2>
         </div>
 
-        {/* 3 Feature Links Blocks (Matching Screenshot 5) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-          {franchiseLists.map((list) => {
-            const IconComp = list.icon;
-            return (
-              <Link
-                key={list.id}
-                href={`/franchise/list/${list.id}`}
-                className="group p-5 rounded-xl border border-slate-200/90 bg-slate-50/60 hover:bg-white hover:shadow-sm transition-all duration-200 flex items-start gap-4"
-              >
-                <div className={`p-2.5 rounded-lg flex-shrink-0 ${list.iconColor}`}>
-                  <IconComp className="w-5 h-5" />
-                </div>
-                <div className="space-y-1">
-                  <h3 className="text-base font-bold font-serif text-[#020618] group-hover:underline decoration-[#020618] decoration-1 underline-offset-[3px] transition-all leading-snug">
-                    {list.title}
-                  </h3>
-                  <p className="text-xs text-slate-600 font-sans leading-relaxed">
-                    {list.description}
-                  </p>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-
-        {/* Franchise 500 Banner & Showcase Grid */}
-        <div className="relative w-full rounded-2xl overflow-hidden bg-slate-900 text-white p-8 sm:p-12 mb-8 flex flex-col md:flex-row items-center justify-between gap-8 border border-slate-800 shadow-md">
-          <div className="space-y-3 max-w-xl text-center md:text-left">
-            <span className="text-xs font-bold uppercase tracking-widest text-amber-400 font-sans">
-              Annual 2026 Ranking
-            </span>
-            <h3 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-black tracking-tight text-white leading-tight">
-              Entrepreneur FRANCHISE 500<span className="text-amber-400">®</span>
-            </h3>
-            <p className="text-slate-300 text-sm font-sans leading-relaxed">
-              Explore the world’s first, most comprehensive, and most trusted franchise ranking. Filter by startup costs, growth metrics, and brand strength.
-            </p>
-          </div>
-
-          <Link
-            href="/franchise500"
-            className="px-6 py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm uppercase tracking-wider rounded-xl transition-colors shadow-md flex-shrink-0 cursor-pointer"
-          >
-            Explore Franchise 500 Ranking →
-          </Link>
-        </div>
-
-        {/* 4-Card Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {FRANCHISE_500_ITEMS.map((item) => (
-            <div
-              key={item.id}
-              className="group bg-white rounded-xl border border-slate-200 hover:border-slate-300 shadow-xs hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col justify-between"
-            >
-              <div>
-                <figure className="relative h-44 w-full overflow-hidden border-b border-slate-100">
-                  <img
-                    src={item.imageUrl}
-                    alt={item.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <span className="absolute top-3 left-3 bg-amber-500 text-slate-950 font-black text-xs px-2.5 py-1 rounded-md shadow-xs font-sans uppercase">
-                    Rank #{item.rank}
-                  </span>
-                </figure>
-
-                <div className="p-5">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 font-sans block mb-1">
-                    {item.category}
-                  </span>
-                  
-                  <h3 className="text-xl font-bold font-serif text-[#020618] group-hover:underline decoration-[#020618] decoration-1 underline-offset-[3px] transition-all mb-3">
-                    {item.name}
-                  </h3>
-
-                  <p className="text-slate-600 text-xs leading-relaxed mb-4 font-sans line-clamp-3">
-                    {item.description}
-                  </p>
-
-                  <div className="space-y-2 pt-3 border-t border-slate-100 text-xs font-sans">
-                    <div className="flex items-center justify-between text-slate-700">
-                      <span className="flex items-center gap-1 text-slate-500">
-                        <DollarSign className="w-3.5 h-3.5 text-slate-400" />
-                        Initial Investment:
-                      </span>
-                      <span className="font-bold text-[#020618]">{item.investmentRange}</span>
-                    </div>
-
-                    <div className="flex items-center justify-between text-slate-700">
-                      <span className="flex items-center gap-1 text-slate-500">
-                        <Building2 className="w-3.5 h-3.5 text-slate-400" />
-                        Total Units:
-                      </span>
-                      <span className="font-bold text-[#020618]">{item.units}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-5 pt-0">
+        {/* 3 Editorial Items Outside Box (Clean typography, no card boxes) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-8 sm:mb-10 items-start">
+          {editorialItems.map((item) => (
+            <div key={item.id} className="space-y-1">
+              <h3 className="text-base sm:text-[17px] font-serif font-bold text-[#020618] leading-snug">
                 <Link
-                  href={`/franchise/${item.id}`}
-                  className="w-full py-2.5 px-4 bg-slate-100 hover:bg-[#193CB8] hover:text-white text-slate-900 font-bold text-xs rounded-lg flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  href="/topic/franchises"
+                  className={`text-[#020618] hover:text-[#1642D0] transition-colors inline-flex items-center ${
+                    item.underlined
+                      ? 'underline decoration-[#020618] decoration-1 underline-offset-[3px]'
+                      : 'hover:underline'
+                  }`}
                 >
-                  Request Free Franchise Info
+                  {item.icon}
+                  <span>{item.title}</span>
                 </Link>
-              </div>
+              </h3>
+              <p className="text-xs sm:text-[13px] text-slate-600 font-serif leading-relaxed m-0">
+                {item.description}
+              </p>
             </div>
           ))}
+        </div>
+
+        {/* Large Blue Box: Top Franchise Suppliers */}
+        <div className="w-full bg-[#193cb8] rounded-2xl p-6 sm:p-8 lg:p-10 shadow-md text-white">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            
+            {/* Left Side: Logo, Title, Year double-lines, Description & Explore Button */}
+            <div className="lg:col-span-5 flex flex-col items-center text-center justify-center">
+              {/* Entrepreneur Italic Serif Logo */}
+              <span className="font-serif italic text-3xl sm:text-4xl text-white font-normal block leading-tight">
+                Entrepreneur
+              </span>
+
+              {/* Bold Uppercase Titles */}
+              <div className="text-2xl sm:text-3xl font-black font-sans uppercase tracking-tight text-white mt-1 leading-none">
+                TOP FRANCHISE
+              </div>
+              <div className="text-2xl sm:text-3xl font-black font-sans uppercase tracking-tight text-white mt-1 leading-none">
+                SUPPLIERS
+              </div>
+
+              {/* Double Line ═ 2026 ═ */}
+              <div className="flex items-center justify-center gap-2.5 my-3 text-white">
+                <div className="flex flex-col gap-0.5 w-7 sm:w-9">
+                  <div className="h-[1.5px] bg-white w-full"></div>
+                  <div className="h-[1.5px] bg-white w-full"></div>
+                </div>
+                <span className="font-sans font-bold text-sm sm:text-base tracking-widest leading-none">
+                  2026
+                </span>
+                <div className="flex flex-col gap-0.5 w-7 sm:w-9">
+                  <div className="h-[1.5px] bg-white w-full"></div>
+                  <div className="h-[1.5px] bg-white w-full"></div>
+                </div>
+              </div>
+
+              {/* Descriptive text */}
+              <p className="text-white text-xs sm:text-[13px] font-serif leading-relaxed text-center max-w-xs mx-auto mb-5 opacity-95">
+                Explore the companies helping franchise systems operate, grow, and scale.
+              </p>
+
+              {/* Explore the list button: White by default, Black on cursor hover */}
+              <Link
+                href="/topic/franchises"
+                className="px-6 py-2.5 rounded-lg bg-white text-[#020618] hover:bg-[#020618] hover:text-white font-bold text-xs sm:text-sm font-sans transition-all duration-200 inline-flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
+              >
+                <span>Explore the list</span>
+                <span className="text-base leading-none">→</span>
+              </Link>
+            </div>
+
+            {/* Right Side: 2x2 Grid of 4 Darker Blue Supplier Category Cards */}
+            <div className="lg:col-span-7">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
+                {supplierCategories.map((cat) => (
+                  <Link
+                    key={cat.title}
+                    href="/topic/franchises"
+                    className="bg-[#1c398e] hover:bg-[#152e72] border border-white/10 rounded-xl p-4 sm:p-5 flex items-center justify-between transition-all duration-200 group cursor-pointer shadow-xs"
+                  >
+                    <div>
+                      <h4 className="font-sans font-bold text-base sm:text-[17px] text-white leading-tight m-0 group-hover:underline">
+                        {cat.title}
+                      </h4>
+                      <p className="font-serif italic text-xs sm:text-[13px] text-blue-100/90 mt-1 mb-0">
+                        {cat.ranked}
+                      </p>
+                    </div>
+
+                    {/* Circular White Badge with Authentic Supplier Logo */}
+                    <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white flex items-center justify-center p-1.5 shadow-xs flex-shrink-0">
+                      <img
+                        src={cat.logo}
+                        alt={cat.title}
+                        className="w-full h-full object-contain rounded-full"
+                      />
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+          </div>
         </div>
 
       </div>
