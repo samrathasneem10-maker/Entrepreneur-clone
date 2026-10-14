@@ -203,10 +203,10 @@ export const FranchisesMainSection: React.FC = () => {
                 Featured Franchise
               </h3>
 
-              {/* Logo + Details Row */}
-              <div className="flex items-center gap-4">
+              {/* Logo + Details & Learn More Button Row (aligned directly under text) */}
+              <div className="flex items-start gap-3.5">
                 {/* Authentic Heights Wellness Logo */}
-                <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0 pt-0.5 flex items-center justify-center">
                   <img
                     src="/images/heights-wellness-logo.webp"
                     alt="Heights Wellness Retreat"
@@ -214,25 +214,23 @@ export const FranchisesMainSection: React.FC = () => {
                   />
                 </div>
 
-                {/* Name & Category */}
-                <div className="flex flex-col justify-center">
+                {/* Name, Category & Learn More Button Column */}
+                <div className="flex flex-col">
                   <h4 className="font-serif font-bold text-base sm:text-[17px] text-[#020618] leading-tight m-0">
                     Heights Wellness<br />Retreat
                   </h4>
-                  <div className="text-xs sm:text-[13px] text-slate-500 font-serif italic pt-1">
+                  <div className="text-xs sm:text-[13px] text-slate-500 font-serif italic pt-1 pb-3">
                     Personal-Care
                   </div>
+                  <div>
+                    <Link
+                      href="/topic/franchises"
+                      className="inline-block px-6 sm:px-7 py-2 bg-[#1642D0] hover:bg-blue-800 text-white font-bold text-xs sm:text-[13px] rounded transition-colors shadow-2xs text-center"
+                    >
+                      Learn More
+                    </Link>
+                  </div>
                 </div>
-              </div>
-
-              {/* Learn More Button */}
-              <div className="pt-4">
-                <Link
-                  href="/topic/franchises"
-                  className="inline-block px-7 py-2.5 bg-[#1642D0] hover:bg-blue-800 text-white font-bold text-xs sm:text-sm rounded-md transition-colors shadow-2xs text-center"
-                >
-                  Learn More
-                </Link>
               </div>
             </div>
           </div>
@@ -329,7 +327,7 @@ export const FranchisesMainSection: React.FC = () => {
               </div>
             </div>
 
-            {/* Quiz Option Buttons: Default Light Blue Fill & Blue Outline, Dark Blue when clicked */}
+            {/* Quiz Option Buttons: Default Light Blue Fill & Blue Outline, Learn More Blue when clicked */}
             <div className="space-y-2.5 mb-2">
               {currentQuiz.options.map((opt) => {
                 const isSelected = selectedOption === opt;
@@ -340,8 +338,8 @@ export const FranchisesMainSection: React.FC = () => {
                     onClick={() => setSelectedOption(opt)}
                     className={`w-full py-2.5 sm:py-3 px-4 rounded-md text-xs sm:text-sm font-bold font-sans transition-all border cursor-pointer text-center block ${
                       isSelected
-                        ? 'bg-[#0B256B] text-white border-[#0B256B] shadow-sm'
-                        : 'border-[#1642D0] bg-[#F4F7FF] text-[#1642D0] hover:bg-blue-100/60'
+                        ? 'bg-[#1642D0] text-white border-[#1642D0] shadow-sm'
+                        : 'border-[#2E5CDB] bg-[#F0F6FF] text-[#1642D0] hover:bg-blue-100/70'
                     }`}
                   >
                     {opt}
