@@ -1,30 +1,47 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
 
 export const EntrepreneursSection: React.FC = () => {
   const leadArticle = {
-    id: 'ent-lead',
-    title: 'They Bet Everything to Turn a Simple Snack into a Restaurant Empire',
-    category: 'BUYING A FRANCHISE',
-    author: 'AMANDA BREEN',
-    imageUrl: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=1200&auto=format&fit=crop',
+    id: 'universities-face-budget-squeeze',
+    category: 'ENTREPRENEURS',
+    title: 'Universities Face a Budget Squeeze. Cutting Spending Is Only Part of the Answer.',
+    excerpt: "Budget cuts aren't new to higher education, but today's financial pressures are reshaping academic programs, staffing and student services, raising questions about long-term sustainability.",
+    author: 'ASHISH FERNANDO',
+    authorSlug: 'ashish-fernando',
+    imageUrl: '/images/university-budget-cuts.jpg',
+    remoteImageUrl: 'https://www.entrepreneur.com/wp-content/uploads/sites/2/2026/10/university-budget-cuts-1026_g2252192638.jpg?resize=500,282',
   };
 
   const rightArticles = [
     {
-      id: 'ent-1',
-      title: 'Jordan Rothstein Is Building SmackTok for the Next Era of Social Sports Gaming',
-      category: 'BUSINESS FUNDING',
-      author: 'LOGAN SIMMONS',
-      imageUrl: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=800&auto=format&fit=crop',
+      id: '5-magic-phrases-to-be-more-likable',
+      category: 'ENTREPRENEURS',
+      title: 'Want to Be More Likable? Just Say These 5 Magic Phrases.',
+      author: 'VANESSA VAN EDWARDS',
+      authorSlug: 'vanessa-van-edwards',
+      imageUrl: '/images/vanessa-van-edwards.jpg',
+      remoteImageUrl: 'https://www.entrepreneur.com/wp-content/uploads/sites/2/2026/10/Vanessa-Van-Edwards_Maggie-Kirkland-.jpg?resize=150,150',
     },
     {
-      id: 'ent-2',
-      title: 'What Kind of Business Entity Should You Choose? Getting It Wrong Could Cost You Millions When You Sell.',
-      category: 'BUILDING A BUSINESS',
-      author: 'ROB PASQUESI',
-      imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop',
+      id: 'why-high-performers-leave',
+      category: 'THOUGHT LEADERS',
+      title: "Why High Performers Leave Before You Know They're Gone",
+      author: 'GLORIA ST. MARTIN-LOWRY',
+      authorSlug: 'gloria-st-martin-lowry',
+      imageUrl: '/images/top-performers-leave.jpg',
+      remoteImageUrl: 'https://www.entrepreneur.com/wp-content/uploads/sites/2/2026/09/1790782535-top-performers-leave-before-theyre-gone-0926-g2222113062.jpg?resize=150,150',
+    },
+    {
+      id: 'college-admissions-red-flag-word',
+      category: 'ENTREPRENEURS',
+      title: 'After 35 Years in the College Admissions Business, 1 Red-Flag Word Is Popping Up More Than Ever',
+      author: 'BRIAN TAYLOR',
+      authorSlug: 'brian-taylor',
+      imageUrl: '/images/college-admissions.jpg',
+      remoteImageUrl: 'https://www.entrepreneur.com/wp-content/uploads/sites/2/2026/10/college-admissions-0926-g1060184852.jpg?resize=150,150',
     },
   ];
 
@@ -32,80 +49,145 @@ export const EntrepreneursSection: React.FC = () => {
     <section className="bg-white py-10 md:py-12 border-b border-slate-200 w-full">
       <div className="w-full">
         
-        {/* Heading Bar matching Screenshot 3 */}
-        <div className="mb-6 border-b border-slate-200 pb-3 flex items-center justify-between">
-          <h2 className="my-0 text-[#020618] font-bold text-2xl sm:text-3xl font-serif leading-none">
-            <Link href="/topic/entrepreneurs" className="hover:underline">Entrepreneurs</Link>
+        {/* Section Header */}
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="my-0 text-[#020618] font-bold text-2xl sm:text-3xl font-serif leading-none tracking-tight">
+            <Link
+              href="/topic/entrepreneurs"
+              className="text-[#020618] no-underline hover:underline decoration-[#020618] decoration-1 underline-offset-[4px] transition-all"
+            >
+              Entrepreneurs
+            </Link>
           </h2>
 
           <Link
             href="/topic/entrepreneurs"
-            className="flex items-center gap-1.5 text-xs font-bold text-[#020618] hover:text-[#1642D0] uppercase tracking-wider font-sans group"
+            aria-label="Read more about Entrepreneurs"
+            className="flex items-center no-underline hover:underline text-xs sm:text-[13px] font-bold text-[#020618] uppercase tracking-wider group"
           >
             <span>See All</span>
-            <span className="w-5 h-5 rounded-full bg-[#1642D0] text-white flex items-center justify-center transition-colors group-hover:bg-blue-800">
-              <ArrowRight className="w-3 h-3" />
-            </span>
+            <svg
+              aria-hidden="true"
+              fill="currentColor"
+              className="w-5 h-5 fill-current ml-1 text-[#1642D0] group-hover:scale-105 transition-transform"
+              viewBox="0 0 24 24"
+            >
+              <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12s4.48 10 10 10 10-4.48 10-10m-10 1H8v-2h4V8l4 4-4 4z" />
+            </svg>
           </Link>
         </div>
 
-        {/* 2-Column Grid Layout: Large Lead Card (Left 50%) + Stacked Right Cards (Right 50%) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* 2-Column Layout matching Reference Image */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-start">
           
-          {/* Left Lead Feature Card */}
-          <div className="lg:col-span-6 group cursor-pointer">
-            <Link href={`/article/${leadArticle.id}`} className="block space-y-3">
-              <div className="relative w-full aspect-[16/10] overflow-hidden rounded-2xl border border-slate-200/90 shadow-2xs">
+          {/* Left Column: Lead Story */}
+          <div className="group">
+            {/* Lead Image */}
+            <Link href={`/article/${leadArticle.id}`} className="block">
+              <div className="relative w-full aspect-[16/10] overflow-hidden rounded-xl border border-slate-200/90 shadow-2xs">
                 <img
                   src={leadArticle.imageUrl}
                   alt={leadArticle.title}
-                  className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (!target.dataset.fallback) {
+                      target.dataset.fallback = 'true';
+                      target.src = leadArticle.remoteImageUrl;
+                    }
+                  }}
+                  className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
                 />
               </div>
-              <div className="space-y-1.5 pt-1">
-                <span className="text-xs font-extrabold uppercase tracking-widest text-[#1642D0] font-sans">
-                  {leadArticle.category}
-                </span>
-                <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#020618] group-hover:underline decoration-[#020618] decoration-1 underline-offset-[3px] transition-all leading-snug">
-                  {leadArticle.title}
-                </h3>
-                <div className="text-[11px] font-sans font-bold uppercase tracking-wider text-slate-500 pt-1">
-                  BY {leadArticle.author}
-                </div>
-              </div>
             </Link>
+
+            {/* Lead Story Details */}
+            <div className="pt-3.5 space-y-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#1642D0] font-sans block">
+                {leadArticle.category}
+              </span>
+
+              <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#020618] leading-snug tracking-tight">
+                <Link
+                  href={`/article/${leadArticle.id}`}
+                  className="text-[#020618] no-underline hover:underline decoration-[#020618] decoration-1 underline-offset-[3px] transition-all"
+                >
+                  {leadArticle.title}
+                </Link>
+              </h3>
+
+              {/* Normal font weight excerpt */}
+              <p className="text-sm sm:text-[15px] font-sans font-normal text-slate-600 leading-relaxed pt-0.5">
+                {leadArticle.excerpt}
+              </p>
+
+              {/* Byline */}
+              <div className="text-xs font-sans uppercase tracking-wider pt-1 flex items-center gap-1">
+                <span className="text-slate-500 font-semibold">BY</span>
+                <Link
+                  href={`/author/${leadArticle.authorSlug}`}
+                  className="text-[#1642D0] font-bold underline decoration-[#1642D0] underline-offset-2 hover:text-blue-800 transition-colors"
+                >
+                  {leadArticle.author}
+                </Link>
+              </div>
+            </div>
           </div>
 
-          {/* Right Column: Stacked Articles with Right Thumbnails (Matching Screenshot 3) */}
-          <div className="lg:col-span-6 space-y-6">
+          {/* Right Column: 3 Stacked Stories with Right Thumbnails */}
+          <div className="space-y-5 lg:space-y-6">
             {rightArticles.map((art, idx) => (
-              <Link
+              <div
                 key={art.id}
-                href={`/article/${art.id}`}
-                className={`group flex items-center justify-between gap-5 pb-6 ${
+                className={`group flex items-start justify-between gap-4 sm:gap-6 pb-5 ${
                   idx < rightArticles.length - 1 ? 'border-b border-slate-200' : ''
                 }`}
               >
-                <div className="flex-1 space-y-2">
-                  <span className="text-xs font-extrabold uppercase tracking-widest text-[#1642D0] font-sans block">
+                {/* Left Text Block */}
+                <div className="flex-1 space-y-1.5 pr-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#1642D0] font-sans block">
                     {art.category}
                   </span>
-                  <h3 className="text-base sm:text-lg font-serif font-bold text-[#020618] group-hover:underline decoration-[#020618] decoration-1 underline-offset-[3px] transition-all leading-snug line-clamp-3">
-                    {art.title}
+
+                  <h3 className="text-base sm:text-lg font-serif font-bold text-[#020618] leading-snug tracking-tight">
+                    <Link
+                      href={`/article/${art.id}`}
+                      className="text-[#020618] no-underline hover:underline decoration-[#020618] decoration-1 underline-offset-[3px] transition-all"
+                    >
+                      {art.title}
+                    </Link>
                   </h3>
-                  <div className="text-[11px] font-sans font-bold uppercase tracking-wider text-slate-500 pt-1">
-                    BY {art.author}
+
+                  {/* Byline */}
+                  <div className="text-xs font-sans uppercase tracking-wider pt-1 flex items-center gap-1">
+                    <span className="text-slate-500 font-semibold">BY</span>
+                    <Link
+                      href={`/author/${art.authorSlug}`}
+                      className="text-[#1642D0] font-bold underline decoration-[#1642D0] underline-offset-2 hover:text-blue-800 transition-colors"
+                    >
+                      {art.author}
+                    </Link>
                   </div>
                 </div>
 
-                <div className="w-32 h-32 sm:w-36 sm:h-36 flex-shrink-0 overflow-hidden rounded-2xl border border-slate-200 shadow-2xs">
+                {/* Right Thumbnail */}
+                <Link
+                  href={`/article/${art.id}`}
+                  className="w-28 h-28 sm:w-32 sm:h-32 flex-shrink-0 overflow-hidden rounded-xl border border-slate-200/90 shadow-2xs block"
+                >
                   <img
                     src={art.imageUrl}
                     alt={art.title}
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      if (!target.dataset.fallback) {
+                        target.dataset.fallback = 'true';
+                        target.src = art.remoteImageUrl;
+                      }
+                    }}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
-                </div>
-              </Link>
+                </Link>
+              </div>
             ))}
           </div>
 

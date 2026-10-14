@@ -2008,6 +2008,53 @@ export const CATEGORY_TOPICS_DATA: Record<string, { title: string; description: 
 // Aggregate all unique topic articles to ensure getArticleById works for any clicked article
 const ALL_TOPIC_ARTICLES: Article[] = Object.values(CATEGORY_TOPICS_DATA).flatMap((topic) => topic.articles);
 
+export const ENTREPRENEURS_SECTION_ARTICLES: Article[] = [
+  {
+    id: 'universities-face-budget-squeeze',
+    title: 'Universities Face a Budget Squeeze. Cutting Spending Is Only Part of the Answer.',
+    category: 'Entrepreneurs',
+    author: { name: 'Ashish Fernando', title: 'Contributor' },
+    date: 'October 14, 2026',
+    readTime: '5 min read',
+    excerpt: "Budget cuts aren't new to higher education, but today's financial pressures are reshaping academic programs, staffing and student services, raising questions about long-term sustainability.",
+    imageUrl: '/images/university-budget-cuts.jpg',
+    imageAspect: 'video',
+  },
+  {
+    id: '5-magic-phrases-to-be-more-likable',
+    title: 'Want to Be More Likable? Just Say These 5 Magic Phrases.',
+    category: 'Entrepreneurs',
+    author: { name: 'Vanessa Van Edwards', title: 'Contributor' },
+    date: 'October 14, 2026',
+    readTime: '4 min read',
+    excerpt: 'Science-backed phrases and communication tactics to instantly build rapport and connection.',
+    imageUrl: '/images/vanessa-van-edwards.jpg',
+    imageAspect: 'square',
+  },
+  {
+    id: 'why-high-performers-leave',
+    title: "Why High Performers Leave Before You Know They're Gone",
+    category: 'Thought Leaders',
+    author: { name: 'Gloria St. Martin-Lowry', title: 'Thought Leader' },
+    date: 'October 14, 2026',
+    readTime: '5 min read',
+    excerpt: 'Key retention indicators and workplace dynamics that drive top talent out the door.',
+    imageUrl: '/images/top-performers-leave.jpg',
+    imageAspect: 'square',
+  },
+  {
+    id: 'college-admissions-red-flag-word',
+    title: 'After 35 Years in the College Admissions Business, 1 Red-Flag Word Is Popping Up More Than Ever',
+    category: 'Entrepreneurs',
+    author: { name: 'Brian Taylor', title: 'Contributor' },
+    date: 'October 14, 2026',
+    readTime: '6 min read',
+    excerpt: 'An insider view on changes in college applications, admissions trends, and what families need to know.',
+    imageUrl: '/images/college-admissions.jpg',
+    imageAspect: 'square',
+  },
+];
+
 export const ALL_ARTICLES: Article[] = [
   HERO_ARTICLE,
   ...LATEST_ARTICLES,
@@ -2018,6 +2065,7 @@ export const ALL_ARTICLES: Article[] = [
   ...MARKETS_INVESTING_ARTICLES,
   ...AI_TECH_FEATURE_ARTICLES,
   ...DEEP_DIVE_ARTICLES,
+  ...ENTREPRENEURS_SECTION_ARTICLES,
   ...ALL_TOPIC_ARTICLES,
 ];
 
