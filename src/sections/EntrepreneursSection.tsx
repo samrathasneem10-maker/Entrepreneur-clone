@@ -10,7 +10,7 @@ export const EntrepreneursSection: React.FC = () => {
     title: 'Universities Face a Budget Squeeze. Cutting Spending Is Only Part of the Answer.',
     titleJsx: (
       <>
-        Universities Face a Budget Squeeze. Cutting Spending Is Only<br className="hidden sm:inline" /> Part of the Answer.
+        Universities Face a Budget Squeeze. Cutting Spending Is Only<br />Part of the Answer.
       </>
     ),
     excerpt: "Budget cuts aren't new to higher education, but today's financial pressures are reshaping academic programs, staffing and student services, raising questions about long-term sustainability.",
@@ -66,35 +66,37 @@ export const EntrepreneursSection: React.FC = () => {
   ];
 
   return (
-    <section className="bg-white pt-10 md:pt-12 pb-10 md:pb-12 border-b border-slate-200 w-full">
+    <section className="bg-white pb-10 md:pb-12 border-b border-slate-200 w-full">
       <div className="w-full">
         
-        {/* Section Header */}
-        <div className="mb-6 flex items-center justify-between">
-          <h2 className="my-0 text-[#020618] font-bold text-2xl sm:text-3xl font-serif leading-none tracking-tight">
+        {/* Top line with SMALL DECREASED GAP above Entrepreneurs heading matching screenshot */}
+        <div className="border-t border-slate-200 pt-2.5 sm:pt-3 pb-2 mb-5">
+          <div className="flex items-center justify-between">
+            <h2 className="my-0 text-[#020618] font-bold text-2xl sm:text-3xl font-serif leading-none tracking-tight">
+              <Link
+                href="/topic/entrepreneurs"
+                className="text-[#020618] no-underline hover:underline decoration-[#020618] decoration-1 underline-offset-[4px] transition-all"
+              >
+                Entrepreneurs
+              </Link>
+            </h2>
+
             <Link
               href="/topic/entrepreneurs"
-              className="text-[#020618] no-underline hover:underline decoration-[#020618] decoration-1 underline-offset-[4px] transition-all"
+              aria-label="Read more about Entrepreneurs"
+              className="flex items-center no-underline hover:underline text-xs sm:text-[13px] font-bold text-[#020618] uppercase tracking-wider group"
             >
-              Entrepreneurs
+              <span>See All</span>
+              <svg
+                aria-hidden="true"
+                fill="currentColor"
+                className="w-5 h-5 fill-current ml-1 text-[#1642D0] group-hover:scale-105 transition-transform"
+                viewBox="0 0 24 24"
+              >
+                <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12s4.48 10 10 10 10-4.48 10-10m-10 1H8v-2h4V8l4 4-4 4z" />
+              </svg>
             </Link>
-          </h2>
-
-          <Link
-            href="/topic/entrepreneurs"
-            aria-label="Read more about Entrepreneurs"
-            className="flex items-center no-underline hover:underline text-xs sm:text-[13px] font-bold text-[#020618] uppercase tracking-wider group"
-          >
-            <span>See All</span>
-            <svg
-              aria-hidden="true"
-              fill="currentColor"
-              className="w-5 h-5 fill-current ml-1 text-[#1642D0] group-hover:scale-105 transition-transform"
-              viewBox="0 0 24 24"
-            >
-              <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12s4.48 10 10 10 10-4.48 10-10m-10 1H8v-2h4V8l4 4-4 4z" />
-            </svg>
-          </Link>
+          </div>
         </div>
 
         {/* 2-Column Layout: Left and Right sides stretch to the exact same baseline */}
@@ -127,7 +129,7 @@ export const EntrepreneursSection: React.FC = () => {
                   {leadArticle.category}
                 </span>
 
-                <h3 className="text-xl sm:text-2xl lg:text-[25px] font-serif font-bold text-[#020618] leading-snug tracking-tight">
+                <h3 className="text-lg sm:text-[21px] lg:text-[22px] font-serif font-bold text-[#020618] leading-[1.3] tracking-tight">
                   <Link
                     href={`/article/${leadArticle.id}`}
                     className="text-[#020618] no-underline hover:underline decoration-[#020618] decoration-1 underline-offset-[3px] transition-all"

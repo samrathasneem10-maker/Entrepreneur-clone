@@ -37,7 +37,7 @@ export const SideHustleSection: React.FC = () => {
   ];
 
   return (
-    <section className="bg-white pt-4 sm:pt-6 pb-12 md:pb-16 border-b border-slate-200/80 w-full">
+    <section className="bg-white pt-4 sm:pt-6 pb-8 md:pb-10 w-full">
       <div className="w-full">
         
         {/* Category Heading Bar: No underline under 'Side Hustle', green circle See All */}

@@ -162,13 +162,13 @@ export const FranchisesMainSection: React.FC = () => {
           </div>
         </div>
 
-        {/* Sub-Navigation Pills (All Solid Black Rounded Pills) */}
-        <div className="flex items-center gap-2.5 sm:gap-3 overflow-x-auto no-scrollbar pb-8">
+        {/* Sub-Navigation Pills (All Solid Black Rounded Pills matching Screenshot gap) */}
+        <div className="flex items-center gap-2 sm:gap-2.5 overflow-x-auto no-scrollbar pb-6 sm:pb-7">
           {pills.map((pill) => (
             <Link
               key={pill.label}
               href={pill.href}
-              className="px-5 py-2.5 rounded-full font-bold text-xs sm:text-sm font-sans whitespace-nowrap bg-[#020618] text-white hover:bg-slate-800 transition-colors shadow-2xs"
+              className="px-4 sm:px-4.5 py-1.5 sm:py-2 rounded-full font-bold text-xs sm:text-[13px] font-sans whitespace-nowrap bg-[#020618] text-white hover:bg-slate-800 transition-colors shadow-2xs"
             >
               {pill.label}
             </Link>
@@ -327,7 +327,7 @@ export const FranchisesMainSection: React.FC = () => {
               </div>
             </div>
 
-            {/* Quiz Option Buttons: Default Light Blue Fill & Blue Outline, Learn More Blue when clicked */}
+            {/* Quiz Option Buttons: Default Light Blue Fill & Blue Outline, Learn More Blue on Cursor Hover and Click */}
             <div className="space-y-2.5 mb-2">
               {currentQuiz.options.map((opt) => {
                 const isSelected = selectedOption === opt;
@@ -339,7 +339,7 @@ export const FranchisesMainSection: React.FC = () => {
                     className={`w-full py-2.5 sm:py-3 px-4 rounded-md text-xs sm:text-sm font-bold font-sans transition-all border cursor-pointer text-center block ${
                       isSelected
                         ? 'bg-[#1642D0] text-white border-[#1642D0] shadow-sm'
-                        : 'border-[#2E5CDB] bg-[#F0F6FF] text-[#1642D0] hover:bg-blue-100/70'
+                        : 'border-[#2E5CDB] bg-[#F0F6FF] text-[#1642D0] hover:bg-[#1642D0] hover:text-white hover:border-[#1642D0]'
                     }`}
                   >
                     {opt}
