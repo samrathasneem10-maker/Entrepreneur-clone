@@ -46,7 +46,7 @@ export const EntrepreneursSection: React.FC = () => {
   ];
 
   return (
-    <section className="bg-white py-10 md:py-12 border-b border-slate-200 w-full">
+    <section className="bg-white pt-10 md:pt-12 pb-10 md:pb-12 border-b border-slate-200 w-full">
       <div className="w-full">
         
         {/* Section Header */}
@@ -77,70 +77,70 @@ export const EntrepreneursSection: React.FC = () => {
           </Link>
         </div>
 
-        {/* 2-Column Layout matching Reference Image */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-start">
+        {/* 2-Column Layout: Left and Right sides stretch to the exact same baseline */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-stretch">
           
-          {/* Left Column: Lead Story */}
-          <div className="group">
-            {/* Lead Image */}
-            <Link href={`/article/${leadArticle.id}`} className="block">
-              <div className="relative w-full aspect-[16/10] overflow-hidden rounded-xl border border-slate-200/90 shadow-2xs">
-                <img
-                  src={leadArticle.imageUrl}
-                  alt={leadArticle.title}
-                  onError={(e) => {
-                    const target = e.currentTarget;
-                    if (!target.dataset.fallback) {
-                      target.dataset.fallback = 'true';
-                      target.src = leadArticle.remoteImageUrl;
-                    }
-                  }}
-                  className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
-                />
+          {/* Left Column: Lead Story ending on the same baseline */}
+          <div className="group flex flex-col justify-between h-full">
+            <div>
+              {/* Lead Image */}
+              <Link href={`/article/${leadArticle.id}`} className="block">
+                <div className="relative w-full aspect-[16/10] overflow-hidden rounded-xl border border-slate-200/90 shadow-2xs">
+                  <img
+                    src={leadArticle.imageUrl}
+                    alt={leadArticle.title}
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      if (!target.dataset.fallback) {
+                        target.dataset.fallback = 'true';
+                        target.src = leadArticle.remoteImageUrl;
+                      }
+                    }}
+                    className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                  />
+                </div>
+              </Link>
+
+              {/* Lead Story Details */}
+              <div className="pt-3.5 space-y-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#1642D0] font-sans block">
+                  {leadArticle.category}
+                </span>
+
+                <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#020618] leading-snug tracking-tight">
+                  <Link
+                    href={`/article/${leadArticle.id}`}
+                    className="text-[#020618] no-underline hover:underline decoration-[#020618] decoration-1 underline-offset-[3px] transition-all"
+                  >
+                    {leadArticle.title}
+                  </Link>
+                </h3>
+
+                {/* Normal font weight excerpt */}
+                <p className="text-sm sm:text-[15px] font-sans font-normal text-slate-600 leading-relaxed pt-0.5">
+                  {leadArticle.excerpt}
+                </p>
               </div>
-            </Link>
+            </div>
 
-            {/* Lead Story Details */}
-            <div className="pt-3.5 space-y-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#1642D0] font-sans block">
-                {leadArticle.category}
-              </span>
-
-              <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#020618] leading-snug tracking-tight">
-                <Link
-                  href={`/article/${leadArticle.id}`}
-                  className="text-[#020618] no-underline hover:underline decoration-[#020618] decoration-1 underline-offset-[3px] transition-all"
-                >
-                  {leadArticle.title}
-                </Link>
-              </h3>
-
-              {/* Normal font weight excerpt */}
-              <p className="text-sm sm:text-[15px] font-sans font-normal text-slate-600 leading-relaxed pt-0.5">
-                {leadArticle.excerpt}
-              </p>
-
-              {/* Byline */}
-              <div className="text-xs font-sans uppercase tracking-wider pt-1 flex items-center gap-1">
-                <span className="text-slate-500 font-semibold">BY</span>
-                <Link
-                  href={`/author/${leadArticle.authorSlug}`}
-                  className="text-[#1642D0] font-bold underline decoration-[#1642D0] underline-offset-2 hover:text-blue-800 transition-colors"
-                >
-                  {leadArticle.author}
-                </Link>
-              </div>
+            {/* Byline ending at the exact same horizontal line as the right column */}
+            <div className="text-xs font-sans uppercase tracking-wider pt-4 pb-1 flex items-center gap-1">
+              <span className="text-slate-500 font-semibold">BY</span>
+              <Link
+                href={`/author/${leadArticle.authorSlug}`}
+                className="text-[#1642D0] font-bold underline decoration-[#1642D0] underline-offset-2 hover:text-blue-800 transition-colors"
+              >
+                {leadArticle.author}
+              </Link>
             </div>
           </div>
 
-          {/* Right Column: 3 Stacked Stories with Right Thumbnails */}
-          <div className="space-y-5 lg:space-y-6">
-            {rightArticles.map((art, idx) => (
+          {/* Right Column: 3 Stacked Stories - Every story including 3rd has border-b */}
+          <div className="flex flex-col justify-between h-full space-y-4 sm:space-y-5">
+            {rightArticles.map((art) => (
               <div
                 key={art.id}
-                className={`group flex items-start justify-between gap-4 sm:gap-6 pb-5 ${
-                  idx < rightArticles.length - 1 ? 'border-b border-slate-200' : ''
-                }`}
+                className="group flex items-start justify-between gap-4 sm:gap-6 pb-4 sm:pb-5 border-b border-slate-200"
               >
                 {/* Left Text Block */}
                 <div className="flex-1 space-y-1.5 pr-2">
