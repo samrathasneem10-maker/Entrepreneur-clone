@@ -4,8 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 
 export const FranchisesMainSection: React.FC = () => {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string>>({});
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   const pills = [
     { label: 'Franchise 500', href: '/topic/franchises' },
@@ -69,7 +68,7 @@ export const FranchisesMainSection: React.FC = () => {
     remoteImageUrl: 'https://www.entrepreneur.com/wp-content/uploads/sites/2/2026/10/daves-hot-chicken-1026-g-2217834688.jpg?resize=500,500',
   };
 
-  // Interactive Quiz Questions - Step 1 exactly matching screenshot
+  // Step 1 Options matching exact Money / Flexibility / Control / Lifestyle
   const quizSteps = [
     {
       step: 1,
@@ -127,49 +126,43 @@ export const FranchisesMainSection: React.FC = () => {
     },
   ];
 
-  const currentQuiz = quizSteps[currentStep - 1] || quizSteps[0];
+  const currentQuiz = quizSteps[0];
 
   const handleSelectOption = (option: string) => {
-    setSelectedAnswers((prev) => ({ ...prev, [currentStep]: option }));
-    if (currentStep < 5) {
-      setCurrentStep((prev) => prev + 1);
-    }
-  };
-
-  const handleResetQuiz = () => {
-    setSelectedAnswers({});
-    setCurrentStep(1);
+    setSelectedOption((prev) => (prev === option ? null : option));
   };
 
   return (
-    <section className="bg-white pt-10 md:pt-12 pb-12 md:pb-16 border-b border-slate-200 w-full">
+    <section className="bg-white pb-12 md:pb-16 border-b border-slate-200 w-full">
       <div className="w-full">
         
-        {/* Header Bar */}
-        <div className="mb-6 flex items-center justify-between">
-          <h2 className="my-0 text-[#020618] font-bold text-2xl sm:text-3xl font-serif leading-none tracking-tight">
-            <Link href="/topic/franchises" className="hover:underline">
-              Franchises
-            </Link>
-          </h2>
+        {/* Top line with SMALL GAP above Franchises heading matching screenshot */}
+        <div className="border-t border-slate-200 pt-2.5 sm:pt-3 pb-2 mb-5">
+          <div className="flex items-center justify-between">
+            <h2 className="my-0 text-[#020618] font-bold text-2xl sm:text-3xl font-serif leading-none tracking-tight">
+              <Link href="/topic/franchises" className="hover:underline">
+                Franchises
+              </Link>
+            </h2>
 
-          <Link
-            href="/topic/franchises"
-            className="flex items-center no-underline hover:underline text-xs sm:text-[13px] font-bold text-[#020618] uppercase tracking-wider group"
-          >
-            <span>See All</span>
-            <svg
-              aria-hidden="true"
-              fill="currentColor"
-              className="w-5 h-5 fill-current ml-1.5 text-[#1642D0] group-hover:scale-105 transition-transform"
-              viewBox="0 0 24 24"
+            <Link
+              href="/topic/franchises"
+              className="flex items-center no-underline hover:underline text-xs sm:text-[13px] font-bold text-[#020618] uppercase tracking-wider group"
             >
-              <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12s4.48 10 10 10 10-4.48 10-10m-10 1H8v-2h4V8l4 4-4 4z" />
-            </svg>
-          </Link>
+              <span>See All</span>
+              <svg
+                aria-hidden="true"
+                fill="currentColor"
+                className="w-5 h-5 fill-current ml-1.5 text-[#6B21A8] group-hover:scale-105 transition-transform"
+                viewBox="0 0 24 24"
+              >
+                <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12s4.48 10 10 10 10-4.48 10-10m-10 1H8v-2h4V8l4 4-4 4z" />
+              </svg>
+            </Link>
+          </div>
         </div>
 
-        {/* Sub-Navigation Pills (All Solid Black Rounded Pills matching Screenshot) */}
+        {/* Sub-Navigation Pills (All Solid Black Rounded Pills) */}
         <div className="flex items-center gap-2.5 sm:gap-3 overflow-x-auto no-scrollbar pb-8">
           {pills.map((pill) => (
             <Link
@@ -299,74 +292,63 @@ export const FranchisesMainSection: React.FC = () => {
             </div>
           </div>
 
-          {/* 3. Right Column: Interactive Quiz Card matching exact Money/Flexibility/Control/Lifestyle options */}
+          {/* 3. Right Column: Exact 3-line paragraph and Dark Blue on click */}
           <div className="md:col-span-12 xl:col-span-3 border border-[#020618] rounded-xl p-5 sm:p-6 bg-white shadow-2xs">
             <div className="text-center space-y-2 mb-4">
-              <h3 className="text-xl sm:text-[22px] font-serif font-bold text-[#020618] leading-tight my-0">
-                Find Your Perfect Franchise Match
+              <h3 className="text-xl sm:text-[22px] font-serif font-bold text-[#020618] leading-tight text-center my-0">
+                Find Your Perfect<br />Franchise Match
               </h3>
 
-              <p className="text-xs text-slate-600 font-sans leading-relaxed">
-                See which franchises fit your budget and have open territories near you.
+              {/* Exact 3-line formatted paragraph from screenshot */}
+              <p className="text-xs sm:text-[13px] text-slate-600 font-serif leading-relaxed text-center max-w-[240px] mx-auto">
+                See which franchises fit your<br />
+                budget and have open<br />
+                territories near you.
               </p>
             </div>
 
-            {/* Quiz Progress Header */}
-            <div className="space-y-1.5 mb-4">
-              <div className="flex items-center justify-start">
-                <span className="px-2 py-0.5 bg-[#1642D0] text-white text-[10px] font-bold rounded-sm">
-                  {currentQuiz.percentage}
-                </span>
-              </div>
-              <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                <div
-                  className="bg-[#1642D0] h-full rounded-full transition-all duration-300"
-                  style={{ width: currentQuiz.percentage }}
-                />
+            {/* Quiz Progress Header with 17% pill inside track */}
+            <div className="w-full bg-[#E8EEF5] h-3.5 rounded-full p-0.5 flex items-center mb-4">
+              <div className="bg-[#1642D0] text-white text-[9px] font-bold px-2 py-0.5 rounded-full leading-none flex items-center justify-center">
+                {currentQuiz.percentage}
               </div>
             </div>
 
-            {/* Step & Question */}
+            {/* Step & Question: Exact 3-line question wrap */}
             <div className="text-center space-y-1 mb-4">
               <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 font-sans">
                 STEP {currentQuiz.step}/5
               </div>
               <div className="text-sm sm:text-[15px] font-bold text-[#020618] font-sans leading-snug">
-                {currentQuiz.question}
+                What&apos;s most important for<br />
+                you when starting a<br />
+                business?
               </div>
               <div className="text-xs text-slate-500 font-sans">
                 Select one
               </div>
             </div>
 
-            {/* Blue outlined Quiz Option Buttons matching Screenshot */}
-            <div className="space-y-3 mb-4">
-              {currentQuiz.options.map((opt) => (
-                <button
-                  key={opt}
-                  onClick={() => handleSelectOption(opt)}
-                  className={`w-full py-2.5 sm:py-3 px-4 rounded-lg text-xs sm:text-sm font-bold font-sans transition-all border cursor-pointer text-center block ${
-                    selectedAnswers[currentStep] === opt
-                      ? 'border-[#1642D0] bg-[#1642D0] text-white shadow-xs'
-                      : 'border-[#1642D0] bg-white text-[#1642D0] hover:bg-blue-50/60 shadow-2xs'
-                  }`}
-                >
-                  {opt}
-                </button>
-              ))}
+            {/* Quiz Option Buttons: Default Light Blue Fill & Blue Outline, Dark Blue when clicked */}
+            <div className="space-y-2.5 mb-2">
+              {currentQuiz.options.map((opt) => {
+                const isSelected = selectedOption === opt;
+                return (
+                  <button
+                    key={opt}
+                    type="button"
+                    onClick={() => setSelectedOption(opt)}
+                    className={`w-full py-2.5 sm:py-3 px-4 rounded-md text-xs sm:text-sm font-bold font-sans transition-all border cursor-pointer text-center block ${
+                      isSelected
+                        ? 'bg-[#0B256B] text-white border-[#0B256B] shadow-sm'
+                        : 'border-[#1642D0] bg-[#F4F7FF] text-[#1642D0] hover:bg-blue-100/60'
+                    }`}
+                  >
+                    {opt}
+                  </button>
+                );
+              })}
             </div>
-
-            {/* Reset / Status */}
-            {currentStep > 1 && (
-              <div className="text-center pt-2 border-t border-slate-100">
-                <button
-                  onClick={handleResetQuiz}
-                  className="text-[11px] font-bold text-slate-500 hover:text-[#1642D0] transition-colors underline cursor-pointer"
-                >
-                  Reset Quiz
-                </button>
-              </div>
-            )}
           </div>
 
         </div>

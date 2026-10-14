@@ -38,7 +38,7 @@ export const TransformAISection: React.FC = () => {
   ];
 
   return (
-    <section className="bg-white pt-10 md:pt-12 pb-12 md:pb-16 border-b border-slate-200 w-full">
+    <section className="bg-white pt-10 md:pt-12 pb-10 md:pb-12 w-full">
       <div className="w-full">
         
         {/* Section Header */}
