@@ -8,6 +8,11 @@ export const EntrepreneursSection: React.FC = () => {
     id: 'universities-face-budget-squeeze',
     category: 'ENTREPRENEURS',
     title: 'Universities Face a Budget Squeeze. Cutting Spending Is Only Part of the Answer.',
+    titleJsx: (
+      <>
+        Universities Face a Budget Squeeze. Cutting Spending Is Only<br className="hidden sm:inline" /> Part of the Answer.
+      </>
+    ),
     excerpt: "Budget cuts aren't new to higher education, but today's financial pressures are reshaping academic programs, staffing and student services, raising questions about long-term sustainability.",
     author: 'ASHISH FERNANDO',
     authorSlug: 'ashish-fernando',
@@ -20,6 +25,11 @@ export const EntrepreneursSection: React.FC = () => {
       id: '5-magic-phrases-to-be-more-likable',
       category: 'ENTREPRENEURS',
       title: 'Want to Be More Likable? Just Say These 5 Magic Phrases.',
+      titleJsx: (
+        <>
+          Want to Be More Likable? Just Say These 5<br className="hidden sm:inline" /> Magic Phrases.
+        </>
+      ),
       author: 'VANESSA VAN EDWARDS',
       authorSlug: 'vanessa-van-edwards',
       imageUrl: '/images/vanessa-van-edwards.jpg',
@@ -29,6 +39,11 @@ export const EntrepreneursSection: React.FC = () => {
       id: 'why-high-performers-leave',
       category: 'THOUGHT LEADERS',
       title: "Why High Performers Leave Before You Know They're Gone",
+      titleJsx: (
+        <>
+          Why High Performers Leave Before You<br className="hidden sm:inline" /> Know They&apos;re Gone
+        </>
+      ),
       author: 'GLORIA ST. MARTIN-LOWRY',
       authorSlug: 'gloria-st-martin-lowry',
       imageUrl: '/images/top-performers-leave.jpg',
@@ -38,6 +53,11 @@ export const EntrepreneursSection: React.FC = () => {
       id: 'college-admissions-red-flag-word',
       category: 'ENTREPRENEURS',
       title: 'After 35 Years in the College Admissions Business, 1 Red-Flag Word Is Popping Up More Than Ever',
+      titleJsx: (
+        <>
+          After 35 Years in the College Admissions<br className="hidden sm:inline" /> Business, 1 Red-Flag Word Is Popping Up<br className="hidden sm:inline" /> More Than Ever
+        </>
+      ),
       author: 'BRIAN TAYLOR',
       authorSlug: 'brian-taylor',
       imageUrl: '/images/college-admissions.jpg',
@@ -107,12 +127,12 @@ export const EntrepreneursSection: React.FC = () => {
                   {leadArticle.category}
                 </span>
 
-                <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#020618] leading-snug tracking-tight">
+                <h3 className="text-xl sm:text-2xl lg:text-[25px] font-serif font-bold text-[#020618] leading-snug tracking-tight">
                   <Link
                     href={`/article/${leadArticle.id}`}
                     className="text-[#020618] no-underline hover:underline decoration-[#020618] decoration-1 underline-offset-[3px] transition-all"
                   >
-                    {leadArticle.title}
+                    {leadArticle.titleJsx}
                   </Link>
                 </h3>
 
@@ -135,7 +155,7 @@ export const EntrepreneursSection: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Column: 3 Stacked Stories - Every story including 3rd has border-b */}
+          {/* Right Column: 3 Stacked Stories with exact 2-line / 3-line breaks */}
           <div className="flex flex-col justify-between h-full space-y-4 sm:space-y-5">
             {rightArticles.map((art) => (
               <div
@@ -143,17 +163,17 @@ export const EntrepreneursSection: React.FC = () => {
                 className="group flex items-start justify-between gap-4 sm:gap-6 pb-4 sm:pb-5 border-b border-slate-200"
               >
                 {/* Left Text Block */}
-                <div className="flex-1 space-y-1.5 pr-2">
+                <div className="flex-1 space-y-1.5 pr-1 sm:pr-2">
                   <span className="text-xs font-bold uppercase tracking-wider text-[#1642D0] font-sans block">
                     {art.category}
                   </span>
 
-                  <h3 className="text-base sm:text-lg font-serif font-bold text-[#020618] leading-snug tracking-tight">
+                  <h3 className="text-lg sm:text-[19px] lg:text-[20px] font-serif font-bold text-[#020618] leading-[1.3] sm:leading-[1.35] tracking-tight">
                     <Link
                       href={`/article/${art.id}`}
                       className="text-[#020618] no-underline hover:underline decoration-[#020618] decoration-1 underline-offset-[3px] transition-all"
                     >
-                      {art.title}
+                      {art.titleJsx}
                     </Link>
                   </h3>
 
@@ -172,7 +192,7 @@ export const EntrepreneursSection: React.FC = () => {
                 {/* Right Thumbnail */}
                 <Link
                   href={`/article/${art.id}`}
-                  className="w-28 h-28 sm:w-32 sm:h-32 flex-shrink-0 overflow-hidden rounded-xl border border-slate-200/90 shadow-2xs block"
+                  className="w-[125px] h-[125px] sm:w-[140px] sm:h-[140px] lg:w-[150px] lg:h-[150px] flex-shrink-0 overflow-hidden rounded-xl border border-slate-200/90 shadow-2xs block"
                 >
                   <img
                     src={art.imageUrl}
