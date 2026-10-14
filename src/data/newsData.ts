@@ -2091,6 +2091,64 @@ export const AGENTIC_AI_SECTION_ARTICLES: Article[] = [
   },
 ];
 
+export const FRANCHISES_MAIN_SECTION_ARTICLES: Article[] = [
+  {
+    id: 'daves-hot-chicken',
+    title: "Dave's Hot Chicken Started With $900 in a Parking Lot. It Now Has 500 Restaurants.",
+    category: 'Buying a Franchise',
+    author: { name: 'Jonathan Small', title: 'Editor' },
+    date: 'October 14, 2026',
+    readTime: '6 min read',
+    excerpt: 'The chain has eight openings in one day, deals across Europe and no sign of slowing down.',
+    imageUrl: '/images/daves-hot-chicken.jpg',
+    imageAspect: 'video',
+  },
+  {
+    id: 'former-engineer-preschool-teacher',
+    title: "This Former Engineer and Preschool Teacher Teamed Up to Start a Creative Business: 'Haven't Regretted Choosing a Franchise.'",
+    category: 'Buying a Franchise',
+    author: { name: 'Sherin Shibu', title: 'Staff Writer' },
+    date: 'October 14, 2026',
+    readTime: '5 min read',
+    excerpt: 'How two entrepreneurs found success investing in a studio franchise.',
+    imageUrl: '/images/daves-hot-chicken.jpg',
+    imageAspect: 'video',
+  },
+  {
+    id: 'taco-bell-milk-bar-empanada',
+    title: 'Taco Bell and Milk Bar Are Stuffing a Birthday Cake Into an Empanada',
+    category: 'Buying a Franchise',
+    author: { name: 'Jon Small', title: 'Staff Writer' },
+    date: 'October 14, 2026',
+    readTime: '4 min read',
+    excerpt: 'A surprising cross-brand collaboration bringing dessert innovation to national menus.',
+    imageUrl: '/images/daves-hot-chicken.jpg',
+    imageAspect: 'video',
+  },
+  {
+    id: 'hiltons-ai-trip-planner',
+    title: "Hilton's AI Trip Planner Wants To Book Your Travel. Customers Aren't So Sure Yet.",
+    category: 'Business News',
+    author: { name: 'Jon Small', title: 'Staff Writer' },
+    date: 'October 14, 2026',
+    readTime: '4 min read',
+    excerpt: 'Evaluating hospitality AI tools and whether travellers are ready to let algorithms plan trips.',
+    imageUrl: '/images/daves-hot-chicken.jpg',
+    imageAspect: 'video',
+  },
+  {
+    id: 'chick-fil-a-healthy-dose-fear',
+    title: "As Franchises Go After Chick-fil-A, Its CEO Is Prescribing a 'Healthy Dose of Fear'",
+    category: 'Buying a Franchise',
+    author: { name: 'Jon Small', title: 'Staff Writer' },
+    date: 'October 14, 2026',
+    readTime: '5 min read',
+    excerpt: 'How industry competitors are challenging drive-thru giants and what leadership advises.',
+    imageUrl: '/images/daves-hot-chicken.jpg',
+    imageAspect: 'video',
+  },
+];
+
 export const ALL_ARTICLES: Article[] = [
   HERO_ARTICLE,
   ...LATEST_ARTICLES,
@@ -2103,6 +2161,7 @@ export const ALL_ARTICLES: Article[] = [
   ...DEEP_DIVE_ARTICLES,
   ...ENTREPRENEURS_SECTION_ARTICLES,
   ...AGENTIC_AI_SECTION_ARTICLES,
+  ...FRANCHISES_MAIN_SECTION_ARTICLES,
   ...ALL_TOPIC_ARTICLES,
 ];
 
