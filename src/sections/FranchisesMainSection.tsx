@@ -162,13 +162,13 @@ export const FranchisesMainSection: React.FC = () => {
           </div>
         </div>
 
-        {/* Sub-Navigation Pills (All Solid Black Rounded Pills matching Screenshot gap) */}
-        <div className="flex items-center gap-2 sm:gap-2.5 overflow-x-auto no-scrollbar pb-6 sm:pb-7">
+        {/* Sub-Navigation Pills (Exact 5 Centered Black Pills matching Screenshot) */}
+        <div className="flex items-center justify-start sm:justify-center gap-2 sm:gap-2.5 overflow-x-auto no-scrollbar pb-6 sm:pb-7">
           {pills.map((pill) => (
             <Link
               key={pill.label}
               href={pill.href}
-              className="px-4 sm:px-4.5 py-1.5 sm:py-2 rounded-full font-bold text-xs sm:text-[13px] font-sans whitespace-nowrap bg-[#020618] text-white hover:bg-slate-800 transition-colors shadow-2xs"
+              className="px-3.5 sm:px-4 py-1 sm:py-1.5 rounded-full font-bold text-[11px] sm:text-xs font-sans whitespace-nowrap bg-[#020618] text-white hover:bg-slate-800 transition-colors shadow-2xs flex items-center justify-center h-6 sm:h-[26px]"
             >
               {pill.label}
             </Link>
