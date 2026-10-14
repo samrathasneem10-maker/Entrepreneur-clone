@@ -69,17 +69,17 @@ export const FranchisesMainSection: React.FC = () => {
     remoteImageUrl: 'https://www.entrepreneur.com/wp-content/uploads/sites/2/2026/10/daves-hot-chicken-1026-g-2217834688.jpg?resize=500,500',
   };
 
-  // Interactive Quiz Questions
+  // Interactive Quiz Questions - Step 1 exactly matching screenshot
   const quizSteps = [
     {
       step: 1,
       percentage: '17%',
       question: "What's most important for you when starting a business?",
       options: [
-        'High earning potential',
-        'Be my own boss / Independence',
-        'Work-life balance / Flexible hours',
-        'Low upfront investment cost',
+        'Money',
+        'Flexibility',
+        'Control',
+        'Lifestyle',
       ],
     },
     {
@@ -98,7 +98,7 @@ export const FranchisesMainSection: React.FC = () => {
       percentage: '65%',
       question: 'Which franchise industry appeals to you most?',
       options: [
-        'Food & Beverage / Quick-Service',
+        'Food & Beverage / Fast-Casual',
         'Health, Wellness & Fitness',
         'Home Services & Maintenance',
         'Business Services & Coaching',
@@ -145,7 +145,7 @@ export const FranchisesMainSection: React.FC = () => {
     <section className="bg-white pt-10 md:pt-12 pb-12 md:pb-16 border-b border-slate-200 w-full">
       <div className="w-full">
         
-        {/* Header Bar matching Screenshot */}
+        {/* Header Bar */}
         <div className="mb-6 flex items-center justify-between">
           <h2 className="my-0 text-[#020618] font-bold text-2xl sm:text-3xl font-serif leading-none tracking-tight">
             <Link href="/topic/franchises" className="hover:underline">
@@ -185,7 +185,7 @@ export const FranchisesMainSection: React.FC = () => {
         {/* 3-Column Layout: Left (3 cols), Middle (6 cols), Right (3 cols) */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
           
-          {/* 1. Left Column (3 of 12 cols on desktop): 4 stacked articles */}
+          {/* 1. Left Column: 4 stacked articles + Featured Franchise Widget */}
           <div className="md:col-span-5 xl:col-span-3 space-y-5">
             {leftArticles.map((art) => (
               <div key={art.id} className="space-y-1">
@@ -204,33 +204,47 @@ export const FranchisesMainSection: React.FC = () => {
               </div>
             ))}
 
-            {/* Featured Franchise Widget (Matching Screenshot) */}
-            <div className="pt-5 border-t border-slate-200 space-y-3">
-              <h4 className="text-xs font-serif font-bold text-[#020618] uppercase tracking-wider">
+            {/* Featured Franchise Widget (Exact Layout & Logo from Screenshot) */}
+            <div className="pt-6 border-t border-slate-200">
+              <h3 className="text-base sm:text-lg font-serif font-bold text-[#020618] tracking-tight mb-4">
                 Featured Franchise
-              </h4>
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full overflow-hidden bg-slate-100 border border-slate-200 flex-shrink-0">
+              </h3>
+
+              {/* Logo + Details Row */}
+              <div className="flex items-center gap-4">
+                {/* Authentic Heights Wellness Logo */}
+                <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center">
                   <img
-                    src="https://www.entrepreneur.com/wp-content/uploads/sites/2/2026/07/1769649182-ProfilePictures1.webp"
+                    src="/images/heights-wellness-logo.webp"
                     alt="Heights Wellness Retreat"
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                    }}
+                    className="w-full h-auto object-contain"
                   />
                 </div>
-                <div className="space-y-0.5 flex-1">
-                  <div className="text-xs font-bold text-[#020618] hover:text-[#1642D0] cursor-pointer">
-                    Heights Wellness Retreat
+
+                {/* Name & Category */}
+                <div className="flex flex-col justify-center">
+                  <h4 className="font-serif font-bold text-base sm:text-[17px] text-[#020618] leading-tight m-0">
+                    Heights Wellness<br />Retreat
+                  </h4>
+                  <div className="text-xs sm:text-[13px] text-slate-500 font-serif italic pt-1">
+                    Personal-Care
                   </div>
-                  <div className="text-[11px] text-slate-500 italic">Personal-Care</div>
                 </div>
+              </div>
+
+              {/* Learn More Button */}
+              <div className="pt-4">
+                <Link
+                  href="/topic/franchises"
+                  className="inline-block px-7 py-2.5 bg-[#1642D0] hover:bg-blue-800 text-white font-bold text-xs sm:text-sm rounded-md transition-colors shadow-2xs text-center"
+                >
+                  Learn More
+                </Link>
               </div>
             </div>
           </div>
 
-          {/* 2. Middle Column (6 of 12 cols on desktop): Featured Dave's Hot Chicken photo + Article */}
+          {/* 2. Middle Column: Featured Dave's Hot Chicken photo + Underlined Article */}
           <div className="md:col-span-7 xl:col-span-6">
             <div className="group">
               {/* Featured photo */}
@@ -257,10 +271,10 @@ export const FranchisesMainSection: React.FC = () => {
                   {middleArticle.category}
                 </span>
 
-                <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#020618] leading-snug tracking-tight max-w-xl">
+                <h3 className="text-2xl sm:text-[26px] lg:text-[28px] font-serif font-bold text-[#020618] leading-[1.25] tracking-tight max-w-xl">
                   <Link
                     href={`/article/${middleArticle.id}`}
-                    className="text-[#020618] no-underline hover:underline decoration-[#020618] decoration-1 underline-offset-[3px] transition-all"
+                    className="text-[#020618] underline decoration-[#020618] decoration-1 underline-offset-[4px] hover:text-[#1642D0] transition-colors"
                   >
                     {middleArticle.title}
                   </Link>
@@ -285,7 +299,7 @@ export const FranchisesMainSection: React.FC = () => {
             </div>
           </div>
 
-          {/* 3. Right Column (3 of 12 cols on desktop): Interactive Find Your Perfect Franchise Match Widget */}
+          {/* 3. Right Column: Interactive Quiz Card matching exact Money/Flexibility/Control/Lifestyle options */}
           <div className="md:col-span-12 xl:col-span-3 border border-[#020618] rounded-xl p-5 sm:p-6 bg-white shadow-2xs">
             <div className="text-center space-y-2 mb-4">
               <h3 className="text-xl sm:text-[22px] font-serif font-bold text-[#020618] leading-tight my-0">
@@ -313,28 +327,28 @@ export const FranchisesMainSection: React.FC = () => {
             </div>
 
             {/* Step & Question */}
-            <div className="text-center space-y-1 mb-3">
+            <div className="text-center space-y-1 mb-4">
               <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 font-sans">
                 STEP {currentQuiz.step}/5
               </div>
-              <div className="text-sm font-bold text-[#020618] font-sans leading-snug">
+              <div className="text-sm sm:text-[15px] font-bold text-[#020618] font-sans leading-snug">
                 {currentQuiz.question}
               </div>
-              <div className="text-[11px] text-slate-500 font-sans">
+              <div className="text-xs text-slate-500 font-sans">
                 Select one
               </div>
             </div>
 
-            {/* Quiz Options */}
-            <div className="space-y-2 mb-4">
+            {/* Blue outlined Quiz Option Buttons matching Screenshot */}
+            <div className="space-y-3 mb-4">
               {currentQuiz.options.map((opt) => (
                 <button
                   key={opt}
                   onClick={() => handleSelectOption(opt)}
-                  className={`w-full py-2 px-3 text-left rounded-md text-xs font-sans transition-all border cursor-pointer ${
+                  className={`w-full py-2.5 sm:py-3 px-4 rounded-lg text-xs sm:text-sm font-bold font-sans transition-all border cursor-pointer text-center block ${
                     selectedAnswers[currentStep] === opt
-                      ? 'border-[#1642D0] bg-blue-50 text-[#1642D0] font-bold shadow-2xs'
-                      : 'border-slate-300 text-slate-800 hover:border-[#1642D0] hover:bg-slate-50'
+                      ? 'border-[#1642D0] bg-[#1642D0] text-white shadow-xs'
+                      : 'border-[#1642D0] bg-white text-[#1642D0] hover:bg-blue-50/60 shadow-2xs'
                   }`}
                 >
                   {opt}
@@ -344,7 +358,7 @@ export const FranchisesMainSection: React.FC = () => {
 
             {/* Reset / Status */}
             {currentStep > 1 && (
-              <div className="text-center pt-1 border-t border-slate-100">
+              <div className="text-center pt-2 border-t border-slate-100">
                 <button
                   onClick={handleResetQuiz}
                   className="text-[11px] font-bold text-slate-500 hover:text-[#1642D0] transition-colors underline cursor-pointer"
