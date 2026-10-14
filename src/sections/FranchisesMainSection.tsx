@@ -162,13 +162,13 @@ export const FranchisesMainSection: React.FC = () => {
           </div>
         </div>
 
-        {/* Sub-Navigation Pills (Exact 5 Centered Black Pills with 14px gap, 24px height, and symmetrical margins) */}
-        <div className="flex items-center justify-start sm:justify-center gap-[13px] sm:gap-[14px] overflow-x-auto no-scrollbar pb-6 sm:pb-7">
+        {/* Sub-Navigation Pills (Zoomed Larger Black Ovals, Increased Gap, White Button on Cursor Hover) */}
+        <div className="flex items-center justify-start sm:justify-center gap-3 sm:gap-4 overflow-x-auto no-scrollbar pb-7 sm:pb-8">
           {pills.map((pill) => (
             <Link
               key={pill.label}
               href={pill.href}
-              className="px-3.5 py-1 rounded-full font-bold text-[11px] sm:text-xs font-sans whitespace-nowrap bg-[#020618] text-white hover:bg-slate-800 transition-colors shadow-2xs flex items-center justify-center h-6 leading-none"
+              className="px-5 sm:px-6 py-2 sm:py-2.5 rounded-full font-bold text-xs sm:text-sm font-sans whitespace-nowrap bg-[#020618] text-white border border-[#020618] hover:bg-white hover:text-[#020618] hover:border-[#020618] transition-all duration-200 shadow-2xs hover:shadow-sm flex items-center justify-center cursor-pointer"
             >
               {pill.label}
             </Link>
