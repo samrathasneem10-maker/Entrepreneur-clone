@@ -89,6 +89,57 @@ export const FranchiseSection: React.FC = () => {
     },
   ];
 
+  const postBoxArticles = [
+    {
+      id: 'franchise-500-less-than-25k',
+      underlined: true,
+      titleJsx: (
+        <>
+          The Top Franchise 500-Ranked<br className="hidden sm:inline" /> Businesses You Can Launch for Less<br className="hidden sm:inline" /> Than $25,000 in 2026
+        </>
+      ),
+      descriptionJsx: (
+        <>
+          These brands prove you don&apos;t need a lot of capital to<br className="hidden sm:inline" /> become a business owner in 2026.
+        </>
+      ),
+      imageUrl: '/images/franchise-cleaning-worker.png',
+      alt: 'The Top Franchise 500-Ranked Businesses You Can Launch for Less Than $25,000 in 2026',
+    },
+    {
+      id: 'who-needs-storefront-mobile-truck',
+      underlined: false,
+      titleJsx: (
+        <>
+          Who Needs a Storefront? These 5 Mobile<br className="hidden sm:inline" /> Truck Franchises Don&apos;t.
+        </>
+      ),
+      descriptionJsx: (
+        <>
+          From tool trucks and shaved ice to moving services,<br className="hidden sm:inline" /> these franchises prove you don&apos;t need a brick-and-<br className="hidden sm:inline" />mortar location to build a scalable business.
+        </>
+      ),
+      imageUrl: '/images/franchise-mobile-truck.png',
+      alt: "Who Needs a Storefront? These 5 Mobile Truck Franchises Don't.",
+    },
+    {
+      id: '150-billion-pet-industry-booming',
+      underlined: false,
+      titleJsx: (
+        <>
+          The $150 Billion Pet Industry Is Booming<br className="hidden sm:inline" /> &mdash; These 5 Franchises Are Cashing In
+        </>
+      ),
+      descriptionJsx: (
+        <>
+          Pet care is one of the fastest-growing franchise<br className="hidden sm:inline" /> categories in 2026. See which brands are ranked on<br className="hidden sm:inline" /> this year&apos;s Franchise 500.
+        </>
+      ),
+      imageUrl: '/images/franchise-pet-grooming.png',
+      alt: 'The $150 Billion Pet Industry Is Booming — These 5 Franchises Are Cashing In',
+    },
+  ];
+
   return (
     <section className="bg-white pt-2 pb-12 md:pb-16 border-b border-slate-200 w-full">
       <div className="w-full">
@@ -191,6 +242,44 @@ export const FranchiseSection: React.FC = () => {
             </div>
 
           </div>
+        </div>
+
+        {/* 3 Featured Articles Below Blue Box with Radius Rectangle & Exact Line Breaks */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mt-10 sm:mt-12 items-start">
+          {postBoxArticles.map((art) => (
+            <article key={art.id} className="group space-y-3">
+              {/* Radius Rectangle Image Container with rounded-xl */}
+              <Link href={`/article/${art.id}`} className="block overflow-hidden rounded-xl">
+                <div className="relative w-full aspect-[16/10] overflow-hidden rounded-xl border border-slate-200/80 shadow-2xs">
+                  <img
+                    src={art.imageUrl}
+                    alt={art.alt}
+                    className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300 rounded-xl"
+                  />
+                </div>
+              </Link>
+
+              {/* Exact Bold Title Lines and Serif Paragraph Lines */}
+              <div className="space-y-1.5">
+                <h3 className="font-serif font-bold text-base sm:text-[17px] text-[#020618] leading-[1.3] m-0">
+                  <Link
+                    href={`/article/${art.id}`}
+                    className={`text-[#020618] hover:text-[#1642D0] transition-colors ${
+                      art.underlined
+                        ? 'underline decoration-[#020618] decoration-1 underline-offset-[3px]'
+                        : 'hover:underline'
+                    }`}
+                  >
+                    {art.titleJsx}
+                  </Link>
+                </h3>
+
+                <p className="text-xs sm:text-[13px] text-slate-600 font-serif leading-relaxed m-0">
+                  {art.descriptionJsx}
+                </p>
+              </div>
+            </article>
+          ))}
         </div>
 
       </div>
