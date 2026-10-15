@@ -354,31 +354,35 @@ export default function ArticleDetailPage() {
                     I remember rationalizing his behavior. &ldquo;Well, that&apos;s just how he is,&rdquo; and &ldquo;Maybe I&apos;m being too sensitive,&rdquo; and &ldquo;This is the price I pay to have this big title and paycheck,&rdquo; or &ldquo;He is just under a lot of stress.&rdquo; Just because they are the boss doesn&apos;t mean they can behave this way. Ask yourself if you would allow a colleague to treat you this way? Chances are you wouldn&apos;t.
                   </p>
 
-                  {/* Advertisement 1: JustAnswer Expert Chat Card matching Images 2 & 3 */}
-                  <div className="max-w-[300px] mx-auto border border-slate-300 bg-white overflow-hidden my-8 font-sans shadow-2xs">
+                  {/* Advertisement 1: JustAnswer Expert Chat Card matching Images 1 & 2 */}
+                  <div className="max-w-[300px] mx-auto border border-slate-300 bg-white rounded-md overflow-hidden my-8 font-sans shadow-2xs">
+                    {/* Title Header ABOVE the image matching website */}
+                    <div className="bg-[#eafbf8] px-3.5 py-2.5 flex items-center justify-between border-b border-[#c8ebe5]">
+                      <h4 className="font-sans font-bold text-[13px] sm:text-[14px] text-[#27615b] my-0 leading-tight">
+                        Chat with an expert Online<br />Now
+                      </h4>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[11px] font-bold text-[#00a4e4] tracking-tight">justanswer</span>
+                        <div className="flex items-center gap-0.5 text-[9px] text-[#00a4e4]">
+                          <span>▷</span>
+                          <span className="text-slate-400">⋮</span>
+                        </div>
+                      </div>
+                    </div>
+
                     <div className="relative w-full">
                       <img
                         src="/images/justanswer-expert.png"
                         alt="Chat with an expert Online Now"
                         className="w-full h-auto object-cover"
                       />
-                      {/* Google AdChoices icon in top right */}
-                      <div className="absolute top-1 right-1 bg-white/90 px-1 py-0.5 rounded-xs flex items-center gap-0.5 text-[10px] text-slate-500 shadow-2xs">
-                        <span className="text-[9px] text-[#00a4e4]">▷</span>
-                        <span className="text-[9px]">ⓘ</span>
-                      </div>
                     </div>
 
-                    <div className="p-3 text-left">
-                      <h4 className="font-sans font-bold text-[14px] text-black my-0 leading-snug">
-                        Chat with an expert Online Now
-                      </h4>
-                      <div className="flex items-center justify-between text-xs pt-3 text-slate-500 font-sans">
-                        <span className="text-[12px] text-slate-500">JustAnswer</span>
-                        <a href="#" className="text-[#1a73e8] underline hover:text-[#112d99] flex items-center font-normal text-[12px]">
-                          Open <span className="ml-1 text-[10px]">&gt;</span>
-                        </a>
-                      </div>
+                    <div className="flex items-center justify-between text-xs px-3.5 py-2.5 text-slate-500 font-sans bg-white border-t border-slate-100">
+                      <span className="text-[12px] text-slate-500 font-medium">JustAnswer</span>
+                      <a href="#" className="text-[#1a73e8] hover:underline flex items-center font-normal text-[12px]">
+                        Open <span className="ml-1 text-[10px]">&gt;</span>
+                      </a>
                     </div>
                   </div>
 
@@ -436,37 +440,38 @@ export default function ArticleDetailPage() {
                     is a game-changing free resource designed to help employees make sense of employment agreements. The tool can help you identify provisions that would affect your ability to speak up. You can upload your employment contract and onboarding documents to this tool. It will help give you a better sense of what you signed and what rights and options are available to you if you are the target of workplace bullying. You may also decide to talk to trusted friends and mentors, and consult an employment attorney.
                   </p>
 
-                  {/* Advertisement 2: MarketViews ETF Card matching Images 4 & 5 */}
-                  <div className="max-w-[300px] mx-auto border border-black bg-white overflow-hidden my-8 font-sans">
-                    <div className="w-full border-b border-black">
+                  {/* Advertisement 2: JustAnswer Expert Chat Card matching Images 3 & 4 */}
+                  <div className="max-w-[300px] mx-auto border border-slate-300/80 rounded-md overflow-hidden my-8 font-sans shadow-xs">
+                    {/* Title Header ABOVE the image matching website */}
+                    <div className="bg-[#eafbf8] px-3.5 py-2.5 flex items-center justify-between border-b border-[#c8ebe5]">
+                      <h4 className="font-sans font-bold text-[13px] sm:text-[14px] text-[#27615b] my-0 leading-tight">
+                        Chat with an expert Online<br />Now
+                      </h4>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[11px] font-bold text-[#00a4e4] tracking-tight">justanswer</span>
+                        <div className="flex items-center gap-0.5 text-[9px] text-[#00a4e4]">
+                          <span>▷</span>
+                          <span className="text-slate-400">⋮</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="w-full">
                       <img
-                        src="/images/etf-banner-display.png"
-                        alt="What is the latest on ETFs?"
+                        src="/images/justanswer-expert.png"
+                        alt="Chat with an expert Online Now"
                         className="w-full h-auto object-cover"
                       />
                     </div>
 
-                    <div className="p-3 bg-white text-left">
-                      <h4 className="font-serif font-bold text-[14px] text-black my-0 leading-tight">
-                        What is the latest on ETFs?
-                      </h4>
-                      <span className="text-[11px] font-sans text-slate-500 block pt-0.5">
-                        MarketViews
-                      </span>
-                      <div className="flex items-center justify-between mt-3 pt-1">
-                        <div className="flex items-center text-slate-400 text-[11px]">
-                          <span className="border border-slate-400 rounded-full w-3.5 h-3.5 flex items-center justify-center text-[9px] font-serif">
-                            i
-                          </span>
-                        </div>
-                        <a
-                          href="#"
-                          className="px-3 py-1 border border-black text-black text-xs font-sans hover:bg-black hover:text-white transition-colors"
-                        >
-                          Read More
-                        </a>
-                      </div>
-                    </div>
+                    {/* Dark green Open button bar matching Image 4 */}
+                    <a
+                      href="#"
+                      className="bg-[#082b25] hover:bg-[#0c3d35] px-4 py-2.5 flex items-center justify-between text-white font-sans text-sm font-semibold transition-colors block no-underline"
+                    >
+                      <span>Open</span>
+                      <span className="text-base font-bold leading-none">&gt;</span>
+                    </a>
                   </div>
 
                   {/* Conclusion Paragraph matching Image 5 */}
