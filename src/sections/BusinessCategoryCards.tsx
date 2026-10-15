@@ -8,6 +8,18 @@ export const BusinessCategoryCards: React.FC = () => {
     <section className="bg-white py-10 md:py-14 border-b border-slate-200 w-full">
       <div className="w-full">
         
+        {/* Section Heading: Categories */}
+        <div className="border-t border-slate-200 pt-3 pb-2 mb-6 sm:mb-8">
+          <h2 className="my-0 text-[#020618] font-bold text-2xl sm:text-3xl font-serif leading-none tracking-tight">
+            <Link
+              href="/topic/categories"
+              className="text-[#020618] no-underline hover:underline decoration-[#020618] decoration-1 underline-offset-[4px] transition-all"
+            >
+              Categories
+            </Link>
+          </h2>
+        </div>
+
         {/* 3 Main Columns: Leadership, Business Ideas, Technology */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10 items-start">
           
