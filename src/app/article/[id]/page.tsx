@@ -17,24 +17,42 @@ import { Footer } from '@/layouts/Footer';
 import { ArticleCard } from '@/components/ArticleCard';
 import { getArticleById, ALL_ARTICLES, LATEST_ARTICLES } from '@/data/newsData';
 
-const SPONSORED_ITEMS = [
+const LATEST_SIDEBAR_ARTICLES = [
   {
-    id: 'spons-1',
-    title: 'Robotics and Artificial Intelligence: Discover the trends.',
-    source: 'MarketViews',
-    imageUrl: '/images/sponsored-robotics-ai.png',
+    id: 'latest-side-1',
+    title: 'Apple, Amazon and Microsoft Want These New AI Gadgets on Your Holiday Wish List',
+    time: '3 HOURS AGO',
+    link: '/article/apple-amazon-and-microsoft-want-these-new-ai-gadgets',
   },
   {
-    id: 'spons-2',
-    title: 'Stay updated with the newest gold market developments.',
-    source: 'MarketViews',
-    imageUrl: '/images/sponsored-gold-market.png',
+    id: 'latest-side-2',
+    title: 'America Finally Got a New Sunscreen. Europeans Have Been Sporting It Since 1999.',
+    time: '4 HOURS AGO',
+    link: '/article/america-finally-got-a-new-sunscreen',
   },
   {
-    id: 'spons-3',
-    title: 'Find expert news and trends in the world of commodities.',
-    source: 'MarketViews',
-    imageUrl: '/images/sponsored-commodities.png',
+    id: 'latest-side-3',
+    title: "This Popular Pickleball Franchisor Filed for Bankruptcy. Its Founder Says, 'I Own It'",
+    time: '4 HOURS AGO',
+    link: '/article/this-popular-pickleball-franchisor-filed-for-bankruptcy',
+  },
+  {
+    id: 'latest-side-4',
+    title: 'AI Is Changing Your Company Culture Whether You Planned for It or Not.',
+    time: '5 HOURS AGO',
+    link: '/article/ai-is-changing-your-company-culture',
+  },
+  {
+    id: 'latest-side-5',
+    title: "Creators Are Handing Their Video Edits to AI. Here's Where It Starts to Backfire.",
+    time: '6 HOURS AGO',
+    link: '/article/creators-are-handing-their-video-edits-to-ai',
+  },
+  {
+    id: 'latest-side-6',
+    title: "He Leads a $240 Billion Food Giant. Here's the Difficult Management Rule He Follows.",
+    time: '7 HOURS AGO',
+    link: '/article/he-leads-a-240-billion-food-giant',
   },
 ];
 
@@ -468,123 +486,54 @@ export default function ArticleDetailPage() {
 
           </article>
 
-          {/* RIGHT SIDEBAR (Matching reference screenshot) */}
+          {/* RIGHT SIDEBAR (Matching Images 1, 2, and 3) */}
           <aside className="lg:col-span-4 space-y-6 sticky top-24">
-            {/* 1. Top Right Sidebar Advertisement (336 x 770) matching reference image */}
-            <div className="w-full max-w-[336px] mx-auto">
-              <p className="text-[11px] font-sans font-normal uppercase tracking-wider text-[#777777] text-center mb-2.5 my-0 select-none">
-                ADVERTISEMENT
-              </p>
-              <div className="w-full h-[600px] sm:h-[700px] lg:h-[770px] bg-[#f9f9f9] border border-[#e5e7eb] flex items-center justify-center shadow-2xs">
-                <span className="text-2xl sm:text-3xl font-sans text-[#777777] font-normal select-none">
-                  336 x 770
-                </span>
-              </div>
+            {/* 1. Top Right Sidebar Advertisement matching Image 2 */}
+            <div className="w-full max-w-[340px] mx-auto border border-slate-200/90 rounded-xs bg-white overflow-hidden shadow-2xs">
+              <img
+                src="/images/flexjobs-ad.png"
+                alt="FlexJobs: Fully Remote Companies Hiring"
+                className="w-full h-auto object-contain block"
+              />
             </div>
 
-            {/* Underline right before Latest heading matching reference screenshot */}
-            <div className="border-t border-slate-200 pt-5 mt-5">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#020618] my-0">
-                  Latest
+            {/* Horizontal Line before Latest Article matching Image 1 */}
+            <div className="border-t border-slate-200 pt-5 mt-6">
+              <div className="flex items-center justify-between mb-5">
+                <h3 className="text-2xl sm:text-[26px] font-serif font-bold text-[#020618] my-0 tracking-tight">
+                  Latest Article
                 </h3>
                 <Link
                   href="/topic/business-news"
                   className="flex items-center gap-1.5 text-xs font-sans font-semibold text-slate-800 hover:text-[#1642D0] transition-colors"
                 >
                   <span>See All</span>
-                  <span className="w-4 h-4 rounded-full bg-[#1642D0] text-white flex items-center justify-center text-[9px] font-bold">
+                  <span className="w-5 h-5 rounded-full bg-[#1642D0] text-white flex items-center justify-center text-[10px] font-bold">
                     ➔
                   </span>
                 </Link>
               </div>
 
-              <div className="space-y-5">
-                {/* Story 1 */}
-                <article className="group">
-                  <h4 className="text-sm sm:text-[15px] font-serif font-bold text-[#020618] leading-[1.3] my-0">
-                    <Link
-                      href="/topic/business-news"
-                      className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors"
-                    >
-                      AI Is Changing Your Company Culture Whether You Planned for It or Not. Here&apos;s How to Shape What Happens Next.
-                    </Link>
-                  </h4>
-                  <div className="flex items-center gap-1.5 text-[11px] font-sans uppercase tracking-wider text-slate-500 mt-1.5 font-medium">
-                    <span className="text-slate-400">•</span>
-                    <span>15 HOURS AGO</span>
-                  </div>
-                </article>
-
-                {/* Story 2 */}
-                <article className="group">
-                  <h4 className="text-sm sm:text-[15px] font-serif font-bold text-[#020618] leading-[1.3] my-0">
-                    <Link
-                      href="/topic/business-news"
-                      className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors"
-                    >
-                      Creators Are Handing Their Video Edits to AI. Here&apos;s Where It Starts to Backfire.
-                    </Link>
-                  </h4>
-                  <div className="flex items-center gap-1.5 text-[11px] font-sans uppercase tracking-wider text-slate-500 mt-1.5 font-medium">
-                    <span className="text-slate-400">•</span>
-                    <span>15 HOURS AGO</span>
-                  </div>
-                </article>
-
-                {/* Story 3 */}
-                <article className="group">
-                  <h4 className="text-sm sm:text-[15px] font-serif font-bold text-[#020618] leading-[1.3] my-0">
-                    <Link
-                      href="/topic/leadership"
-                      className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors"
-                    >
-                      He Leads a $240 Billion Food Giant. Here&apos;s the Difficult Management Rule He Follows.
-                    </Link>
-                  </h4>
-                  <div className="flex items-center gap-1.5 text-[11px] font-sans uppercase tracking-wider text-slate-500 mt-1.5 font-medium">
-                    <span className="text-slate-400">•</span>
-                    <span>15 HOURS AGO</span>
-                  </div>
-                </article>
-              </div>
-            </div>
-
-            {/* 3. Sponsored Financial Content Block */}
-            <div className="pt-6 border-t border-slate-200 space-y-3.5">
-              <div className="border-b border-slate-200 pb-1.5">
-                <h3 className="text-sm font-bold font-sans text-[#111827] my-0">
-                  Sponsored Financial Content
-                </h3>
-              </div>
-
-              <div className="space-y-4 pt-1">
-                {SPONSORED_ITEMS.map((item) => (
-                  <a
-                    key={item.id}
-                    href="#"
-                    className="group flex items-start gap-3.5 no-underline"
-                  >
-                    <div className="w-[68px] h-[52px] flex-shrink-0 overflow-hidden rounded-[2px] border border-slate-200 shadow-2xs">
-                      <img
-                        src={item.imageUrl}
-                        alt={item.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
+              {/* 6 Latest Articles matching Image 1 */}
+              <div className="space-y-6 sm:space-y-7">
+                {LATEST_SIDEBAR_ARTICLES.map((art) => (
+                  <article key={art.id} className="group">
+                    <h4 className="text-[16px] sm:text-[17px] font-serif font-bold text-[#020618] leading-[1.3] my-0">
+                      <Link
+                        href={art.link}
+                        className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors"
+                      >
+                        {art.title}
+                      </Link>
+                    </h4>
+                    <div className="flex items-center gap-2 text-[11px] font-sans uppercase tracking-wider text-slate-500 mt-2 font-medium">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#5A6E85] shrink-0" />
+                      <span>{art.time}</span>
                     </div>
-                    <div className="flex-1 space-y-0.5">
-                      <h4 className="text-[12.5px] font-sans font-normal text-[#111827] leading-[1.32] group-hover:underline group-hover:text-[#1642D0] transition-colors my-0">
-                        {item.title}
-                      </h4>
-                      <span className="text-[11px] font-sans text-slate-500 block pt-0.5">
-                        {item.source}
-                      </span>
-                    </div>
-                  </a>
+                  </article>
                 ))}
               </div>
             </div>
-
           </aside>
 
         </div>
