@@ -6,6 +6,11 @@ import { useParams } from 'next/navigation';
 import {
   Copy,
   Check,
+  Play,
+  Pause,
+  Volume2,
+  ArrowRight,
+  ExternalLink,
 } from 'lucide-react';
 import { Header } from '@/layouts/Header';
 import { Footer } from '@/layouts/Footer';
@@ -39,6 +44,7 @@ export default function ArticleDetailPage() {
   const article = getArticleById(articleId);
 
   const [copied, setCopied] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const handleCopyLink = () => {
     if (typeof window !== 'undefined') {
@@ -124,7 +130,7 @@ export default function ArticleDetailPage() {
             <div className="border-b border-slate-200 my-3" />
 
             {/* Action Bar: Google Add to Preferred Sources pill + SHARE with Copy icon side by side matching screenshot */}
-            <div className="flex items-center gap-5 sm:gap-6 py-1.5 mb-6">
+            <div className="flex items-center gap-5 sm:gap-6 py-1.5 mb-2">
               {/* Google Add to Preferred Sources Pill */}
               <a
                 href="https://news.google.com"
@@ -152,6 +158,136 @@ export default function ArticleDetailPage() {
                 <span>SHARE</span>
                 {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-slate-800" />}
               </button>
+            </div>
+
+            {/* Text after horizontal line matching Image 1: Opinions disclaimer */}
+            <p className="text-xs italic text-slate-500 font-sans my-1">
+              Opinions expressed by Entrepreneur contributors are their own.
+            </p>
+
+            {/* Audio box: Listen to this post matching Image 1 & 2 */}
+            <div
+              onClick={() => setIsPlaying(!isPlaying)}
+              className="w-full border border-slate-200/90 rounded-md bg-white hover:bg-slate-50/80 px-4 py-2.5 flex items-center justify-between transition-colors cursor-pointer my-4 shadow-2xs"
+            >
+              <div className="flex items-center gap-3">
+                <span className="w-6 h-6 rounded-full bg-[#0b1329] text-white flex items-center justify-center shrink-0">
+                  {isPlaying ? (
+                    <Pause className="w-3 h-3 fill-current" />
+                  ) : (
+                    <Play className="w-3 h-3 fill-current ml-0.5" />
+                  )}
+                </span>
+                <span className="text-sm font-sans font-medium text-[#0b1329]">
+                  {isPlaying ? 'Playing audio narration (0:45 / 4:18)...' : 'Listen to this post'}
+                </span>
+              </div>
+              {isPlaying && (
+                <div className="flex items-center gap-1.5 text-xs text-[#1642D0] font-sans font-semibold">
+                  <Volume2 className="w-4 h-4 animate-pulse" />
+                  <span className="hidden sm:inline">Playing</span>
+                </div>
+              )}
+            </div>
+
+            {/* Key Takeaways Section matching Image 2 */}
+            <div className="pt-2 pb-2">
+              <h2 className="text-2xl sm:text-[26px] font-serif font-bold text-[#020618] my-0">
+                Key Takeaways
+              </h2>
+              <ul className="mt-4 space-y-4 text-base sm:text-[16.5px] font-serif text-slate-800 leading-relaxed list-none p-0">
+                <li className="flex items-start gap-3">
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-2.5 shrink-0 block" />
+                  <span>
+                    When you are working for someone who is a bully, we may use power dynamics as an excuse — but normalizing this behavior is part of the problem. Call out bad behavior when you see or experience it.
+                  </span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-2.5 shrink-0 block" />
+                  <span>
+                    Keep a record of the facts: when it happened, what happened, if anyone else was present and how it impacted your work. You will want to use this documentation in the future if you decide to contact an employment lawyer.
+                  </span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-2.5 shrink-0 block" />
+                  <span>
+                    When your boss is the bully, speaking up can feel really risky, but there are protections in place for employees for this reason.
+                  </span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Franchise Assessment Card matching Image 2 */}
+            <div className="bg-[#f8f9fa] border border-slate-200/90 rounded-xl p-5 sm:p-7 my-6 shadow-2xs">
+              {/* Header with Entrepreneur logo icon */}
+              <div className="flex items-center gap-2 mb-2">
+                <span className="w-5 h-5 bg-black text-white font-serif font-bold text-xs flex items-center justify-center rounded-[2px] leading-none">
+                  E
+                </span>
+                <span className="text-xs font-sans font-bold uppercase tracking-wider text-slate-600">
+                  FRANCHISE ASSESSMENT
+                </span>
+              </div>
+
+              {/* Horizontal line inside card */}
+              <div className="border-b border-slate-300 mb-5" />
+
+              {/* 2-Column content */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                {/* Left Side */}
+                <div className="md:col-span-7 space-y-3">
+                  <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#020618] leading-[1.22] my-0">
+                    Your <span className="text-[#990000]">top franchise matches</span> — filtered by budget, open near you, ranked by fit.
+                  </h3>
+                  <p className="text-sm sm:text-[14.5px] font-sans text-slate-600 leading-relaxed my-0 pt-1">
+                    Answer 5 questions. We search 3,000+ franchises from the Franchise 500 and show you only the ones that match. Free.
+                  </p>
+                  <div className="pt-2">
+                    <Link
+                      href="/topic/franchises"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#990000] hover:bg-[#800000] text-white text-xs sm:text-[13px] font-sans font-bold rounded-[3px] shadow-2xs transition-colors cursor-pointer"
+                    >
+                      Find my franchise →
+                    </Link>
+                  </div>
+                </div>
+
+                {/* Right Side Dark Mockup */}
+                <div className="md:col-span-5 bg-[#0d0d0d] p-3 rounded-lg border border-neutral-800 space-y-2">
+                  {/* Row 1: Jersey Mike's */}
+                  <div className="border border-red-900/80 bg-[#170a0a] rounded-md p-2 flex items-center justify-between">
+                    <div>
+                      <div className="text-xs font-bold text-white leading-tight font-sans">Jersey Mike&apos;s Subs</div>
+                      <div className="text-[10px] text-neutral-400 font-sans mt-0.5">#1 Franchise 500 • $235k - $760k</div>
+                    </div>
+                    <span className="bg-red-950/90 text-red-400 border border-red-800/60 text-[9.5px] font-medium px-2 py-0.5 rounded-full shrink-0">
+                      #1 match for you
+                    </span>
+                  </div>
+
+                  {/* Row 2: Anytime Fitness */}
+                  <div className="border border-neutral-800 bg-[#161616] rounded-md p-2 flex items-center justify-between">
+                    <div>
+                      <div className="text-xs font-bold text-white leading-tight font-sans">Anytime Fitness</div>
+                      <div className="text-[10px] text-neutral-400 font-sans mt-0.5">#4 Franchise 500 • $280k - $560k</div>
+                    </div>
+                    <span className="bg-emerald-950/90 text-emerald-400 border border-emerald-800/60 text-[9.5px] font-medium px-2 py-0.5 rounded-full shrink-0">
+                      3 territories open
+                    </span>
+                  </div>
+
+                  {/* Row 3: The UPS Store */}
+                  <div className="border border-neutral-800 bg-[#161616] rounded-md p-2 flex items-center justify-between">
+                    <div>
+                      <div className="text-xs font-bold text-white leading-tight font-sans">The UPS Store</div>
+                      <div className="text-[10px] text-neutral-400 font-sans mt-0.5">#7 Franchise 500 • $138k - $471k</div>
+                    </div>
+                    <span className="bg-emerald-950/90 text-emerald-400 border border-emerald-800/60 text-[9.5px] font-medium px-2 py-0.5 rounded-full shrink-0">
+                      See units
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Rich Editorial Body Content */}
@@ -251,11 +387,124 @@ export default function ArticleDetailPage() {
 
           </article>
 
-          {/* RIGHT SIDEBAR (Matching reference screenshot: Sponsored Financial Content + Latest News) */}
+          {/* RIGHT SIDEBAR (Matching Image 1 & Image 2) */}
           <aside className="lg:col-span-4 space-y-8 sticky top-24">
             
-            {/* Sponsored Financial Content Block matching screenshot */}
-            <div className="space-y-3.5">
+            {/* 1. Intelligence Test Google Ad Card matching Image 1 & 2 */}
+            <div className="border border-slate-200 rounded-sm bg-white overflow-hidden shadow-2xs">
+              {/* Banner Header Image with AdChoices */}
+              <div className="relative w-full">
+                <img
+                  src="/images/iq-test-banner.png"
+                  alt="Intelligence Test scoring scale"
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+
+              {/* Ad Body Content */}
+              <div className="px-4 py-5 text-center flex flex-col items-center">
+                <h3 className="text-xl sm:text-[22px] font-sans font-bold text-[#020618] leading-tight my-0">
+                  Test Your IQ in 3 Minutes
+                </h3>
+
+                {/* Brain Icon */}
+                <div className="my-4">
+                  <img
+                    src="/images/iq-brain-icon.png"
+                    alt="Brain Icon"
+                    className="w-9 h-10 object-contain mx-auto"
+                  />
+                </div>
+
+                {/* Blue Link */}
+                <a
+                  href="#"
+                  className="text-sm font-sans font-medium text-[#1642D0] hover:underline inline-flex items-center gap-1.5"
+                >
+                  <span>Global IQ Comparison</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+
+                {/* Dark Circular Action Button matching Image 2 */}
+                <button
+                  aria-label="Start IQ Test"
+                  className="w-11 h-11 rounded-full bg-[#1e293b] hover:bg-slate-900 text-white flex items-center justify-center mt-5 mb-1 shadow-sm transition-transform hover:scale-105 cursor-pointer"
+                >
+                  <ArrowRight className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* 2. Latest Stories Section matching Image 2 */}
+            <div className="pt-2">
+              <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-200">
+                <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#020618] my-0">
+                  Latest
+                </h3>
+                <Link
+                  href="/topic/business-news"
+                  className="flex items-center gap-1.5 text-xs font-sans font-semibold text-slate-800 hover:text-[#1642D0] transition-colors"
+                >
+                  <span>See All</span>
+                  <span className="w-4 h-4 rounded-full bg-[#1642D0] text-white flex items-center justify-center text-[9px] font-bold">
+                    ➔
+                  </span>
+                </Link>
+              </div>
+
+              <div className="space-y-5">
+                {/* Story 1 */}
+                <article className="group">
+                  <h4 className="text-sm sm:text-[15px] font-serif font-bold text-[#020618] leading-[1.3] my-0">
+                    <Link
+                      href="/topic/business-news"
+                      className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors"
+                    >
+                      AI Is Changing Your Company Culture Whether You Planned for It or Not. Here’s How to Shape What Happens Next.
+                    </Link>
+                  </h4>
+                  <div className="flex items-center gap-1.5 text-[11px] font-sans uppercase tracking-wider text-slate-500 mt-1.5 font-medium">
+                    <span className="text-slate-400">•</span>
+                    <span>17 HOURS AGO</span>
+                  </div>
+                </article>
+
+                {/* Story 2 */}
+                <article className="group">
+                  <h4 className="text-sm sm:text-[15px] font-serif font-bold text-[#020618] leading-[1.3] my-0">
+                    <Link
+                      href="/topic/business-news"
+                      className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors"
+                    >
+                      Creators Are Handing Their Video Edits to AI. Here’s Where It Starts to Backfire.
+                    </Link>
+                  </h4>
+                  <div className="flex items-center gap-1.5 text-[11px] font-sans uppercase tracking-wider text-slate-500 mt-1.5 font-medium">
+                    <span className="text-slate-400">•</span>
+                    <span>17 HOURS AGO</span>
+                  </div>
+                </article>
+
+                {/* Story 3 */}
+                <article className="group">
+                  <h4 className="text-sm sm:text-[15px] font-serif font-bold text-[#020618] leading-[1.3] my-0">
+                    <Link
+                      href="/topic/leadership"
+                      className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors"
+                    >
+                      He Leads a $240 Billion Food Giant. Here&apos;s the Difficult Management Rule He Follows.
+                    </Link>
+                  </h4>
+                  <div className="flex items-center gap-1.5 text-[11px] font-sans uppercase tracking-wider text-slate-500 mt-1.5 font-medium">
+                    <span className="text-slate-400">•</span>
+                    <span>1 DAY AGO</span>
+                  </div>
+                </article>
+              </div>
+            </div>
+
+            {/* 3. Sponsored Financial Content Block */}
+            <div className="pt-6 border-t border-slate-200 space-y-3.5">
               <div className="border-b border-slate-200 pb-1.5">
                 <h3 className="text-sm font-bold font-sans text-[#111827] my-0">
                   Sponsored Financial Content
@@ -269,7 +518,6 @@ export default function ArticleDetailPage() {
                     href="#"
                     className="group flex items-start gap-3.5 no-underline"
                   >
-                    {/* Thumbnail Image */}
                     <div className="w-[68px] h-[52px] flex-shrink-0 overflow-hidden rounded-[2px] border border-slate-200 shadow-2xs">
                       <img
                         src={item.imageUrl}
@@ -277,7 +525,6 @@ export default function ArticleDetailPage() {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     </div>
-                    {/* Text Details */}
                     <div className="flex-1 space-y-0.5">
                       <h4 className="text-[12.5px] font-sans font-normal text-[#111827] leading-[1.32] group-hover:underline group-hover:text-[#1642D0] transition-colors my-0">
                         {item.title}
@@ -287,28 +534,6 @@ export default function ArticleDetailPage() {
                       </span>
                     </div>
                   </a>
-                ))}
-              </div>
-            </div>
-
-            {/* Additional Latest News Stream */}
-            <div className="pt-6 border-t border-slate-200">
-              <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-200">
-                <h3 className="text-base font-bold font-serif text-[#020618] my-0">
-                  Latest News
-                </h3>
-                <Link href="/topic/business-news" className="text-xs font-bold text-[#1642D0] uppercase tracking-wider hover:underline">
-                  See All
-                </Link>
-              </div>
-
-              <div className="space-y-4">
-                {LATEST_ARTICLES.slice(0, 5).map((latest) => (
-                  <ArticleCard
-                    key={latest.id}
-                    article={latest}
-                    variant="compact"
-                  />
                 ))}
               </div>
             </div>
