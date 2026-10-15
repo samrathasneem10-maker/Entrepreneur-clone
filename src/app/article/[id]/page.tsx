@@ -43,20 +43,23 @@ export default function ArticleDetailPage() {
   const articleId = typeof params?.id === 'string' ? params.id : 'not-every-boss-deserves-a-thank-you-card';
   const rawArticle = getArticleById(articleId);
 
-  // If visiting latest-1 or boss articles, ensure authentic editorial metadata matching reference screenshots
+  const isBossArticle = articleId.includes('boss') || articleId.includes('bully');
+
+  // Metadata matching user's reference screenshot (53 Side Hustle Ideas) or authentic Boss article
   const article = {
     ...rawArticle,
-    title: (articleId.includes('boss') || articleId.includes('bully') || articleId.startsWith('latest') || !rawArticle.title)
+    title: isBossArticle
       ? 'Not Every Boss Deserves a Thank-You Card. Here’s What to Do When Your Boss Is a Bully.'
-      : rawArticle.title,
-    excerpt: (articleId.includes('boss') || articleId.includes('bully') || articleId.startsWith('latest') || !rawArticle.excerpt)
+      : '53 Side Hustle Ideas to Make Extra Money in 2026',
+    excerpt: isBossArticle
       ? 'As some of us celebrate National Boss’s Day, it’s important to remember that not everyone has a good relationship with their boss.'
-      : rawArticle.excerpt,
+      : 'From freelancing to selling products, find out how to earn extra income today.',
     author: {
-      name: (articleId.includes('boss') || articleId.includes('bully') || articleId.startsWith('latest')) ? 'MITA MALLICK' : rawArticle.author?.name || 'MITA MALLICK',
+      name: isBossArticle ? 'MITA MALLICK' : 'R.L. ADAMS',
     },
-    editor: (articleId.includes('boss') || articleId.includes('bully') || articleId.startsWith('latest')) ? 'KARA MCINTYRE' : rawArticle.editor || 'KARA MCINTYRE',
-    date: (articleId.includes('boss') || articleId.includes('bully') || articleId.startsWith('latest')) ? 'OCT 14, 2026' : rawArticle.date || 'OCT 14, 2026',
+    editor: isBossArticle ? 'KARA MCINTYRE' : 'AMANDA BREEN',
+    date: isBossArticle ? 'OCT 14, 2026' : 'JAN 26, 2026',
+    imageUrl: isBossArticle ? (rawArticle?.imageUrl || '/images/hero-mentor.jpg') : '/images/side-hustle-53.jpg',
   };
 
   const [copied, setCopied] = useState(false);
@@ -78,7 +81,7 @@ export default function ArticleDetailPage() {
       {/* 1. Header with Sticky Reading Progress Bar */}
       <Header showProgressBar={true} />
 
-      {/* Breadcrumb Navigation matching reference screenshot (Black House Icon + / + BUILDING A BUSINESS) */}
+      {/* Breadcrumb Navigation matching reference screenshot (Black House Icon + / + ENTREPRENEURS + / + THOUGHT LEADERS) */}
       <div className="w-full max-w-7xl mx-auto px-5 lg:px-10 pt-3 pb-2.5 flex items-center gap-2.5 text-xs font-bold uppercase tracking-wider text-slate-900 font-sans">
         <Link href="/" aria-label="Home" className="text-slate-950 hover:text-[#1642D0] transition-colors flex items-center">
           <svg className="w-3.5 h-3.5 fill-current shrink-0" viewBox="0 0 24 24">
@@ -87,17 +90,24 @@ export default function ArticleDetailPage() {
         </Link>
         <span className="text-slate-400 font-normal select-none">/</span>
         <Link
-          href={`/topic/${(article.category || 'building-a-business').toLowerCase().replace(/\s+/g, '-')}`}
+          href="/topic/entrepreneurs"
           className="text-slate-900 hover:text-[#1642D0] transition-colors tracking-wider font-extrabold"
         >
-          {article.category || 'BUILDING A BUSINESS'}
+          ENTREPRENEURS
+        </Link>
+        <span className="text-slate-400 font-normal select-none">/</span>
+        <Link
+          href="/topic/thought-leaders"
+          className="text-slate-900 hover:text-[#1642D0] transition-colors tracking-wider font-extrabold"
+        >
+          THOUGHT LEADERS
         </Link>
       </div>
 
       {/* Blue Announcement Bar right under breadcrumb matching reference screenshot */}
-      <div className="w-full bg-[#1642D0] py-2 px-4 text-center text-white text-xs sm:text-sm font-bold tracking-wide">
+      <div className="w-full bg-[#1642D0] py-2.5 px-4 text-center text-white text-xs sm:text-sm font-bold tracking-wide">
         <a href="#" className="hover:underline transition-colors underline decoration-white">
-          How to Get Your Press Release in Front of Millions
+          Turn Your Inbox Into a Growth Tool
         </a>
       </div>
 
@@ -115,42 +125,47 @@ export default function ArticleDetailPage() {
 
             {/* Subtitle / Excerpt */}
             {article.excerpt && (
-              <p className="text-slate-700 text-base sm:text-lg lg:text-[18.5px] font-serif font-normal leading-relaxed my-0 pt-1">
+              <p className="text-slate-600 text-base sm:text-lg lg:text-[18.5px] font-serif font-normal leading-relaxed my-0 pt-1">
                 {article.excerpt}
               </p>
             )}
 
-            {/* Author, Editor & Date Row: Exact format BY MITA MALLICK | EDITED BY KARA MCINTYRE | OCT 14, 2026 */}
-            <div className="text-xs font-sans font-bold uppercase tracking-wider text-slate-500 flex flex-wrap items-center gap-1.5 pt-2 pb-1">
+            {/* Horizontal Line ABOVE Byline matching reference screenshot */}
+            <div className="border-t border-slate-200 mt-4 mb-2.5" />
+
+            {/* Author, Editor & Date Row: Exact format BY R.L. ADAMS | EDITED BY AMANDA BREEN | JAN 26, 2026 */}
+            <div className="text-xs font-sans font-bold uppercase tracking-wider text-slate-500 flex flex-wrap items-center gap-1.5 py-0.5">
               <span className="text-slate-500 font-semibold">BY</span>
               <Link
-                href={`/author/${(article.author?.name || 'mita-mallick').toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+                href={`/author/${(article.author?.name || 'rl-adams').toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
                 className="text-[#1642D0] font-bold hover:underline decoration-[#1642D0] underline-offset-2"
               >
-                {article.author?.name || 'MITA MALLICK'}
+                {article.author?.name || 'R.L. ADAMS'}
               </Link>
               {article.editor ? (
                 <>
                   <span className="text-slate-300 mx-1.5 select-none font-normal">|</span>
                   <span className="text-slate-500 font-semibold">EDITED BY</span>
-                  <span className="text-[#1642D0] font-bold">{article.editor}</span>
+                  <span className="text-[#1642D0] font-bold hover:underline decoration-[#1642D0] underline-offset-2 cursor-pointer">
+                    {article.editor}
+                  </span>
                 </>
               ) : null}
               <span className="text-slate-300 mx-1.5 select-none font-normal">|</span>
-              <span className="text-slate-500 font-normal">{article.date || 'OCT 14, 2026'}</span>
+              <span className="text-slate-500 font-normal">{article.date || 'JAN 26, 2026'}</span>
             </div>
 
-            {/* Divider Line */}
-            <div className="border-b border-slate-200 my-3" />
+            {/* Horizontal Line BELOW Byline matching reference screenshot */}
+            <div className="border-b border-slate-200 mt-2.5 mb-4" />
 
             {/* Action Bar: Google Add to Preferred Sources pill + SHARE with Copy icon side by side matching screenshot */}
-            <div className="flex items-center gap-5 sm:gap-6 py-1.5 mb-2">
+            <div className="flex items-center gap-5 sm:gap-6 py-1 mb-4">
               {/* Google Add to Preferred Sources Pill */}
               <a
                 href="https://news.google.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-full border border-slate-300 bg-white hover:bg-slate-50 px-3.5 py-1.5 inline-flex items-center gap-2 text-xs font-medium text-slate-800 shadow-2xs transition-colors cursor-pointer"
+                className="rounded-full border border-slate-300 bg-white hover:bg-slate-50 px-4 py-1.5 inline-flex items-center gap-2 text-xs font-medium text-slate-800 shadow-2xs transition-colors cursor-pointer"
               >
                 {/* Authentic 4-color Google G icon */}
                 <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24">
@@ -165,13 +180,22 @@ export default function ArticleDetailPage() {
               {/* Right beside it: SHARE + Copy Link */}
               <button
                 onClick={handleCopyLink}
-                className="flex items-center gap-1.5 text-xs font-bold text-slate-800 hover:text-[#1642D0] tracking-wider font-sans uppercase transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 text-xs font-bold text-[#1642D0] hover:text-[#0d2d8d] tracking-wider font-sans uppercase transition-colors cursor-pointer"
                 title={copied ? 'Copied link!' : 'Copy Link'}
                 aria-label="Copy Link"
               >
                 <span>SHARE</span>
                 {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-slate-800" />}
               </button>
+            </div>
+
+            {/* Main Featured Article Image matching reference screenshot */}
+            <div className="w-full my-4 overflow-hidden">
+              <img
+                src={article.imageUrl || '/images/side-hustle-53.jpg'}
+                alt={article.title}
+                className="w-full h-auto object-cover"
+              />
             </div>
 
             {/* Text after horizontal line matching Image 1: Opinions disclaimer */}
@@ -510,57 +534,21 @@ export default function ArticleDetailPage() {
 
           </article>
 
-          {/* RIGHT SIDEBAR (Matching Image 1 & Image 2) */}
+          {/* RIGHT SIDEBAR (Matching reference screenshot) */}
           <aside className="lg:col-span-4 space-y-6 sticky top-24">
             
-            {/* 1. Intelligence Test Google Ad Card matching Image 1 & 2 */}
-            <div className="border border-slate-200 rounded-sm bg-white overflow-hidden shadow-2xs flex flex-col justify-between min-h-[460px]">
-              {/* Banner Header Image with AdChoices */}
+            {/* 1. FlexJobs Google Ad Card matching reference screenshot */}
+            <div className="border border-slate-200/90 rounded-xs bg-white overflow-hidden shadow-2xs p-3">
               <div className="relative w-full">
                 <img
-                  src="/images/iq-test-banner.png"
-                  alt="Intelligence Test scoring scale"
-                  className="w-full h-auto object-cover"
+                  src="/images/flexjobs-ad.png"
+                  alt="FlexJobs: Remote Jobs, Flexible Jobs, Freelance Jobs, Work from Home Jobs"
+                  className="w-full h-auto object-contain"
                 />
-              </div>
-
-              {/* Ad Body Content */}
-              <div className="px-4 py-4 text-center flex flex-col items-center flex-1 justify-between">
-                <div>
-                  <h3 className="text-xl sm:text-[22px] font-sans font-bold text-[#020618] leading-tight my-0">
-                    Test Your IQ in 3 Minutes
-                  </h3>
-
-                  {/* Brain Icon */}
-                  <div className="my-3">
-                    <img
-                      src="/images/iq-brain-icon.png"
-                      alt="Brain Icon"
-                      className="w-9 h-10 object-contain mx-auto"
-                    />
-                  </div>
-
-                  {/* Blue Link */}
-                  <a
-                    href="#"
-                    className="text-sm font-sans font-medium text-[#1642D0] hover:underline inline-flex items-center gap-1.5"
-                  >
-                    <span>Global IQ Comparison</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                </div>
-
-                {/* Dark Circular Action Button matching Image 2 */}
-                <button
-                  aria-label="Start IQ Test"
-                  className="w-11 h-11 rounded-full bg-[#1e293b] hover:bg-slate-900 text-white flex items-center justify-center mt-4 mb-2 shadow-sm transition-transform hover:scale-105 cursor-pointer"
-                >
-                  <ArrowRight className="w-5 h-5" />
-                </button>
               </div>
             </div>
 
-            {/* Underline right before Latest heading matching Image 1 & 2 */}
+            {/* Underline right before Latest heading matching reference screenshot */}
             <div className="border-t border-slate-200 pt-5 mt-5">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#020618] my-0">
@@ -585,12 +573,12 @@ export default function ArticleDetailPage() {
                       href="/topic/business-news"
                       className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors"
                     >
-                      He Leads a $240 Billion Food Giant. Here&apos;s the Difficult Management Rule He Follows.
+                      AI Is Changing Your Company Culture Whether You Planned for It or Not. Here&apos;s How to Shape What Happens Next.
                     </Link>
                   </h4>
                   <div className="flex items-center gap-1.5 text-[11px] font-sans uppercase tracking-wider text-slate-500 mt-1.5 font-medium">
                     <span className="text-slate-400">•</span>
-                    <span>17 HOURS AGO</span>
+                    <span>15 HOURS AGO</span>
                   </div>
                 </article>
 
@@ -601,12 +589,12 @@ export default function ArticleDetailPage() {
                       href="/topic/business-news"
                       className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors"
                     >
-                      Creators Are Handing Their Video Edits to AI. Here’s Where It Starts to Backfire.
+                      Creators Are Handing Their Video Production Over to AI. Here&apos;s How You Can Too.
                     </Link>
                   </h4>
                   <div className="flex items-center gap-1.5 text-[11px] font-sans uppercase tracking-wider text-slate-500 mt-1.5 font-medium">
                     <span className="text-slate-400">•</span>
-                    <span>17 HOURS AGO</span>
+                    <span>1 DAY AGO</span>
                   </div>
                 </article>
 
@@ -622,7 +610,7 @@ export default function ArticleDetailPage() {
                   </h4>
                   <div className="flex items-center gap-1.5 text-[11px] font-sans uppercase tracking-wider text-slate-500 mt-1.5 font-medium">
                     <span className="text-slate-400">•</span>
-                    <span>17 HOURS AGO</span>
+                    <span>2 DAYS AGO</span>
                   </div>
                 </article>
               </div>
