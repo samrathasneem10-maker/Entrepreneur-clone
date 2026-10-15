@@ -209,7 +209,7 @@ export default function NewslettersPage() {
                       {item.frequency}
                     </span>
                   </div>
-                  <p className="text-xs sm:text-sm text-slate-600 font-sans leading-relaxed my-0">
+                  <p className="text-xs sm:text-sm text-slate-700 font-serif leading-relaxed my-0">
                     {item.description}
                   </p>
                 </div>

@@ -139,7 +139,7 @@ export const EntrepreneursSection: React.FC = () => {
                 </h3>
 
                 {/* Normal font weight excerpt */}
-                <p className="text-sm sm:text-[15px] font-sans font-normal text-slate-600 leading-relaxed pt-0.5">
+                <p className="text-sm sm:text-[15px] font-serif font-normal text-slate-700 leading-relaxed pt-0.5">
                   {leadArticle.excerpt}
                 </p>
               </div>

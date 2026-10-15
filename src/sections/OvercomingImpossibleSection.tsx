@@ -52,7 +52,7 @@ export const OvercomingImpossibleSection: React.FC = () => {
             </h3>
 
             {/* Description with comfortable line height */}
-            <p className="text-slate-600 text-base sm:text-[17px] leading-[1.65] font-sans">
+            <p className="text-slate-700 text-base sm:text-[17px] leading-[1.65] font-serif font-normal">
               This isn't another conference. It's a hands-on workshop. Bring the &ldquo;impossible&rdquo; problem holding your business back — and leave with a clear plan to solve it.
             </p>
 
@@ -63,7 +63,7 @@ export const OvercomingImpossibleSection: React.FC = () => {
               </h4>
 
               {/* Bullet points list with generous line spacing */}
-              <ul className="space-y-3.5 sm:space-y-4 font-sans text-[15px] sm:text-base text-slate-700 leading-normal">
+              <ul className="space-y-3.5 sm:space-y-4 font-serif font-normal text-[15px] sm:text-base text-slate-700 leading-normal">
                 <li className="flex items-start gap-3">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#193CB8] mt-2 flex-shrink-0" />
                   <span>Hands-on problem-solving with <strong className="text-slate-900 font-bold">Robert Irvine</strong></span>

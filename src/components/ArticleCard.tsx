@@ -113,7 +113,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
           )}
 
           {showExcerpt && excerpt && (
-            <p className="mt-4 text-slate-700 text-sm sm:text-base leading-relaxed max-w-3xl font-sans font-normal">
+            <p className="mt-4 text-slate-700 text-sm sm:text-base leading-relaxed max-w-3xl font-serif font-normal">
               {excerpt}
             </p>
           )}
@@ -198,7 +198,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
         )}
         <div className="flex flex-col">
           <Badge className="text-[11px] text-[#193CB8] mb-1">{category}</Badge>
-          <h4 className="text-sm font-bold font-sans text-[#020618] leading-tight mb-1">
+          <h4 className="text-sm font-bold font-serif text-[#020618] leading-tight mb-1">
             <Link
               href={`/article/${article.id}`}
               className="text-[#020618] no-underline hover:underline decoration-[#020618] decoration-1 underline-offset-[2px] transition-all"
@@ -259,7 +259,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
         </h3>
 
         {showExcerpt && excerpt && (
-          <p className={`text-slate-600 text-xs sm:text-sm font-normal leading-relaxed mb-3.5 line-clamp-3 font-sans ${isCenter ? 'max-w-sm' : ''}`}>
+          <p className={`text-slate-700 text-xs sm:text-sm font-serif font-normal leading-relaxed mb-3.5 line-clamp-3 ${isCenter ? 'max-w-sm' : ''}`}>
             {excerpt}
           </p>
         )}

@@ -114,7 +114,7 @@ export const TransformAISection: React.FC = () => {
                   </h3>
 
                   {/* Under Paragraph (Normal font weight text) */}
-                  <p className="text-xs sm:text-sm font-sans font-normal text-slate-600 leading-relaxed mb-3">
+                  <p className="text-xs sm:text-sm font-serif font-normal text-slate-700 leading-relaxed mb-3">
                     {card.excerpt}
                   </p>
                 </div>

@@ -109,7 +109,7 @@ export default function AuthorProfilePage() {
                     </h3>
 
                     {art.excerpt && (
-                      <p className="text-xs sm:text-sm text-slate-600 font-sans leading-relaxed line-clamp-2">
+                      <p className="text-xs sm:text-sm text-slate-700 font-serif font-normal leading-relaxed line-clamp-2">
                         {art.excerpt}
                       </p>
                     )}

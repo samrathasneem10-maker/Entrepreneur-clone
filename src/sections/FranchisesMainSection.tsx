@@ -272,7 +272,7 @@ export const FranchisesMainSection: React.FC = () => {
                 </h3>
 
                 {/* Normal weight excerpt */}
-                <p className="text-sm sm:text-base font-sans font-normal text-slate-600 leading-relaxed max-w-lg">
+                <p className="text-sm sm:text-base font-serif font-normal text-slate-700 leading-relaxed max-w-lg">
                   {middleArticle.excerpt}
                 </p>
 
