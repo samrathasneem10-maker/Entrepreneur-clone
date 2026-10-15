@@ -99,7 +99,7 @@ export default function ArticleDetailPage() {
   // Metadata matching user's reference screenshot (53 Side Hustle Ideas) or authentic Boss article
   const article = {
     ...rawArticle,
-    category: isBossArticle ? 'BUILDING A BUSINESS' : 'THOUGHT LEADERS',
+    category: isBossArticle ? 'Building a Business' : 'Finance & Economics',
     title: isBossArticle
       ? 'Not Every Boss Deserves a Thank-You Card. Here’s What to Do When Your Boss Is a Bully.'
       : '53 Side Hustle Ideas to Make Extra Money in 2026',
@@ -153,19 +153,33 @@ export default function ArticleDetailPage() {
       <Header showProgressBar={true} />
 
       {/* Main Article Container with 2-Column Layout */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-5 lg:px-10 py-8 lg:py-10">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-5 lg:px-10 pt-4 pb-10">
+        
+        {/* Top < BACK TO NEWSFEED bar + horizontal line matching reference image 1 */}
+        <div className="w-full mb-6">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-slate-800 transition-colors font-sans"
+          >
+            <span className="text-sm font-semibold select-none">&lt;</span>
+            <span>BACK TO NEWSFEED</span>
+          </Link>
+          {/* Horizontal line under < BACK TO NEWSFEED matching Image 1 */}
+          <div className="border-b border-slate-200 mt-2.5" />
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           
           {/* LEFT/MAIN CONTENT (8 columns on large screens) */}
           <article className="lg:col-span-8 space-y-4">
             
-            {/* Category above headline */}
+            {/* Red Category Heading matching reference image 1 */}
             <div className="mb-2">
               <Link
-                href={`/topic/${(article.category || 'thought-leaders').toLowerCase().replace(/\s+/g, '-')}`}
-                className="text-xs font-sans font-bold uppercase tracking-wider text-[#1642D0] hover:underline"
+                href={`/topic/${(article.category || 'finance-and-economics').toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+                className="text-xs sm:text-[13px] font-sans font-bold text-[#DC2626] hover:underline"
               >
-                {article.category || 'THOUGHT LEADERS'}
+                {article.category || 'Finance & Economics'}
               </Link>
             </div>
 
