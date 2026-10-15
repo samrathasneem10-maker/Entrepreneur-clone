@@ -135,6 +135,21 @@ export const TransformAISection: React.FC = () => {
           ))}
         </div>
 
+        {/* Promotional / Advertisement Banner: America's Favorite Mom & Pop Shops 2026 */}
+        <div className="mt-8 sm:mt-10 md:mt-12 w-full">
+          <Link
+            href="/topic/mom-and-pop-shops"
+            className="block w-full overflow-hidden rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md transition-all duration-300 group cursor-pointer"
+            aria-label="Entrepreneur - America's Favorite Mom & Pop Shops 2026 - See the list"
+          >
+            <img
+              src="/images/mom-and-pop-shops-banner.png"
+              alt="Entrepreneur - America's Favorite Mom & Pop Shops 2026 - See the list"
+              className="w-full h-auto object-cover block rounded-xl sm:rounded-2xl group-hover:scale-[1.008] transition-transform duration-500"
+            />
+          </Link>
+        </div>
+
       </div>
     </section>
   );
