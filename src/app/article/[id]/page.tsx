@@ -454,15 +454,15 @@ export default function ArticleDetailPage() {
 
           {/* RIGHT SIDEBAR (Matching reference screenshot) */}
           <aside className="lg:col-span-4 space-y-6 sticky top-24">
-            
-            {/* 1. FlexJobs Google Ad Card matching reference screenshot */}
-            <div className="border border-slate-200/90 rounded-xs bg-white overflow-hidden shadow-2xs p-3">
-              <div className="relative w-full">
-                <img
-                  src="/images/flexjobs-ad.png"
-                  alt="FlexJobs: Remote Jobs, Flexible Jobs, Freelance Jobs, Work from Home Jobs"
-                  className="w-full h-auto object-contain"
-                />
+            {/* 1. Top Right Sidebar Advertisement (336 x 770) matching reference image */}
+            <div className="w-full max-w-[336px] mx-auto">
+              <p className="text-[11px] font-sans font-normal uppercase tracking-wider text-[#777777] text-center mb-2.5 my-0 select-none">
+                ADVERTISEMENT
+              </p>
+              <div className="w-full h-[600px] sm:h-[700px] lg:h-[770px] bg-[#f9f9f9] border border-[#e5e7eb] flex items-center justify-center shadow-2xs">
+                <span className="text-2xl sm:text-3xl font-sans text-[#777777] font-normal select-none">
+                  336 x 770
+                </span>
               </div>
             </div>
 
