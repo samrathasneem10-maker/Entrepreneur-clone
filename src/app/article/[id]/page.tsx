@@ -217,20 +217,23 @@ export default function ArticleDetailPage() {
               </ul>
             </div>
 
-            {/* Franchise Assessment Card matching Image 2 */}
-            <div className="bg-[#f8f9fa] border border-slate-200/90 rounded-xl p-5 sm:p-7 my-6 shadow-2xs">
+            {/* Underline after Key Takeaways matching Image 1 */}
+            <div className="border-b border-slate-200 mt-6 mb-7" />
+
+            {/* Franchise Assessment Card matching Image 1 & 2 */}
+            <div className="bg-[#f8f9fa] border border-slate-200/90 rounded-xl p-5 sm:p-7 mb-7 shadow-2xs">
               {/* Header with Entrepreneur logo icon */}
               <div className="flex items-center gap-2 mb-2">
-                <span className="w-5 h-5 bg-black text-white font-serif font-bold text-xs flex items-center justify-center rounded-[2px] leading-none">
+                <span className="w-5 h-5 bg-black text-white font-serif font-bold text-xs flex items-center justify-center rounded-[2px] leading-none shrink-0">
                   E
                 </span>
-                <span className="text-xs font-sans font-bold uppercase tracking-wider text-slate-600">
+                <span className="text-xs font-sans font-bold uppercase tracking-wider text-slate-500">
                   FRANCHISE ASSESSMENT
                 </span>
               </div>
 
-              {/* Horizontal line inside card */}
-              <div className="border-b border-slate-300 mb-5" />
+              {/* Straight line inside card spanning left text column matching Image 1 */}
+              <div className="w-full md:w-[58%] border-b border-slate-900/90 mt-2 mb-5" />
 
               {/* 2-Column content */}
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
@@ -290,33 +293,82 @@ export default function ArticleDetailPage() {
               </div>
             </div>
 
-            {/* Rich Editorial Body Content */}
+            {/* Rich Editorial Body Content matching Images 1, 2, and 3 */}
             <div className="prose prose-slate max-w-none space-y-6 text-slate-800 text-base sm:text-lg leading-relaxed font-serif pt-2">
               {isBossArticle ? (
                 <>
                   <p>
-                    National Boss’s Day rolls around every October, and offices across the country fill with celebratory greeting cards, decorated cupcakes, and polite applause in team Slack channels. But for millions of dedicated professionals, signing a generic card feels less like gratitude and more like forced corporate theater.
+                    I still remember standing in the kitchen area at work, being pressured to sign that thank you card. It was{' '}
+                    <a href="#" className="text-[#1642D0] hover:underline font-normal">
+                      National Boss’s Day
+                    </a>{' '}
+                    and my boss’s executive assistant had a card she wanted us to all sign. It was to thank our boss for being a great boss. The front of the card said, “The world needs more bosses like you!” I felt sick to my stomach, barely scrawling my name inside. The irony was that this boss was one of the worst bosses I had ever worked for.
                   </p>
 
                   <p>
-                    Workplaces often tolerate abusive or hyper-critical managers because they appear to &ldquo;get results.&rdquo; Yet research consistently shows that bully bosses cost companies billions in attrition, medical leaves, and silenced innovation. When a manager relies on public humiliation, shifted goalposts, or veiled threats, employees don&apos;t work harder &mdash; they work scared.
+                    My former boss was the{' '}
+                    <a href="#" className="text-[#1642D0] hover:underline font-normal">
+                      bully boss
+                    </a>
+                    . He reminded me of the playground bully who teased and taunted and mocked others. This bully boss also publicly and privately humiliated me. He called me a rat. He told me no one wanted me on their team but only he took a chance on me. When he found out another leader at the company wanted me to rotate onto their team, he screamed at me and said I could leave his team only when he said I could.
                   </p>
 
-                  {/* Section H2 */}
+                  <p>
+                    As some of us celebrate and honor National Boss’s Day, it’s an important moment to remember that not everyone has a good relationship with their boss. Some of us are struggling with a boss who undermines us, makes fun of us, and even threatens to fire us. For anyone struggling with a bully boss, here are three important steps I wish I had taken back then.
+                  </p>
+
+                  {/* Section 1 Heading matching Images 2 & 3 */}
                   <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#020618] pt-4 mb-3 tracking-tight">
-                    1. Recognize the Difference Between High Expectations and Bullying
+                    1. Don&apos;t normalize the behavior just because it&apos;s your boss
                   </h2>
 
                   <p>
-                    Tough leaders challenge your ideas to sharpen your thinking; bully bosses attack your character to preserve their own status. A demanding manager will debate facts, offer constructive pathways for improvement, and advocate for your promotion behind closed doors. A bully will withhold vital project context, take credit for your late-night breakthroughs, and criticize you in group meetings.
+                    When you are working for someone who is a bully, we may use{' '}
+                    <a href="#" className="text-[#1642D0] hover:underline font-normal">
+                      power dynamics
+                    </a>{' '}
+                    as an excuse. We tolerate things from a boss that we wouldn&apos;t tolerate from a colleague. And of course, we may be scared of losing our jobs, so we normalize this behavior. If a bully boss shuts you down, calls you names and makes inappropriate jokes, and consistently crosses boundaries, this isn&apos;t them just having a bad day. This is a pattern of bad, bullying behavior.
                   </p>
 
-                  {/* Pull Quote Block */}
-                  <blockquote className="my-8 border-l-4 border-[#1642D0] pl-6 py-4 bg-blue-50/50 rounded-r-xl text-lg sm:text-xl font-serif italic text-[#020618] leading-relaxed">
-                    &ldquo;You cannot fix a toxic boss. You can only protect your reputation, your health, and your strategic career trajectory.&rdquo;
-                  </blockquote>
+                  <p>
+                    I remember rationalizing his behavior. &ldquo;Well, that&apos;s just how he is,&rdquo; and &ldquo;Maybe I&apos;m being too sensitive,&rdquo; and &ldquo;This is the price I pay to have this big title and paycheck,&rdquo; or &ldquo;He is just under a lot of stress.&rdquo; Just because they are the boss doesn&apos;t mean they can behave this way. Ask yourself if you would allow a colleague to treat you this way? Chances are you wouldn&apos;t.
+                  </p>
 
-                  {/* Section H2 */}
+                  {/* Sponsored ETF Banner Unit matching Image 3 */}
+                  <div className="border border-slate-700/60 bg-white p-3 flex flex-col sm:flex-row items-center justify-between gap-4 my-8 rounded-xs shadow-2xs relative">
+                    <div className="absolute top-1.5 right-2 flex items-center text-slate-400 text-[10px]" title="AdChoices">
+                      <svg className="w-3.5 h-3.5 fill-slate-400" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                      </svg>
+                    </div>
+
+                    <div className="flex items-center gap-3.5">
+                      <div className="w-[110px] h-[44px] overflow-hidden rounded-xs shrink-0 border border-slate-200">
+                        <img
+                          src="/images/sponsored-etf.png"
+                          alt="What is the latest on ETFs?"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div>
+                        <h4 className="text-sm sm:text-[15px] font-sans font-bold text-[#020618] my-0 leading-snug">
+                          What is the latest on ETFs?
+                        </h4>
+                        <span className="text-[11px] font-sans text-slate-500 block pt-0.5">
+                          MarketViews
+                        </span>
+                      </div>
+                    </div>
+
+                    <a
+                      href="#"
+                      className="px-4 py-1.5 border border-black hover:bg-black hover:text-white text-xs font-sans font-medium text-black transition-colors rounded-none shrink-0"
+                    >
+                      Read More
+                    </a>
+                  </div>
+
+                  {/* Section 2 */}
                   <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#020618] pt-4 mb-3 tracking-tight">
                     2. Maintain an Objective, Off-System Log
                   </h2>
@@ -346,7 +398,7 @@ export default function ArticleDetailPage() {
                     </ul>
                   </div>
 
-                  {/* Section H2 */}
+                  {/* Section 3 */}
                   <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#020618] pt-4 mb-3 tracking-tight">
                     3. Plan Your Exit From a Position of Power
                   </h2>
@@ -388,10 +440,10 @@ export default function ArticleDetailPage() {
           </article>
 
           {/* RIGHT SIDEBAR (Matching Image 1 & Image 2) */}
-          <aside className="lg:col-span-4 space-y-8 sticky top-24">
+          <aside className="lg:col-span-4 space-y-6 sticky top-24">
             
             {/* 1. Intelligence Test Google Ad Card matching Image 1 & 2 */}
-            <div className="border border-slate-200 rounded-sm bg-white overflow-hidden shadow-2xs">
+            <div className="border border-slate-200 rounded-sm bg-white overflow-hidden shadow-2xs flex flex-col justify-between min-h-[460px]">
               {/* Banner Header Image with AdChoices */}
               <div className="relative w-full">
                 <img
@@ -402,42 +454,44 @@ export default function ArticleDetailPage() {
               </div>
 
               {/* Ad Body Content */}
-              <div className="px-4 py-5 text-center flex flex-col items-center">
-                <h3 className="text-xl sm:text-[22px] font-sans font-bold text-[#020618] leading-tight my-0">
-                  Test Your IQ in 3 Minutes
-                </h3>
+              <div className="px-4 py-4 text-center flex flex-col items-center flex-1 justify-between">
+                <div>
+                  <h3 className="text-xl sm:text-[22px] font-sans font-bold text-[#020618] leading-tight my-0">
+                    Test Your IQ in 3 Minutes
+                  </h3>
 
-                {/* Brain Icon */}
-                <div className="my-4">
-                  <img
-                    src="/images/iq-brain-icon.png"
-                    alt="Brain Icon"
-                    className="w-9 h-10 object-contain mx-auto"
-                  />
+                  {/* Brain Icon */}
+                  <div className="my-3">
+                    <img
+                      src="/images/iq-brain-icon.png"
+                      alt="Brain Icon"
+                      className="w-9 h-10 object-contain mx-auto"
+                    />
+                  </div>
+
+                  {/* Blue Link */}
+                  <a
+                    href="#"
+                    className="text-sm font-sans font-medium text-[#1642D0] hover:underline inline-flex items-center gap-1.5"
+                  >
+                    <span>Global IQ Comparison</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
                 </div>
-
-                {/* Blue Link */}
-                <a
-                  href="#"
-                  className="text-sm font-sans font-medium text-[#1642D0] hover:underline inline-flex items-center gap-1.5"
-                >
-                  <span>Global IQ Comparison</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
 
                 {/* Dark Circular Action Button matching Image 2 */}
                 <button
                   aria-label="Start IQ Test"
-                  className="w-11 h-11 rounded-full bg-[#1e293b] hover:bg-slate-900 text-white flex items-center justify-center mt-5 mb-1 shadow-sm transition-transform hover:scale-105 cursor-pointer"
+                  className="w-11 h-11 rounded-full bg-[#1e293b] hover:bg-slate-900 text-white flex items-center justify-center mt-4 mb-2 shadow-sm transition-transform hover:scale-105 cursor-pointer"
                 >
                   <ArrowRight className="w-5 h-5" />
                 </button>
               </div>
             </div>
 
-            {/* 2. Latest Stories Section matching Image 2 */}
-            <div className="pt-2">
-              <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-200">
+            {/* Underline right before Latest heading matching Image 1 & 2 */}
+            <div className="border-t border-slate-200 pt-5 mt-5">
+              <div className="flex items-center justify-between mb-4">
                 <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#020618] my-0">
                   Latest
                 </h3>
@@ -497,7 +551,7 @@ export default function ArticleDetailPage() {
                   </h4>
                   <div className="flex items-center gap-1.5 text-[11px] font-sans uppercase tracking-wider text-slate-500 mt-1.5 font-medium">
                     <span className="text-slate-400">•</span>
-                    <span>1 DAY AGO</span>
+                    <span>17 HOURS AGO</span>
                   </div>
                 </article>
               </div>
