@@ -137,9 +137,9 @@ export const FranchisesMainSection: React.FC = () => {
       <div className="w-full">
         
         {/* Top line with SMALL GAP above Franchises heading matching screenshot */}
-        <div className="border-t border-slate-200 pt-2 pb-1.5 mb-4">
+        <div className="border-t border-slate-200 pt-4 pb-2 mb-3 sm:mb-4">
           <div className="flex items-center justify-between">
-            <h2 className="my-0 text-[#020618] font-bold text-2xl sm:text-3xl font-serif leading-none tracking-tight">
+            <h2 className="my-0 text-[#020618] font-bold text-2xl sm:text-3xl font-serif font-['Playfair_Display',Georgia,serif] leading-none tracking-tight">
               <Link href="/topic/franchises" className="hover:underline">
                 Franchises
               </Link>
@@ -147,13 +147,13 @@ export const FranchisesMainSection: React.FC = () => {
 
             <Link
               href="/topic/franchises"
-              className="flex items-center no-underline hover:underline text-xs sm:text-[13px] font-bold text-[#020618] uppercase tracking-wider group"
+              className="flex items-center no-underline hover:underline text-xs sm:text-[13px] font-bold text-[#020618] group"
             >
-              <span>See All</span>
+              <span className="font-sans font-bold">See All</span>
               <svg
                 aria-hidden="true"
                 fill="currentColor"
-                className="w-5 h-5 fill-current ml-1.5 text-[#6B21A8] group-hover:scale-105 transition-transform"
+                className="w-4.5 h-4.5 fill-current ml-1.5 text-[#6B21A8] group-hover:scale-105 transition-transform"
                 viewBox="0 0 24 24"
               >
                 <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12s4.48 10 10 10 10-4.48 10-10m-10 1H8v-2h4V8l4 4-4 4z" />
@@ -162,13 +162,13 @@ export const FranchisesMainSection: React.FC = () => {
           </div>
         </div>
 
-        {/* Sub-Navigation Pills (Zoomed Larger Black Ovals, Increased Gap, White Button on Cursor Hover) */}
-        <div className="flex items-center justify-start sm:justify-center gap-3 sm:gap-4 overflow-x-auto no-scrollbar pb-7 sm:pb-8">
+        {/* Sub-Navigation Pills: 5 Oval Shapes Matching Reference Image 2 */}
+        <div className="flex items-center justify-start flex-wrap gap-2 sm:gap-2.5 mb-6 sm:mb-8">
           {pills.map((pill) => (
             <Link
               key={pill.label}
               href={pill.href}
-              className="px-5 sm:px-6 py-2 sm:py-2.5 rounded-full font-bold text-xs sm:text-sm font-sans whitespace-nowrap bg-[#020618] text-white border border-[#020618] hover:bg-white hover:text-[#020618] hover:border-[#020618] transition-all duration-200 shadow-2xs hover:shadow-sm flex items-center justify-center cursor-pointer"
+              className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-full font-bold text-xs sm:text-[13px] font-sans whitespace-nowrap bg-[#020618] text-white hover:bg-slate-800 transition-colors inline-flex items-center justify-center cursor-pointer shadow-2xs"
             >
               {pill.label}
             </Link>
