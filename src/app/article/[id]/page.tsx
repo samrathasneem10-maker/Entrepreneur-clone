@@ -41,7 +41,23 @@ const SPONSORED_ITEMS = [
 export default function ArticleDetailPage() {
   const params = useParams();
   const articleId = typeof params?.id === 'string' ? params.id : 'not-every-boss-deserves-a-thank-you-card';
-  const article = getArticleById(articleId);
+  const rawArticle = getArticleById(articleId);
+
+  // If visiting latest-1 or boss articles, ensure authentic editorial metadata matching reference screenshots
+  const article = {
+    ...rawArticle,
+    title: (articleId.includes('boss') || articleId.includes('bully') || articleId.startsWith('latest') || !rawArticle.title)
+      ? 'Not Every Boss Deserves a Thank-You Card. Here’s What to Do When Your Boss Is a Bully.'
+      : rawArticle.title,
+    excerpt: (articleId.includes('boss') || articleId.includes('bully') || articleId.startsWith('latest') || !rawArticle.excerpt)
+      ? 'As some of us celebrate National Boss’s Day, it’s important to remember that not everyone has a good relationship with their boss.'
+      : rawArticle.excerpt,
+    author: {
+      name: (articleId.includes('boss') || articleId.includes('bully') || articleId.startsWith('latest')) ? 'MITA MALLICK' : rawArticle.author?.name || 'MITA MALLICK',
+    },
+    editor: (articleId.includes('boss') || articleId.includes('bully') || articleId.startsWith('latest')) ? 'KARA MCINTYRE' : rawArticle.editor || 'KARA MCINTYRE',
+    date: (articleId.includes('boss') || articleId.includes('bully') || articleId.startsWith('latest')) ? 'OCT 14, 2026' : rawArticle.date || 'OCT 14, 2026',
+  };
 
   const [copied, setCopied] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -56,8 +72,6 @@ export default function ArticleDetailPage() {
 
   // 8 Related articles for the bottom grid
   const relatedArticles = ALL_ARTICLES.filter((a) => a.id !== article.id).slice(0, 8);
-
-  const isBossArticle = article.id.includes('boss') || article.id.includes('bully');
 
   return (
     <div className="min-h-screen flex flex-col bg-white font-sans antialiased text-slate-900">
@@ -295,9 +309,7 @@ export default function ArticleDetailPage() {
 
             {/* Rich Editorial Body Content matching Images 1, 2, 3, and newly uploaded 3-paragraph reference */}
             <div className="max-w-none space-y-7 text-[#2b3445] font-['Georgia',Cambria,'Times_New_Roman',serif] text-[18px] lg:text-[18.5px] leading-[32px] lg:leading-[33px] pt-2">
-              {isBossArticle ? (
-                <>
-                  <p className="m-0">
+              <p className="m-0">
                     I still remember standing in the kitchen area at work, being pressured to sign that thank you<br className="hidden xl:inline" />{' '}
                     card. It was{' '}
                     <a
@@ -354,35 +366,31 @@ export default function ArticleDetailPage() {
                     I remember rationalizing his behavior. &ldquo;Well, that&apos;s just how he is,&rdquo; and &ldquo;Maybe I&apos;m being too sensitive,&rdquo; and &ldquo;This is the price I pay to have this big title and paycheck,&rdquo; or &ldquo;He is just under a lot of stress.&rdquo; Just because they are the boss doesn&apos;t mean they can behave this way. Ask yourself if you would allow a colleague to treat you this way? Chances are you wouldn&apos;t.
                   </p>
 
-                  {/* Advertisement 1: JustAnswer Expert Chat Card matching Images 1 & 2 */}
+                  {/* Advertisement 1: JustAnswer Expert Chat Card matching Image 2 */}
                   <div className="max-w-[300px] mx-auto border border-slate-300 bg-white rounded-md overflow-hidden my-8 font-sans shadow-2xs">
-                    {/* Title Header ABOVE the image matching website */}
-                    <div className="bg-[#eafbf8] px-3.5 py-2.5 flex items-center justify-between border-b border-[#c8ebe5]">
-                      <h4 className="font-sans font-bold text-[13px] sm:text-[14px] text-[#27615b] my-0 leading-tight">
-                        Chat with an expert Online<br />Now
-                      </h4>
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[11px] font-bold text-[#00a4e4] tracking-tight">justanswer</span>
-                        <div className="flex items-center gap-0.5 text-[9px] text-[#00a4e4]">
-                          <span>▷</span>
-                          <span className="text-slate-400">⋮</span>
-                        </div>
-                      </div>
-                    </div>
-
                     <div className="relative w-full">
                       <img
                         src="/images/justanswer-expert.png"
                         alt="Chat with an expert Online Now"
                         className="w-full h-auto object-cover"
                       />
+                      {/* Google AdChoices icon in top right matching Image 2 */}
+                      <div className="absolute top-1 right-1 bg-white/90 px-1 py-0.5 rounded-xs flex items-center gap-0.5 text-[10px] text-slate-500 shadow-2xs">
+                        <span className="text-[9px] text-[#00a4e4]">▷</span>
+                        <span className="text-[9px]">ⓘ</span>
+                      </div>
                     </div>
 
-                    <div className="flex items-center justify-between text-xs px-3.5 py-2.5 text-slate-500 font-sans bg-white border-t border-slate-100">
-                      <span className="text-[12px] text-slate-500 font-medium">JustAnswer</span>
-                      <a href="#" className="text-[#1a73e8] hover:underline flex items-center font-normal text-[12px]">
-                        Open <span className="ml-1 text-[10px]">&gt;</span>
-                      </a>
+                    <div className="p-3 text-left">
+                      <h4 className="font-sans font-bold text-[14px] text-black my-0 leading-snug">
+                        Chat with an expert Online Now
+                      </h4>
+                      <div className="flex items-center justify-between text-xs pt-3 text-slate-500 font-sans">
+                        <span className="text-[12px] text-slate-500">JustAnswer</span>
+                        <a href="#" className="text-[#1a73e8] hover:underline flex items-center font-normal text-[12px]">
+                          Open <span className="ml-1 text-[10px]">&gt;</span>
+                        </a>
+                      </div>
                     </div>
                   </div>
 
@@ -498,35 +506,6 @@ export default function ArticleDetailPage() {
 
                   {/* Bottom Divider Line matching Image 5 */}
                   <div className="border-b border-slate-200 mt-8 mb-12" />
-                </>
-              ) : (
-                <>
-                  <p>
-                    In an increasingly crowded marketplace, products and services are rapidly becoming commoditized. When competitors can replicate feature sets within weeks, customer experience (CX) becomes the primary differentiator that protects pricing power and drives long-term customer lifetime value.
-                  </p>
-
-                  <p>
-                    Leading executives recognize that design is not merely a cosmetic layer applied at the final stage of product development. Instead, design-led companies integrate customer insights directly into business strategy, capital allocation, and executive decision-making.
-                  </p>
-
-                  {/* Section H2 */}
-                  <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#020618] pt-4 mb-3 tracking-tight">
-                    1. The Strategic Value of User-Centered Architecture
-                  </h2>
-
-                  <p>
-                    When leadership teams prioritize user-centered design, they systematically eliminate friction points across the entire customer lifecycle. From initial brand discovery to post-purchase support, every touchpoint reinforces brand trust and user satisfaction.
-                  </p>
-
-                  <blockquote className="my-8 border-l-4 border-[#1642D0] pl-6 py-4 bg-blue-50/50 rounded-r-xl text-lg sm:text-xl font-serif italic text-[#020618] leading-relaxed">
-                    &ldquo;Design is not just what it looks like and feels like. Design is how it works under real-world operational pressure.&rdquo;
-                  </blockquote>
-
-                  <p>
-                    Research across Fortune 500 enterprises indicates that organizations with top-quartile design scores generate 32 percentage points higher revenue growth and 56 percentage points higher total returns to shareholders compared to their industry peers.
-                  </p>
-                </>
-              )}
             </div>
 
           </article>
