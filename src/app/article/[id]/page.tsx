@@ -474,17 +474,15 @@ export default function ArticleDetailPage() {
                     </div>
                   </div>
 
-                  {/* 2. Horizontal In-Article Advertisement matching Image 1 */}
-                  <div className="my-8">
-                    <div className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-widest text-slate-400 text-center mb-2 select-none">
+                  {/* 2. Horizontal In-Article Advertisement matching Image 3 style */}
+                  <div className="my-8 max-w-[740px] mx-auto">
+                    <p className="text-[11px] font-sans font-normal uppercase tracking-wider text-[#777777] text-center mb-2.5 my-0 select-none">
                       ADVERTISEMENT
-                    </div>
-                    <div className="border border-slate-200/90 rounded-xs bg-white overflow-hidden shadow-2xs max-w-[740px] mx-auto">
-                      <img
-                        src="/images/intelligence-test-ad.png"
-                        alt="Intelligence Test: Test Your IQ in 3 Minutes"
-                        className="w-full h-auto object-contain block"
-                      />
+                    </p>
+                    <div className="w-full h-[120px] sm:h-[150px] bg-[#f9f9f9] border border-[#e5e7eb] flex items-center justify-center shadow-2xs">
+                      <span className="text-2xl sm:text-3xl font-sans text-[#777777] font-normal select-none">
+                        728 x 90
+                      </span>
                     </div>
                   </div>
 
@@ -528,30 +526,24 @@ export default function ArticleDetailPage() {
 
           {/* RIGHT SIDEBAR (Matching Images 1, 2, and 3) */}
           <aside className="lg:col-span-4 space-y-6 sticky top-24">
-            {/* 1. Top Right Sidebar Advertisement matching Image 2 */}
-            <div className="w-full max-w-[340px] mx-auto border border-slate-200/90 rounded-xs bg-white overflow-hidden shadow-2xs">
-              <img
-                src="/images/flexjobs-ad.png"
-                alt="FlexJobs: Fully Remote Companies Hiring"
-                className="w-full h-auto object-contain block"
-              />
+            {/* 1. Top Right Sidebar Advertisement (336 x 770) matching Image 3 */}
+            <div className="w-full max-w-[336px] mx-auto">
+              <p className="text-[11px] font-sans font-normal uppercase tracking-wider text-[#777777] text-center mb-2.5 my-0 select-none">
+                ADVERTISEMENT
+              </p>
+              <div className="w-full h-[600px] sm:h-[700px] lg:h-[770px] bg-[#f9f9f9] border border-[#e5e7eb] flex items-center justify-center shadow-2xs">
+                <span className="text-2xl sm:text-3xl font-sans text-[#777777] font-normal select-none">
+                  336 x 770
+                </span>
+              </div>
             </div>
 
             {/* Horizontal Line before Latest Article matching Image 1 */}
             <div className="border-t border-slate-200 pt-5 mt-6">
-              <div className="flex items-center justify-between mb-5">
+              <div className="mb-5">
                 <h3 className="text-2xl sm:text-[26px] font-serif font-bold text-[#020618] my-0 tracking-tight">
                   Latest Article
                 </h3>
-                <Link
-                  href="/topic/business-news"
-                  className="flex items-center gap-1.5 text-xs font-sans font-semibold text-slate-800 hover:text-[#1642D0] transition-colors"
-                >
-                  <span>See All</span>
-                  <span className="w-5 h-5 rounded-full bg-[#1642D0] text-white flex items-center justify-center text-[10px] font-bold">
-                    ➔
-                  </span>
-                </Link>
               </div>
 
               {/* 6 Latest Articles matching Image 1 */}
