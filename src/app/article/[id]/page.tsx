@@ -38,6 +38,57 @@ const SPONSORED_ITEMS = [
   },
 ];
 
+const RELATED_CONTENT_ITEMS = [
+  {
+    id: 'rel-1',
+    category: 'BUILDING A BUSINESS',
+    title: "An Introvert's Case for Skipping Small Talk and Building Real Connections",
+    author: 'AYTEKIN TANK',
+    imageUrl: '/images/related-introvert.png',
+    slug: '/article/an-introverts-case-for-skipping-small-talk',
+  },
+  {
+    id: 'rel-2',
+    category: 'BUILDING A BUSINESS',
+    title: "Not Every Boss Deserves a Thank-You Card. Here’s What to Do When Your Boss Is a Bully.",
+    author: 'MITA MALLICK',
+    imageUrl: '/images/related-boss-bully.png',
+    slug: '/article/not-every-boss-deserves-a-thank-you-card',
+  },
+  {
+    id: 'rel-3',
+    category: 'BUSINESS NEWS',
+    title: "He Leads a $240 Billion Food Giant. Here’s the Difficult Management Rule He Follows.",
+    author: 'SHERIN SHIBU',
+    imageUrl: '/images/related-food-giant.png',
+    slug: '/article/he-leads-a-240-billion-food-giant',
+  },
+  {
+    id: 'rel-4',
+    category: 'BUILDING A BUSINESS',
+    title: 'How This Trio Built a Multi-Million Dollar Supply Chain Powerhouse From a Garage',
+    author: 'JASON FEIFER',
+    imageUrl: '/images/related-founders-warehouse.png',
+    slug: '/article/how-this-trio-built-a-supply-chain-powerhouse',
+  },
+  {
+    id: 'rel-5',
+    category: 'LEADERSHIP',
+    title: "Taking the Leap: What Great Leaders Do When the Path Ahead Isn't Clear",
+    author: 'TERRY RICE',
+    imageUrl: '/images/related-jumping-cliff.png',
+    slug: '/article/taking-the-leap-what-great-leaders-do',
+  },
+  {
+    id: 'rel-6',
+    category: 'TECHNOLOGY',
+    title: 'AI Is Changing Your Company Culture Whether You Planned for It or Not',
+    author: 'AMANDA BREEN',
+    imageUrl: '/images/related-robot-hands.png',
+    slug: '/article/ai-is-changing-your-company-culture',
+  },
+];
+
 export default function ArticleDetailPage() {
   const params = useParams();
   const articleId = typeof params?.id === 'string' ? params.id : 'not-every-boss-deserves-a-thank-you-card';
@@ -569,26 +620,54 @@ export default function ArticleDetailPage() {
 
         </div>
 
-        {/* RELATED CONTENT GRID SECTION (Bottom of Page) */}
-        <section className="mt-16 pt-10 border-t-2 border-slate-200">
-          <div className="flex items-center justify-between mb-8">
+        {/* RELATED CONTENT GRID SECTION (Matching Reference Screenshot) */}
+        <section className="mt-14 pt-8 border-t border-slate-200">
+          <div className="mb-8">
             <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#020618] my-0">
               Related Content
             </h2>
-            <Link href="/" className="text-xs font-bold text-[#1642D0] uppercase tracking-wider hover:underline">
-              Back to Home →
-            </Link>
           </div>
 
-          {/* 8-Card Grid matching Homepage card design */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {relatedArticles.map((rel) => (
-              <ArticleCard
-                key={rel.id}
-                article={rel}
-                variant="featured"
-                showExcerpt={true}
-              />
+          {/* 3-Column Grid matching reference screenshot */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
+            {RELATED_CONTENT_ITEMS.map((item) => (
+              <article key={item.id} className="group flex flex-col">
+                <Link
+                  href={item.slug}
+                  className="block overflow-hidden rounded-xl border border-slate-200/60 shadow-2xs aspect-[16/9.5] bg-slate-100"
+                >
+                  <img
+                    src={item.imageUrl}
+                    alt={item.title}
+                    className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
+                  />
+                </Link>
+
+                <div className="pt-3.5 flex flex-col flex-1">
+                  <Link
+                    href={`/topic/${item.category.toLowerCase().replace(/\s+/g, '-')}`}
+                    className="text-xs font-sans font-bold uppercase tracking-wider text-[#1642D0] hover:underline mb-2 block"
+                  >
+                    {item.category}
+                  </Link>
+
+                  <h3 className="text-[17.5px] sm:text-[18.5px] font-serif font-bold text-[#020618] leading-[1.3] group-hover:text-[#1642D0] transition-colors mb-2.5">
+                    <Link href={item.slug} className="hover:underline">
+                      {item.title}
+                    </Link>
+                  </h3>
+
+                  <div className="mt-auto text-xs font-sans uppercase tracking-wider text-slate-500 font-medium">
+                    <span className="text-slate-400 font-semibold">BY </span>
+                    <Link
+                      href={`/author/${item.author.toLowerCase().replace(/\s+/g, '-')}`}
+                      className="text-[#1642D0] font-bold hover:underline"
+                    >
+                      {item.author}
+                    </Link>
+                  </div>
+                </div>
+              </article>
             ))}
           </div>
         </section>
