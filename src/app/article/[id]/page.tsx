@@ -334,78 +334,130 @@ export default function ArticleDetailPage() {
                     I remember rationalizing his behavior. &ldquo;Well, that&apos;s just how he is,&rdquo; and &ldquo;Maybe I&apos;m being too sensitive,&rdquo; and &ldquo;This is the price I pay to have this big title and paycheck,&rdquo; or &ldquo;He is just under a lot of stress.&rdquo; Just because they are the boss doesn&apos;t mean they can behave this way. Ask yourself if you would allow a colleague to treat you this way? Chances are you wouldn&apos;t.
                   </p>
 
-                  {/* Sponsored ETF Banner Unit matching Image 3 */}
-                  <div className="border border-slate-700/60 bg-white p-3 flex flex-col sm:flex-row items-center justify-between gap-4 my-8 rounded-xs shadow-2xs relative">
-                    <div className="absolute top-1.5 right-2 flex items-center text-slate-400 text-[10px]" title="AdChoices">
-                      <svg className="w-3.5 h-3.5 fill-slate-400" viewBox="0 0 24 24">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
-                      </svg>
-                    </div>
-
-                    <div className="flex items-center gap-3.5">
-                      <div className="w-[110px] h-[44px] overflow-hidden rounded-xs shrink-0 border border-slate-200">
-                        <img
-                          src="/images/sponsored-etf.png"
-                          alt="What is the latest on ETFs?"
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div>
-                        <h4 className="text-sm sm:text-[15px] font-sans font-bold text-[#020618] my-0 leading-snug">
-                          What is the latest on ETFs?
-                        </h4>
-                        <span className="text-[11px] font-sans text-slate-500 block pt-0.5">
-                          MarketViews
-                        </span>
+                  {/* Advertisement 1: JustAnswer Expert Chat Card matching Images 2 & 3 */}
+                  <div className="max-w-[300px] mx-auto border border-slate-300 bg-white overflow-hidden my-8 font-sans shadow-2xs">
+                    <div className="relative w-full">
+                      <img
+                        src="/images/justanswer-expert.png"
+                        alt="Chat with an expert Online Now"
+                        className="w-full h-auto object-cover"
+                      />
+                      {/* Google AdChoices icon in top right */}
+                      <div className="absolute top-1 right-1 bg-white/90 px-1 py-0.5 rounded-xs flex items-center gap-0.5 text-[10px] text-slate-500 shadow-2xs">
+                        <span className="text-[9px] text-[#00a4e4]">▷</span>
+                        <span className="text-[9px]">ⓘ</span>
                       </div>
                     </div>
 
-                    <a
-                      href="#"
-                      className="px-4 py-1.5 border border-black hover:bg-black hover:text-white text-xs font-sans font-medium text-black transition-colors rounded-none shrink-0"
-                    >
-                      Read More
+                    <div className="p-3 text-left">
+                      <h4 className="font-sans font-bold text-[14px] text-black my-0 leading-snug">
+                        Chat with an expert Online Now
+                      </h4>
+                      <div className="flex items-center justify-between text-xs pt-3 text-slate-500 font-sans">
+                        <span className="text-[12px] text-slate-500">JustAnswer</span>
+                        <a href="#" className="text-[#1a73e8] hover:underline flex items-center font-normal text-[12px]">
+                          Open <span className="ml-1 text-[10px]">&gt;</span>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 2 Heading matching Image 3 */}
+                  <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#020618] pt-6 mb-4 tracking-tight leading-tight">
+                    2. Document what&apos;s happening
+                  </h2>
+
+                  <p>
+                    I wish I had documented what was happening at work during this time. Some days I thought it would get better. Some days I thought I was imagining things. Some days I thought I could push through. Some days, I felt myself disappearing. My confidence was completely shaken.
+                  </p>
+
+                  <p>
+                    Document what&apos;s happening. As I discuss in my book,{' '}
+                    <a href="#" className="text-[#1642D0] hover:underline italic font-serif">
+                      The Devil Emails at Midnight: What Good Leaders Can Learn from Bad Bosses
                     </a>
-                  </div>
+                    , where there&apos;s smoke, there&apos;s fire. A boss who bullies you once will do it again and again, testing your boundaries. And if they are bullying you, chances are, they have bullied others too. Make sure to keep your{' '}
+                    <a href="#" className="text-[#1642D0] hover:underline font-normal">
+                      documentation
+                    </a>{' '}
+                    off your work laptop and save screenshots of texts, emails and Slack messages. Keep a record of the facts: when it happened, what happened, if anyone else was present and how it impacted your work. You will want to use this documentation in the future if you decide to contact an employment lawyer. And, for now, you can review what&apos;s happening and remind yourself that you are not the problem. You are, in fact, the target of bullying.
+                  </p>
 
-                  {/* Section 2 */}
-                  <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#020618] pt-4 mb-3 tracking-tight">
-                    2. Maintain an Objective, Off-System Log
+                  {/* Section 3 Heading matching Image 4 */}
+                  <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#020618] pt-6 mb-4 tracking-tight leading-tight">
+                    3. Know your rights
                   </h2>
 
                   <p>
-                    When dealing with a manager who gaslights or denies prior verbal commitments, documentation is your greatest shield. Immediately following contentious discussions, follow up with a calm, professional summary email: <em>&ldquo;To confirm our discussion this morning, the deliverables for Project Apex are due Thursday at 3 PM.&rdquo;</em>
+                    When your boss is the bully, speaking up can feel really risky. I wish I had known my rights and I wish I knew back then silence wasn&apos;t my only option. That&apos;s where{' '}
+                    <a href="#" className="text-[#1642D0] hover:underline font-normal">
+                      Lift Our Voices
+                    </a>
+                    , founded by Gretchen Carlson and Julie Roginsky, is an invaluable resource.
                   </p>
-
-                  {/* Actionable Checklist */}
-                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 my-6 font-sans">
-                    <h3 className="text-base font-bold font-sans text-[#020618] uppercase tracking-wider mb-3">
-                      Essential Self-Protection Strategies
-                    </h3>
-                    <ul className="space-y-3 text-sm text-slate-700">
-                      <li className="flex items-start gap-2.5">
-                        <span className="font-bold text-[#1642D0]">01.</span>
-                        <span><strong>Build Cross-Functional Champions:</strong> Ensure leaders in other divisions see your tangible work so your career is never dependent on one person&apos;s subjective review.</span>
-                      </li>
-                      <li className="flex items-start gap-2.5">
-                        <span className="font-bold text-[#1642D0]">02.</span>
-                        <span><strong>Document Factual Timelines:</strong> Keep a personal, timestamped log of project milestones, deliverables, and communication records on non-work personal storage.</span>
-                      </li>
-                      <li className="flex items-start gap-2.5">
-                        <span className="font-bold text-[#1642D0]">03.</span>
-                        <span><strong>Execute a Controlled Exit:</strong> Polish your credentials, activate executive recruiters, and negotiate your next chapter from a position of quiet strength.</span>
-                      </li>
-                    </ul>
-                  </div>
-
-                  {/* Section 3 */}
-                  <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#020618] pt-4 mb-3 tracking-tight">
-                    3. Plan Your Exit From a Position of Power
-                  </h2>
 
                   <p>
-                    Never let an abusive manager make you question your worth or competency. The strongest rebuttal to toxic leadership is thriving in an organization that values your talent, respects your boundaries, and rewards your contributions.
+                    Lift Our Voices is working to challenge workplace silencing mechanisms and help employees better understand their rights. It&apos;s{' '}
+                    <a href="#" className="text-[#1642D0] hover:underline font-normal">
+                      LOV Where You Work AI Tool
+                    </a>{' '}
+                    is a game-changing free resource designed to help employees make sense of employment agreements. The tool can help you identify provisions that would affect your ability to speak up. You can upload your employment contract and onboarding documents to this tool. It will help give you a better sense of what you signed and what rights and options are available to you if you are the target of workplace bullying. You may also decide to talk to trusted friends and mentors, and consult an employment attorney.
                   </p>
+
+                  {/* Advertisement 2: MarketViews ETF Card matching Images 4 & 5 */}
+                  <div className="max-w-[300px] mx-auto border border-black bg-white overflow-hidden my-8 font-sans">
+                    <div className="w-full border-b border-black">
+                      <img
+                        src="/images/etf-banner-display.png"
+                        alt="What is the latest on ETFs?"
+                        className="w-full h-auto object-cover"
+                      />
+                    </div>
+
+                    <div className="p-3 bg-white text-left">
+                      <h4 className="font-serif font-bold text-[14px] text-black my-0 leading-tight">
+                        What is the latest on ETFs?
+                      </h4>
+                      <span className="text-[11px] font-sans text-slate-500 block pt-0.5">
+                        MarketViews
+                      </span>
+                      <div className="flex items-center justify-between mt-3 pt-1">
+                        <div className="flex items-center text-slate-400 text-[11px]">
+                          <span className="border border-slate-400 rounded-full w-3.5 h-3.5 flex items-center justify-center text-[9px] font-serif">
+                            i
+                          </span>
+                        </div>
+                        <a
+                          href="#"
+                          className="px-3 py-1 border border-black text-black text-xs font-sans hover:bg-black hover:text-white transition-colors"
+                        >
+                          Read More
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Conclusion Paragraph matching Image 5 */}
+                  <p>
+                    For some, National Boss&apos;s Day is a day to thank the boss who makes work better. But if your boss is the reason you dread going to work, you don&apos;t owe them a card or a mug or a thank you. You owe yourself a plan. Understand and validate what you are experiencing. Document what&apos;s happening. Finally, map out your options. Remember that having a boss doesn&apos;t mean giving up{' '}
+                    <a href="#" className="text-[#1642D0] hover:underline font-normal">
+                      your voice
+                    </a>
+                    . It means learning when and how to use it.
+                  </p>
+
+                  {/* Subscription Callout Bar matching Image 5 */}
+                  <div className="border-l-[3.5px] border-[#1642D0] pl-4 py-1 my-8">
+                    <p className="text-[15px] sm:text-[16px] italic font-serif text-slate-700 m-0 leading-normal">
+                      Get unlimited access to our tools, playbooks and insights built to grow your business.{' '}
+                      <a href="#" className="text-[#1642D0] hover:underline not-italic font-sans font-semibold">
+                        Subscribe now.
+                      </a>
+                    </p>
+                  </div>
+
+                  {/* Bottom Divider Line matching Image 5 */}
+                  <div className="border-b border-slate-200 mt-8 mb-12" />
                 </>
               ) : (
                 <>
@@ -514,7 +566,7 @@ export default function ArticleDetailPage() {
                       href="/topic/business-news"
                       className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors"
                     >
-                      AI Is Changing Your Company Culture Whether You Planned for It or Not. Here’s How to Shape What Happens Next.
+                      He Leads a $240 Billion Food Giant. Here&apos;s the Difficult Management Rule He Follows.
                     </Link>
                   </h4>
                   <div className="flex items-center gap-1.5 text-[11px] font-sans uppercase tracking-wider text-slate-500 mt-1.5 font-medium">
