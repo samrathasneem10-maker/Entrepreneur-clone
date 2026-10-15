@@ -437,50 +437,90 @@ export default function ArticleDetailPage() {
                     </p>
                   </div>
 
-                  {/* Bottom Divider Line matching Image 5 */}
-                  <div className="border-b border-slate-200 mt-8 mb-10" />
+                  {/* Divider line before Author Bio matching Image 1 */}
+                  <div className="border-b border-slate-200 mt-8 mb-8" />
 
-                  {/* Comments Section (linked to COMMENT button) */}
-                  <section id="comments-section" className="pt-2 mb-10">
-                    <div className="flex items-center gap-2.5 mb-5 pb-3 border-b border-slate-200">
-                      <svg className="w-5 h-5 fill-[#314158]" viewBox="0 0 24 24">
-                        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
-                      </svg>
-                      <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#020618] my-0">
-                        Comments
-                      </h3>
-                      <span className="text-xs font-sans font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
-                        0
-                      </span>
-                    </div>
-
-                    {/* Comment Input Box */}
-                    <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mb-6">
-                      <label htmlFor="article-comment" className="block text-xs font-bold uppercase tracking-wider text-slate-700 font-sans mb-2">
-                        Join the Discussion
-                      </label>
-                      <textarea
-                        id="article-comment"
-                        rows={3}
-                        placeholder="What are your thoughts on this story? Leave a comment..."
-                        className="w-full bg-white border border-slate-200 rounded-md p-3 text-sm font-sans focus:outline-hidden focus:ring-2 focus:ring-[#1642D0] focus:border-transparent resize-y"
+                  {/* 1. Author Bio Card matching Image 1 */}
+                  <div className="flex items-start gap-4 sm:gap-5 pb-6 mb-6">
+                    <div className="w-14 h-14 rounded-full overflow-hidden shrink-0 border border-slate-200 shadow-2xs">
+                      <img
+                        src="/images/author-sherin.png"
+                        alt="Sherin Shibu"
+                        className="w-full h-full object-cover"
                       />
-                      <div className="flex items-center justify-between mt-3">
-                        <span className="text-xs text-slate-400 font-sans">
-                          Sign in to submit your comment
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h4 className="font-serif font-bold text-base sm:text-lg text-[#020618] my-0 leading-tight">
+                          Sherin Shibu
+                        </h4>
+                        <span className="text-slate-400 font-normal select-none">•</span>
+                        <span className="text-slate-600 font-serif text-sm">
+                          News Reporter
                         </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs font-sans font-semibold text-[#15803d] mt-1">
+                        <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
+                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                        </svg>
+                        <span>Entrepreneur Staff</span>
+                      </div>
+                      <p className="text-xs sm:text-[13.5px] font-serif text-slate-600 leading-relaxed my-0 pt-1.5">
+                        Sherin Shibu is a business news reporter at Entrepreneur.com. She previously worked for PCMag, Business...{' '}
+                        <a href="#" className="text-[#1642D0] underline underline-offset-2 hover:text-[#0d2d8d]">
+                          Read more
+                        </a>
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* 2. Horizontal In-Article Advertisement matching Image 1 */}
+                  <div className="my-8">
+                    <div className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-widest text-slate-400 text-center mb-2 select-none">
+                      ADVERTISEMENT
+                    </div>
+                    <div className="border border-slate-200/90 rounded-xs bg-white overflow-hidden shadow-2xs max-w-[740px] mx-auto">
+                      <img
+                        src="/images/intelligence-test-ad.png"
+                        alt="Intelligence Test: Test Your IQ in 3 Minutes"
+                        className="w-full h-auto object-contain block"
+                      />
+                    </div>
+                  </div>
+
+                  {/* 3. Join the Conversation Section matching Image 1 & Image 2 */}
+                  <section id="comments-section" className="pt-4 mb-10">
+                    <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#020618] my-0">
+                      Join the Conversation
+                    </h3>
+                    <div className="border-b border-slate-200 mt-4 mb-4" />
+                    <p className="text-xs sm:text-sm font-serif text-slate-600 mt-2 mb-1">
+                      Leave a comment. Be kind. Critique ideas, not people.
+                    </p>
+                    <p className="text-xs sm:text-sm font-serif text-slate-600 m-0">
+                      Read our{' '}
+                      <a href="#" className="text-[#1642D0] underline underline-offset-2 hover:text-[#0d2d8d]">
+                        community guidelines
+                      </a>
+                    </p>
+
+                    {/* Comment Textarea and Sign in to post Button matching Image 2 */}
+                    <div className="mt-5">
+                      <textarea
+                        rows={4}
+                        placeholder="What do you think?"
+                        className="w-full bg-[#f9fafb] border border-slate-200 rounded-md p-3 text-sm font-sans placeholder-slate-400 focus:outline-hidden focus:ring-1 focus:ring-[#1642D0] focus:border-[#1642D0] resize-y"
+                      />
+                      <div className="flex justify-end mt-3">
                         <button
                           type="button"
-                          className="bg-[#1642D0] hover:bg-[#0d2d8d] text-white font-sans text-xs font-bold uppercase tracking-wider px-5 py-2 rounded-md transition-colors cursor-pointer"
+                          className="bg-[#1642D0] hover:bg-[#0d2d8d] text-white font-sans text-xs sm:text-[13px] font-bold px-5 py-2.5 rounded-md transition-colors cursor-pointer"
                         >
-                          Post Comment
+                          Sign in to post
                         </button>
                       </div>
                     </div>
-
-                    <div className="text-center py-6 text-slate-400 font-sans text-sm border border-dashed border-slate-200 rounded-lg">
-                      No comments yet. Be the first to share your perspective!
-                    </div>
+                    <div className="border-b border-slate-200 mt-6" />
                   </section>
             </div>
 
