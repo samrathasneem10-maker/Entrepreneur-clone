@@ -293,28 +293,45 @@ export default function ArticleDetailPage() {
               </div>
             </div>
 
-            {/* Rich Editorial Body Content matching Images 1, 2, and 3 */}
-            <div className="prose prose-slate max-w-none space-y-6 text-slate-800 text-base sm:text-lg leading-relaxed font-serif pt-2">
+            {/* Rich Editorial Body Content matching Images 1, 2, 3, and newly uploaded 3-paragraph reference */}
+            <div className="max-w-none space-y-7 text-[#2b3445] font-['Georgia',Cambria,'Times_New_Roman',serif] text-[18px] lg:text-[18.5px] leading-[32px] lg:leading-[33px] pt-2">
               {isBossArticle ? (
                 <>
-                  <p>
-                    I still remember standing in the kitchen area at work, being pressured to sign that thank you card. It was{' '}
-                    <a href="#" className="text-[#1642D0] hover:underline font-normal">
+                  <p className="m-0">
+                    I still remember standing in the kitchen area at work, being pressured to sign that thank you<br className="hidden xl:inline" />{' '}
+                    card. It was{' '}
+                    <a
+                      href="#"
+                      className="text-[#1642D0] underline underline-offset-[3px] decoration-1 decoration-[#1642D0] hover:text-[#0d2d8d] font-normal"
+                    >
                       National Boss’s Day
                     </a>{' '}
-                    and my boss’s executive assistant had a card she wanted us to all sign. It was to thank our boss for being a great boss. The front of the card said, “The world needs more bosses like you!” I felt sick to my stomach, barely scrawling my name inside. The irony was that this boss was one of the worst bosses I had ever worked for.
+                    and my boss’s executive assistant had a card she wanted us to<br className="hidden xl:inline" />{' '}
+                    all sign. It was to thank our boss for being a great boss. The front of the card said, “The world<br className="hidden xl:inline" />{' '}
+                    needs more bosses like you!” I felt sick to my stomach, barely scrawling my name inside. The<br className="hidden xl:inline" />{' '}
+                    irony was that this boss was one of the worst bosses I had ever worked for.
                   </p>
 
-                  <p>
+                  <p className="m-0">
                     My former boss was the{' '}
-                    <a href="#" className="text-[#1642D0] hover:underline font-normal">
+                    <a
+                      href="#"
+                      className="text-[#1642D0] underline underline-offset-[3px] decoration-1 decoration-[#1642D0] hover:text-[#0d2d8d] font-normal"
+                    >
                       bully boss
                     </a>
-                    . He reminded me of the playground bully who teased and taunted and mocked others. This bully boss also publicly and privately humiliated me. He called me a rat. He told me no one wanted me on their team but only he took a chance on me. When he found out another leader at the company wanted me to rotate onto their team, he screamed at me and said I could leave his team only when he said I could.
+                    . He reminded me of the playground bully who teased and<br className="hidden xl:inline" />{' '}
+                    taunted and mocked others. This bully boss also publicly and privately humiliated me. He called<br className="hidden xl:inline" />{' '}
+                    me a rat. He told me no one wanted me on their team but only he took a chance on me. When<br className="hidden xl:inline" />{' '}
+                    he found out another leader at the company wanted me to rotate onto their team, he screamed<br className="hidden xl:inline" />{' '}
+                    at me and said I could leave his team only when he said I could.
                   </p>
 
-                  <p>
-                    As some of us celebrate and honor National Boss’s Day, it’s an important moment to remember that not everyone has a good relationship with their boss. Some of us are struggling with a boss who undermines us, makes fun of us, and even threatens to fire us. For anyone struggling with a bully boss, here are three important steps I wish I had taken back then.
+                  <p className="m-0">
+                    As some of us celebrate and honor National Boss’s Day, it’s an important moment to remember<br className="hidden xl:inline" />{' '}
+                    that not everyone has a good relationship with their boss. Some of us are struggling with a boss<br className="hidden xl:inline" />{' '}
+                    who undermines us, makes fun of us, and even threatens to fire us. For anyone struggling with a<br className="hidden xl:inline" />{' '}
+                    bully boss, here are three important steps I wish I had taken back then.
                   </p>
 
                   {/* Section 1 Heading matching Images 2 & 3 */}
@@ -322,15 +339,18 @@ export default function ArticleDetailPage() {
                     1. Don&apos;t normalize the behavior just because it&apos;s your boss
                   </h2>
 
-                  <p>
+                  <p className="m-0">
                     When you are working for someone who is a bully, we may use{' '}
-                    <a href="#" className="text-[#1642D0] hover:underline font-normal">
+                    <a
+                      href="#"
+                      className="text-[#1642D0] underline underline-offset-[3px] decoration-1 decoration-[#1642D0] hover:text-[#0d2d8d] font-normal"
+                    >
                       power dynamics
                     </a>{' '}
                     as an excuse. We tolerate things from a boss that we wouldn&apos;t tolerate from a colleague. And of course, we may be scared of losing our jobs, so we normalize this behavior. If a bully boss shuts you down, calls you names and makes inappropriate jokes, and consistently crosses boundaries, this isn&apos;t them just having a bad day. This is a pattern of bad, bullying behavior.
                   </p>
 
-                  <p>
+                  <p className="m-0">
                     I remember rationalizing his behavior. &ldquo;Well, that&apos;s just how he is,&rdquo; and &ldquo;Maybe I&apos;m being too sensitive,&rdquo; and &ldquo;This is the price I pay to have this big title and paycheck,&rdquo; or &ldquo;He is just under a lot of stress.&rdquo; Just because they are the boss doesn&apos;t mean they can behave this way. Ask yourself if you would allow a colleague to treat you this way? Chances are you wouldn&apos;t.
                   </p>
 
@@ -355,7 +375,7 @@ export default function ArticleDetailPage() {
                       </h4>
                       <div className="flex items-center justify-between text-xs pt-3 text-slate-500 font-sans">
                         <span className="text-[12px] text-slate-500">JustAnswer</span>
-                        <a href="#" className="text-[#1a73e8] hover:underline flex items-center font-normal text-[12px]">
+                        <a href="#" className="text-[#1a73e8] underline hover:text-[#112d99] flex items-center font-normal text-[12px]">
                           Open <span className="ml-1 text-[10px]">&gt;</span>
                         </a>
                       </div>
@@ -367,17 +387,23 @@ export default function ArticleDetailPage() {
                     2. Document what&apos;s happening
                   </h2>
 
-                  <p>
+                  <p className="m-0">
                     I wish I had documented what was happening at work during this time. Some days I thought it would get better. Some days I thought I was imagining things. Some days I thought I could push through. Some days, I felt myself disappearing. My confidence was completely shaken.
                   </p>
 
-                  <p>
+                  <p className="m-0">
                     Document what&apos;s happening. As I discuss in my book,{' '}
-                    <a href="#" className="text-[#1642D0] hover:underline italic font-serif">
+                    <a
+                      href="#"
+                      className="text-[#1642D0] underline underline-offset-[3px] decoration-1 decoration-[#1642D0] hover:text-[#0d2d8d] italic font-serif"
+                    >
                       The Devil Emails at Midnight: What Good Leaders Can Learn from Bad Bosses
                     </a>
                     , where there&apos;s smoke, there&apos;s fire. A boss who bullies you once will do it again and again, testing your boundaries. And if they are bullying you, chances are, they have bullied others too. Make sure to keep your{' '}
-                    <a href="#" className="text-[#1642D0] hover:underline font-normal">
+                    <a
+                      href="#"
+                      className="text-[#1642D0] underline underline-offset-[3px] decoration-1 decoration-[#1642D0] hover:text-[#0d2d8d] font-normal"
+                    >
                       documentation
                     </a>{' '}
                     off your work laptop and save screenshots of texts, emails and Slack messages. Keep a record of the facts: when it happened, what happened, if anyone else was present and how it impacted your work. You will want to use this documentation in the future if you decide to contact an employment lawyer. And, for now, you can review what&apos;s happening and remind yourself that you are not the problem. You are, in fact, the target of bullying.
@@ -388,17 +414,23 @@ export default function ArticleDetailPage() {
                     3. Know your rights
                   </h2>
 
-                  <p>
+                  <p className="m-0">
                     When your boss is the bully, speaking up can feel really risky. I wish I had known my rights and I wish I knew back then silence wasn&apos;t my only option. That&apos;s where{' '}
-                    <a href="#" className="text-[#1642D0] hover:underline font-normal">
+                    <a
+                      href="#"
+                      className="text-[#1642D0] underline underline-offset-[3px] decoration-1 decoration-[#1642D0] hover:text-[#0d2d8d] font-normal"
+                    >
                       Lift Our Voices
                     </a>
                     , founded by Gretchen Carlson and Julie Roginsky, is an invaluable resource.
                   </p>
 
-                  <p>
+                  <p className="m-0">
                     Lift Our Voices is working to challenge workplace silencing mechanisms and help employees better understand their rights. It&apos;s{' '}
-                    <a href="#" className="text-[#1642D0] hover:underline font-normal">
+                    <a
+                      href="#"
+                      className="text-[#1642D0] underline underline-offset-[3px] decoration-1 decoration-[#1642D0] hover:text-[#0d2d8d] font-normal"
+                    >
                       LOV Where You Work AI Tool
                     </a>{' '}
                     is a game-changing free resource designed to help employees make sense of employment agreements. The tool can help you identify provisions that would affect your ability to speak up. You can upload your employment contract and onboarding documents to this tool. It will help give you a better sense of what you signed and what rights and options are available to you if you are the target of workplace bullying. You may also decide to talk to trusted friends and mentors, and consult an employment attorney.
@@ -438,9 +470,12 @@ export default function ArticleDetailPage() {
                   </div>
 
                   {/* Conclusion Paragraph matching Image 5 */}
-                  <p>
+                  <p className="m-0">
                     For some, National Boss&apos;s Day is a day to thank the boss who makes work better. But if your boss is the reason you dread going to work, you don&apos;t owe them a card or a mug or a thank you. You owe yourself a plan. Understand and validate what you are experiencing. Document what&apos;s happening. Finally, map out your options. Remember that having a boss doesn&apos;t mean giving up{' '}
-                    <a href="#" className="text-[#1642D0] hover:underline font-normal">
+                    <a
+                      href="#"
+                      className="text-[#1642D0] underline underline-offset-[3px] decoration-1 decoration-[#1642D0] hover:text-[#0d2d8d] font-normal"
+                    >
                       your voice
                     </a>
                     . It means learning when and how to use it.
@@ -448,9 +483,9 @@ export default function ArticleDetailPage() {
 
                   {/* Subscription Callout Bar matching Image 5 */}
                   <div className="border-l-[3.5px] border-[#1642D0] pl-4 py-1 my-8">
-                    <p className="text-[15px] sm:text-[16px] italic font-serif text-slate-700 m-0 leading-normal">
+                    <p className="text-[15px] sm:text-[16px] italic font-['Georgia',serif] text-slate-700 m-0 leading-normal">
                       Get unlimited access to our tools, playbooks and insights built to grow your business.{' '}
-                      <a href="#" className="text-[#1642D0] hover:underline not-italic font-sans font-semibold">
+                      <a href="#" className="text-[#1642D0] underline underline-offset-[3px] not-italic font-sans font-semibold hover:text-[#0d2d8d]">
                         Subscribe now.
                       </a>
                     </p>
