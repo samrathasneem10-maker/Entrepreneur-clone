@@ -100,7 +100,7 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* 1st DASHED LINE */}
-        <div className="w-full border-t border-dashed border-white/20"></div>
+        <div className="w-full border-t-2 border-dashed border-white/60"></div>
 
         {/* MIDDLE SECTION: 4 Directory Link Columns */}
         <div className="py-8 sm:py-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 lg:gap-10 text-left">
@@ -120,7 +120,7 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* 2nd DASHED LINE */}
-        <div className="w-full border-t border-dashed border-white/20"></div>
+        <div className="w-full border-t-2 border-dashed border-white/60"></div>
 
         {/* THIRD SECTION: Social Icons, Copyright & USAID Disclaimer */}
         <div className="py-8 sm:py-9 space-y-6">
@@ -177,7 +177,7 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* 3rd DASHED LINE */}
-        <div className="w-full border-t border-dashed border-white/20"></div>
+        <div className="w-full border-t-2 border-dashed border-white/60"></div>
 
         {/* BOTTOM SECTION: International Editions */}
         <div className="py-6 sm:py-7 flex flex-wrap items-center justify-center gap-x-2.5 sm:gap-x-3.5 gap-y-2 text-xs sm:text-[13px] font-bold font-sans text-white">
