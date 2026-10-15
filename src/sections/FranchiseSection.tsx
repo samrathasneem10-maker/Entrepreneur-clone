@@ -129,48 +129,31 @@ export const FranchiseSection: React.FC = () => {
         <div className="w-full bg-[#193cb8] rounded-2xl p-6 sm:p-8 lg:p-10 shadow-md text-white">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             
-            {/* Left Side: Logo, Title, Year double-lines, Description & Explore Button */}
+            {/* Left Side: Authentic Logo Lockup, Description & Explore Button */}
             <div className="lg:col-span-5 flex flex-col items-center text-center justify-center">
-              {/* Entrepreneur Italic Serif Logo */}
-              <span className="font-serif italic text-3xl sm:text-4xl text-white font-normal block leading-tight">
-                Entrepreneur
-              </span>
-
-              {/* Bold Uppercase Titles */}
-              <div className="text-2xl sm:text-3xl font-black font-sans uppercase tracking-tight text-white mt-1 leading-none">
-                TOP FRANCHISE
-              </div>
-              <div className="text-2xl sm:text-3xl font-black font-sans uppercase tracking-tight text-white mt-1 leading-none">
-                SUPPLIERS
+              {/* Exact High-Resolution Logo Lockup: Entrepreneur + TOP FRANCHISE SUPPLIERS ═ 2026 ═ */}
+              <div className="w-full max-w-[270px] sm:max-w-[290px] mx-auto mb-2 flex items-center justify-center">
+                <img
+                  src="/images/top-franchise-suppliers-logo.png"
+                  alt="Entrepreneur Top Franchise Suppliers 2026"
+                  className="w-full h-auto object-contain block select-none pointer-events-none"
+                />
               </div>
 
-              {/* Double Line ═ 2026 ═ */}
-              <div className="flex items-center justify-center gap-2.5 my-3 text-white">
-                <div className="flex flex-col gap-0.5 w-7 sm:w-9">
-                  <div className="h-[1.5px] bg-white w-full"></div>
-                  <div className="h-[1.5px] bg-white w-full"></div>
-                </div>
-                <span className="font-sans font-bold text-sm sm:text-base tracking-widest leading-none">
-                  2026
-                </span>
-                <div className="flex flex-col gap-0.5 w-7 sm:w-9">
-                  <div className="h-[1.5px] bg-white w-full"></div>
-                  <div className="h-[1.5px] bg-white w-full"></div>
-                </div>
-              </div>
-
-              {/* Descriptive text */}
-              <p className="text-white text-xs sm:text-[13px] font-serif leading-relaxed text-center max-w-xs mx-auto mb-5 opacity-95">
-                Explore the companies helping franchise systems operate, grow, and scale.
+              {/* Exact 3-line formatted serif description */}
+              <p className="text-white text-xs sm:text-[13.5px] font-serif leading-relaxed text-center max-w-[270px] mx-auto mb-5 text-white/95">
+                Explore the companies helping<br />
+                franchise systems operate, grow, and<br />
+                scale.
               </p>
 
               {/* Explore the list button: White by default, Black on cursor hover */}
               <Link
                 href="/topic/franchises"
-                className="px-6 py-2.5 rounded-lg bg-white text-[#020618] hover:bg-[#020618] hover:text-white font-bold text-xs sm:text-sm font-sans transition-all duration-200 inline-flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
+                className="px-6 py-2.5 rounded-md bg-white text-[#020618] hover:bg-[#020618] hover:text-white font-bold text-xs sm:text-[13px] font-sans transition-all duration-200 inline-flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
               >
                 <span>Explore the list</span>
-                <span className="text-base leading-none">→</span>
+                <span className="text-sm font-bold leading-none">→</span>
               </Link>
             </div>
 
@@ -184,10 +167,12 @@ export const FranchiseSection: React.FC = () => {
                     className="bg-[#1c398e] hover:bg-[#152e72] border border-white/10 rounded-xl p-4 sm:p-5 flex items-center justify-between transition-all duration-200 group cursor-pointer shadow-xs"
                   >
                     <div>
+                      {/* Bold Sans-serif Title */}
                       <h4 className="font-sans font-bold text-base sm:text-[17px] text-white leading-tight m-0 group-hover:underline">
                         {cat.title}
                       </h4>
-                      <p className="font-serif italic text-xs sm:text-[13px] text-blue-100/90 mt-1 mb-0">
+                      {/* Sans-serif Italic for ranked count (matching exact reference font family) */}
+                      <p className="font-sans italic text-xs sm:text-[13px] text-white/90 mt-1.5 mb-0">
                         {cat.ranked}
                       </p>
                     </div>
