@@ -198,67 +198,37 @@ export default function ArticleDetailPage() {
               />
             </div>
 
-            {/* Text after horizontal line matching Image 1: Opinions disclaimer */}
-            <p className="text-xs italic text-slate-500 font-sans my-1">
-              Opinions expressed by Entrepreneur contributors are their own.
-            </p>
-
-            {/* Audio box: Listen to this post matching Image 1 & 2 */}
-            <div
-              onClick={() => setIsPlaying(!isPlaying)}
-              className="w-full border border-slate-200/90 rounded-md bg-white hover:bg-slate-50/80 px-4 py-2.5 flex items-center justify-between transition-colors cursor-pointer my-4 shadow-2xs"
-            >
-              <div className="flex items-center gap-3">
-                <span className="w-6 h-6 rounded-full bg-[#0b1329] text-white flex items-center justify-center shrink-0">
-                  {isPlaying ? (
-                    <Pause className="w-3 h-3 fill-current" />
-                  ) : (
-                    <Play className="w-3 h-3 fill-current ml-0.5" />
-                  )}
-                </span>
-                <span className="text-sm font-sans font-medium text-[#0b1329]">
-                  {isPlaying ? 'Playing audio narration (0:45 / 4:18)...' : 'Listen to this post'}
-                </span>
-              </div>
-              {isPlaying && (
-                <div className="flex items-center gap-1.5 text-xs text-[#1642D0] font-sans font-semibold">
-                  <Volume2 className="w-4 h-4 animate-pulse" />
-                  <span className="hidden sm:inline">Playing</span>
-                </div>
-              )}
+            {/* Image caption and opinions disclaimer matching screenshot */}
+            <div className="flex items-center justify-between text-xs text-slate-500 font-sans pt-1 pb-2">
+              <span className="italic">Opinions expressed by Entrepreneur contributors are their own.</span>
+              <span className="text-slate-400 font-sans text-[11px]">kundoy | Getty Images</span>
             </div>
 
-            {/* Key Takeaways Section matching Image 2 */}
-            <div className="pt-2 pb-2">
+            {/* Key Takeaways Section matching reference screenshot */}
+            <div className="pt-2 pb-1">
               <h2 className="text-2xl sm:text-[26px] font-serif font-bold text-[#020618] my-0">
                 Key Takeaways
               </h2>
-              <ul className="mt-4 space-y-4 text-base sm:text-[16.5px] font-serif text-slate-800 leading-relaxed list-none p-0">
+              <ul className="mt-4 space-y-3 text-base sm:text-[16.5px] font-serif text-slate-800 leading-relaxed list-none p-0">
                 <li className="flex items-start gap-3">
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-2.5 shrink-0 block" />
                   <span>
-                    When you are working for someone who is a bully, we may use power dynamics as an excuse — but normalizing this behavior is part of the problem. Call out bad behavior when you see or experience it.
+                    Side hustles can help you pay off debt, save up an emergency fund and more.
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-2.5 shrink-0 block" />
                   <span>
-                    Keep a record of the facts: when it happened, what happened, if anyone else was present and how it impacted your work. You will want to use this documentation in the future if you decide to contact an employment lawyer.
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-2.5 shrink-0 block" />
-                  <span>
-                    When your boss is the bully, speaking up can feel really risky, but there are protections in place for employees for this reason.
+                    No matter where your interests or skill sets lie, there&apos;s probably a gig for you.
                   </span>
                 </li>
               </ul>
             </div>
 
-            {/* Underline after Key Takeaways matching Image 1 */}
+            {/* Underline after Key Takeaways matching screenshot */}
             <div className="border-b border-slate-200 mt-6 mb-7" />
 
-            {/* Franchise Assessment Card matching Image 1 & 2 */}
+            {/* Rectangle Box: Entrepreneur Virtual Event Card matching reference screenshot */}
             <div className="bg-[#f8f9fa] border border-slate-200/90 rounded-xl p-5 sm:p-7 mb-7 shadow-2xs">
               {/* Header with Entrepreneur logo icon */}
               <div className="flex items-center gap-2 mb-2">
@@ -266,109 +236,53 @@ export default function ArticleDetailPage() {
                   E
                 </span>
                 <span className="text-xs font-sans font-bold uppercase tracking-wider text-slate-500">
-                  FRANCHISE ASSESSMENT
+                  ENTREPRENEUR VIRTUAL EVENT
                 </span>
               </div>
 
-              {/* Straight line inside card spanning left text column matching Image 1 */}
-              <div className="w-full md:w-[58%] border-b border-slate-900/90 mt-2 mb-5" />
+              {/* Straight line inside card spanning left text column matching reference screenshot */}
+              <div className="w-full md:w-[60%] border-b border-slate-200/90 mt-2.5 mb-5" />
 
               {/* 2-Column content */}
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
                 {/* Left Side */}
-                <div className="md:col-span-7 space-y-3">
-                  <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#020618] leading-[1.22] my-0">
-                    Your <span className="text-[#990000]">top franchise matches</span> — filtered by budget, open near you, ranked by fit.
+                <div className="md:col-span-8 space-y-3">
+                  <h3 className="text-xl sm:text-[23px] font-sans font-bold text-[#020618] leading-[1.25] my-0">
+                    Small Audience, Big Sales: How to Make Money With Social Media
                   </h3>
-                  <p className="text-sm sm:text-[14.5px] font-sans text-slate-600 leading-relaxed my-0 pt-1">
-                    Answer 5 questions. We search 3,000+ franchises from the Franchise 500 and show you only the ones that match. Free.
+                  <p className="text-sm sm:text-[14.5px] font-serif text-slate-700 leading-relaxed my-0 pt-1">
+                    Join our free event and learn from an expert who&apos;s helped 100+ creators turn social media into real revenue.
                   </p>
-                  <div className="pt-2">
-                    <Link
-                      href="/topic/franchises"
-                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#990000] hover:bg-[#800000] text-white text-xs sm:text-[13px] font-sans font-bold rounded-[3px] shadow-2xs transition-colors cursor-pointer"
+                  <div className="pt-3">
+                    <a
+                      href="#"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#1642D0] hover:bg-[#1236a8] text-white text-xs sm:text-[13px] font-sans font-bold rounded-[3px] shadow-2xs transition-colors cursor-pointer"
                     >
-                      Find my franchise →
-                    </Link>
+                      Register for Free
+                    </a>
                   </div>
                 </div>
 
-                {/* Right Side Dark Mockup */}
-                <div className="md:col-span-5 bg-[#0d0d0d] p-3 rounded-lg border border-neutral-800 space-y-2">
-                  {/* Row 1: Jersey Mike's */}
-                  <div className="border border-red-900/80 bg-[#170a0a] rounded-md p-2 flex items-center justify-between">
-                    <div>
-                      <div className="text-xs font-bold text-white leading-tight font-sans">Jersey Mike&apos;s Subs</div>
-                      <div className="text-[10px] text-neutral-400 font-sans mt-0.5">#1 Franchise 500 • $235k - $760k</div>
-                    </div>
-                    <span className="bg-red-950/90 text-red-400 border border-red-800/60 text-[9.5px] font-medium px-2 py-0.5 rounded-full shrink-0">
-                      #1 match for you
-                    </span>
-                  </div>
-
-                  {/* Row 2: Anytime Fitness */}
-                  <div className="border border-neutral-800 bg-[#161616] rounded-md p-2 flex items-center justify-between">
-                    <div>
-                      <div className="text-xs font-bold text-white leading-tight font-sans">Anytime Fitness</div>
-                      <div className="text-[10px] text-neutral-400 font-sans mt-0.5">#4 Franchise 500 • $280k - $560k</div>
-                    </div>
-                    <span className="bg-emerald-950/90 text-emerald-400 border border-emerald-800/60 text-[9.5px] font-medium px-2 py-0.5 rounded-full shrink-0">
-                      3 territories open
-                    </span>
-                  </div>
-
-                  {/* Row 3: The UPS Store */}
-                  <div className="border border-neutral-800 bg-[#161616] rounded-md p-2 flex items-center justify-between">
-                    <div>
-                      <div className="text-xs font-bold text-white leading-tight font-sans">The UPS Store</div>
-                      <div className="text-[10px] text-neutral-400 font-sans mt-0.5">#7 Franchise 500 • $138k - $471k</div>
-                    </div>
-                    <span className="bg-emerald-950/90 text-emerald-400 border border-emerald-800/60 text-[9.5px] font-medium px-2 py-0.5 rounded-full shrink-0">
-                      See units
-                    </span>
-                  </div>
+                {/* Right Side Event Speaker Card */}
+                <div className="md:col-span-4 flex justify-center md:justify-end">
+                  <img
+                    src="/images/event-speaker-card.png"
+                    alt="Natalie Ruiz • CEO of AnswerConnect - Event Speaker"
+                    className="w-[155px] sm:w-[170px] h-auto object-contain rounded-lg shadow-xs"
+                  />
                 </div>
               </div>
             </div>
 
-            {/* Rich Editorial Body Content matching Images 1, 2, 3, and newly uploaded 3-paragraph reference */}
+            {/* Rich Editorial Body Content matching reference screenshot */}
             <div className="max-w-none space-y-7 text-[#2b3445] font-['Georgia',Cambria,'Times_New_Roman',serif] text-[18px] lg:text-[18.5px] leading-[32px] lg:leading-[33px] pt-2">
               <p className="m-0">
-                    I still remember standing in the kitchen area at work, being pressured to sign that thank you<br className="hidden xl:inline" />{' '}
-                    card. It was{' '}
-                    <a
-                      href="#"
-                      className="text-[#1642D0] underline underline-offset-[3px] decoration-1 decoration-[#1642D0] hover:text-[#0d2d8d] font-normal"
-                    >
-                      National Boss’s Day
-                    </a>{' '}
-                    and my boss’s executive assistant had a card she wanted us to<br className="hidden xl:inline" />{' '}
-                    all sign. It was to thank our boss for being a great boss. The front of the card said, “The world<br className="hidden xl:inline" />{' '}
-                    needs more bosses like you!” I felt sick to my stomach, barely scrawling my name inside. The<br className="hidden xl:inline" />{' '}
-                    irony was that this boss was one of the worst bosses I had ever worked for.
-                  </p>
+                Are you looking for ways to make extra money on the side while maintaining your day job? You&apos;re not alone. Whether it&apos;s to pay off debt, save up an emergency fund or simply have a little more money in your pocket, there are plenty of opportunities available to help you supplement your income.
+              </p>
 
-                  <p className="m-0">
-                    My former boss was the{' '}
-                    <a
-                      href="#"
-                      className="text-[#1642D0] underline underline-offset-[3px] decoration-1 decoration-[#1642D0] hover:text-[#0d2d8d] font-normal"
-                    >
-                      bully boss
-                    </a>
-                    . He reminded me of the playground bully who teased and<br className="hidden xl:inline" />{' '}
-                    taunted and mocked others. This bully boss also publicly and privately humiliated me. He called<br className="hidden xl:inline" />{' '}
-                    me a rat. He told me no one wanted me on their team but only he took a chance on me. When<br className="hidden xl:inline" />{' '}
-                    he found out another leader at the company wanted me to rotate onto their team, he screamed<br className="hidden xl:inline" />{' '}
-                    at me and said I could leave his team only when he said I could.
-                  </p>
-
-                  <p className="m-0">
-                    As some of us celebrate and honor National Boss’s Day, it’s an important moment to remember<br className="hidden xl:inline" />{' '}
-                    that not everyone has a good relationship with their boss. Some of us are struggling with a boss<br className="hidden xl:inline" />{' '}
-                    who undermines us, makes fun of us, and even threatens to fire us. For anyone struggling with a<br className="hidden xl:inline" />{' '}
-                    bully boss, here are three important steps I wish I had taken back then.
-                  </p>
+              <p className="m-0">
+                From online freelancing jobs to traditional side hustles, this comprehensive list outlines actionable ideas you can start today. Here are the top side hustle opportunities to generate income in 2026.
+              </p>
 
                   {/* Section 1 Heading matching Images 2 & 3 */}
                   <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#020618] pt-4 mb-3 tracking-tight">
@@ -589,12 +503,12 @@ export default function ArticleDetailPage() {
                       href="/topic/business-news"
                       className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors"
                     >
-                      Creators Are Handing Their Video Production Over to AI. Here&apos;s How You Can Too.
+                      Creators Are Handing Their Video Edits to AI. Here&apos;s Where It Starts to Backfire.
                     </Link>
                   </h4>
                   <div className="flex items-center gap-1.5 text-[11px] font-sans uppercase tracking-wider text-slate-500 mt-1.5 font-medium">
                     <span className="text-slate-400">•</span>
-                    <span>1 DAY AGO</span>
+                    <span>15 HOURS AGO</span>
                   </div>
                 </article>
 
@@ -610,7 +524,7 @@ export default function ArticleDetailPage() {
                   </h4>
                   <div className="flex items-center gap-1.5 text-[11px] font-sans uppercase tracking-wider text-slate-500 mt-1.5 font-medium">
                     <span className="text-slate-400">•</span>
-                    <span>2 DAYS AGO</span>
+                    <span>15 HOURS AGO</span>
                   </div>
                 </article>
               </div>
