@@ -99,6 +99,7 @@ export default function ArticleDetailPage() {
   // Metadata matching user's reference screenshot (53 Side Hustle Ideas) or authentic Boss article
   const article = {
     ...rawArticle,
+    category: isBossArticle ? 'BUILDING A BUSINESS' : 'THOUGHT LEADERS',
     title: isBossArticle
       ? 'Not Every Boss Deserves a Thank-You Card. Here’s What to Do When Your Boss Is a Bully.'
       : '53 Side Hustle Ideas to Make Extra Money in 2026',
@@ -124,6 +125,25 @@ export default function ArticleDetailPage() {
     }
   };
 
+  const handleTogglePlay = () => {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      if (isPlaying) {
+        window.speechSynthesis.cancel();
+        setIsPlaying(false);
+      } else {
+        window.speechSynthesis.cancel();
+        const textToSpeak = `${article.title}. ${article.excerpt || ''}`;
+        const utterance = new SpeechSynthesisUtterance(textToSpeak);
+        utterance.onend = () => setIsPlaying(false);
+        utterance.onerror = () => setIsPlaying(false);
+        window.speechSynthesis.speak(utterance);
+        setIsPlaying(true);
+      }
+    } else {
+      setIsPlaying(!isPlaying);
+    }
+  };
+
   // 8 Related articles for the bottom grid
   const relatedArticles = ALL_ARTICLES.filter((a) => a.id !== article.id).slice(0, 8);
 
@@ -142,10 +162,10 @@ export default function ArticleDetailPage() {
             {/* Category above headline */}
             <div className="mb-2">
               <Link
-                href={`/topic/${(article.category || 'building-a-business').toLowerCase().replace(/\s+/g, '-')}`}
+                href={`/topic/${(article.category || 'thought-leaders').toLowerCase().replace(/\s+/g, '-')}`}
                 className="text-xs font-sans font-bold uppercase tracking-wider text-[#1642D0] hover:underline"
               >
-                {article.category || 'BUILDING A BUSINESS'}
+                {article.category || 'THOUGHT LEADERS'}
               </Link>
             </div>
 
@@ -180,17 +200,60 @@ export default function ArticleDetailPage() {
             {/* Horizontal Line BELOW Byline matching reference screenshot */}
             <div className="border-b border-slate-200 mt-2.5 mb-4" />
 
-            {/* Action Bar: Only SHARE with Copy icon */}
-            <div className="flex items-center gap-5 sm:gap-6 py-1 mb-4">
+            {/* Action Bar: SHARE on left, COMMENT on right matching Images 2 & 3 */}
+            <div className="flex items-center justify-between py-1 mb-2.5">
+              {/* Left: SHARE */}
               <button
                 onClick={handleCopyLink}
-                className="flex items-center gap-1.5 text-xs font-bold text-[#1642D0] hover:text-[#0d2d8d] tracking-wider font-sans uppercase transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 text-xs font-bold text-[#020618] hover:text-[#1642D0] tracking-wider font-sans uppercase transition-colors cursor-pointer"
                 title={copied ? 'Copied link!' : 'Copy Link'}
                 aria-label="Copy Link"
               >
                 <span>SHARE</span>
                 {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-slate-800" />}
               </button>
+
+              {/* Right: COMMENT */}
+              <button
+                onClick={() => {
+                  const el = document.getElementById('comments-section');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="flex items-center gap-2 text-xs font-bold text-[#314158] hover:text-[#1642D0] tracking-wider font-sans uppercase transition-colors cursor-pointer"
+                aria-label="Comment"
+              >
+                <svg className="w-4 h-4 fill-[#314158] shrink-0" viewBox="0 0 24 24">
+                  <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+                </svg>
+                <span>COMMENT</span>
+              </button>
+            </div>
+
+            {/* Listen to this post Bar matching Images 2 & 3 */}
+            <div className="w-full border border-slate-200/90 rounded-md bg-white px-3.5 py-2.5 mb-4 flex items-center justify-between shadow-2xs">
+              <button
+                onClick={handleTogglePlay}
+                className="flex items-center gap-3 group cursor-pointer text-left focus:outline-hidden"
+                aria-label={isPlaying ? 'Pause audio' : 'Listen to this post'}
+              >
+                <div className="w-7 h-7 rounded-full bg-[#10182b] group-hover:bg-[#1642D0] transition-colors flex items-center justify-center shrink-0">
+                  {isPlaying ? (
+                    <Pause className="w-3.5 h-3.5 fill-white text-white" />
+                  ) : (
+                    <Play className="w-3.5 h-3.5 fill-white text-white ml-0.5" />
+                  )}
+                </div>
+                <span className="font-sans font-bold text-sm text-[#10182b] group-hover:text-[#1642D0] transition-colors">
+                  {isPlaying ? 'Pause listening' : 'Listen to this post'}
+                </span>
+              </button>
+
+              {isPlaying && (
+                <div className="flex items-center gap-2 text-xs text-slate-500 font-sans animate-pulse">
+                  <Volume2 className="w-4 h-4 text-[#1642D0]" />
+                  <span>Playing audio...</span>
+                </div>
+              )}
             </div>
 
             {/* Main Featured Article Image matching reference screenshot */}
@@ -447,7 +510,50 @@ export default function ArticleDetailPage() {
                   </div>
 
                   {/* Bottom Divider Line matching Image 5 */}
-                  <div className="border-b border-slate-200 mt-8 mb-12" />
+                  <div className="border-b border-slate-200 mt-8 mb-10" />
+
+                  {/* Comments Section (linked to COMMENT button) */}
+                  <section id="comments-section" className="pt-2 mb-10">
+                    <div className="flex items-center gap-2.5 mb-5 pb-3 border-b border-slate-200">
+                      <svg className="w-5 h-5 fill-[#314158]" viewBox="0 0 24 24">
+                        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+                      </svg>
+                      <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#020618] my-0">
+                        Comments
+                      </h3>
+                      <span className="text-xs font-sans font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
+                        0
+                      </span>
+                    </div>
+
+                    {/* Comment Input Box */}
+                    <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mb-6">
+                      <label htmlFor="article-comment" className="block text-xs font-bold uppercase tracking-wider text-slate-700 font-sans mb-2">
+                        Join the Discussion
+                      </label>
+                      <textarea
+                        id="article-comment"
+                        rows={3}
+                        placeholder="What are your thoughts on this story? Leave a comment..."
+                        className="w-full bg-white border border-slate-200 rounded-md p-3 text-sm font-sans focus:outline-hidden focus:ring-2 focus:ring-[#1642D0] focus:border-transparent resize-y"
+                      />
+                      <div className="flex items-center justify-between mt-3">
+                        <span className="text-xs text-slate-400 font-sans">
+                          Sign in to submit your comment
+                        </span>
+                        <button
+                          type="button"
+                          className="bg-[#1642D0] hover:bg-[#0d2d8d] text-white font-sans text-xs font-bold uppercase tracking-wider px-5 py-2 rounded-md transition-colors cursor-pointer"
+                        >
+                          Post Comment
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="text-center py-6 text-slate-400 font-sans text-sm border border-dashed border-slate-200 rounded-lg">
+                      No comments yet. Be the first to share your perspective!
+                    </div>
+                  </section>
             </div>
 
           </article>
