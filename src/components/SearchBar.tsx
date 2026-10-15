@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { Search, X, ArrowRight, Sparkles } from 'lucide-react';
 import { SearchBarSkeleton } from '@/components/skeletons/SearchBarSkeleton';
@@ -13,6 +14,11 @@ interface SearchBarProps {
 export const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
   const router = useRouter();
   const [query, setQuery] = useState('');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -30,7 +36,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
   const popularTopics = [
     'Start an LLC',
@@ -50,7 +56,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
   };
 
 
-  return (
+  const modalContent = (
     <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-start justify-center pt-16 sm:pt-24 px-4 transition-all">
       <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full p-6 relative border border-slate-200 animate-in fade-in slide-in-from-top-6 duration-200">
         
@@ -125,5 +131,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 };
 

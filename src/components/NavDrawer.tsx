@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
-import { X, ChevronRight, Search, User } from 'lucide-react';
+import { X, Search, User } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthContext';
 
 interface NavDrawerProps {
@@ -31,6 +32,11 @@ const SIDEBAR_TOPICS = [
 
 export const NavDrawer: React.FC<NavDrawerProps> = ({ isOpen, onClose, onOpenSearch }) => {
   const { openLogin } = useAuth();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -46,14 +52,18 @@ export const NavDrawer: React.FC<NavDrawerProps> = ({ isOpen, onClose, onOpenSea
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
-  return (
+  const drawerContent = (
     <div className="fixed inset-0 z-50 flex justify-start bg-slate-900/70 backdrop-blur-xs transition-opacity animate-in fade-in duration-200">
-      <div className="bg-white w-full max-w-md h-full overflow-y-auto shadow-2xl flex flex-col border-r border-slate-200 animate-in slide-in-from-left duration-300">
+      {/* Click backdrop to close */}
+      <div className="absolute inset-0" onClick={onClose} aria-hidden="true" />
+
+      {/* Drawer Container: pinned to full viewport height, non-scrolling shell */}
+      <div className="relative bg-white w-full max-w-sm sm:max-w-md h-full max-h-screen flex flex-col shadow-2xl border-r border-slate-200 z-10 animate-in slide-in-from-left duration-300">
         
-        {/* Header inside Drawer: Logo, Search Icon, Login Icon, Close Icon */}
-        <div className="p-5 sm:p-6 border-b border-slate-200 flex items-center justify-between sticky top-0 bg-white z-10">
+        {/* Header inside Drawer: Logo, Search Icon, Login Icon, Close Icon (Pinned shrink-0) */}
+        <div className="p-5 sm:p-6 border-b border-slate-200 flex items-center justify-between shrink-0 bg-white">
           <div className="flex items-center gap-2">
             <span className="font-serif font-black text-2xl tracking-tighter text-slate-950">
               Entrepreneur<span className="text-red-700 font-sans text-xs align-super ml-0.5">®</span>
@@ -67,7 +77,7 @@ export const NavDrawer: React.FC<NavDrawerProps> = ({ isOpen, onClose, onOpenSea
                 onClose();
                 if (onOpenSearch) onOpenSearch();
               }}
-              className="p-2 text-slate-700 hover:text-[#193CB8] hover:bg-slate-100 rounded-full transition-colors cursor-pointer"
+              className="p-2 text-slate-700 hover:text-[#1642D0] hover:bg-slate-100 rounded-full transition-colors cursor-pointer"
               aria-label="Search"
               title="Search"
             >
@@ -80,7 +90,7 @@ export const NavDrawer: React.FC<NavDrawerProps> = ({ isOpen, onClose, onOpenSea
                 onClose();
                 openLogin();
               }}
-              className="p-2 text-slate-700 hover:text-[#193CB8] hover:bg-slate-100 rounded-full transition-colors cursor-pointer"
+              className="p-2 text-slate-700 hover:text-[#1642D0] hover:bg-slate-100 rounded-full transition-colors cursor-pointer"
               aria-label="Sign In"
               title="Sign In"
             >
@@ -98,18 +108,17 @@ export const NavDrawer: React.FC<NavDrawerProps> = ({ isOpen, onClose, onOpenSea
           </div>
         </div>
 
-        {/* Drawer Scrollable Content: 15 Exact Topics */}
-        <div className="p-5 sm:p-6 flex-1 overflow-y-auto">
+        {/* Drawer Scrollable Content: 15 Exact Topics with NO > arrow mark */}
+        <div className="p-5 sm:p-6 flex-1 min-h-0 overflow-y-auto overscroll-contain">
           <nav className="space-y-1">
             {SIDEBAR_TOPICS.map((topic) => (
               <div key={topic.label} className="border-b border-slate-100 last:border-b-0">
                 <Link
                   href={topic.href}
                   onClick={onClose}
-                  className="group text-base font-bold font-sans text-[#020618] hover:text-[#193CB8] transition-colors flex items-center justify-between py-3"
+                  className="block text-base font-bold font-sans text-[#020618] hover:text-[#1642D0] transition-colors py-3"
                 >
-                  <span>{topic.label}</span>
-                  <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-[#193CB8] group-hover:translate-x-0.5 transition-all" />
+                  {topic.label}
                 </Link>
               </div>
             ))}
@@ -119,4 +128,6 @@ export const NavDrawer: React.FC<NavDrawerProps> = ({ isOpen, onClose, onOpenSea
       </div>
     </div>
   );
+
+  return createPortal(drawerContent, document.body);
 };

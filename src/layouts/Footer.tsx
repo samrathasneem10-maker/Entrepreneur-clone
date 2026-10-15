@@ -3,6 +3,20 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 
+// Bold circular dashed divider line matching reference screenshot
+const CircleDashedDivider: React.FC = () => (
+  <div
+    className="w-full h-2.5 my-3 sm:my-4"
+    style={{
+      backgroundImage: 'radial-gradient(circle, rgba(255, 255, 255, 0.95) 1.8px, transparent 2px)',
+      backgroundSize: '9px 8px',
+      backgroundRepeat: 'repeat-x',
+      backgroundPosition: 'center',
+    }}
+    aria-hidden="true"
+  />
+);
+
 export const Footer: React.FC = () => {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
@@ -72,40 +86,40 @@ export const Footer: React.FC = () => {
   ];
 
   return (
-    <footer className="bg-[#020618] text-white font-sans w-full">
+    <footer className="bg-[#020618] text-white font-sans w-full py-6 sm:py-8 border-t border-slate-900">
       <div className="w-full max-w-7xl xl:max-w-[1360px] 2xl:max-w-[1400px] mx-auto px-5 lg:px-10">
         
         {/* TOP SECTION: Newsletter Subscription */}
-        <div className="py-8 sm:py-10 flex flex-col md:flex-row items-center justify-between gap-6">
-          <p className="text-white font-serif text-sm sm:text-[15px] leading-relaxed max-w-xl text-center md:text-left my-0">
+        <div className="py-5 sm:py-6 flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-10">
+          <p className="text-white font-serif text-[13px] sm:text-sm md:text-[14px] leading-relaxed max-w-[480px] text-left my-0">
             We&apos;ll be in your inbox every morning Monday-Saturday with all the day&apos;s top business news, inspiring stories, best advice and exclusive reporting from Entrepreneur.
           </p>
 
-          <form onSubmit={handleSubscribe} className="flex items-center gap-2.5 w-full md:w-auto justify-center md:justify-end">
+          <form onSubmit={handleSubscribe} className="flex items-center gap-3.5 w-full sm:w-auto shrink-0 justify-start sm:justify-end">
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               required
-              className="bg-white text-slate-900 placeholder:text-slate-500 px-3.5 py-2 sm:py-2.5 rounded-[3px] text-xs sm:text-sm w-full sm:w-[260px] md:w-[280px] focus:outline-none"
+              className="bg-white text-slate-900 placeholder:text-slate-400 px-4 h-10 rounded-[3px] text-xs sm:text-[13px] w-full sm:w-[240px] md:w-[280px] focus:outline-none shadow-xs font-sans"
             />
             <button
               type="submit"
-              className="bg-[#1642D0] hover:bg-blue-800 text-white font-bold text-xs sm:text-sm px-6 py-2 sm:py-2.5 rounded-[3px] transition-colors cursor-pointer whitespace-nowrap shadow-xs"
+              className="bg-[#1642D0] hover:bg-blue-700 text-white font-bold text-xs sm:text-[13px] px-6 h-10 rounded-[3px] transition-colors cursor-pointer whitespace-nowrap shadow-xs font-sans"
             >
               {subscribed ? 'Subscribed!' : 'Subscribe'}
             </button>
           </form>
         </div>
 
-        {/* 1st DASHED LINE */}
-        <div className="w-full border-t-2 border-dashed border-white/60"></div>
+        {/* 1st DASHED LINE (Bold Circle Dots) */}
+        <CircleDashedDivider />
 
         {/* MIDDLE SECTION: 4 Directory Link Columns */}
-        <div className="py-8 sm:py-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 lg:gap-10 text-left">
+        <div className="py-6 sm:py-8 grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 lg:gap-10 text-left">
           {directoryColumns.map((col, colIdx) => (
-            <div key={colIdx} className="space-y-3 sm:space-y-3.5 flex flex-col">
+            <div key={colIdx} className="space-y-2.5 sm:space-y-3 flex flex-col">
               {col.map((item, itemIdx) => (
                 <Link
                   key={itemIdx}
@@ -119,15 +133,15 @@ export const Footer: React.FC = () => {
           ))}
         </div>
 
-        {/* 2nd DASHED LINE */}
-        <div className="w-full border-t-2 border-dashed border-white/60"></div>
+        {/* 2nd DASHED LINE (Bold Circle Dots) */}
+        <CircleDashedDivider />
 
         {/* THIRD SECTION: Social Icons, Copyright & USAID Disclaimer */}
-        <div className="py-8 sm:py-9 space-y-6">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div className="py-5 sm:py-6 space-y-4 sm:space-y-5">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
             
             {/* 7 Social Media Icons */}
-            <div className="flex items-center gap-4 text-white">
+            <div className="flex items-center gap-3.5 sm:gap-4 text-white">
               {/* Facebook */}
               <a href="https://facebook.com/entrepreneur" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors" aria-label="Facebook">
                 <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.625c-.204.347-.282.808-.282 1.626v1.425h3.692l-.571 3.667h-3.121v7.98H9.101z"/></svg>
@@ -165,7 +179,7 @@ export const Footer: React.FC = () => {
             </div>
 
             {/* Copyright text */}
-            <p className="text-slate-300 text-[11px] sm:text-xs font-serif leading-tight text-center sm:text-right my-0">
+            <p className="text-slate-300 text-[11px] sm:text-xs font-serif leading-tight text-left sm:text-right my-0">
               Copyright © 2026 Entrepreneur Media, LLC All rights reserved. Entrepreneur® and its related marks are registered trademarks of Entrepreneur Media, LLC.
             </p>
           </div>
@@ -176,11 +190,11 @@ export const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* 3rd DASHED LINE */}
-        <div className="w-full border-t-2 border-dashed border-white/60"></div>
+        {/* 3rd DASHED LINE (Bold Circle Dots) */}
+        <CircleDashedDivider />
 
         {/* BOTTOM SECTION: International Editions */}
-        <div className="py-6 sm:py-7 flex flex-wrap items-center justify-center gap-x-2.5 sm:gap-x-3.5 gap-y-2 text-xs sm:text-[13px] font-bold font-sans text-white">
+        <div className="py-5 sm:py-6 flex flex-wrap items-center justify-center gap-x-2.5 sm:gap-x-3.5 gap-y-2 text-xs sm:text-[13px] font-bold font-sans text-white">
           {editions.map((edition, idx) => (
             <React.Fragment key={edition.label}>
               <Link href={edition.href} className="hover:text-blue-400 transition-colors whitespace-nowrap">
