@@ -4,25 +4,41 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import {
-  ChevronRight,
-  Clock,
-  User,
   Copy,
   Check,
-  Bookmark,
 } from 'lucide-react';
 import { Header } from '@/layouts/Header';
 import { Footer } from '@/layouts/Footer';
 import { ArticleCard } from '@/components/ArticleCard';
 import { getArticleById, ALL_ARTICLES, LATEST_ARTICLES } from '@/data/newsData';
 
+const SPONSORED_ITEMS = [
+  {
+    id: 'spons-1',
+    title: 'Robotics and Artificial Intelligence: Discover the trends.',
+    source: 'MarketViews',
+    imageUrl: '/images/sponsored-robotics-ai.png',
+  },
+  {
+    id: 'spons-2',
+    title: 'Stay updated with the newest gold market developments.',
+    source: 'MarketViews',
+    imageUrl: '/images/sponsored-gold-market.png',
+  },
+  {
+    id: 'spons-3',
+    title: 'Find expert news and trends in the world of commodities.',
+    source: 'MarketViews',
+    imageUrl: '/images/sponsored-commodities.png',
+  },
+];
+
 export default function ArticleDetailPage() {
   const params = useParams();
-  const articleId = typeof params?.id === 'string' ? params.id : 'hero-1';
+  const articleId = typeof params?.id === 'string' ? params.id : 'not-every-boss-deserves-a-thank-you-card';
   const article = getArticleById(articleId);
 
   const [copied, setCopied] = useState(false);
-  const [bookmarked, setBookmarked] = useState(false);
 
   const handleCopyLink = () => {
     if (typeof window !== 'undefined') {
@@ -35,234 +51,250 @@ export default function ArticleDetailPage() {
   // 8 Related articles for the bottom grid
   const relatedArticles = ALL_ARTICLES.filter((a) => a.id !== article.id).slice(0, 8);
 
+  const isBossArticle = article.id.includes('boss') || article.id.includes('bully');
+
   return (
     <div className="min-h-screen flex flex-col bg-white font-sans antialiased text-slate-900">
       {/* 1. Header with Sticky Reading Progress Bar */}
       <Header showProgressBar={true} />
 
+      {/* Breadcrumb Navigation matching reference screenshot (Black House Icon + / + BUILDING A BUSINESS) */}
+      <div className="w-full max-w-7xl mx-auto px-5 lg:px-10 pt-3 pb-2.5 flex items-center gap-2.5 text-xs font-bold uppercase tracking-wider text-slate-900 font-sans">
+        <Link href="/" aria-label="Home" className="text-slate-950 hover:text-[#1642D0] transition-colors flex items-center">
+          <svg className="w-3.5 h-3.5 fill-current shrink-0" viewBox="0 0 24 24">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+          </svg>
+        </Link>
+        <span className="text-slate-400 font-normal select-none">/</span>
+        <Link
+          href={`/topic/${(article.category || 'building-a-business').toLowerCase().replace(/\s+/g, '-')}`}
+          className="text-slate-900 hover:text-[#1642D0] transition-colors tracking-wider font-extrabold"
+        >
+          {article.category || 'BUILDING A BUSINESS'}
+        </Link>
+      </div>
 
-      {/* Breadcrumb Navigation Line */}
-      <div className="bg-slate-50/80 border-b border-slate-200 py-2.5 px-5 lg:px-10 text-xs text-slate-600 font-sans">
-        <div className="w-full max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto no-scrollbar">
-          <Link href="/" className="hover:text-[#1642D0] transition-colors">
-            Home
-          </Link>
-          <ChevronRight className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
-          <Link href={`/topic/${article.category.toLowerCase().replace(/\s+/g, '-')}`} className="hover:text-[#1642D0] transition-colors">
-            {article.category}
-          </Link>
-          <ChevronRight className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
-          <span className="text-slate-900 font-medium truncate max-w-md">
-            {article.title}
-          </span>
-        </div>
+      {/* Blue Announcement Bar right under breadcrumb matching reference screenshot */}
+      <div className="w-full bg-[#1642D0] py-2 px-4 text-center text-white text-xs sm:text-sm font-bold tracking-wide">
+        <a href="#" className="hover:underline transition-colors underline decoration-white">
+          How to Get Your Press Release in Front of Millions
+        </a>
       </div>
 
       {/* Main Article Container with 2-Column Layout */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-5 lg:px-10 py-8 lg:py-12">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-5 lg:px-10 py-8 lg:py-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           
           {/* LEFT/MAIN CONTENT (8 columns on large screens) */}
-          <article className="lg:col-span-8 space-y-6">
+          <article className="lg:col-span-8 space-y-4">
             
-            {/* Category Tag */}
-            <div>
-              <span className="inline-block font-sans text-xs sm:text-sm font-extrabold uppercase tracking-widest text-[#1642D0] mb-2">
-                {article.category}
-              </span>
+            {/* Main Headline (H1): Exact styling from reference screenshot */}
+            <h1 className="text-3xl sm:text-4xl lg:text-[42px] xl:text-[46px] font-serif font-bold text-[#020618] leading-[1.14] tracking-tight my-0">
+              {article.title}
+            </h1>
 
-              {/* Main Headline */}
-              <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-serif font-bold text-[#020618] leading-[1.18] tracking-tight mb-4">
-                {article.title}
-              </h1>
-
-              {/* Subtitle / Excerpt */}
-              {article.excerpt && (
-                <p className="text-slate-700 text-lg sm:text-xl font-serif font-normal leading-relaxed mb-6">
-                  {article.excerpt}
-                </p>
-              )}
-
-              {/* Author & Publication Metadata Row */}
-              <div className="flex flex-wrap items-center justify-between gap-4 py-4 border-t border-b border-slate-200 my-6 text-xs sm:text-sm font-sans">
-                <div className="flex items-center gap-3">
-                  <img
-                    src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=300&auto=format&fit=crop"
-                    alt="Merilee Kern, MBA"
-                    className="w-10 h-10 rounded-full object-cover border border-slate-300 flex-shrink-0 shadow-xs"
-                  />
-                  <div>
-                    <div className="font-bold text-[#020618]">
-                      By{' '}
-                      <Link href="/author/merilee-kern" className="underline hover:text-[#1642D0]">
-                        Merilee Kern, MBA
-                      </Link>
-
-                    </div>
-                    <div className="text-slate-500 text-xs font-normal">
-                      Writer
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-4 text-slate-500 text-xs">
-                  <div className="flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5" />
-                    <span>July 25, 2026</span>
-                  </div>
-                  <span>•</span>
-                  <span>6 min read</span>
-                </div>
-
-
-                {/* Utility Action Buttons: Copy Link & Bookmark */}
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={handleCopyLink}
-                    className="p-2 rounded-full bg-slate-100 hover:bg-slate-800 hover:text-white text-slate-700 transition-colors relative cursor-pointer"
-                    title="Copy Link"
-                    aria-label="Copy Link"
-                  >
-                    {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
-                  </button>
-
-                  <button
-                    onClick={() => setBookmarked(!bookmarked)}
-                    className={`p-2 rounded-full transition-colors cursor-pointer ${
-                      bookmarked
-                        ? 'bg-amber-100 text-amber-700'
-                        : 'bg-slate-100 text-slate-700 hover:bg-slate-800 hover:text-white'
-                    }`}
-                    title="Bookmark Article"
-                    aria-label="Bookmark Article"
-                  >
-                    <Bookmark className="w-4 h-4 fill-current" />
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Main Featured Image */}
-            {article.imageUrl && (
-              <figure className="my-6">
-                <div className="relative w-full aspect-[16/10] overflow-hidden rounded-xl border border-slate-200 shadow-xs">
-                  <img
-                    src={article.imageUrl}
-                    alt={article.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <figcaption className="text-xs text-slate-500 font-sans italic mt-2.5">
-                  Editorial Photography / Unsplash Collection. Strategic design planning sessions drive measurable enterprise returns.
-                </figcaption>
-              </figure>
+            {/* Subtitle / Excerpt */}
+            {article.excerpt && (
+              <p className="text-slate-700 text-base sm:text-lg lg:text-[18.5px] font-serif font-normal leading-relaxed my-0 pt-1">
+                {article.excerpt}
+              </p>
             )}
 
-            {/* Rich Article Body Content */}
-            <div className="prose prose-slate max-w-none space-y-6 text-slate-800 text-base sm:text-lg leading-relaxed font-sans pt-2">
-              <p>
-                In an increasingly crowded marketplace, products and services are rapidly becoming commoditized. When competitors can replicate feature sets within weeks, customer experience (CX) becomes the primary differentiator that protects pricing power and drives long-term customer lifetime value.
-              </p>
+            {/* Author, Editor & Date Row: Exact format BY MITA MALLICK | EDITED BY KARA MCINTYRE | OCT 14, 2026 */}
+            <div className="text-xs font-sans font-bold uppercase tracking-wider text-slate-500 flex flex-wrap items-center gap-1.5 pt-2 pb-1">
+              <span className="text-slate-500 font-semibold">BY</span>
+              <Link
+                href={`/author/${(article.author?.name || 'mita-mallick').toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+                className="text-[#1642D0] font-bold hover:underline decoration-[#1642D0] underline-offset-2"
+              >
+                {article.author?.name || 'MITA MALLICK'}
+              </Link>
+              {article.editor ? (
+                <>
+                  <span className="text-slate-300 mx-1.5 select-none font-normal">|</span>
+                  <span className="text-slate-500 font-semibold">EDITED BY</span>
+                  <span className="text-[#1642D0] font-bold">{article.editor}</span>
+                </>
+              ) : null}
+              <span className="text-slate-300 mx-1.5 select-none font-normal">|</span>
+              <span className="text-slate-500 font-normal">{article.date || 'OCT 14, 2026'}</span>
+            </div>
 
-              <p>
-                Leading executives recognize that design is not merely a cosmetic layer applied at the final stage of product development. Instead, design-led companies integrate customer insights directly into business strategy, capital allocation, and executive decision-making.
-              </p>
+            {/* Divider Line */}
+            <div className="border-b border-slate-200 my-3" />
 
-              {/* Section H2 */}
-              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#020618] pt-4 mb-3 tracking-tight">
-                1. The Strategic Value of User-Centered Architecture
-              </h2>
+            {/* Action Bar: Google Add to Preferred Sources pill + SHARE with Copy icon side by side matching screenshot */}
+            <div className="flex items-center gap-5 sm:gap-6 py-1.5 mb-6">
+              {/* Google Add to Preferred Sources Pill */}
+              <a
+                href="https://news.google.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-full border border-slate-300 bg-white hover:bg-slate-50 px-3.5 py-1.5 inline-flex items-center gap-2 text-xs font-medium text-slate-800 shadow-2xs transition-colors cursor-pointer"
+              >
+                {/* Authentic 4-color Google G icon */}
+                <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                </svg>
+                <span>Add to Preferred Sources</span>
+              </a>
 
-              <p>
-                When leadership teams prioritize user-centered design, they systematically eliminate friction points across the entire customer lifecycle. From initial brand discovery to post-purchase support, every touchpoint reinforces brand trust and user satisfaction.
-              </p>
+              {/* Right beside it: SHARE + Copy Link */}
+              <button
+                onClick={handleCopyLink}
+                className="flex items-center gap-1.5 text-xs font-bold text-slate-800 hover:text-[#1642D0] tracking-wider font-sans uppercase transition-colors cursor-pointer"
+                title={copied ? 'Copied link!' : 'Copy Link'}
+                aria-label="Copy Link"
+              >
+                <span>SHARE</span>
+                {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-slate-800" />}
+              </button>
+            </div>
 
-              {/* Pull Quote Block */}
-              <blockquote className="my-8 border-l-4 border-[#1642D0] pl-6 py-4 bg-blue-50/50 rounded-r-xl text-lg sm:text-xl font-serif italic text-[#020618] leading-relaxed">
-                "Design is not just what it looks like and feels like. Design is how it works under real-world operational pressure."
-              </blockquote>
+            {/* Rich Editorial Body Content */}
+            <div className="prose prose-slate max-w-none space-y-6 text-slate-800 text-base sm:text-lg leading-relaxed font-serif pt-2">
+              {isBossArticle ? (
+                <>
+                  <p>
+                    National Boss’s Day rolls around every October, and offices across the country fill with celebratory greeting cards, decorated cupcakes, and polite applause in team Slack channels. But for millions of dedicated professionals, signing a generic card feels less like gratitude and more like forced corporate theater.
+                  </p>
 
-              <p>
-                Research across Fortune 500 enterprises indicates that organizations with top-quartile design scores generate 32 percentage points higher revenue growth and 56 percentage points higher total returns to shareholders compared to their industry peers.
-              </p>
+                  <p>
+                    Workplaces often tolerate abusive or hyper-critical managers because they appear to &ldquo;get results.&rdquo; Yet research consistently shows that bully bosses cost companies billions in attrition, medical leaves, and silenced innovation. When a manager relies on public humiliation, shifted goalposts, or veiled threats, employees don&apos;t work harder &mdash; they work scared.
+                  </p>
 
-              {/* Section H2 */}
-              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#020618] pt-4 mb-3 tracking-tight">
-                2. Aligning Cross-Functional Teams Around Customer Metrics
-              </h2>
+                  {/* Section H2 */}
+                  <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#020618] pt-4 mb-3 tracking-tight">
+                    1. Recognize the Difference Between High Expectations and Bullying
+                  </h2>
 
-              <p>
-                Achieving design excellence requires breaking down traditional departmental silos. When product managers, software engineers, marketers, and customer success specialists share common CX key performance indicators (KPIs), decisions accelerate and strategic clarity improves.
-              </p>
+                  <p>
+                    Tough leaders challenge your ideas to sharpen your thinking; bully bosses attack your character to preserve their own status. A demanding manager will debate facts, offer constructive pathways for improvement, and advocate for your promotion behind closed doors. A bully will withhold vital project context, take credit for your late-night breakthroughs, and criticize you in group meetings.
+                  </p>
 
-              {/* Actionable Checklist */}
-              <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 my-6">
-                <h3 className="text-base font-bold font-sans text-[#020618] uppercase tracking-wider mb-3">
-                  Core Implementation Milestones
-                </h3>
-                <ul className="space-y-3 text-sm text-slate-700">
-                  <li className="flex items-start gap-2.5">
-                    <span className="font-bold text-[#1642D0]">01.</span>
-                    <span><strong>Establish Continuous Feedback Loops:</strong> Automate weekly customer interview digests and qualitative user recordings across executive slack channels.</span>
-                  </li>
-                  <li className="flex items-start gap-2.5">
-                    <span className="font-bold text-[#1642D0]">02.</span>
-                    <span><strong>Standardize Modular Design Systems:</strong> Build reusable component libraries that maintain brand consistency while speeding up release velocity.</span>
-                  </li>
-                  <li className="flex items-start gap-2.5">
-                    <span className="font-bold text-[#1642D0]">03.</span>
-                    <span><strong>Tie Executive Compensation to CX:</strong> Link a portion of leadership bonuses to Net Promoter Scores (NPS) and Customer Retention Rates.</span>
-                  </li>
-                </ul>
-              </div>
+                  {/* Pull Quote Block */}
+                  <blockquote className="my-8 border-l-4 border-[#1642D0] pl-6 py-4 bg-blue-50/50 rounded-r-xl text-lg sm:text-xl font-serif italic text-[#020618] leading-relaxed">
+                    &ldquo;You cannot fix a toxic boss. You can only protect your reputation, your health, and your strategic career trajectory.&rdquo;
+                  </blockquote>
 
-              {/* Inline Secondary Image */}
-              <figure className="my-8">
-                <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-slate-200">
-                  <img
-                    src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1000&auto=format&fit=crop"
-                    alt="Team Collaboration Session"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <figcaption className="text-xs text-slate-500 font-sans italic mt-2 text-center">
-                  Figure 1: Cross-functional strategy teams analyzing real-time user behavior analytics.
-                </figcaption>
-              </figure>
+                  {/* Section H2 */}
+                  <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#020618] pt-4 mb-3 tracking-tight">
+                    2. Maintain an Objective, Off-System Log
+                  </h2>
 
-              {/* Section H2 */}
-              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#020618] pt-4 mb-3 tracking-tight">
-                3. Measuring ROI and Sustainable Enterprise Growth
-              </h2>
+                  <p>
+                    When dealing with a manager who gaslights or denies prior verbal commitments, documentation is your greatest shield. Immediately following contentious discussions, follow up with a calm, professional summary email: <em>&ldquo;To confirm our discussion this morning, the deliverables for Project Apex are due Thursday at 3 PM.&rdquo;</em>
+                  </p>
 
-              <p>
-                Ultimately, design investments must demonstrate tangible financial returns. By monitoring metrics such as Customer Acquisition Cost (CAC), Customer Lifetime Value (LTV), and churn rates, founders can validate CX expenditures to board members and venture investors alike.
-              </p>
+                  {/* Actionable Checklist */}
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 my-6 font-sans">
+                    <h3 className="text-base font-bold font-sans text-[#020618] uppercase tracking-wider mb-3">
+                      Essential Self-Protection Strategies
+                    </h3>
+                    <ul className="space-y-3 text-sm text-slate-700">
+                      <li className="flex items-start gap-2.5">
+                        <span className="font-bold text-[#1642D0]">01.</span>
+                        <span><strong>Build Cross-Functional Champions:</strong> Ensure leaders in other divisions see your tangible work so your career is never dependent on one person&apos;s subjective review.</span>
+                      </li>
+                      <li className="flex items-start gap-2.5">
+                        <span className="font-bold text-[#1642D0]">02.</span>
+                        <span><strong>Document Factual Timelines:</strong> Keep a personal, timestamped log of project milestones, deliverables, and communication records on non-work personal storage.</span>
+                      </li>
+                      <li className="flex items-start gap-2.5">
+                        <span className="font-bold text-[#1642D0]">03.</span>
+                        <span><strong>Execute a Controlled Exit:</strong> Polish your credentials, activate executive recruiters, and negotiate your next chapter from a position of quiet strength.</span>
+                      </li>
+                    </ul>
+                  </div>
 
-              <p>
-                Companies that successfully operationalize design-led strategies build resilient, high-margin business models capable of outperforming macroeconomic headwinds.
-              </p>
+                  {/* Section H2 */}
+                  <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#020618] pt-4 mb-3 tracking-tight">
+                    3. Plan Your Exit From a Position of Power
+                  </h2>
+
+                  <p>
+                    Never let an abusive manager make you question your worth or competency. The strongest rebuttal to toxic leadership is thriving in an organization that values your talent, respects your boundaries, and rewards your contributions.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p>
+                    In an increasingly crowded marketplace, products and services are rapidly becoming commoditized. When competitors can replicate feature sets within weeks, customer experience (CX) becomes the primary differentiator that protects pricing power and drives long-term customer lifetime value.
+                  </p>
+
+                  <p>
+                    Leading executives recognize that design is not merely a cosmetic layer applied at the final stage of product development. Instead, design-led companies integrate customer insights directly into business strategy, capital allocation, and executive decision-making.
+                  </p>
+
+                  {/* Section H2 */}
+                  <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#020618] pt-4 mb-3 tracking-tight">
+                    1. The Strategic Value of User-Centered Architecture
+                  </h2>
+
+                  <p>
+                    When leadership teams prioritize user-centered design, they systematically eliminate friction points across the entire customer lifecycle. From initial brand discovery to post-purchase support, every touchpoint reinforces brand trust and user satisfaction.
+                  </p>
+
+                  <blockquote className="my-8 border-l-4 border-[#1642D0] pl-6 py-4 bg-blue-50/50 rounded-r-xl text-lg sm:text-xl font-serif italic text-[#020618] leading-relaxed">
+                    &ldquo;Design is not just what it looks like and feels like. Design is how it works under real-world operational pressure.&rdquo;
+                  </blockquote>
+
+                  <p>
+                    Research across Fortune 500 enterprises indicates that organizations with top-quartile design scores generate 32 percentage points higher revenue growth and 56 percentage points higher total returns to shareholders compared to their industry peers.
+                  </p>
+                </>
+              )}
             </div>
 
           </article>
 
-          {/* RIGHT SIDEBAR (4 columns on large screens) */}
+          {/* RIGHT SIDEBAR (Matching reference screenshot: Sponsored Financial Content + Latest News) */}
           <aside className="lg:col-span-4 space-y-8 sticky top-24">
             
-            {/* 1. Medium Rectangle Ad Placeholder (300x250) */}
-            <div className="bg-slate-50 border border-dashed border-slate-300 rounded-xl p-4 flex flex-col items-center justify-center h-[250px] text-center">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
-                Advertisement
-              </span>
-              <span className="text-xs font-semibold text-slate-600">
-                300x250 Medium Rectangle Banner
-              </span>
+            {/* Sponsored Financial Content Block matching screenshot */}
+            <div className="space-y-3.5">
+              <div className="border-b border-slate-200 pb-1.5">
+                <h3 className="text-sm font-bold font-sans text-[#111827] my-0">
+                  Sponsored Financial Content
+                </h3>
+              </div>
+
+              <div className="space-y-4 pt-1">
+                {SPONSORED_ITEMS.map((item) => (
+                  <a
+                    key={item.id}
+                    href="#"
+                    className="group flex items-start gap-3.5 no-underline"
+                  >
+                    {/* Thumbnail Image */}
+                    <div className="w-[68px] h-[52px] flex-shrink-0 overflow-hidden rounded-[2px] border border-slate-200 shadow-2xs">
+                      <img
+                        src={item.imageUrl}
+                        alt={item.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                    {/* Text Details */}
+                    <div className="flex-1 space-y-0.5">
+                      <h4 className="text-[12.5px] font-sans font-normal text-[#111827] leading-[1.32] group-hover:underline group-hover:text-[#1642D0] transition-colors my-0">
+                        {item.title}
+                      </h4>
+                      <span className="text-[11px] font-sans text-slate-500 block pt-0.5">
+                        {item.source}
+                      </span>
+                    </div>
+                  </a>
+                ))}
+              </div>
             </div>
 
-            {/* 2. Extended Latest News Stream (Fills Sidebar Vertically) */}
-            <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-2xs">
+            {/* Additional Latest News Stream */}
+            <div className="pt-6 border-t border-slate-200">
               <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-200">
-                <h3 className="text-lg font-bold font-serif text-[#020618] my-0">
+                <h3 className="text-base font-bold font-serif text-[#020618] my-0">
                   Latest News
                 </h3>
                 <Link href="/topic/business-news" className="text-xs font-bold text-[#1642D0] uppercase tracking-wider hover:underline">
@@ -271,7 +303,7 @@ export default function ArticleDetailPage() {
               </div>
 
               <div className="space-y-4">
-                {LATEST_ARTICLES.slice(0, 7).map((latest) => (
+                {LATEST_ARTICLES.slice(0, 5).map((latest) => (
                   <ArticleCard
                     key={latest.id}
                     article={latest}
@@ -311,7 +343,7 @@ export default function ArticleDetailPage() {
 
       </main>
 
-      {/* 2. Footer (Reused with exact styling) */}
+      {/* 2. Footer */}
       <Footer />
     </div>
   );

@@ -14,6 +14,7 @@ export interface Article {
   imageAspect?: 'square' | 'video' | 'wide';
   isPopular?: boolean;
   rank?: number;
+  editor?: string;
 }
 
 export interface CategoryCard {
@@ -2149,7 +2150,25 @@ export const FRANCHISES_MAIN_SECTION_ARTICLES: Article[] = [
   },
 ];
 
+export const NOT_EVERY_BOSS_ARTICLE: Article = {
+  id: 'not-every-boss-deserves-a-thank-you-card',
+  title: "Not Every Boss Deserves a Thank-You Card. Here's What to Do When Your Boss Is a Bully.",
+  category: 'BUILDING A BUSINESS',
+  author: {
+    name: 'MITA MALLICK',
+    title: 'Contributor',
+    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=300&auto=format&fit=crop',
+  },
+  editor: 'KARA MCINTYRE',
+  date: 'OCT 14, 2026',
+  readTime: '4 min read',
+  excerpt: "As some of us celebrate National Boss’s Day, it’s important to remember that not everyone has a good relationship with their boss.",
+  imageUrl: '/images/category-leadership.png',
+  imageAspect: 'wide',
+};
+
 export const ALL_ARTICLES: Article[] = [
+  NOT_EVERY_BOSS_ARTICLE,
   HERO_ARTICLE,
   ...LATEST_ARTICLES,
   ...SECONDARY_FEATURED,
@@ -2166,8 +2185,12 @@ export const ALL_ARTICLES: Article[] = [
 ];
 
 export function getArticleById(id: string): Article {
-  const found = ALL_ARTICLES.find((a) => a.id === id);
+  const found = ALL_ARTICLES.find((a) => a.id === id || a.id.toLowerCase() === (id || '').toLowerCase());
   if (found) return found;
+
+  if ((id || '').includes('boss') || (id || '').includes('building-a-business') || (id || '').includes('bully')) {
+    return NOT_EVERY_BOSS_ARTICLE;
+  }
   
   return {
     id: id || 'hero-1',

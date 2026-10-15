@@ -44,9 +44,12 @@ export const BusinessCategoryCards: React.FC = () => {
               </Link>
 
               <div className="mt-3">
-                <span className="text-xs font-bold font-sans text-[#1642D0] uppercase tracking-wider block mb-1">
+                <Link
+                  href="/article/not-every-boss-deserves-a-thank-you-card"
+                  className="text-xs font-bold font-sans text-[#1642D0] uppercase tracking-wider block mb-1 hover:underline"
+                >
                   BUILDING A BUSINESS
-                </span>
+                </Link>
                 <h4 className="text-base sm:text-[17px] font-serif font-bold text-[#020618] leading-[1.3] m-0">
                   <Link href="/topic/leadership" className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors">
                     An Introvert&apos;s Case for Skipping Small Talk and Building Real Connections
@@ -60,11 +63,17 @@ export const BusinessCategoryCards: React.FC = () => {
 
             {/* Row 2: Medium Title Article */}
             <article className="group">
-              <span className="text-xs font-bold font-sans text-[#1642D0] uppercase tracking-wider block mb-1">
+              <Link
+                href="/article/not-every-boss-deserves-a-thank-you-card"
+                className="text-xs font-bold font-sans text-[#1642D0] uppercase tracking-wider block mb-1 hover:underline"
+              >
                 BUILDING A BUSINESS
-              </span>
+              </Link>
               <h4 className="text-sm sm:text-[15px] font-serif font-bold text-[#020618] leading-[1.3] m-0">
-                <Link href="/topic/leadership" className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors">
+                <Link
+                  href="/article/not-every-boss-deserves-a-thank-you-card"
+                  className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors"
+                >
                   Not Every Boss Deserves a Thank-You Card. Here&apos;s What to Do When Your Boss Is a Bully.
                 </Link>
               </h4>
