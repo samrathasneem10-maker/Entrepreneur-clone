@@ -309,51 +309,7 @@ export default function ArticleDetailPage() {
             {/* Underline after Key Takeaways matching screenshot */}
             <div className="border-b border-slate-200 mt-6 mb-7" />
 
-            {/* Rectangle Box: Entrepreneur Virtual Event Card matching reference screenshot */}
-            <div className="bg-[#f8f9fa] border border-slate-200/90 rounded-xl p-5 sm:p-7 mb-7 shadow-2xs">
-              {/* Header with Entrepreneur logo icon */}
-              <div className="flex items-center gap-2 mb-2">
-                <span className="w-5 h-5 bg-black text-white font-serif font-bold text-xs flex items-center justify-center rounded-[2px] leading-none shrink-0">
-                  E
-                </span>
-                <span className="text-xs font-sans font-bold uppercase tracking-wider text-slate-500">
-                  ENTREPRENEUR VIRTUAL EVENT
-                </span>
-              </div>
 
-              {/* Straight line inside card spanning left text column matching reference screenshot */}
-              <div className="w-full md:w-[60%] border-b border-slate-200/90 mt-2.5 mb-5" />
-
-              {/* 2-Column content */}
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-                {/* Left Side */}
-                <div className="md:col-span-8 space-y-3">
-                  <h3 className="text-xl sm:text-[23px] font-sans font-bold text-[#020618] leading-[1.25] my-0">
-                    Small Audience, Big Sales: How to Make Money With Social Media
-                  </h3>
-                  <p className="text-sm sm:text-[14.5px] font-serif text-slate-700 leading-relaxed my-0 pt-1">
-                    Join our free event and learn from an expert who&apos;s helped 100+ creators turn social media into real revenue.
-                  </p>
-                  <div className="pt-3">
-                    <a
-                      href="#"
-                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#1642D0] hover:bg-[#1236a8] text-white text-xs sm:text-[13px] font-sans font-bold rounded-[3px] shadow-2xs transition-colors cursor-pointer"
-                    >
-                      Register for Free
-                    </a>
-                  </div>
-                </div>
-
-                {/* Right Side Event Speaker Card */}
-                <div className="md:col-span-4 flex justify-center md:justify-end">
-                  <img
-                    src="/images/event-speaker-card.png"
-                    alt="Natalie Ruiz • CEO of AnswerConnect - Event Speaker"
-                    className="w-[155px] sm:w-[170px] h-auto object-contain rounded-lg shadow-xs"
-                  />
-                </div>
-              </div>
-            </div>
 
             {/* Rich Editorial Body Content matching reference screenshot */}
             <div className="max-w-none space-y-7 text-[#2b3445] font-['Georgia',Cambria,'Times_New_Roman',serif] text-[18px] lg:text-[18.5px] leading-[32px] lg:leading-[33px] pt-2">
@@ -385,33 +341,6 @@ export default function ArticleDetailPage() {
                     I remember rationalizing his behavior. &ldquo;Well, that&apos;s just how he is,&rdquo; and &ldquo;Maybe I&apos;m being too sensitive,&rdquo; and &ldquo;This is the price I pay to have this big title and paycheck,&rdquo; or &ldquo;He is just under a lot of stress.&rdquo; Just because they are the boss doesn&apos;t mean they can behave this way. Ask yourself if you would allow a colleague to treat you this way? Chances are you wouldn&apos;t.
                   </p>
 
-                  {/* Advertisement 1: JustAnswer Expert Chat Card matching Image 2 */}
-                  <div className="max-w-[300px] mx-auto border border-slate-300 bg-white rounded-md overflow-hidden my-8 font-sans shadow-2xs">
-                    <div className="relative w-full">
-                      <img
-                        src="/images/justanswer-expert.png"
-                        alt="Chat with an expert Online Now"
-                        className="w-full h-auto object-cover"
-                      />
-                      {/* Google AdChoices icon in top right matching Image 2 */}
-                      <div className="absolute top-1 right-1 bg-white/90 px-1 py-0.5 rounded-xs flex items-center gap-0.5 text-[10px] text-slate-500 shadow-2xs">
-                        <span className="text-[9px] text-[#00a4e4]">▷</span>
-                        <span className="text-[9px]">ⓘ</span>
-                      </div>
-                    </div>
-
-                    <div className="p-3 text-left">
-                      <h4 className="font-sans font-bold text-[14px] text-black my-0 leading-snug">
-                        Chat with an expert Online Now
-                      </h4>
-                      <div className="flex items-center justify-between text-xs pt-3 text-slate-500 font-sans">
-                        <span className="text-[12px] text-slate-500">JustAnswer</span>
-                        <a href="#" className="text-[#1a73e8] hover:underline flex items-center font-normal text-[12px]">
-                          Open <span className="ml-1 text-[10px]">&gt;</span>
-                        </a>
-                      </div>
-                    </div>
-                  </div>
 
                   {/* Section 2 Heading matching Image 3 */}
                   <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#020618] pt-6 mb-4 tracking-tight leading-tight">
@@ -467,39 +396,6 @@ export default function ArticleDetailPage() {
                     is a game-changing free resource designed to help employees make sense of employment agreements. The tool can help you identify provisions that would affect your ability to speak up. You can upload your employment contract and onboarding documents to this tool. It will help give you a better sense of what you signed and what rights and options are available to you if you are the target of workplace bullying. You may also decide to talk to trusted friends and mentors, and consult an employment attorney.
                   </p>
 
-                  {/* Advertisement 2: JustAnswer Expert Chat Card matching Images 3 & 4 */}
-                  <div className="max-w-[300px] mx-auto border border-slate-300/80 rounded-md overflow-hidden my-8 font-sans shadow-xs">
-                    {/* Title Header ABOVE the image matching website */}
-                    <div className="bg-[#eafbf8] px-3.5 py-2.5 flex items-center justify-between border-b border-[#c8ebe5]">
-                      <h4 className="font-sans font-bold text-[13px] sm:text-[14px] text-[#27615b] my-0 leading-tight">
-                        Chat with an expert Online<br />Now
-                      </h4>
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[11px] font-bold text-[#00a4e4] tracking-tight">justanswer</span>
-                        <div className="flex items-center gap-0.5 text-[9px] text-[#00a4e4]">
-                          <span>▷</span>
-                          <span className="text-slate-400">⋮</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="w-full">
-                      <img
-                        src="/images/justanswer-expert.png"
-                        alt="Chat with an expert Online Now"
-                        className="w-full h-auto object-cover"
-                      />
-                    </div>
-
-                    {/* Dark green Open button bar matching Image 4 */}
-                    <a
-                      href="#"
-                      className="bg-[#082b25] hover:bg-[#0c3d35] px-4 py-2.5 flex items-center justify-between text-white font-sans text-sm font-semibold transition-colors block no-underline"
-                    >
-                      <span>Open</span>
-                      <span className="text-base font-bold leading-none">&gt;</span>
-                    </a>
-                  </div>
 
                   {/* Conclusion Paragraph matching Image 5 */}
                   <p className="m-0">
