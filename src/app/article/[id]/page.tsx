@@ -191,13 +191,13 @@ export default function ArticleDetailPage() {
           {/* LEFT/MAIN CONTENT (8 columns on large screens) */}
           <article className="lg:col-span-8 space-y-4">
             
-            {/* Red Category Heading matching reference image 1 */}
+            {/* Category Heading matching reference image */}
             <div className="mb-2">
               <Link
-                href={`/topic/${(article.category || 'finance-and-economics').toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
-                className="text-xs sm:text-[13px] font-sans font-bold text-[#DC2626] hover:underline"
+                href="/topic/thought-leaders"
+                className="text-xs sm:text-[13px] font-sans font-bold uppercase tracking-wider text-[#1642D0] hover:underline"
               >
-                {article.category || 'Finance & Economics'}
+                Thought Leaders
               </Link>
             </div>
 
@@ -474,14 +474,14 @@ export default function ArticleDetailPage() {
                     </div>
                   </div>
 
-                  {/* Advertisement matching reference image */}
-                  <div className="my-8">
+                  {/* Horizontal In-Article Advertisement matching Image 2 */}
+                  <div className="my-8 max-w-[728px] mx-auto">
                     <p className="text-[11px] font-sans font-normal uppercase tracking-wider text-[#777777] text-center mb-2.5 my-0 select-none">
                       ADVERTISEMENT
                     </p>
-                    <div className="w-full max-w-[336px] h-[600px] sm:h-[700px] lg:h-[770px] bg-[#f9f9f9] border border-[#e5e7eb] flex items-center justify-center shadow-2xs mx-auto">
+                    <div className="w-full h-[90px] sm:h-[100px] bg-[#f9f9f9] border border-[#e5e7eb] flex items-center justify-center shadow-2xs">
                       <span className="text-2xl sm:text-3xl font-sans text-[#777777] font-normal select-none">
-                        336 x 770
+                        728 x 90
                       </span>
                     </div>
                   </div>
@@ -527,13 +527,14 @@ export default function ArticleDetailPage() {
           {/* RIGHT SIDEBAR (Matching Images 1, 2, and 3) */}
           <aside className="lg:col-span-4 space-y-6 sticky top-24">
             {/* 1. Top Right Sidebar Advertisement (336 x 770) matching Image 3 */}
-            <div className="w-full max-w-[336px] mx-auto">
+            {/* 1. Top Right Sidebar Advertisement matching Image 1 (ends at bottom of left image) */}
+            <div className="w-full max-w-[300px] sm:max-w-[336px] mx-auto">
               <p className="text-[11px] font-sans font-normal uppercase tracking-wider text-[#777777] text-center mb-2.5 my-0 select-none">
                 ADVERTISEMENT
               </p>
-              <div className="w-full h-[600px] sm:h-[700px] lg:h-[770px] bg-[#f9f9f9] border border-[#e5e7eb] flex items-center justify-center shadow-2xs">
+              <div className="w-full h-[480px] sm:h-[520px] lg:h-[560px] bg-[#f9f9f9] border border-[#e5e7eb] flex items-center justify-center shadow-2xs">
                 <span className="text-2xl sm:text-3xl font-sans text-[#777777] font-normal select-none">
-                  336 x 770
+                  300 x 600
                 </span>
               </div>
             </div>
