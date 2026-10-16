@@ -474,19 +474,7 @@ export default function ArticleDetailPage() {
                     </div>
                   </div>
 
-                  {/* 2. Horizontal In-Article Advertisement matching Image 3 style */}
-                  <div className="my-8 max-w-[740px] mx-auto">
-                    <p className="text-[11px] font-sans font-normal uppercase tracking-wider text-[#777777] text-center mb-2.5 my-0 select-none">
-                      ADVERTISEMENT
-                    </p>
-                    <div className="w-full h-[120px] sm:h-[150px] bg-[#f9f9f9] border border-[#e5e7eb] flex items-center justify-center shadow-2xs">
-                      <span className="text-2xl sm:text-3xl font-sans text-[#777777] font-normal select-none">
-                        728 x 90
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* 3. Join the Conversation Section matching Image 1 & Image 2 */}
+                  {/* 2. Join the Conversation Section matching Image 1 & Image 2 */}
                   <section id="comments-section" className="pt-4 mb-10">
                     <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#020618] my-0">
                       Join the Conversation
@@ -564,6 +552,18 @@ export default function ArticleDetailPage() {
                     </div>
                   </article>
                 ))}
+              </div>
+
+              {/* Advertisement after Latest Article matching Image 3 */}
+              <div className="border-t border-slate-200 pt-6 mt-8">
+                <p className="text-[11px] font-sans font-normal uppercase tracking-wider text-[#777777] text-center mb-2.5 my-0 select-none">
+                  ADVERTISEMENT
+                </p>
+                <div className="w-full h-[600px] sm:h-[700px] lg:h-[770px] bg-[#f9f9f9] border border-[#e5e7eb] flex items-center justify-center shadow-2xs">
+                  <span className="text-2xl sm:text-3xl font-sans text-[#777777] font-normal select-none">
+                    336 x 770
+                  </span>
+                </div>
               </div>
             </div>
           </aside>
