@@ -12,7 +12,6 @@ import {
   ArrowRight,
   ExternalLink,
   Bookmark,
-  Share2,
 } from 'lucide-react';
 import { Header } from '@/layouts/Header';
 import { Footer } from '@/layouts/Footer';
@@ -231,15 +230,6 @@ export default function ArticleDetailPage() {
                   >
                     {article.author?.name || 'R.L. ADAMS'}
                   </Link>
-                  <a
-                    href="https://linkedin.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center w-3.5 h-3.5 bg-[#0A66C2] rounded-[2px] text-white text-[9px] font-bold ml-0.5 leading-none hover:opacity-90 transition-opacity"
-                    aria-label="LinkedIn Profile"
-                  >
-                    in
-                  </a>
                 </div>
                 <div className="text-[12px] font-sans text-slate-500 mt-0.5 flex items-center gap-1.5">
                   <span>Published {article.date || 'JAN 26, 2026'} AT 5:17 AM EDT</span>
@@ -266,11 +256,11 @@ export default function ArticleDetailPage() {
                 <button
                   type="button"
                   onClick={handleCopyLink}
-                  className="w-9 h-9 rounded-full border border-red-200/90 bg-red-50/20 hover:bg-red-50 flex items-center justify-center text-[#DC2626] transition-colors cursor-pointer"
+                  className="w-9 h-9 rounded-full border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-700 transition-colors cursor-pointer"
                   title={copied ? 'Link copied!' : 'Share article'}
                   aria-label="Share article"
                 >
-                  {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Share2 className="w-4 h-4 text-[#DC2626]" />}
+                  {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-slate-700" />}
                 </button>
               </div>
             </div>
@@ -278,8 +268,8 @@ export default function ArticleDetailPage() {
             {/* Horizontal Line BELOW Byline matching Image 1 */}
             <div className="border-b border-slate-200 mt-3 mb-4" />
 
-            {/* Compact Listen to this post Bar matching Image 3 (vertical cut line) */}
-            <div className="inline-flex items-center border border-slate-200/90 rounded-md bg-white px-3.5 py-2 mb-4 shadow-2xs">
+            {/* Compact Listen to this post Bar matching Image 3 (vertical cut line) with extra space after */}
+            <div className="inline-flex items-center border border-slate-200/90 rounded-md bg-white px-3.5 py-2 mb-8 shadow-2xs">
               <button
                 onClick={handleTogglePlay}
                 className="flex items-center gap-2.5 group cursor-pointer text-left focus:outline-hidden"
@@ -467,14 +457,19 @@ export default function ArticleDetailPage() {
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap items-center gap-2">
+                      <div className="flex items-center gap-1.5">
                         <h4 className="font-serif font-bold text-base sm:text-lg text-[#020618] my-0 leading-tight">
                           Sherin Shibu
                         </h4>
-                        <span className="text-slate-400 font-normal select-none">•</span>
-                        <span className="text-slate-600 font-serif text-sm">
-                          News Reporter
-                        </span>
+                        <a
+                          href="https://linkedin.com"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center w-3.5 h-3.5 bg-[#0A66C2] rounded-[2px] text-white text-[9px] font-bold ml-0.5 leading-none hover:opacity-90 transition-opacity"
+                          aria-label="Sherin Shibu LinkedIn Profile"
+                        >
+                          in
+                        </a>
                       </div>
                       <div className="flex items-center gap-1.5 text-xs font-sans font-semibold text-[#15803d] mt-1">
                         <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
