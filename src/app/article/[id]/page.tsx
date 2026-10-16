@@ -218,7 +218,7 @@ export default function ArticleDetailPage() {
             {/* Horizontal Line ABOVE Byline matching Image 1 */}
             <div className="border-t border-slate-200 mt-4 mb-3" />
 
-            {/* Author Byline & Action Buttons matching Image 1 */}
+            {/* Author Byline & Published info matching Image 1 & Image 2 */}
             <div className="flex items-center justify-between py-1">
               {/* Left: Author & Published info */}
               <div>
@@ -238,61 +238,66 @@ export default function ArticleDetailPage() {
                 </div>
               </div>
 
-              {/* Right: Circular Bookmark & Share Buttons matching Image 1 */}
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setBookmarked(!bookmarked)}
-                  className={`w-9 h-9 rounded-full border flex items-center justify-center transition-colors cursor-pointer ${
-                    bookmarked
-                      ? 'border-[#1642D0] bg-blue-50 text-[#1642D0]'
-                      : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-600'
-                  }`}
-                  title={bookmarked ? 'Saved to bookmarks' : 'Bookmark article'}
-                  aria-label="Bookmark article"
-                >
-                  <Bookmark className={`w-4 h-4 ${bookmarked ? 'fill-current' : ''}`} />
-                </button>
-                <button
-                  type="button"
-                  onClick={handleCopyLink}
-                  className="w-9 h-9 rounded-full border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-700 transition-colors cursor-pointer"
-                  title={copied ? 'Link copied!' : 'Share article'}
-                  aria-label="Share article"
-                >
-                  {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-slate-700" />}
-                </button>
-              </div>
+              {/* Right: Circular Bookmark Button matching Image 2 */}
+              <button
+                type="button"
+                onClick={() => setBookmarked(!bookmarked)}
+                className={`w-9 h-9 rounded-full border flex items-center justify-center transition-colors cursor-pointer ${
+                  bookmarked
+                    ? 'border-[#1642D0] bg-blue-50 text-[#1642D0]'
+                    : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-600'
+                }`}
+                title={bookmarked ? 'Saved to bookmarks' : 'Bookmark article'}
+                aria-label="Bookmark article"
+              >
+                <Bookmark className={`w-4 h-4 ${bookmarked ? 'fill-current' : ''}`} />
+              </button>
             </div>
 
-            {/* Horizontal Line BELOW Byline matching Image 1 */}
-            <div className="border-b border-slate-200 mt-3 mb-4" />
-
-            {/* Compact Listen to this post Bar matching Image 3 (vertical cut line) with extra space after */}
-            <div className="inline-flex items-center border border-slate-200/90 rounded-md bg-white px-3.5 py-2 mb-8 shadow-2xs">
+            {/* Horizontal Line matching Image 1 */}
+            <div className="border-t border-slate-200 mt-3 pt-3 pb-3 mb-8 flex flex-wrap items-center gap-4 sm:gap-6">
+              {/* SHARE Button matching Image 1 */}
               <button
-                onClick={handleTogglePlay}
-                className="flex items-center gap-2.5 group cursor-pointer text-left focus:outline-hidden"
-                aria-label={isPlaying ? 'Pause audio' : 'Listen to this post'}
+                type="button"
+                onClick={handleCopyLink}
+                className="flex items-center gap-1.5 text-xs font-bold text-[#020618] hover:text-[#1642D0] tracking-wider font-sans uppercase transition-colors cursor-pointer shrink-0"
+                title={copied ? 'Link copied!' : 'Share article'}
+                aria-label="Share article"
               >
-                <div className="w-6 h-6 rounded-full bg-[#10182b] group-hover:bg-[#1642D0] transition-colors flex items-center justify-center shrink-0">
-                  {isPlaying ? (
-                    <Pause className="w-3 h-3 fill-white text-white" />
-                  ) : (
-                    <Play className="w-3 h-3 fill-white text-white ml-0.5" />
-                  )}
-                </div>
-                <span className="font-sans font-bold text-xs sm:text-[13px] text-[#10182b] group-hover:text-[#1642D0] transition-colors">
-                  {isPlaying ? 'Pause listening' : 'Listen to this post'}
-                </span>
+                <span>SHARE</span>
+                {copied ? (
+                  <Check className="w-4 h-4 text-emerald-600" />
+                ) : (
+                  <Copy className="w-4 h-4 text-slate-800" />
+                )}
               </button>
 
-              {isPlaying && (
-                <div className="flex items-center gap-1.5 text-xs text-slate-500 font-sans ml-3 animate-pulse">
-                  <Volume2 className="w-3.5 h-3.5 text-[#1642D0]" />
-                  <span>Playing...</span>
-                </div>
-              )}
+              {/* Listen to this post Bar right after SHARE icon with some space */}
+              <div className="inline-flex items-center border border-slate-200/90 rounded-md bg-white px-3.5 py-1.5 shadow-2xs">
+                <button
+                  onClick={handleTogglePlay}
+                  className="flex items-center gap-2.5 group cursor-pointer text-left focus:outline-hidden"
+                  aria-label={isPlaying ? 'Pause audio' : 'Listen to this post'}
+                >
+                  <div className="w-6 h-6 rounded-full bg-[#10182b] group-hover:bg-[#1642D0] transition-colors flex items-center justify-center shrink-0">
+                    {isPlaying ? (
+                      <Pause className="w-3 h-3 fill-white text-white" />
+                    ) : (
+                      <Play className="w-3 h-3 fill-white text-white ml-0.5" />
+                    )}
+                  </div>
+                  <span className="font-sans font-bold text-xs sm:text-[13px] text-[#10182b] group-hover:text-[#1642D0] transition-colors">
+                    {isPlaying ? 'Pause listening' : 'Listen to this post'}
+                  </span>
+                </button>
+
+                {isPlaying && (
+                  <div className="flex items-center gap-1.5 text-xs text-slate-500 font-sans ml-3 animate-pulse">
+                    <Volume2 className="w-3.5 h-3.5 text-[#1642D0]" />
+                    <span>Playing...</span>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Main Featured Article Image matching reference screenshot */}
