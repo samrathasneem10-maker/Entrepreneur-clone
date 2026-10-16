@@ -11,6 +11,8 @@ import {
   Volume2,
   ArrowRight,
   ExternalLink,
+  Bookmark,
+  Share2,
 } from 'lucide-react';
 import { Header } from '@/layouts/Header';
 import { Footer } from '@/layouts/Footer';
@@ -133,6 +135,7 @@ export default function ArticleDetailPage() {
   };
 
   const [copied, setCopied] = useState(false);
+  const [bookmarked, setBookmarked] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const handleCopyLink = () => {
@@ -213,77 +216,91 @@ export default function ArticleDetailPage() {
               </p>
             )}
 
-            {/* Horizontal Line ABOVE Byline matching reference screenshot */}
-            <div className="border-t border-slate-200 mt-4 mb-2.5" />
+            {/* Horizontal Line ABOVE Byline matching Image 1 */}
+            <div className="border-t border-slate-200 mt-4 mb-3" />
 
-            {/* Author & Date Row: BY R.L. ADAMS | JAN 26, 2026 */}
-            <div className="text-xs font-sans font-bold uppercase tracking-wider text-slate-500 flex flex-wrap items-center gap-1.5 py-0.5">
-              <span className="text-slate-500 font-semibold">BY</span>
-              <Link
-                href={`/author/${(article.author?.name || 'rl-adams').toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
-                className="text-[#1642D0] font-bold hover:underline decoration-[#1642D0] underline-offset-2"
-              >
-                {article.author?.name || 'R.L. ADAMS'}
-              </Link>
-              <span className="text-slate-300 mx-1.5 select-none font-normal">|</span>
-              <span className="text-slate-500 font-normal">{article.date || 'JAN 26, 2026'}</span>
+            {/* Author Byline & Action Buttons matching Image 1 */}
+            <div className="flex items-center justify-between py-1">
+              {/* Left: Author & Published info */}
+              <div>
+                <div className="flex items-center gap-1.5 text-xs sm:text-[13px] font-sans font-bold uppercase tracking-wider text-slate-800">
+                  <span className="text-slate-500 font-semibold">BY</span>
+                  <Link
+                    href={`/author/${(article.author?.name || 'rl-adams').toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+                    className="text-[#020618] font-bold hover:underline"
+                  >
+                    {article.author?.name || 'R.L. ADAMS'}
+                  </Link>
+                  <a
+                    href="https://linkedin.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center w-3.5 h-3.5 bg-[#0A66C2] rounded-[2px] text-white text-[9px] font-bold ml-0.5 leading-none hover:opacity-90 transition-opacity"
+                    aria-label="LinkedIn Profile"
+                  >
+                    in
+                  </a>
+                </div>
+                <div className="text-[12px] font-sans text-slate-500 mt-0.5 flex items-center gap-1.5">
+                  <span>Published {article.date || 'JAN 26, 2026'} AT 5:17 AM EDT</span>
+                  <span>•</span>
+                  <span>5 min read</span>
+                </div>
+              </div>
+
+              {/* Right: Circular Bookmark & Share Buttons matching Image 1 */}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setBookmarked(!bookmarked)}
+                  className={`w-9 h-9 rounded-full border flex items-center justify-center transition-colors cursor-pointer ${
+                    bookmarked
+                      ? 'border-[#1642D0] bg-blue-50 text-[#1642D0]'
+                      : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-600'
+                  }`}
+                  title={bookmarked ? 'Saved to bookmarks' : 'Bookmark article'}
+                  aria-label="Bookmark article"
+                >
+                  <Bookmark className={`w-4 h-4 ${bookmarked ? 'fill-current' : ''}`} />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCopyLink}
+                  className="w-9 h-9 rounded-full border border-red-200/90 bg-red-50/20 hover:bg-red-50 flex items-center justify-center text-[#DC2626] transition-colors cursor-pointer"
+                  title={copied ? 'Link copied!' : 'Share article'}
+                  aria-label="Share article"
+                >
+                  {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Share2 className="w-4 h-4 text-[#DC2626]" />}
+                </button>
+              </div>
             </div>
 
-            {/* Horizontal Line BELOW Byline matching reference screenshot */}
-            <div className="border-b border-slate-200 mt-2.5 mb-4" />
+            {/* Horizontal Line BELOW Byline matching Image 1 */}
+            <div className="border-b border-slate-200 mt-3 mb-4" />
 
-            {/* Action Bar: SHARE on left, COMMENT on right matching Images 2 & 3 */}
-            <div className="flex items-center justify-between py-1 mb-2.5">
-              {/* Left: SHARE */}
-              <button
-                onClick={handleCopyLink}
-                className="flex items-center gap-1.5 text-xs font-bold text-[#020618] hover:text-[#1642D0] tracking-wider font-sans uppercase transition-colors cursor-pointer"
-                title={copied ? 'Copied link!' : 'Copy Link'}
-                aria-label="Copy Link"
-              >
-                <span>SHARE</span>
-                {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-slate-800" />}
-              </button>
-
-              {/* Right: COMMENT */}
-              <button
-                onClick={() => {
-                  const el = document.getElementById('comments-section');
-                  if (el) el.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="flex items-center gap-2 text-xs font-bold text-[#314158] hover:text-[#1642D0] tracking-wider font-sans uppercase transition-colors cursor-pointer"
-                aria-label="Comment"
-              >
-                <svg className="w-4 h-4 fill-[#314158] shrink-0" viewBox="0 0 24 24">
-                  <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
-                </svg>
-                <span>COMMENT</span>
-              </button>
-            </div>
-
-            {/* Listen to this post Bar matching Images 2 & 3 */}
-            <div className="w-full border border-slate-200/90 rounded-md bg-white px-3.5 py-2.5 mb-4 flex items-center justify-between shadow-2xs">
+            {/* Compact Listen to this post Bar matching Image 3 (vertical cut line) */}
+            <div className="inline-flex items-center border border-slate-200/90 rounded-md bg-white px-3.5 py-2 mb-4 shadow-2xs">
               <button
                 onClick={handleTogglePlay}
-                className="flex items-center gap-3 group cursor-pointer text-left focus:outline-hidden"
+                className="flex items-center gap-2.5 group cursor-pointer text-left focus:outline-hidden"
                 aria-label={isPlaying ? 'Pause audio' : 'Listen to this post'}
               >
-                <div className="w-7 h-7 rounded-full bg-[#10182b] group-hover:bg-[#1642D0] transition-colors flex items-center justify-center shrink-0">
+                <div className="w-6 h-6 rounded-full bg-[#10182b] group-hover:bg-[#1642D0] transition-colors flex items-center justify-center shrink-0">
                   {isPlaying ? (
-                    <Pause className="w-3.5 h-3.5 fill-white text-white" />
+                    <Pause className="w-3 h-3 fill-white text-white" />
                   ) : (
-                    <Play className="w-3.5 h-3.5 fill-white text-white ml-0.5" />
+                    <Play className="w-3 h-3 fill-white text-white ml-0.5" />
                   )}
                 </div>
-                <span className="font-sans font-bold text-sm text-[#10182b] group-hover:text-[#1642D0] transition-colors">
+                <span className="font-sans font-bold text-xs sm:text-[13px] text-[#10182b] group-hover:text-[#1642D0] transition-colors">
                   {isPlaying ? 'Pause listening' : 'Listen to this post'}
                 </span>
               </button>
 
               {isPlaying && (
-                <div className="flex items-center gap-2 text-xs text-slate-500 font-sans animate-pulse">
-                  <Volume2 className="w-4 h-4 text-[#1642D0]" />
-                  <span>Playing audio...</span>
+                <div className="flex items-center gap-1.5 text-xs text-slate-500 font-sans ml-3 animate-pulse">
+                  <Volume2 className="w-3.5 h-3.5 text-[#1642D0]" />
+                  <span>Playing...</span>
                 </div>
               )}
             </div>
@@ -526,13 +543,12 @@ export default function ArticleDetailPage() {
 
           {/* RIGHT SIDEBAR (Matching Images 1, 2, and 3) */}
           <aside className="lg:col-span-4 space-y-6 sticky top-24">
-            {/* 1. Top Right Sidebar Advertisement (336 x 770) matching Image 3 */}
-            {/* 1. Top Right Sidebar Advertisement matching Image 1 (ends at bottom of left image) */}
+            {/* 1. Top Right Sidebar Advertisement matching Image 3 */}
             <div className="w-full max-w-[300px] sm:max-w-[336px] mx-auto">
               <p className="text-[11px] font-sans font-normal uppercase tracking-wider text-[#777777] text-center mb-2.5 my-0 select-none">
                 ADVERTISEMENT
               </p>
-              <div className="w-full h-[480px] sm:h-[520px] lg:h-[560px] bg-[#f9f9f9] border border-[#e5e7eb] flex items-center justify-center shadow-2xs">
+              <div className="w-full h-[250px] sm:h-[280px] lg:h-[300px] bg-[#f9f9f9] border border-[#e5e7eb] flex items-center justify-center shadow-2xs">
                 <span className="text-2xl sm:text-3xl font-sans text-[#777777] font-normal select-none">
                   300 x 600
                 </span>
