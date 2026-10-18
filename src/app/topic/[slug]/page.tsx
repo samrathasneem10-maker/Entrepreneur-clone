@@ -307,9 +307,9 @@ export default function DynamicTopicPage() {
 
       {/* 2-Column Sub-Featured Cards matching Image 2 */}
       <div className="w-full max-w-7xl mx-auto px-5 lg:px-10 pb-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           {/* Card 1 */}
-          <article className="group flex flex-col items-start text-left">
+          <article className="group flex flex-col items-start text-left w-full">
             <div className="w-full aspect-[16/10] overflow-hidden bg-slate-100 mb-3.5">
               <img
                 src="/images/topic-sub-1.jpg"
@@ -320,18 +320,18 @@ export default function DynamicTopicPage() {
             <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-1.5 block">
               THOUGHT LEADERS
             </span>
-            <h2 className="font-serif font-bold text-lg sm:text-[21px] lg:text-[22px] text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-1.5">
+            <h2 className="font-serif font-bold text-base sm:text-lg lg:text-[19px] xl:text-[20px] text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-1.5 md:min-h-[30px] lg:min-h-[30px] flex items-center">
               <Link href="/article/power-of-effective-communication-leadership">
                 The Power of Effective Communication in Leadership
               </Link>
             </h2>
-            <p className="font-serif text-slate-600 text-xs sm:text-[14px] leading-relaxed mt-2 my-0 w-full">
+            <p className="font-serif text-slate-600 text-xs sm:text-[13.5px] lg:text-[14px] leading-relaxed mt-2 my-0 w-full">
               Great leaders don&apos;t just give direction — they listen, inspire and bring people together.
             </p>
           </article>
 
           {/* Card 2 */}
-          <article className="group flex flex-col items-start text-left">
+          <article className="group flex flex-col items-start text-left w-full">
             <div className="w-full aspect-[16/10] overflow-hidden bg-slate-100 mb-3.5">
               <img
                 src="/images/topic-sub-2.jpg"
@@ -342,12 +342,12 @@ export default function DynamicTopicPage() {
             <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-1.5 block">
               THOUGHT LEADERS
             </span>
-            <h2 className="font-serif font-bold text-lg sm:text-[21px] lg:text-[22px] text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-1.5">
+            <h2 className="font-serif font-bold text-base sm:text-lg lg:text-[19px] xl:text-[20px] text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-1.5 md:min-h-[30px] lg:min-h-[30px] flex items-center">
               <Link href="/article/collaboration-drives-innovation-growth">
                 Collaboration Drives Innovation and Growth
               </Link>
             </h2>
-            <p className="font-serif text-slate-600 text-xs sm:text-[14px] leading-relaxed mt-2 my-0 w-full">
+            <p className="font-serif text-slate-600 text-xs sm:text-[13.5px] lg:text-[14px] leading-relaxed mt-2 my-0 w-full">
               When great minds work together, new ideas turn into real progress.
             </p>
           </article>
@@ -435,30 +435,34 @@ export default function DynamicTopicPage() {
           {/* Right Column: Sidebar with 2 Advertisements (Articles 1-5 & Articles 6-9) */}
           <div className="lg:col-span-5 space-y-6">
             
-            {/* 1st Sidebar Advertisement: Decreased size from Article 1 to 5, top aligned with left column */}
-            <div className="w-full min-h-[480px] md:min-h-[540px] lg:min-h-[580px] bg-[#edf2f7] border border-slate-300 flex flex-col items-center justify-center p-6 text-center shadow-2xs relative">
-              <span className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-400 absolute top-4">
+            {/* 1st Sidebar Advertisement: Decreased size from Article 1 to 5, outside top advertisement */}
+            <div className="w-full text-center">
+              <span className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-400 block mb-2">
                 ADVERTISEMENT
               </span>
-              <span className="text-xs font-semibold text-slate-600 font-sans">
-                300 × 600 Half Page Banner
-              </span>
-              <span className="text-[11px] text-slate-400 font-sans mt-0.5">
-                Your Advertisement Here
-              </span>
+              <div className="w-full min-h-[480px] md:min-h-[540px] lg:min-h-[580px] bg-[#edf2f7] border border-slate-300 flex flex-col items-center justify-center p-6 text-center shadow-2xs">
+                <span className="text-xs font-semibold text-slate-600 font-sans">
+                  300 × 600 Half Page Banner
+                </span>
+                <span className="text-[11px] text-slate-400 font-sans mt-0.5">
+                  Your Advertisement Here
+                </span>
+              </div>
             </div>
 
-            {/* 2nd Sidebar Advertisement: Starts after 1st ad with small gap, spans until 9th article */}
-            <div className="w-full min-h-[460px] md:min-h-[500px] lg:min-h-[550px] bg-[#edf2f7] border border-slate-300 flex flex-col items-center justify-center p-6 text-center shadow-2xs relative">
-              <span className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-400 absolute top-4">
+            {/* 2nd Sidebar Advertisement: Starts after 1st ad with small gap, spans until 9th article, outside top advertisement */}
+            <div className="w-full text-center">
+              <span className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-400 block mb-2">
                 ADVERTISEMENT
               </span>
-              <span className="text-xs font-semibold text-slate-600 font-sans">
-                300 × 250 Medium Rectangle
-              </span>
-              <span className="text-[11px] text-slate-400 font-sans mt-0.5">
-                Your Advertisement Here
-              </span>
+              <div className="w-full min-h-[460px] md:min-h-[500px] lg:min-h-[550px] bg-[#edf2f7] border border-slate-300 flex flex-col items-center justify-center p-6 text-center shadow-2xs">
+                <span className="text-xs font-semibold text-slate-600 font-sans">
+                  300 × 250 Medium Rectangle
+                </span>
+                <span className="text-[11px] text-slate-400 font-sans mt-0.5">
+                  Your Advertisement Here
+                </span>
+              </div>
             </div>
 
           </div>
