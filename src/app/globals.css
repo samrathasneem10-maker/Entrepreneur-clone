@@ -9,15 +9,19 @@
 }
 
 @theme {
-  --font-sans: 'Inter', var(--font-sans, system-ui), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-serif: 'Playfair Display', var(--font-serif, Georgia), Cambria, "Times New Roman", serif;
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-serif: Georgia, 'Playfair Display', Cambria, "Times New Roman", Times, serif;
   --font-georgia: Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-logo: "Noe Display", 'Bodoni Moda', var(--font-logo, serif), Didot, "Bodoni MT", Georgia, serif;
+  --font-logo: "Noe Display", 'Bodoni Moda', Didot, "Bodoni MT", Georgia, serif;
 }
 
 :root {
   --background: #ffffff;
   --foreground: #020617;
+}
+
+.font-serif {
+  font-family: Georgia, 'Playfair Display', Cambria, "Times New Roman", Times, serif;
 }
 
 html, body {

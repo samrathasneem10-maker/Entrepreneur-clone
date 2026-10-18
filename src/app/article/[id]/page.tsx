@@ -218,28 +218,23 @@ export default function ArticleDetailPage() {
             {/* Horizontal Line ABOVE Byline matching Image 1 */}
             <div className="border-t border-slate-200 mt-4 mb-3" />
 
-            {/* Part 1: Author Byline & Bookmark matching Image 1 */}
-            <div className="flex items-center justify-between py-0.5">
-              {/* Left: Author & Date */}
-              <div className="flex items-center gap-2 text-xs sm:text-[13px] font-sans font-bold uppercase tracking-wider text-slate-800">
-                <span className="text-slate-600 font-bold">BY</span>
-                <Link
-                  href={`/author/${(article.author?.name || 'rl-adams').toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
-                  className="text-[#1642D0] hover:underline font-bold"
-                >
-                  {article.author?.name || 'R.L. ADAMS'}
-                </Link>
-                <span className="text-slate-300 font-normal">|</span>
-                <span className="text-slate-500 font-normal">
-                  {article.date || 'JAN 26, 2026'}
-                </span>
-              </div>
-
-              {/* Right: Bookmark Icon matching Image 1 */}
+            {/* Part 1: Author Byline & Bookmark right next to date */}
+            <div className="flex items-center gap-2.5 text-xs sm:text-[13px] font-sans font-bold uppercase tracking-wider text-slate-800 py-0.5">
+              <span className="text-slate-600 font-bold">BY</span>
+              <Link
+                href={`/author/${(article.author?.name || 'rl-adams').toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+                className="text-[#1642D0] hover:underline font-bold"
+              >
+                {article.author?.name || 'R.L. ADAMS'}
+              </Link>
+              <span className="text-slate-300 font-normal">|</span>
+              <span className="text-slate-500 font-normal">
+                {article.date || 'JAN 26, 2026'}
+              </span>
               <button
                 type="button"
                 onClick={() => setBookmarked(!bookmarked)}
-                className="text-slate-700 hover:text-[#1642D0] transition-colors cursor-pointer p-0.5"
+                className="text-slate-700 hover:text-[#1642D0] transition-colors cursor-pointer p-0.5 ml-1 flex items-center"
                 title={bookmarked ? 'Saved to bookmarks' : 'Bookmark article'}
                 aria-label="Bookmark article"
               >
@@ -247,10 +242,10 @@ export default function ArticleDetailPage() {
               </button>
             </div>
 
-            {/* Part 2: Action Bar (Listen to this post, divider, Copy/Share icon, COMMENT) matching Image 1 */}
+            {/* Part 2: Action Bar (Listen to this post, SHARE button, COMMENT) */}
             <div className="flex items-center justify-between pt-3 pb-1 mb-8">
-              {/* Left: Listen to this post | Share/Copy icon */}
-              <div className="flex items-center gap-3">
+              {/* Left: Listen to this post & SHARE button */}
+              <div className="flex items-center gap-4">
                 {/* Listen to this post Pill Button */}
                 <div className="inline-flex items-center border border-slate-200 rounded-full bg-white px-3.5 py-1.5 shadow-xs hover:border-slate-300 transition-colors">
                   <button
@@ -278,31 +273,23 @@ export default function ArticleDetailPage() {
                   )}
                 </div>
 
-                {/* Vertical Divider Line matching Image 1 */}
-                <div className="h-5 w-px bg-slate-300 select-none" />
-
-                {/* Copy / Share Button with Tooltip matching Image 1 */}
-                <div className="relative group/share">
-                  <button
-                    type="button"
-                    onClick={handleCopyLink}
-                    className="p-1 rounded-md hover:bg-slate-100 text-slate-700 hover:text-[#1642D0] transition-colors cursor-pointer flex items-center justify-center"
-                    aria-label="Share article"
-                  >
-                    {copied ? (
-                      <Check className="w-4 h-4 text-emerald-600" />
-                    ) : (
-                      <Copy className="w-4 h-4 text-slate-700 hover:text-[#1642D0]" />
-                    )}
-                  </button>
-                  {/* Share Tooltip */}
-                  <div className="absolute left-1/2 -translate-x-1/2 top-full mt-1 px-2 py-0.5 bg-white text-slate-700 text-[11px] font-sans font-medium rounded shadow-md border border-slate-200 pointer-events-none opacity-0 group-hover/share:opacity-100 transition-opacity z-10 whitespace-nowrap">
-                    {copied ? 'Copied!' : 'Share'}
-                  </div>
-                </div>
+                {/* SHARE Button (No divider line, explicit SHARE label with icon) */}
+                <button
+                  type="button"
+                  onClick={handleCopyLink}
+                  className="flex items-center gap-1.5 text-xs sm:text-[13px] font-bold text-slate-700 hover:text-[#1642D0] tracking-wider font-sans uppercase transition-colors cursor-pointer py-1.5 px-2.5 rounded-md hover:bg-slate-100"
+                  aria-label="Share article"
+                >
+                  <span>{copied ? 'COPIED!' : 'SHARE'}</span>
+                  {copied ? (
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  ) : (
+                    <Copy className="w-3.5 h-3.5 text-slate-700 hover:text-[#1642D0]" />
+                  )}
+                </button>
               </div>
 
-              {/* Right: COMMENT matching Image 1 */}
+              {/* Right: COMMENT */}
               <button
                 type="button"
                 onClick={() => {
