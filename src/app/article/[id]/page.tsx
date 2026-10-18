@@ -215,43 +215,57 @@ export default function ArticleDetailPage() {
               </p>
             )}
 
-            {/* Horizontal Line ABOVE Action Bar */}
+            {/* Horizontal Line ABOVE Byline matching Image 1 */}
             <div className="border-t border-slate-200 mt-4 mb-3" />
 
-            {/* Action Bar (Top Row): SHARE, Listen to this post, and Bookmark */}
-            <div className="flex flex-wrap items-center justify-between py-1 gap-4">
-              {/* Left: SHARE icon and Listen to this post bar */}
-              <div className="flex items-center gap-4 sm:gap-6">
-                <button
-                  type="button"
-                  onClick={handleCopyLink}
-                  className="flex items-center gap-1.5 text-xs font-bold text-[#020618] hover:text-[#1642D0] tracking-wider font-sans uppercase transition-colors cursor-pointer shrink-0"
-                  title={copied ? 'Link copied!' : 'Share article'}
-                  aria-label="Share article"
+            {/* Part 1: Author Byline & Bookmark matching Image 1 */}
+            <div className="flex items-center justify-between py-0.5">
+              {/* Left: Author & Date */}
+              <div className="flex items-center gap-2 text-xs sm:text-[13px] font-sans font-bold uppercase tracking-wider text-slate-800">
+                <span className="text-slate-600 font-bold">BY</span>
+                <Link
+                  href={`/author/${(article.author?.name || 'rl-adams').toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+                  className="text-[#1642D0] hover:underline font-bold"
                 >
-                  <span>SHARE</span>
-                  {copied ? (
-                    <Check className="w-4 h-4 text-emerald-600" />
-                  ) : (
-                    <Copy className="w-4 h-4 text-slate-800" />
-                  )}
-                </button>
+                  {article.author?.name || 'R.L. ADAMS'}
+                </Link>
+                <span className="text-slate-300 font-normal">|</span>
+                <span className="text-slate-500 font-normal">
+                  {article.date || 'JAN 26, 2026'}
+                </span>
+              </div>
 
-                {/* Listen to this post Bar right after SHARE icon with some space */}
-                <div className="inline-flex items-center border border-slate-200/90 rounded-md bg-white px-3.5 py-1.5 shadow-2xs">
+              {/* Right: Bookmark Icon matching Image 1 */}
+              <button
+                type="button"
+                onClick={() => setBookmarked(!bookmarked)}
+                className="text-slate-700 hover:text-[#1642D0] transition-colors cursor-pointer p-0.5"
+                title={bookmarked ? 'Saved to bookmarks' : 'Bookmark article'}
+                aria-label="Bookmark article"
+              >
+                <Bookmark className={`w-4 h-4 ${bookmarked ? 'fill-[#1642D0] text-[#1642D0]' : 'text-slate-700'}`} />
+              </button>
+            </div>
+
+            {/* Part 2: Action Bar (Listen to this post, divider, Copy/Share icon, COMMENT) matching Image 1 */}
+            <div className="flex items-center justify-between pt-3 pb-1 mb-8">
+              {/* Left: Listen to this post | Share/Copy icon */}
+              <div className="flex items-center gap-3">
+                {/* Listen to this post Pill Button */}
+                <div className="inline-flex items-center border border-slate-200 rounded-full bg-white px-3.5 py-1.5 shadow-xs hover:border-slate-300 transition-colors">
                   <button
                     onClick={handleTogglePlay}
                     className="flex items-center gap-2.5 group cursor-pointer text-left focus:outline-hidden"
                     aria-label={isPlaying ? 'Pause audio' : 'Listen to this post'}
                   >
-                    <div className="w-6 h-6 rounded-full bg-[#10182b] group-hover:bg-[#1642D0] transition-colors flex items-center justify-center shrink-0">
+                    <div className="w-5.5 h-5.5 rounded-full bg-[#10182b] group-hover:bg-[#1642D0] transition-colors flex items-center justify-center shrink-0">
                       {isPlaying ? (
-                        <Pause className="w-3 h-3 fill-white text-white" />
+                        <Pause className="w-2.5 h-2.5 fill-white text-white" />
                       ) : (
-                        <Play className="w-3 h-3 fill-white text-white ml-0.5" />
+                        <Play className="w-2.5 h-2.5 fill-white text-white ml-0.5" />
                       )}
                     </div>
-                    <span className="font-sans font-bold text-xs sm:text-[13px] text-[#10182b] group-hover:text-[#1642D0] transition-colors">
+                    <span className="font-sans font-semibold text-xs sm:text-[13px] text-[#10182b] group-hover:text-[#1642D0] transition-colors">
                       {isPlaying ? 'Pause listening' : 'Listen to this post'}
                     </span>
                   </button>
@@ -263,43 +277,46 @@ export default function ArticleDetailPage() {
                     </div>
                   )}
                 </div>
+
+                {/* Vertical Divider Line matching Image 1 */}
+                <div className="h-5 w-px bg-slate-300 select-none" />
+
+                {/* Copy / Share Button with Tooltip matching Image 1 */}
+                <div className="relative group/share">
+                  <button
+                    type="button"
+                    onClick={handleCopyLink}
+                    className="p-1 rounded-md hover:bg-slate-100 text-slate-700 hover:text-[#1642D0] transition-colors cursor-pointer flex items-center justify-center"
+                    aria-label="Share article"
+                  >
+                    {copied ? (
+                      <Check className="w-4 h-4 text-emerald-600" />
+                    ) : (
+                      <Copy className="w-4 h-4 text-slate-700 hover:text-[#1642D0]" />
+                    )}
+                  </button>
+                  {/* Share Tooltip */}
+                  <div className="absolute left-1/2 -translate-x-1/2 top-full mt-1 px-2 py-0.5 bg-white text-slate-700 text-[11px] font-sans font-medium rounded shadow-md border border-slate-200 pointer-events-none opacity-0 group-hover/share:opacity-100 transition-opacity z-10 whitespace-nowrap">
+                    {copied ? 'Copied!' : 'Share'}
+                  </div>
+                </div>
               </div>
 
-              {/* Right: Circular Bookmark Button */}
+              {/* Right: COMMENT matching Image 1 */}
               <button
                 type="button"
-                onClick={() => setBookmarked(!bookmarked)}
-                className={`w-9 h-9 rounded-full border flex items-center justify-center transition-colors cursor-pointer ${
-                  bookmarked
-                    ? 'border-[#1642D0] bg-blue-50 text-[#1642D0]'
-                    : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-600'
-                }`}
-                title={bookmarked ? 'Saved to bookmarks' : 'Bookmark article'}
-                aria-label="Bookmark article"
+                onClick={() => {
+                  const el = document.getElementById('comments-section');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-[#1642D0] tracking-wider font-sans uppercase transition-colors cursor-pointer"
+                aria-label="Comment"
               >
-                <Bookmark className={`w-4 h-4 ${bookmarked ? 'fill-current' : ''}`} />
+                <svg className="w-3.5 h-3.5 fill-slate-600 hover:fill-[#1642D0] shrink-0" viewBox="0 0 24 24">
+                  <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+                </svg>
+                <span>COMMENT</span>
               </button>
-            </div>
-
-            {/* Horizontal Line BETWEEN Action Bar and Author Byline */}
-            <div className="border-t border-slate-200 mt-3 mb-3" />
-
-            {/* Author Byline & Published Info (Bottom Row) */}
-            <div className="py-1 mb-8">
-              <div className="flex items-center gap-1.5 text-xs sm:text-[13px] font-sans font-bold uppercase tracking-wider text-slate-800">
-                <span className="text-slate-500 font-semibold">BY</span>
-                <Link
-                  href={`/author/${(article.author?.name || 'rl-adams').toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
-                  className="text-[#020618] font-bold hover:underline"
-                >
-                  {article.author?.name || 'R.L. ADAMS'}
-                </Link>
-              </div>
-              <div className="text-[12px] font-sans text-slate-500 mt-0.5 flex items-center gap-1.5">
-                <span>Published {article.date || 'JAN 26, 2026'} AT 5:17 AM EDT</span>
-                <span>•</span>
-                <span>5 min read</span>
-              </div>
             </div>
 
             {/* Main Featured Article Image matching reference screenshot */}
