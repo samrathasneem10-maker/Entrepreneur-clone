@@ -30,6 +30,34 @@ const AUTHORS_MAP: Record<string, AuthorProfile> = {
     avatar: '/images/sherin-shibu.jpg',
     bio: 'Sherin Shibu is a business news reporter at Entrepreneur.com. She previously worked for PCMag, Business Insider, The Messenger, and ZDNET as a reporter and copyeditor. Her areas of coverage encompass tech, business, strategy, finance, and even space. She is a Columbia University graduate.',
   },
+  'dean-guida': {
+    name: 'Dean Guida',
+    role: 'Contributor & Tech CEO',
+    badge: 'Entrepreneur Leadership Network Contributor',
+    avatar: '/images/more-author-1.jpg',
+    bio: "Dean Guida is the founder and CEO of Infragistics, a global software company providing tools and solutions to accelerate application design and development. He is the author of 'When Grit Is Not Enough'.",
+  },
+  'ben-angel': {
+    name: 'Ben Angel',
+    role: 'Bestselling Author & Contributor',
+    badge: 'Entrepreneur Network Contributor',
+    avatar: '/images/more-author-2.jpg',
+    bio: "Ben Angel is the author of 'Unstoppable: A 90-Day Plan to Biohack Your Mind and Body for Success'. He has helped thousands of entrepreneurs maximize their cognitive performance and productivity.",
+  },
+  'rob-aquino': {
+    name: 'Rob Aquino',
+    role: 'CEO & Business Strategist',
+    badge: 'Entrepreneur Leadership Network Contributor',
+    avatar: '/images/more-author-3.jpg',
+    bio: 'Rob Aquino is the CEO of JBS Corp, specializing in corporate strategy, organizational scaling, and executive leadership development across growth-stage enterprises.',
+  },
+  'molly-cavanah': {
+    name: 'Molly Cavanah',
+    role: 'Growth Executive & Analyst',
+    badge: 'Entrepreneur Leadership Network Contributor',
+    avatar: '/images/more-author-4.jpg',
+    bio: 'Molly Cavanah is a seasoned growth executive with extensive experience leading revenue operations, user acquisition, and predictive data analytics for venture-backed tech companies.',
+  },
   'rl-adams': {
     name: 'R.L. Adams',
     role: 'Contributing Writer',
@@ -39,8 +67,8 @@ const AUTHORS_MAP: Record<string, AuthorProfile> = {
   },
 };
 
-// Exactly 25 authentic articles matching the 1-row-3-columns reference layout
-const AUTHOR_ARTICLES_25 = [
+// 24 articles in complete 3-column rows, with the final row matching Image 1 exactly
+const AUTHOR_ARTICLES_24 = [
   {
     id: 'childhood-sweethearts-product-new-parents',
     title: "These Childhood Sweethearts Created a Product for New Parents. It Made $500K in Revenue in Under 1 Minute: 'Orders Started to Roll In'",
@@ -188,33 +216,54 @@ const AUTHOR_ARTICLES_25 = [
     excerpt: 'Underwriters now mandate multi-factor authentication, endpoint detection, and regular employee phishing tests.',
     imageUrl: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?q=80&w=600&auto=format&fit=crop',
   },
+  // FINAL ROW: EXACT MATCH TO IMAGE 1
   {
-    id: 'creator-economy-evolves-first-party-audience',
-    title: 'The Creator Economy Evolves: Subscriptions, Memberships, and Owning Your First-Party Audience',
-    category: 'CREATOR BUSINESS',
-    excerpt: 'Creators pivot away from erratic platform algorithms to build sustainable direct subscriber revenue streams.',
-    imageUrl: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=600&auto=format&fit=crop',
+    id: 'workers-managing-ai-bots-no-manager-pay',
+    title: 'Workers Are Managing AI Bots — Without Getting Manager Pay',
+    category: 'BUSINESS NEWS',
+    excerpt: 'A new report reveals that more workers than ever are managing AI bots without a raise or title change.',
+    imageUrl: '/images/final-article-1.jpg',
   },
   {
-    id: 'clean-energy-startups-high-interest-rates',
-    title: 'How Clean Energy Startups Are Navigating High Interest Rates and Grid Interconnection Delays',
-    category: 'CLEAN ENERGY',
-    excerpt: 'Distributed solar-plus-storage models gain traction as utility-scale developers wait years for substation capacity.',
-    imageUrl: 'https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?q=80&w=600&auto=format&fit=crop',
+    id: 'is-chatgpt-dulling-your-brain-studies',
+    title: 'Is ChatGPT Dulling Your Brain? New Studies Raise Alarming Questions.',
+    category: 'BUSINESS NEWS',
+    excerpt: 'Psychologists say generative tools can weaken attention and problem-solving.',
+    imageUrl: '/images/final-article-2.jpg',
   },
   {
-    id: 'mastering-the-hybrid-workplace-deep-work',
-    title: 'Mastering the Hybrid Workplace: Asynchronous Communication and Deep Work Culture',
-    category: 'WORKPLACE PRODUCTIVITY',
-    excerpt: 'Leading tech organizations cut recurring status meetings in half to empower engineers with uninterrupted focus.',
-    imageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=600&auto=format&fit=crop',
+    id: 'arrogant-leader-bought-6-businesses-lost-them-all',
+    title: "This Self-Described 'Arrogant' Leader Bought 6 Businesses for $3 Million and Lost Them All. Here's What She Learned and How She Got Back on Track.",
+    category: 'BUYING A FRANCHISE',
+    excerpt: 'The experience fundamentally changed the way she thought about business.',
+    imageUrl: '/images/final-article-3.jpg',
+  },
+];
+
+const MORE_AUTHORS = [
+  {
+    name: 'Dean Guida',
+    title: "Founder and CEO of Infragistics, Author of 'When Grit Is Not Enough'",
+    avatar: '/images/more-author-1.jpg',
+    href: '/author/dean-guida',
   },
   {
-    id: 'global-supply-chain-resilience-nearshoring',
-    title: 'Global Supply Chain Resilience: Nearshoring Manufacturing Back to North America',
-    category: 'SUPPLY CHAIN',
-    excerpt: 'Industrial automation, shortened maritime transit times, and tax incentives make regionalized manufacturing competitive.',
-    imageUrl: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=600&auto=format&fit=crop',
+    name: 'Ben Angel',
+    title: 'Entrepreneur Network Contributor',
+    avatar: '/images/more-author-2.jpg',
+    href: '/author/ben-angel',
+  },
+  {
+    name: 'Rob Aquino',
+    title: 'CEO of JBS Corp',
+    avatar: '/images/more-author-3.jpg',
+    href: '/author/rob-aquino',
+  },
+  {
+    name: 'Molly Cavanah',
+    title: 'VP of Revenue Growth & Data',
+    avatar: '/images/more-author-4.jpg',
+    href: '/author/molly-cavanah',
   },
 ];
 
@@ -236,7 +285,7 @@ export default function AuthorProfilePage() {
       <section className="bg-white pt-10 pb-4 md:pt-14 md:pb-6 px-5 lg:px-10">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8 md:gap-12">
-            {/* Author Avatar: Clean circle without border matching Image 1 */}
+            {/* Author Avatar: Clean circle without border */}
             <div className="shrink-0">
               <img
                 src={author.avatar}
@@ -301,18 +350,18 @@ export default function AuthorProfilePage() {
         </div>
       </section>
 
-      {/* ARTICLES STREAM - EXACT MATCH TO REFERENCE SCREENSHOT (1 ROW 3 COLUMNS, TOTAL 25) */}
+      {/* ARTICLES STREAM - 1 ROW 3 COLUMNS GRID */}
       <main className="flex-1 w-full max-w-7xl mx-auto px-5 lg:px-10 py-6 md:py-10">
-        {/* Section Headline matching screenshot */}
+        {/* Section Headline */}
         <div className="mb-8">
           <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-serif font-black text-[#020618] tracking-tight my-0">
             More From {author.name}
           </h2>
         </div>
 
-        {/* 1 Row 3 Columns Grid for 25 Articles */}
+        {/* 1 Row 3 Columns Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
-          {AUTHOR_ARTICLES_25.map((art) => (
+          {AUTHOR_ARTICLES_24.map((art) => (
             <article key={art.id} className="group flex flex-col items-start text-left">
               {/* Card Image */}
               <div className="w-full aspect-[16/10] overflow-hidden rounded-xl bg-slate-100 mb-3.5">
@@ -343,11 +392,77 @@ export default function AuthorProfilePage() {
           ))}
         </div>
 
-        {/* Clean Website Footer Note */}
-        <div className="mt-14 pt-8 border-t border-slate-200 text-center">
-          <p className="text-xs font-sans text-slate-400 uppercase tracking-widest my-0">
-            Showing all 25 articles by {author.name}
-          </p>
+        {/* HORIZONTAL DIVIDER LINE ABOVE 'MORE AUTHORS YOU MIGHT LIKE' MATCHING IMAGE 2 */}
+        <div className="border-t border-slate-200 mt-16 pt-10">
+          {/* Section Headline matching Image 2 */}
+          <div className="mb-8">
+            <h2 className="text-2xl sm:text-3xl lg:text-[32px] font-serif font-black text-[#020618] tracking-tight my-0">
+              More Authors You Might Like
+            </h2>
+          </div>
+
+          {/* 4 Authors Row matching Image 2 */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8 text-center pt-2 pb-10">
+            {MORE_AUTHORS.map((auth) => (
+              <div key={auth.name} className="flex flex-col items-center">
+                <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-full overflow-hidden mb-3.5">
+                  <img
+                    src={auth.avatar}
+                    alt={auth.name}
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+                  />
+                </div>
+                <h4 className="font-serif font-bold text-sm sm:text-base text-[#020618] hover:text-[#1642D0] cursor-pointer my-0 transition-colors">
+                  <Link href={auth.href}>{auth.name}</Link>
+                </h4>
+                <p className="font-serif text-slate-600 text-[11px] sm:text-xs leading-snug mt-1 mx-auto max-w-[190px] my-0">
+                  {auth.title}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Authentic Pagination Matching Image 2 */}
+          <div className="flex items-center gap-1.5 sm:gap-2 pt-4 pb-8">
+            <button
+              type="button"
+              onClick={() => setCurrentPage(1)}
+              className="min-w-[34px] sm:min-w-[38px] h-9 px-3 rounded-xs bg-[#1642D0] text-white font-sans font-bold text-xs flex items-center justify-center cursor-pointer shadow-2xs"
+            >
+              1
+            </button>
+            <button
+              type="button"
+              onClick={() => setCurrentPage(2)}
+              className="min-w-[34px] sm:min-w-[38px] h-9 px-3 rounded-xs bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 font-sans font-semibold text-xs flex items-center justify-center cursor-pointer transition-colors"
+            >
+              2
+            </button>
+            <button
+              type="button"
+              onClick={() => setCurrentPage(3)}
+              className="min-w-[34px] sm:min-w-[38px] h-9 px-3 rounded-xs bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 font-sans font-semibold text-xs flex items-center justify-center cursor-pointer transition-colors"
+            >
+              3
+            </button>
+            <span className="min-w-[34px] sm:min-w-[38px] h-9 px-2 rounded-xs bg-white border border-slate-300 text-slate-400 font-sans text-xs flex items-center justify-center select-none">
+              ...
+            </span>
+            <button
+              type="button"
+              onClick={() => setCurrentPage(10)}
+              className="min-w-[34px] sm:min-w-[38px] h-9 px-3 rounded-xs bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 font-sans font-semibold text-xs flex items-center justify-center cursor-pointer transition-colors"
+            >
+              10
+            </button>
+            <button
+              type="button"
+              onClick={() => setCurrentPage((p) => Math.min(10, p + 1))}
+              className="h-9 px-4 rounded-xs bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 font-sans font-semibold text-xs flex items-center justify-center cursor-pointer transition-colors"
+            >
+              Next
+            </button>
+          </div>
         </div>
       </main>
 
