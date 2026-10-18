@@ -215,30 +215,57 @@ export default function ArticleDetailPage() {
               </p>
             )}
 
-            {/* Horizontal Line ABOVE Byline matching Image 1 */}
+            {/* Horizontal Line ABOVE Action Bar */}
             <div className="border-t border-slate-200 mt-4 mb-3" />
 
-            {/* Author Byline & Published info matching Image 1 & Image 2 */}
-            <div className="flex items-center justify-between py-1">
-              {/* Left: Author & Published info */}
-              <div>
-                <div className="flex items-center gap-1.5 text-xs sm:text-[13px] font-sans font-bold uppercase tracking-wider text-slate-800">
-                  <span className="text-slate-500 font-semibold">BY</span>
-                  <Link
-                    href={`/author/${(article.author?.name || 'rl-adams').toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
-                    className="text-[#020618] font-bold hover:underline"
+            {/* Action Bar (Top Row): SHARE, Listen to this post, and Bookmark */}
+            <div className="flex flex-wrap items-center justify-between py-1 gap-4">
+              {/* Left: SHARE icon and Listen to this post bar */}
+              <div className="flex items-center gap-4 sm:gap-6">
+                <button
+                  type="button"
+                  onClick={handleCopyLink}
+                  className="flex items-center gap-1.5 text-xs font-bold text-[#020618] hover:text-[#1642D0] tracking-wider font-sans uppercase transition-colors cursor-pointer shrink-0"
+                  title={copied ? 'Link copied!' : 'Share article'}
+                  aria-label="Share article"
+                >
+                  <span>SHARE</span>
+                  {copied ? (
+                    <Check className="w-4 h-4 text-emerald-600" />
+                  ) : (
+                    <Copy className="w-4 h-4 text-slate-800" />
+                  )}
+                </button>
+
+                {/* Listen to this post Bar right after SHARE icon with some space */}
+                <div className="inline-flex items-center border border-slate-200/90 rounded-md bg-white px-3.5 py-1.5 shadow-2xs">
+                  <button
+                    onClick={handleTogglePlay}
+                    className="flex items-center gap-2.5 group cursor-pointer text-left focus:outline-hidden"
+                    aria-label={isPlaying ? 'Pause audio' : 'Listen to this post'}
                   >
-                    {article.author?.name || 'R.L. ADAMS'}
-                  </Link>
-                </div>
-                <div className="text-[12px] font-sans text-slate-500 mt-0.5 flex items-center gap-1.5">
-                  <span>Published {article.date || 'JAN 26, 2026'} AT 5:17 AM EDT</span>
-                  <span>•</span>
-                  <span>5 min read</span>
+                    <div className="w-6 h-6 rounded-full bg-[#10182b] group-hover:bg-[#1642D0] transition-colors flex items-center justify-center shrink-0">
+                      {isPlaying ? (
+                        <Pause className="w-3 h-3 fill-white text-white" />
+                      ) : (
+                        <Play className="w-3 h-3 fill-white text-white ml-0.5" />
+                      )}
+                    </div>
+                    <span className="font-sans font-bold text-xs sm:text-[13px] text-[#10182b] group-hover:text-[#1642D0] transition-colors">
+                      {isPlaying ? 'Pause listening' : 'Listen to this post'}
+                    </span>
+                  </button>
+
+                  {isPlaying && (
+                    <div className="flex items-center gap-1.5 text-xs text-slate-500 font-sans ml-3 animate-pulse">
+                      <Volume2 className="w-3.5 h-3.5 text-[#1642D0]" />
+                      <span>Playing...</span>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Right: Circular Bookmark Button matching Image 2 */}
+              {/* Right: Circular Bookmark Button */}
               <button
                 type="button"
                 onClick={() => setBookmarked(!bookmarked)}
@@ -254,49 +281,24 @@ export default function ArticleDetailPage() {
               </button>
             </div>
 
-            {/* Horizontal Line matching Image 1 */}
-            <div className="border-t border-slate-200 mt-3 pt-3 pb-3 mb-8 flex flex-wrap items-center gap-4 sm:gap-6">
-              {/* SHARE Button matching Image 1 */}
-              <button
-                type="button"
-                onClick={handleCopyLink}
-                className="flex items-center gap-1.5 text-xs font-bold text-[#020618] hover:text-[#1642D0] tracking-wider font-sans uppercase transition-colors cursor-pointer shrink-0"
-                title={copied ? 'Link copied!' : 'Share article'}
-                aria-label="Share article"
-              >
-                <span>SHARE</span>
-                {copied ? (
-                  <Check className="w-4 h-4 text-emerald-600" />
-                ) : (
-                  <Copy className="w-4 h-4 text-slate-800" />
-                )}
-              </button>
+            {/* Horizontal Line BETWEEN Action Bar and Author Byline */}
+            <div className="border-t border-slate-200 mt-3 mb-3" />
 
-              {/* Listen to this post Bar right after SHARE icon with some space */}
-              <div className="inline-flex items-center border border-slate-200/90 rounded-md bg-white px-3.5 py-1.5 shadow-2xs">
-                <button
-                  onClick={handleTogglePlay}
-                  className="flex items-center gap-2.5 group cursor-pointer text-left focus:outline-hidden"
-                  aria-label={isPlaying ? 'Pause audio' : 'Listen to this post'}
+            {/* Author Byline & Published Info (Bottom Row) */}
+            <div className="py-1 mb-8">
+              <div className="flex items-center gap-1.5 text-xs sm:text-[13px] font-sans font-bold uppercase tracking-wider text-slate-800">
+                <span className="text-slate-500 font-semibold">BY</span>
+                <Link
+                  href={`/author/${(article.author?.name || 'rl-adams').toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+                  className="text-[#020618] font-bold hover:underline"
                 >
-                  <div className="w-6 h-6 rounded-full bg-[#10182b] group-hover:bg-[#1642D0] transition-colors flex items-center justify-center shrink-0">
-                    {isPlaying ? (
-                      <Pause className="w-3 h-3 fill-white text-white" />
-                    ) : (
-                      <Play className="w-3 h-3 fill-white text-white ml-0.5" />
-                    )}
-                  </div>
-                  <span className="font-sans font-bold text-xs sm:text-[13px] text-[#10182b] group-hover:text-[#1642D0] transition-colors">
-                    {isPlaying ? 'Pause listening' : 'Listen to this post'}
-                  </span>
-                </button>
-
-                {isPlaying && (
-                  <div className="flex items-center gap-1.5 text-xs text-slate-500 font-sans ml-3 animate-pulse">
-                    <Volume2 className="w-3.5 h-3.5 text-[#1642D0]" />
-                    <span>Playing...</span>
-                  </div>
-                )}
+                  {article.author?.name || 'R.L. ADAMS'}
+                </Link>
+              </div>
+              <div className="text-[12px] font-sans text-slate-500 mt-0.5 flex items-center gap-1.5">
+                <span>Published {article.date || 'JAN 26, 2026'} AT 5:17 AM EDT</span>
+                <span>•</span>
+                <span>5 min read</span>
               </div>
             </div>
 
