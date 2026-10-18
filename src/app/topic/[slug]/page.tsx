@@ -261,12 +261,12 @@ export default function DynamicTopicPage() {
         </div>
       </div>
 
-      {/* 1st Top Advertisement Banner: Show ADVERTISEMENT at the top of the banner */}
-      <div className="w-full max-w-7xl mx-auto px-5 lg:px-10 pt-6 pb-6 text-center">
-        <span className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-400 block mb-2">
+      {/* 1st Top Advertisement Banner: Reduced size */}
+      <div className="w-full max-w-7xl mx-auto px-5 lg:px-10 pt-4 pb-4 sm:pt-5 sm:pb-5 text-center">
+        <span className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-400 block mb-1.5">
           ADVERTISEMENT
         </span>
-        <div className="w-full max-w-[860px] mx-auto min-h-[160px] sm:min-h-[180px] bg-[#edf2f7] border border-slate-300 shadow-2xs flex flex-col items-center justify-center p-4 text-center">
+        <div className="w-full max-w-[728px] mx-auto min-h-[90px] bg-[#edf2f7] border border-slate-300 shadow-2xs flex flex-col items-center justify-center py-3.5 px-4 text-center">
           <span className="text-xs font-semibold text-slate-600 font-sans">
             Leaderboard Banner 728 × 90
           </span>
@@ -432,62 +432,33 @@ export default function DynamicTopicPage() {
             </div>
           </div>
 
-          {/* Right Column: Sidebar with 2 Advertisements (Articles 1-5 & Articles 5-8) + Laptop Image */}
+          {/* Right Column: Sidebar with 2 Advertisements (Articles 1-5 & Articles 6-9) */}
           <div className="lg:col-span-5 space-y-6">
             
-            {/* 1st Sidebar Advertisement: Decreased size from Article 1 to 5, banner size inside middle */}
-            <div className="w-full text-center">
-              <span className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-400 block mb-2">
+            {/* 1st Sidebar Advertisement: Decreased size from Article 1 to 5, top aligned with left column */}
+            <div className="w-full min-h-[480px] md:min-h-[540px] lg:min-h-[580px] bg-[#edf2f7] border border-slate-300 flex flex-col items-center justify-center p-6 text-center shadow-2xs relative">
+              <span className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-400 absolute top-4">
                 ADVERTISEMENT
               </span>
-              <div className="w-full min-h-[480px] md:min-h-[540px] lg:min-h-[580px] bg-[#edf2f7] border border-slate-300 flex flex-col items-center justify-center p-6 text-center shadow-2xs">
-                <div className="w-12 h-12 flex items-center justify-center text-slate-400 mb-2">
-                  <svg className="w-10 h-10 stroke-slate-300" viewBox="0 0 24 24" fill="none" strokeWidth="1.5">
-                    <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
-                <span className="text-[11px] font-sans font-bold uppercase tracking-[0.2em] text-slate-500">
-                  ADVERTISEMENT
-                </span>
-                <span className="text-xs font-semibold text-slate-600 font-sans mt-1">
-                  300 × 600 Half Page Banner
-                </span>
-                <span className="text-[11px] text-slate-400 font-sans mt-0.5">
-                  Your Advertisement Here
-                </span>
-              </div>
+              <span className="text-xs font-semibold text-slate-600 font-sans">
+                300 × 600 Half Page Banner
+              </span>
+              <span className="text-[11px] text-slate-400 font-sans mt-0.5">
+                Your Advertisement Here
+              </span>
             </div>
 
-            {/* 2nd Sidebar Advertisement: Starts after 1st ad with small gap, spans until 8th article */}
-            <div className="w-full text-center">
-              <span className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-400 block mb-2">
+            {/* 2nd Sidebar Advertisement: Starts after 1st ad with small gap, spans until 9th article */}
+            <div className="w-full min-h-[460px] md:min-h-[500px] lg:min-h-[550px] bg-[#edf2f7] border border-slate-300 flex flex-col items-center justify-center p-6 text-center shadow-2xs relative">
+              <span className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-400 absolute top-4">
                 ADVERTISEMENT
               </span>
-              <div className="w-full min-h-[340px] md:min-h-[380px] lg:min-h-[410px] bg-[#edf2f7] border border-slate-300 flex flex-col items-center justify-center p-6 text-center shadow-2xs">
-                <div className="w-10 h-10 flex items-center justify-center text-slate-400 mb-2">
-                  <svg className="w-8 h-8 stroke-slate-300" viewBox="0 0 24 24" fill="none" strokeWidth="1.5">
-                    <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
-                <span className="text-[11px] font-sans font-bold uppercase tracking-[0.2em] text-slate-500">
-                  ADVERTISEMENT
-                </span>
-                <span className="text-xs font-semibold text-slate-600 font-sans mt-1">
-                  300 × 250 Medium Rectangle
-                </span>
-                <span className="text-[11px] text-slate-400 font-sans mt-0.5">
-                  Your Advertisement Here
-                </span>
-              </div>
-            </div>
-
-            {/* Laptop Desk Image matching Image 3 */}
-            <div className="w-full overflow-hidden bg-slate-100 border border-slate-200">
-              <img
-                src="/images/topic-sidebar-laptop.jpg"
-                alt="Workspace setup"
-                className="w-full h-auto object-cover"
-              />
+              <span className="text-xs font-semibold text-slate-600 font-sans">
+                300 × 250 Medium Rectangle
+              </span>
+              <span className="text-[11px] text-slate-400 font-sans mt-0.5">
+                Your Advertisement Here
+              </span>
             </div>
 
           </div>
