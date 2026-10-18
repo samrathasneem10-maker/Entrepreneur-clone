@@ -320,12 +320,12 @@ export default function DynamicTopicPage() {
             <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-1.5 block">
               THOUGHT LEADERS
             </span>
-            <h2 className="font-serif font-bold text-base sm:text-lg lg:text-[19px] xl:text-[20px] text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-1.5 md:min-h-[30px] lg:min-h-[30px] flex items-center">
+            <h2 className="font-serif font-bold text-[15px] sm:text-[15.5px] md:text-[16px] lg:text-[16px] xl:text-[18.5px] tracking-tight text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-1.5 min-h-[24px] sm:min-h-[26px] flex items-center">
               <Link href="/article/power-of-effective-communication-leadership">
                 The Power of Effective Communication in Leadership
               </Link>
             </h2>
-            <p className="font-serif text-slate-600 text-xs sm:text-[13.5px] lg:text-[14px] leading-relaxed mt-2 my-0 w-full">
+            <p className="font-serif text-slate-600 text-xs sm:text-[13px] lg:text-[13px] xl:text-[13.5px] leading-relaxed mt-2 my-0 w-full min-h-[20px] sm:min-h-[22px]">
               Great leaders don&apos;t just give direction — they listen, inspire and bring people together.
             </p>
           </article>
@@ -342,12 +342,12 @@ export default function DynamicTopicPage() {
             <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-1.5 block">
               THOUGHT LEADERS
             </span>
-            <h2 className="font-serif font-bold text-base sm:text-lg lg:text-[19px] xl:text-[20px] text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-1.5 md:min-h-[30px] lg:min-h-[30px] flex items-center">
+            <h2 className="font-serif font-bold text-[15px] sm:text-[15.5px] md:text-[16px] lg:text-[16px] xl:text-[18.5px] tracking-tight text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-1.5 min-h-[24px] sm:min-h-[26px] flex items-center">
               <Link href="/article/collaboration-drives-innovation-growth">
                 Collaboration Drives Innovation and Growth
               </Link>
             </h2>
-            <p className="font-serif text-slate-600 text-xs sm:text-[13.5px] lg:text-[14px] leading-relaxed mt-2 my-0 w-full">
+            <p className="font-serif text-slate-600 text-xs sm:text-[13px] lg:text-[13px] xl:text-[13.5px] leading-relaxed mt-2 my-0 w-full min-h-[20px] sm:min-h-[22px]">
               When great minds work together, new ideas turn into real progress.
             </p>
           </article>
@@ -433,7 +433,7 @@ export default function DynamicTopicPage() {
           </div>
 
           {/* Right Column: Sidebar with 2 Advertisements (Articles 1-5 & Articles 6-9) */}
-          <div className="lg:col-span-5 space-y-6">
+          <div className="lg:col-span-5 space-y-6 lg:-mt-[26px]">
             
             {/* 1st Sidebar Advertisement: Decreased size from Article 1 to 5, outside top advertisement */}
             <div className="w-full text-center">
