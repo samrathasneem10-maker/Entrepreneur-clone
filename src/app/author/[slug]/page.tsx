@@ -2,24 +2,71 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { ArrowLeft, ChevronLeft, ChevronRight, TrendingUp } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import { ChevronLeft, ChevronRight, TrendingUp } from 'lucide-react';
 import { Header } from '@/layouts/Header';
 import { Footer } from '@/layouts/Footer';
 import { ALL_ARTICLES, LATEST_ARTICLES } from '@/data/newsData';
 
+interface AuthorProfile {
+  name: string;
+  role: string;
+  badge: string;
+  avatar: string;
+  bio: string;
+}
+
+const AUTHORS_MAP: Record<string, AuthorProfile> = {
+  'sherin-shibu': {
+    name: 'Sherin Shibu',
+    role: 'News Reporter',
+    badge: 'Entrepreneur Staff',
+    avatar: '/images/sherin-shibu.jpg',
+    bio: 'Sherin Shibu is a business news reporter at Entrepreneur.com. She previously worked for PCMag, Business Insider, The Messenger, and ZDNET as a reporter and copyeditor. Her areas of coverage encompass tech, business, strategy, finance, and even space. She is a Columbia University graduate.',
+  },
+  'merilee-kern': {
+    name: 'Sherin Shibu',
+    role: 'News Reporter',
+    badge: 'Entrepreneur Staff',
+    avatar: '/images/sherin-shibu.jpg',
+    bio: 'Sherin Shibu is a business news reporter at Entrepreneur.com. She previously worked for PCMag, Business Insider, The Messenger, and ZDNET as a reporter and copyeditor. Her areas of coverage encompass tech, business, strategy, finance, and even space. She is a Columbia University graduate.',
+  },
+  'rl-adams': {
+    name: 'R.L. Adams',
+    role: 'Contributing Writer',
+    badge: 'Entrepreneur Staff',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300&auto=format&fit=crop',
+    bio: 'R.L. Adams is a software engineer, serial entrepreneur, and bestselling author of dozens of books on online business, search engine optimization, and passive income generation.',
+  },
+};
+
 export default function AuthorProfilePage() {
-  const router = Router();
+  const params = useParams();
   const [currentPage, setCurrentPage] = useState(1);
 
-  function Router() {
-    return useRouter();
-  }
+  const rawSlug = params?.slug as string | undefined;
+  const slug = (Array.isArray(rawSlug) ? rawSlug[0] : rawSlug) || 'sherin-shibu';
 
-  // Articles written by Merilee Kern, MBA (using ALL_ARTICLES as author content)
+  const author = AUTHORS_MAP[slug] || AUTHORS_MAP['sherin-shibu'];
+
+  // Articles written by this author (or populated with related articles)
+  const authorArticles = ALL_ARTICLES.filter((art) => {
+    const authorName = art.author?.name?.toLowerCase() || '';
+    const targetName = author.name.toLowerCase();
+    return authorName.includes(targetName) || targetName.includes(authorName);
+  });
+
+  const allAuthorContent =
+    authorArticles.length >= 6
+      ? authorArticles
+      : [
+          ...authorArticles,
+          ...ALL_ARTICLES.filter((art) => !authorArticles.some((a) => a.id === art.id)),
+        ];
+
   const ARTICLES_PER_PAGE = 6;
-  const totalPages = Math.ceil(ALL_ARTICLES.length / ARTICLES_PER_PAGE);
-  const paginatedArticles = ALL_ARTICLES.slice(
+  const totalPages = Math.ceil(allAuthorContent.length / ARTICLES_PER_PAGE);
+  const paginatedArticles = allAuthorContent.slice(
     (currentPage - 1) * ARTICLES_PER_PAGE,
     currentPage * ARTICLES_PER_PAGE
   );
@@ -32,53 +79,84 @@ export default function AuthorProfilePage() {
       {/* Navigation Header */}
       <Header />
 
-      {/* TOP AUTHOR PROFILE SECTION */}
-      <section className="bg-slate-50/80 border-b border-slate-200 py-8 md:py-12 px-5 lg:px-10">
-        <div className="max-w-7xl mx-auto space-y-6">
-          {/* Back Button */}
-          <button
-            onClick={() => router.back()}
-            className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-slate-600 hover:text-[#1642D0] transition-colors cursor-pointer"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back</span>
-          </button>
+      {/* TOP AUTHOR PROFILE SECTION - EXACT MATCH TO IMAGE 1 */}
+      <section className="bg-white pt-10 pb-4 md:pt-14 md:pb-6 px-5 lg:px-10">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8 md:gap-12">
+            {/* Author Avatar: Clean circle without border matching Image 1 */}
+            <div className="shrink-0">
+              <img
+                src={author.avatar}
+                alt={author.name}
+                className="w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 rounded-full object-cover shadow-2xs"
+              />
+            </div>
 
-          {/* Author Details Header */}
-          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 pt-1">
-            <img
-              src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=300&auto=format&fit=crop"
-              alt="Merilee Kern, MBA"
-              className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-2 border-slate-300 flex-shrink-0 shadow-xs"
-            />
+            {/* Author Details matching Image 1 */}
+            <div className="text-center sm:text-left flex-1 min-w-0">
+              {/* Author Name */}
+              <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-serif font-black text-[#020618] leading-[1.1] tracking-tight my-0">
+                {author.name}
+              </h1>
 
-            <div className="text-center sm:text-left space-y-2 flex-1">
-              <div className="space-y-1">
-                <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-serif font-black text-[#020618] leading-tight my-0">
-                  Merilee Kern, MBA
-                </h1>
-                <span className="inline-block text-xs font-extrabold uppercase tracking-widest text-[#1642D0]">
-                  Writer
+              {/* Author Role */}
+              <p className="text-sm sm:text-[15px] font-sans text-slate-500 font-normal mt-1.5 mb-2">
+                {author.role}
+              </p>
+
+              {/* Staff / Contributor Badge matching Image 1 */}
+              <div className="flex items-center justify-center sm:justify-start gap-1.5 mt-2 mb-3 text-[#047857]">
+                <svg
+                  className="w-4 h-4 text-[#047857] shrink-0"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M12 2l2.4 2.4 3.4-.4 1.4 3.1 3.1 1.4-.4 3.4 2.4 2.4-2.4 2.4.4 3.4-3.1 1.4-1.4 3.1-3.4-.4-2.4 2.4-2.4-2.4-3.4.4-1.4-3.1-3.1-1.4.4-3.4-2.4-2.4 2.4-2.4-.4-3.4 3.1-1.4 1.4-3.1 3.4.4z" />
+                  <polyline points="9 12 11 14 15 10" />
+                </svg>
+                <span className="font-serif font-bold text-xs sm:text-[13px] text-[#047857] tracking-tight">
+                  {author.badge}
                 </span>
               </div>
 
-              <p className="text-xs sm:text-sm text-slate-600 font-sans leading-relaxed max-w-2xl">
-                Merilee Kern, MBA is a business writer covering entrepreneurship, leadership, technology, startups, innovation, and market trends. She has contributed numerous articles focused on helping entrepreneurs and business professionals stay informed.
+              {/* Author Bio matching Image 1 */}
+              <p className="font-serif text-slate-700 text-sm sm:text-[15px] leading-relaxed max-w-2xl my-0">
+                {author.bio}
               </p>
+
+              {/* Callout Box matching Image 1 */}
+              <div className="mt-5 inline-block bg-[#f0f5ff] rounded-lg px-4 sm:px-5 py-3 shadow-[0_2px_8px_rgba(0,0,0,0.03)] border border-blue-100/60">
+                <p className="font-serif text-xs sm:text-[13.5px] text-slate-700 my-0">
+                  Want to write for Entrepreneur too?{' '}
+                  <Link
+                    href="/newsletters"
+                    className="font-serif font-bold text-[#1642D0] hover:underline"
+                  >
+                    Apply to join Entrepreneur Leadership network.
+                  </Link>
+                </p>
+              </div>
             </div>
           </div>
+
+          {/* Clean Horizontal Divider Line matching Image 1 */}
+          <div className="border-b border-slate-200 mt-8 md:mt-10" />
         </div>
       </section>
 
       {/* MAIN CONTENT & SIDEBAR SECTION */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-5 lg:px-10 py-10 md:py-12">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-5 lg:px-10 py-8 md:py-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           
           {/* LEFT/MAIN ARTICLE STREAM (8 columns on desktop) */}
           <div className="lg:col-span-8 space-y-8">
             <div className="border-b border-slate-200 pb-3">
               <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#020618] uppercase tracking-tight my-0">
-                MORE FROM MERILEE KERN, MBA
+                MORE FROM {author.name.toUpperCase()}
               </h2>
             </div>
 
@@ -140,7 +218,7 @@ export default function AuthorProfilePage() {
                 Previous
               </button>
 
-              {[1, 2, 3, 4, 5].map((pageNum) => (
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => i + 1).map((pageNum) => (
                 <button
                   key={pageNum}
                   onClick={() => {
@@ -159,10 +237,10 @@ export default function AuthorProfilePage() {
 
               <button
                 onClick={() => {
-                  setCurrentPage((p) => Math.min(5, p + 1));
+                  setCurrentPage((p) => Math.min(totalPages, p + 1));
                   window.scrollTo({ top: 300, behavior: 'smooth' });
                 }}
-                disabled={currentPage === 5}
+                disabled={currentPage === totalPages}
                 className="px-4 py-2.5 rounded-lg bg-slate-100 text-slate-800 hover:bg-[#1642D0] hover:text-white disabled:opacity-40 transition-colors flex items-center gap-1 cursor-pointer"
               >
                 Next
