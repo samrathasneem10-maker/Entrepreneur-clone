@@ -1024,14 +1024,14 @@ export default function DynamicTopicPage() {
           {/* Right Column: Sidebar with 2 Advertisements (Articles 1-5 & Articles 6-9) */}
           <div className="lg:col-span-5 space-y-6 lg:-mt-[26px]">
             
-            {/* 1st Sidebar Advertisement: Decreased size from Article 1 to 5, outside top advertisement */}
+            {/* 1st Sidebar Advertisement: 300 × 400 */}
             <div className="w-full text-center">
               <span className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-400 block mb-2">
                 ADVERTISEMENT
               </span>
-              <div className="w-full min-h-[480px] md:min-h-[540px] lg:min-h-[580px] bg-[#edf2f7] border border-slate-300 flex flex-col items-center justify-center p-6 text-center shadow-2xs">
-                <span className="text-xs font-semibold text-slate-600 font-sans">
-                  300 × 600 Half Page Banner
+              <div className="w-full h-[400px] min-h-[400px] bg-[#edf2f7] border border-slate-300 flex flex-col items-center justify-center p-6 text-center shadow-2xs">
+                <span className="text-xs sm:text-[13px] font-semibold text-slate-600 font-sans">
+                  300 × 400 Banner
                 </span>
                 <span className="text-[11px] text-slate-400 font-sans mt-0.5">
                   Your Advertisement Here
@@ -1039,14 +1039,14 @@ export default function DynamicTopicPage() {
               </div>
             </div>
 
-            {/* 2nd Sidebar Advertisement: Starts after 1st ad with small gap, spans until 9th article, outside top advertisement */}
+            {/* 2nd Sidebar Advertisement: 300 × 700 */}
             <div className="w-full text-center">
               <span className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-400 block mb-2">
                 ADVERTISEMENT
               </span>
-              <div className="w-full min-h-[460px] md:min-h-[500px] lg:min-h-[550px] bg-[#edf2f7] border border-slate-300 flex flex-col items-center justify-center p-6 text-center shadow-2xs">
-                <span className="text-xs font-semibold text-slate-600 font-sans">
-                  300 × 250 Medium Rectangle
+              <div className="w-full h-[700px] min-h-[700px] bg-[#edf2f7] border border-slate-300 flex flex-col items-center justify-center p-6 text-center shadow-2xs">
+                <span className="text-xs sm:text-[13px] font-semibold text-slate-600 font-sans">
+                  300 × 700 Banner
                 </span>
                 <span className="text-[11px] text-slate-400 font-sans mt-0.5">
                   Your Advertisement Here
