@@ -932,10 +932,10 @@ export default function DynamicTopicPage() {
 
       {/* Bottom Section: Left Stream (10 Articles per page + NEXT/PREVIOUS Controls) & Right Sidebar (Large Ad + Laptop Image) */}
       <div className="w-full max-w-7xl mx-auto px-5 lg:px-10 pb-16">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
           {/* Left Column: Bordered box with 10 articles per page */}
-          <div id="articles-list-section" className="lg:col-span-7 bg-white border border-slate-200 p-5 sm:p-6 shadow-2xs">
+          <div id="articles-list-section" className="lg:col-span-7 bg-white border border-slate-200 p-5 sm:p-6 shadow-2xs h-fit">
             <div className="space-y-6 divide-y divide-slate-100">
               {currentArticles.map((art, index) => (
                 <article
@@ -1022,7 +1022,7 @@ export default function DynamicTopicPage() {
           </div>
 
           {/* Right Column: Sidebar with 2 Advertisements (Articles 1-5 & Articles 6-9) */}
-          <div className="lg:col-span-5 space-y-6 lg:-mt-[26px]">
+          <div className="lg:col-span-5 space-y-6 lg:-mt-[26px] relative">
             
             {/* 1st Sidebar Advertisement: 300 × 400 */}
             <div className="w-full text-center">
@@ -1039,8 +1039,8 @@ export default function DynamicTopicPage() {
               </div>
             </div>
 
-            {/* 2nd Sidebar Advertisement: 300 × 700 */}
-            <div className="w-full text-center">
+            {/* 2nd Sidebar Advertisement: 300 × 700 (Sticky to move along with the section when scrolling down) */}
+            <div className="w-full text-center lg:sticky lg:top-24 z-10 transition-all">
               <span className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-400 block mb-2">
                 ADVERTISEMENT
               </span>
