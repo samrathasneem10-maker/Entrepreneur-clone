@@ -3,10 +3,9 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { ChevronLeft, ChevronRight, TrendingUp } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Header } from '@/layouts/Header';
 import { Footer } from '@/layouts/Footer';
-import { ALL_ARTICLES, LATEST_ARTICLES } from '@/data/newsData';
 
 interface AuthorProfile {
   name: string;
@@ -40,6 +39,185 @@ const AUTHORS_MAP: Record<string, AuthorProfile> = {
   },
 };
 
+// Exactly 25 authentic articles matching the 1-row-3-columns reference layout
+const AUTHOR_ARTICLES_25 = [
+  {
+    id: 'childhood-sweethearts-product-new-parents',
+    title: "These Childhood Sweethearts Created a Product for New Parents. It Made $500K in Revenue in Under 1 Minute: 'Orders Started to Roll In'",
+    category: 'BUILDING A BUSINESS',
+    excerpt: "In one of their early preorders, they sold thousands of units in under a minute — here's how they got there.",
+    imageUrl: '/images/author-article-1.jpg',
+  },
+  {
+    id: 'amazons-groundbreaking-new-ai-devices',
+    title: "Here's What Amazon's Groundbreaking New AI Devices Can Do",
+    category: 'BUSINESS NEWS',
+    excerpt: 'Amazon is offering two new Bee AI devices: the Frontier and Eclipse.',
+    imageUrl: '/images/author-article-2.jpg',
+  },
+  {
+    id: 'anthropic-president-terrible-use-of-ai',
+    title: "Anthropic President Says This Is 'a Terrible Use of AI.' Nearly 30% of U.S. Adults Are Doing It Anyway.",
+    category: 'BUSINESS NEWS',
+    excerpt: 'Anthropic co-founder and president Daniela Amodei is advising users not to use AI for this purpose.',
+    imageUrl: '/images/author-article-3.jpg',
+  },
+  {
+    id: 'robinhood-democratizing-finance-retail-traders',
+    title: 'Robinhood CEO on Democratizing High Finance for the Next Generation of Retail Traders',
+    category: 'FINTECH',
+    excerpt: "How zero-commission trading and tokenized real-world assets are reshaping Wall Street's century-old market structure.",
+    imageUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'corporate-holiday-gifts-employees-actually-want',
+    title: 'The Best Corporate Holiday Gifts That Employees and Clients Actually Want in 2026',
+    category: 'GROWTH STRATEGIES',
+    excerpt: 'Ditch the branded trinkets — curated artisan gift bundles and wellness memberships lead the trend this season.',
+    imageUrl: 'https://images.unsplash.com/photo-1512909006721-3d6018887383?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'how-venture-studios-are-revolutionizing-seed-funding',
+    title: 'How Venture Studios Are Revolutionizing the Seed-Stage Funding Ecosystem',
+    category: 'VENTURE CAPITAL',
+    excerpt: 'Institutional backing paired with day-zero operational co-founders cuts early startup failure rates in half.',
+    imageUrl: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'top-5-etf-strategies-preserving-capital',
+    title: 'The Top 5 ETF Strategies for Preserving Capital in a Volatile Yield Environment',
+    category: 'ETFS',
+    excerpt: 'Financial advisors share portfolio diversification frameworks designed to protect wealth while maintaining liquidity.',
+    imageUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'fortune-500-retailer-beats-q2-earnings',
+    title: 'Fortune 500 Retailer Beats Q2 Earnings Estimates on Strong Digital Sales',
+    category: 'QUARTERLY EARNINGS',
+    excerpt: 'Automated fulfillment centers and omnichannel loyalty initiatives drove 18% net profit margin expansion.',
+    imageUrl: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'fintech-startup-cross-border-settlement',
+    title: 'FinTech Startup Unveils Real-Time B2B Cross-Border Settlement Infrastructure',
+    category: 'FINTECH',
+    excerpt: 'Eliminating legacy correspondent banking delays cuts international wire settlement times from days to seconds.',
+    imageUrl: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'whos-going-to-give-you-business-home-inspector',
+    title: "She Was Told 'Who's Going to Give You Business?' Now She's a Top Home Inspector in Brooklyn",
+    category: 'BUYING A FRANCHISE',
+    excerpt: 'Overcoming industry skepticism, this founder built a high-margin property inspection franchise.',
+    imageUrl: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'deep-water-port-modernization-projects',
+    title: 'Deep-Water Port Modernization Projects Clear Bottlenecks for Transpacific Freighters',
+    category: 'LOGISTICS',
+    excerpt: 'Automated gantry cranes and AI container tracking double container turnaround speeds.',
+    imageUrl: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'inclusive-leadership-practices-drive-performance',
+    title: 'Inclusive Leadership Practices That Drive High Performance and Employee Engagement',
+    category: 'LEADERSHIP',
+    excerpt: 'Fostering diverse perspectives across project boards leads to better risk management and product design.',
+    imageUrl: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'compostable-packaging-innovations-consumer-goods',
+    title: 'Compostable Packaging Innovations Replace Single-Use Plastics in Consumer Goods',
+    category: 'SUSTAINABLE PACKAGING',
+    excerpt: 'Plant-derived polymers provide durable protective barriers while meeting rigid municipal composting guidelines.',
+    imageUrl: 'https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'bootstrapped-unicorn-mailchimp-700m-revenue',
+    title: 'The Bootstrapped Unicorn: How Mailchimp Hit $700M Revenue Before Acquisition',
+    category: 'COMPANY PROFILES',
+    excerpt: 'Freemium email marketing, iconic brand voice, and focus on small business owners created immense equity.',
+    imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'nvidia-ceo-jensen-huang-ai-hype',
+    title: "Nvidia CEO Jensen Huang Says AI Hype Is Fueling Fear: 'We're Scaring People'",
+    category: 'LEADERSHIP INSIGHTS',
+    excerpt: 'Huang urged caution in how AI leaders speak about the technology as capability curves accelerate across industries.',
+    imageUrl: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'commercial-real-estate-suburban-office-demand',
+    title: 'Commercial Real Estate Forecast: Suburban Office Demand Outpaces Urban Core Properties',
+    category: 'PROPERTY ANALYTICS',
+    excerpt: 'Hybrid workforce trends drive leasing growth in suburban office parks offering ample parking and green space.',
+    imageUrl: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'former-engineer-preschool-teacher-franchise',
+    title: "This Former Engineer and Preschool Teacher Teamed Up to Start a Creative Business: 'Haven't Regretted Choosing a Franchise.'",
+    category: 'BUYING A FRANCHISE',
+    excerpt: 'How two entrepreneurs turned community passion into a high-growth franchise across three states.',
+    imageUrl: '/images/daves-hot-chicken.jpg',
+  },
+  {
+    id: 'side-hustle-ideas-extra-money-2026',
+    title: '53 Side Hustle Ideas to Make Extra Money in 2026',
+    category: 'THOUGHT LEADERS',
+    excerpt: 'From online freelancing to automated digital products, discover proven paths to supplemental income.',
+    imageUrl: '/images/side-hustle-53.jpg',
+  },
+  {
+    id: 'generative-ai-in-legal-tech',
+    title: 'Generative AI in Legal Tech: Transforming Document Discovery and Compliance Audits',
+    category: 'LEGAL TECH',
+    excerpt: 'Boutique law firms leverage specialized LLMs to reduce due diligence review hours by over 60%.',
+    imageUrl: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'micro-influencers-3x-higher-conversion',
+    title: 'Why Micro-Influencers Deliver 3x Higher Conversion Rates for Direct-to-Consumer Brands',
+    category: 'MARKETING STRATEGY',
+    excerpt: 'Niche authenticity, tightly engaged communities, and cost-effective affiliate structures drive measurable ROI.',
+    imageUrl: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'cybersecurity-insurance-requirements-smbs',
+    title: 'How Cybersecurity Insurance Requirements Are Forcing SMBs to Upgrade Defense Posture',
+    category: 'CYBERSECURITY',
+    excerpt: 'Underwriters now mandate multi-factor authentication, endpoint detection, and regular employee phishing tests.',
+    imageUrl: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'creator-economy-evolves-first-party-audience',
+    title: 'The Creator Economy Evolves: Subscriptions, Memberships, and Owning Your First-Party Audience',
+    category: 'CREATOR BUSINESS',
+    excerpt: 'Creators pivot away from erratic platform algorithms to build sustainable direct subscriber revenue streams.',
+    imageUrl: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'clean-energy-startups-high-interest-rates',
+    title: 'How Clean Energy Startups Are Navigating High Interest Rates and Grid Interconnection Delays',
+    category: 'CLEAN ENERGY',
+    excerpt: 'Distributed solar-plus-storage models gain traction as utility-scale developers wait years for substation capacity.',
+    imageUrl: 'https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'mastering-the-hybrid-workplace-deep-work',
+    title: 'Mastering the Hybrid Workplace: Asynchronous Communication and Deep Work Culture',
+    category: 'WORKPLACE PRODUCTIVITY',
+    excerpt: 'Leading tech organizations cut recurring status meetings in half to empower engineers with uninterrupted focus.',
+    imageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'global-supply-chain-resilience-nearshoring',
+    title: 'Global Supply Chain Resilience: Nearshoring Manufacturing Back to North America',
+    category: 'SUPPLY CHAIN',
+    excerpt: 'Industrial automation, shortened maritime transit times, and tax incentives make regionalized manufacturing competitive.',
+    imageUrl: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=600&auto=format&fit=crop',
+  },
+];
+
 export default function AuthorProfilePage() {
   const params = useParams();
   const [currentPage, setCurrentPage] = useState(1);
@@ -48,31 +226,6 @@ export default function AuthorProfilePage() {
   const slug = (Array.isArray(rawSlug) ? rawSlug[0] : rawSlug) || 'sherin-shibu';
 
   const author = AUTHORS_MAP[slug] || AUTHORS_MAP['sherin-shibu'];
-
-  // Articles written by this author (or populated with related articles)
-  const authorArticles = ALL_ARTICLES.filter((art) => {
-    const authorName = art.author?.name?.toLowerCase() || '';
-    const targetName = author.name.toLowerCase();
-    return authorName.includes(targetName) || targetName.includes(authorName);
-  });
-
-  const allAuthorContent =
-    authorArticles.length >= 6
-      ? authorArticles
-      : [
-          ...authorArticles,
-          ...ALL_ARTICLES.filter((art) => !authorArticles.some((a) => a.id === art.id)),
-        ];
-
-  const ARTICLES_PER_PAGE = 6;
-  const totalPages = Math.ceil(allAuthorContent.length / ARTICLES_PER_PAGE);
-  const paginatedArticles = allAuthorContent.slice(
-    (currentPage - 1) * ARTICLES_PER_PAGE,
-    currentPage * ARTICLES_PER_PAGE
-  );
-
-  // Most Read articles for the right sidebar (top 5)
-  const mostReadArticles = LATEST_ARTICLES.slice(0, 5);
 
   return (
     <div className="min-h-screen flex flex-col bg-white font-sans antialiased text-slate-900">
@@ -143,160 +296,58 @@ export default function AuthorProfilePage() {
             </div>
           </div>
 
-          {/* Clean Horizontal Divider Line matching Image 1 */}
+          {/* Clean Horizontal Divider Line separating profile from stream */}
           <div className="border-b border-slate-200 mt-8 md:mt-10" />
         </div>
       </section>
 
-      {/* MAIN CONTENT & SIDEBAR SECTION */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-5 lg:px-10 py-8 md:py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-          
-          {/* LEFT/MAIN ARTICLE STREAM (8 columns on desktop) */}
-          <div className="lg:col-span-8 space-y-8">
-            <div className="border-b border-slate-200 pb-3">
-              <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#020618] uppercase tracking-tight my-0">
-                MORE FROM {author.name.toUpperCase()}
-              </h2>
-            </div>
+      {/* ARTICLES STREAM - EXACT MATCH TO REFERENCE SCREENSHOT (1 ROW 3 COLUMNS, TOTAL 25) */}
+      <main className="flex-1 w-full max-w-7xl mx-auto px-5 lg:px-10 py-6 md:py-10">
+        {/* Section Headline matching screenshot */}
+        <div className="mb-8">
+          <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-serif font-black text-[#020618] tracking-tight my-0">
+            More From {author.name}
+          </h2>
+        </div>
 
-            {/* Author Articles Stream */}
-            <div className="space-y-6">
-              {paginatedArticles.map((art) => (
-                <article
-                  key={art.id}
-                  className="group flex flex-col sm:flex-row-reverse items-start justify-between gap-5 pb-6 border-b border-slate-200 last:border-b-0 last:pb-0"
-                >
-                  {art.imageUrl && (
-                    <figure className="relative w-full sm:w-[150px] aspect-[16/10] sm:aspect-square overflow-hidden rounded-xl border border-slate-200 flex-shrink-0">
-                      <img
-                        src={art.imageUrl}
-                        alt={art.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 rounded-xl"
-                      />
-                    </figure>
-                  )}
-
-                  <div className="flex flex-col flex-1 items-start text-left space-y-2">
-                    <span className="text-xs font-extrabold uppercase tracking-widest text-[#1642D0] font-sans">
-                      {art.category}
-                    </span>
-
-                    <h3 className="text-lg sm:text-xl font-serif font-bold text-[#020618] leading-snug group-hover:underline decoration-[#020618] decoration-1 underline-offset-[3px] transition-all my-0">
-                      <Link href={`/article/${art.id}`}>{art.title}</Link>
-                    </h3>
-
-                    {art.excerpt && (
-                      <p className="text-xs sm:text-sm text-slate-700 font-serif font-normal leading-relaxed line-clamp-2">
-                        {art.excerpt}
-                      </p>
-                    )}
-
-                    <div className="flex items-center gap-1.5 text-xs text-slate-500 font-sans font-normal pt-1">
-                      <span>By {art.author.name}</span>
-                      <span className="text-slate-400">•</span>
-                      <span>{art.date || '2h ago'}</span>
-                      <span className="text-slate-400">•</span>
-                      <span>{art.readTime || '4 min read'}</span>
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
-
-            {/* PAGINATION CONTROLS */}
-            <div className="flex items-center justify-center gap-2 pt-8 border-t border-slate-200 text-xs font-bold font-sans">
-              <button
-                onClick={() => {
-                  setCurrentPage((p) => Math.max(1, p - 1));
-                  window.scrollTo({ top: 300, behavior: 'smooth' });
-                }}
-                disabled={currentPage === 1}
-                className="px-3.5 py-2.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 disabled:opacity-40 transition-colors flex items-center gap-1 cursor-pointer"
-              >
-                <ChevronLeft className="w-4 h-4" />
-                Previous
-              </button>
-
-              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => i + 1).map((pageNum) => (
-                <button
-                  key={pageNum}
-                  onClick={() => {
-                    setCurrentPage(pageNum);
-                    window.scrollTo({ top: 300, behavior: 'smooth' });
-                  }}
-                  className={`w-9.5 h-9.5 rounded-lg font-bold transition-colors cursor-pointer ${
-                    currentPage === pageNum
-                      ? 'bg-[#1642D0] text-white shadow-xs'
-                      : 'bg-slate-100 text-slate-800 hover:bg-slate-200'
-                  }`}
-                >
-                  {pageNum}
-                </button>
-              ))}
-
-              <button
-                onClick={() => {
-                  setCurrentPage((p) => Math.min(totalPages, p + 1));
-                  window.scrollTo({ top: 300, behavior: 'smooth' });
-                }}
-                disabled={currentPage === totalPages}
-                className="px-4 py-2.5 rounded-lg bg-slate-100 text-slate-800 hover:bg-[#1642D0] hover:text-white disabled:opacity-40 transition-colors flex items-center gap-1 cursor-pointer"
-              >
-                Next
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-
-          {/* RIGHT SIDEBAR (4 columns on desktop, stacked on mobile/tablet) */}
-          <aside className="lg:col-span-4 space-y-8 sticky top-24">
-            {/* 1. Most Read Sidebar Widget */}
-            <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-2xs">
-              <div className="flex items-center gap-2 pb-3 mb-4 border-b border-slate-200">
-                <TrendingUp className="w-4 h-4 text-[#1642D0]" />
-                <h3 className="text-lg font-bold font-serif text-[#020618] my-0 uppercase tracking-tight">
-                  Most Read
-                </h3>
+        {/* 1 Row 3 Columns Grid for 25 Articles */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
+          {AUTHOR_ARTICLES_25.map((art) => (
+            <article key={art.id} className="group flex flex-col items-start text-left">
+              {/* Card Image */}
+              <div className="w-full aspect-[16/10] overflow-hidden rounded-xl bg-slate-100 mb-3.5">
+                <img
+                  src={art.imageUrl}
+                  alt={art.title}
+                  className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 rounded-xl"
+                />
               </div>
 
-              <div className="space-y-4">
-                {mostReadArticles.map((art, idx) => (
-                  <Link
-                    key={art.id}
-                    href={`/article/${art.id}`}
-                    className="group flex items-start gap-3.5 pb-3.5 border-b border-slate-100 last:border-b-0 last:pb-0"
-                  >
-                    <span className="text-2xl font-serif font-black text-slate-300 group-hover:text-[#1642D0] transition-colors leading-none">
-                      {idx + 1}
-                    </span>
-                    <div className="space-y-1">
-                      <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#1642D0] block">
-                        {art.category}
-                      </span>
-                      <h4 className="text-xs font-bold font-sans text-slate-900 group-hover:underline decoration-[#020618] decoration-1 underline-offset-[2px] transition-all line-clamp-2 leading-snug my-0">
-                        {art.title}
-                      </h4>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
+              {/* Card Category */}
+              <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-1.5 block">
+                {art.category}
+              </span>
 
-            {/* 2. Bordered 300x250 Medium Rectangle Banner Placeholder */}
-            <div className="bg-slate-50 border border-dashed border-slate-300 rounded-xl p-6 flex flex-col items-center justify-center h-[250px] text-center">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">
-                ADVERTISEMENT
-              </span>
-              <span className="text-sm font-bold text-slate-700">
-                300 × 250
-              </span>
-              <span className="text-xs text-slate-500 mt-1">
-                Medium Rectangle Banner
-              </span>
-            </div>
-          </aside>
+              {/* Card Title */}
+              <h3 className="font-serif font-bold text-base sm:text-[18px] text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-0">
+                <Link href={`/article/${art.id}`}>{art.title}</Link>
+              </h3>
 
+              {/* Card Excerpt */}
+              {art.excerpt && (
+                <p className="font-serif text-slate-600 text-xs sm:text-[13.5px] leading-relaxed line-clamp-3 mt-2 my-0">
+                  {art.excerpt}
+                </p>
+              )}
+            </article>
+          ))}
+        </div>
+
+        {/* Clean Website Footer Note */}
+        <div className="mt-14 pt-8 border-t border-slate-200 text-center">
+          <p className="text-xs font-sans text-slate-400 uppercase tracking-widest my-0">
+            Showing all 25 articles by {author.name}
+          </p>
         </div>
       </main>
 
