@@ -1,253 +1,266 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { ChevronRight, ChevronLeft, TrendingUp } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { Header } from '@/layouts/Header';
 import { Footer } from '@/layouts/Footer';
 import { getTopicDataBySlug } from '@/data/newsData';
 
-const TRENDING_NEWS_ITEMS = [
-  {
-    id: 'trend-1',
-    rank: '01',
-    title: 'New Exclusive Decoration Design & Fit Out LLC – Structural Acrylic Pioneers in the UAE',
-    views: '66 views since publication',
-    link: '/article/hero-1',
-  },
-  {
-    id: 'trend-2',
-    rank: '02',
-    title: 'Trump Declares Iran Ceasefire \'Over,\' Raising Questions About the Next Phase of the Conflict',
-    views: '41 views since publication',
-    link: '/article/feat-1',
-  },
-  {
-    id: 'trend-3',
-    rank: '03',
-    title: 'Trump\'s Hormuz Retreat Highlights Struggles to End Iran Conflict',
-    views: '14 views since publication',
-    link: '/article/feat-2',
-  },
-  {
-    id: 'trend-4',
-    rank: '04',
-    title: 'Senegal Sack Coach Pape Thiaw After Disappointing 2026 FIFA World Cup Campaign',
-    views: '14 views since publication',
-    link: '/article/feat-3',
-  },
-  {
-    id: 'trend-5',
-    rank: '05',
-    title: 'Philip Johnston: The Entrepreneur Building the Future of AI in Space',
-    views: '9 views since publication',
-    link: '/article/feat-4',
-  },
-];
-
 export default function DynamicTopicPage() {
   const params = useParams();
-  const rawSlug = typeof params?.slug === 'string' ? params.slug : 'breaking-business-news';
+  const rawSlug = typeof params?.slug === 'string' ? params.slug : 'thought-leaders';
   const topicData = getTopicDataBySlug(rawSlug);
-
-  const [currentPage, setCurrentPage] = useState(1);
-
-  // Reset pagination when switching topics
-  React.useEffect(() => {
-    setCurrentPage(1);
-  }, [rawSlug]);
-
-  const ARTICLES_PER_PAGE = 5;
-  const totalPages = Math.max(1, Math.ceil(topicData.articles.length / ARTICLES_PER_PAGE));
-  const currentArticles = topicData.articles.slice(
-    (currentPage - 1) * ARTICLES_PER_PAGE,
-    currentPage * ARTICLES_PER_PAGE
-  );
 
   return (
     <div className="min-h-screen flex flex-col bg-white font-sans antialiased text-slate-900">
-      {/* 1. Sticky Header Navigation */}
+      {/* 1. Header Navigation */}
       <Header />
 
-      {/* Breadcrumb Bar */}
-      <div className="bg-slate-50/80 border-b border-slate-200 py-2.5 px-5 lg:px-10 text-xs text-slate-600 font-sans">
+      {/* Breadcrumb Bar matching Image 1 */}
+      <div className="bg-white border-b border-slate-200/80 py-2.5 px-5 lg:px-10 text-xs text-slate-600 font-sans">
         <div className="w-full max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto no-scrollbar">
           <Link href="/" className="hover:text-[#1642D0] transition-colors">
             Home
           </Link>
-          <ChevronRight className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+          <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
           <span className="text-slate-900 font-bold uppercase tracking-wider">
-            {topicData.title}
+            {topicData.title || 'ECONOMY'}
           </span>
         </div>
       </div>
 
-      {/* Top Advertisement Banner Placeholder (728 × 90) */}
-      <div className="w-full max-w-7xl mx-auto px-5 lg:px-10 pt-6 pb-2">
-        <div className="w-full bg-slate-50/80 border-2 border-dashed border-slate-300 rounded-2xl p-4 flex flex-col items-center justify-center text-center min-h-[90px] max-w-[728px] mx-auto shadow-2xs">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">ADVERTISEMENT</span>
-          <span className="text-xs sm:text-sm font-semibold text-slate-700 mt-0.5">Leaderboard Banner 728 × 90</span>
-          <span className="text-[11px] text-slate-400">Your Advertisement Here</span>
+      {/* Top Advertisement Banner: Double size solid rectangle matching Image 3 */}
+      <div className="w-full max-w-7xl mx-auto px-5 lg:px-10 pt-6 pb-6">
+        <div className="w-full max-w-[728px] sm:max-w-[760px] mx-auto min-h-[96px] sm:min-h-[110px] bg-[#edf2f7] border border-slate-300 flex items-center justify-center text-center shadow-2xs">
+          <span className="text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-500">
+            ADVERTISEMENT
+          </span>
         </div>
       </div>
 
-      {/* Main Body Grid Container */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-5 lg:px-10 py-6 lg:py-10">
-        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-10 items-start">
-          
-          {/* LEFT MAIN COLUMN (~70% / 8 cols on lg): Topic Headline + Article Stream + Pagination (Order 1) */}
-          <div className="w-full lg:col-span-8 order-1 space-y-8">
-            
-            {/* Topic Main Title */}
-            <div className="border-b border-slate-200 pb-4">
-              <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-serif font-bold text-[#020618] leading-tight tracking-tight my-0">
-                {topicData.title}
-              </h1>
-              {topicData.description && (
-                <p className="text-slate-600 text-sm font-sans mt-2">
-                  {topicData.description}
-                </p>
-              )}
+      {/* Main Hero Story: Full width image + THOUGHT LEADERS + Full length bold heading + 2-line summary */}
+      <div className="w-full max-w-7xl mx-auto px-5 lg:px-10 pb-8">
+        {/* Full width hero image matching Image 3 */}
+        <div className="w-full overflow-hidden bg-slate-100">
+          <img
+            src="/images/topic-hero-leaders.jpg"
+            alt="How Great Leaders Build Teams That Thrive"
+            className="w-full h-auto max-h-[460px] object-cover"
+          />
+        </div>
+
+        {/* Story details */}
+        <div className="pt-4">
+          <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans block mb-1">
+            THOUGHT LEADERS
+          </span>
+
+          {/* Full length bold heading */}
+          <h1 className="text-2xl sm:text-3xl lg:text-[38px] font-serif font-black text-[#020618] leading-[1.14] tracking-tight my-2">
+            How Great Leaders Build Teams That Thrive
+          </h1>
+
+          {/* 2-paragraph / line summary with space from heading but no gap between paragraphs */}
+          <div className="font-serif text-slate-600 text-sm sm:text-[15.5px] leading-snug space-y-0.5 max-w-4xl mt-2">
+            <p className="my-0">
+              Strong leadership isn&apos;t just about making decisions —
+            </p>
+            <p className="my-0">
+              it&apos;s about creating an environment where people can grow, contribute and succeed.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* 2-Column Sub-Featured Cards matching Image 3 */}
+      <div className="w-full max-w-7xl mx-auto px-5 lg:px-10 pb-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Card 1 */}
+          <article className="group flex flex-col items-start text-left">
+            <div className="w-full aspect-[16/10] overflow-hidden bg-slate-100 mb-3.5">
+              <img
+                src="/images/topic-sub-1.jpg"
+                alt="The Power of Effective Communication in Leadership"
+                className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
+              />
             </div>
+            <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-1 block">
+              THOUGHT LEADERS
+            </span>
+            <h2 className="font-serif font-bold text-lg sm:text-[21px] text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-1.5">
+              <Link href="/article/power-of-effective-communication-leadership">
+                The Power of Effective Communication in Leadership
+              </Link>
+            </h2>
+            <div className="font-serif text-slate-600 text-xs sm:text-[13.5px] leading-snug space-y-0.5 mt-1">
+              <p className="my-0">Great leaders don&apos;t just give direction —</p>
+              <p className="my-0">they listen, inspire and bring people together.</p>
+            </div>
+          </article>
 
-            {/* Article Stream */}
-            <div className="space-y-6">
-              {currentArticles.map((art) => (
-                <article
-                  key={art.id}
-                  className="group flex items-start justify-between gap-6 pb-6 border-b border-slate-200/80 last:border-b-0"
-                >
-                  {/* Article Text Content */}
-                  <div className="flex-1 space-y-1.5">
-                    <span className="text-xs font-extrabold uppercase tracking-widest text-[#1642D0] font-sans block">
-                      {art.category}
-                    </span>
+          {/* Card 2 */}
+          <article className="group flex flex-col items-start text-left">
+            <div className="w-full aspect-[16/10] overflow-hidden bg-slate-100 mb-3.5">
+              <img
+                src="/images/topic-sub-2.jpg"
+                alt="Collaboration Drives Innovation and Growth"
+                className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
+              />
+            </div>
+            <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-1 block">
+              THOUGHT LEADERS
+            </span>
+            <h2 className="font-serif font-bold text-lg sm:text-[21px] text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-1.5">
+              <Link href="/article/collaboration-drives-innovation-growth">
+                Collaboration Drives Innovation and Growth
+              </Link>
+            </h2>
+            <div className="font-serif text-slate-600 text-xs sm:text-[13.5px] leading-snug space-y-0.5 mt-1">
+              <p className="my-0">When great minds work together,</p>
+              <p className="my-0">new ideas turn into real progress.</p>
+            </div>
+          </article>
+        </div>
+      </div>
 
-                    <h2 className="text-lg sm:text-xl font-serif font-bold text-[#020618] group-hover:underline decoration-[#020618] decoration-1 underline-offset-[3px] transition-all leading-snug my-0">
-                      <Link href={`/article/${art.id}`}>
-                        {art.title}
-                      </Link>
-                    </h2>
-
-                    {art.excerpt && (
-                      <p className="text-xs sm:text-sm text-slate-700 font-serif font-normal leading-relaxed line-clamp-2">
-                        {art.excerpt}
-                      </p>
-                    )}
-
-                    <div className="text-[11px] font-sans font-bold uppercase tracking-wider text-slate-500 pt-1">
-                      BY {art.author.name}
-                    </div>
-                  </div>
-
-                  {/* Thumbnail Image */}
-                  {art.imageUrl && (
-                    <Link
-                      href={`/article/${art.id}`}
-                      className="w-32 h-32 sm:w-36 sm:h-36 flex-shrink-0 overflow-hidden rounded-2xl border border-slate-200 shadow-2xs block"
-                    >
-                      <img
-                        src={art.imageUrl}
-                        alt={art.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
+      {/* Bottom Section: Left Stream (3 horizontal articles + << [10] NEXT >>) & Right Sidebar (Ad with X + Laptop image) */}
+      <div className="w-full max-w-7xl mx-auto px-5 lg:px-10 pb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Left Column: Bordered box with 3 horizontal items + pagination */}
+          <div className="lg:col-span-7 bg-white border border-slate-200 p-5 sm:p-6 shadow-2xs">
+            <div className="space-y-6 divide-y divide-slate-100">
+              {/* Item 1 */}
+              <article className="flex gap-4 sm:gap-5 items-start first:pt-0 pt-6">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 overflow-hidden bg-slate-100">
+                  <img
+                    src="/images/topic-thumb-1.jpg"
+                    alt="The Future of Work: Trends Shaping 2025 and Beyond"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <span className="text-[11px] font-bold text-[#1642D0] uppercase tracking-wider font-sans block mb-1">
+                    INDUSTRY
+                  </span>
+                  <h3 className="font-serif font-bold text-sm sm:text-base text-[#020618] leading-snug hover:underline my-1">
+                    <Link href="/article/future-of-work-trends-2025-beyond">
+                      The Future of Work: Trends Shaping 2025 and Beyond
                     </Link>
-                  )}
-                </article>
-              ))}
+                  </h3>
+                  <p className="font-serif text-slate-600 text-xs sm:text-[12.5px] leading-relaxed line-clamp-2 my-0">
+                    From remote work to AI, here&apos;s what&apos;s changing the way we work and do business.
+                  </p>
+                </div>
+              </article>
+
+              {/* Item 2 */}
+              <article className="flex gap-4 sm:gap-5 items-start pt-6">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 overflow-hidden bg-slate-100">
+                  <img
+                    src="/images/topic-thumb-2.jpg"
+                    alt="How Technology Is Redefining Modern Business"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <span className="text-[11px] font-bold text-[#1642D0] uppercase tracking-wider font-sans block mb-1">
+                    INDUSTRY
+                  </span>
+                  <h3 className="font-serif font-bold text-sm sm:text-base text-[#020618] leading-snug hover:underline my-1">
+                    <Link href="/article/how-technology-redefining-modern-business">
+                      How Technology Is Redefining Modern Business
+                    </Link>
+                  </h3>
+                  <p className="font-serif text-slate-600 text-xs sm:text-[12.5px] leading-relaxed line-clamp-2 my-0">
+                    Innovation, automation and digital tools are creating new opportunities across industries.
+                  </p>
+                </div>
+              </article>
+
+              {/* Item 3 */}
+              <article className="flex gap-4 sm:gap-5 items-start pt-6">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 overflow-hidden bg-slate-100">
+                  <img
+                    src="/images/topic-thumb-3.jpg"
+                    alt="Building a More Sustainable Tomorrow"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <span className="text-[11px] font-bold text-[#1642D0] uppercase tracking-wider font-sans block mb-1">
+                    INDUSTRY
+                  </span>
+                  <h3 className="font-serif font-bold text-sm sm:text-base text-[#020618] leading-snug hover:underline my-1">
+                    <Link href="/article/building-sustainable-tomorrow">
+                      Building a More Sustainable Tomorrow
+                    </Link>
+                  </h3>
+                  <p className="font-serif text-slate-600 text-xs sm:text-[12.5px] leading-relaxed line-clamp-2 my-0">
+                    Businesses are rethinking their impact — for people, communities and the planet.
+                  </p>
+                </div>
+              </article>
             </div>
 
-            {/* Pagination Controls */}
-            <div className="flex items-center justify-center gap-2 pt-6 border-t border-slate-200 font-sans text-xs font-bold">
+            {/* Pagination: << [10] NEXT >> matching Image 3 */}
+            <div className="flex items-center justify-center gap-4 pt-8 mt-6 border-t border-slate-100 text-xs font-bold font-sans text-slate-700">
               <button
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className="px-3 py-2 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 disabled:opacity-40 transition-colors flex items-center gap-1 cursor-pointer"
+                type="button"
+                className="hover:text-[#1642D0] transition-colors cursor-pointer select-none"
+                aria-label="Previous page"
               >
-                <ChevronLeft className="w-3.5 h-3.5" />
+                &laquo;
               </button>
-
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-                <button
-                  key={pageNum}
-                  onClick={() => setCurrentPage(pageNum)}
-                  className={`w-9 h-9 rounded-lg font-bold transition-colors cursor-pointer ${
-                    currentPage === pageNum ? 'bg-[#1642D0] text-white' : 'bg-slate-100 text-slate-800 hover:bg-slate-200'
-                  }`}
-                >
-                  {pageNum}
-                </button>
-              ))}
-
+              <div className="w-8 h-8 rounded-full border border-slate-300 text-slate-800 flex items-center justify-center font-bold text-xs bg-slate-50">
+                10
+              </div>
               <button
-                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
-                className="px-4 py-2 rounded-lg bg-slate-100 text-slate-800 hover:bg-[#1642D0] hover:text-white disabled:opacity-40 transition-colors cursor-pointer"
+                type="button"
+                className="hover:text-[#1642D0] transition-colors cursor-pointer uppercase tracking-wider font-bold"
               >
-                Next
+                NEXT
+              </button>
+              <button
+                type="button"
+                className="hover:text-[#1642D0] transition-colors cursor-pointer select-none"
+                aria-label="Next set"
+              >
+                &raquo;
               </button>
             </div>
-
           </div>
 
-          {/* RIGHT SIDEBAR (~30% / 4 cols on lg): Sticky Trending News + 2 Ad Banners (Order 2) */}
-          <aside className="w-full lg:col-span-4 order-2 lg:sticky lg:top-24 space-y-6">
-            
-            {/* 1. Trending News Card (Matching Reference Screenshots 2 & 3) */}
-            <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-2xs space-y-4">
-              <div className="flex items-center gap-2 pb-3.5 border-b border-slate-200">
-                <TrendingUp className="w-5 h-5 text-[#1642D0]" />
-                <h2 className="text-sm font-serif font-extrabold text-[#020618] uppercase tracking-wider my-0">
-                  TRENDING IN US
-                </h2>
+          {/* Right Column: Sidebar with Advertisement X box + Laptop Image (TRENDING IN US removed) */}
+          <div className="lg:col-span-5 space-y-6">
+            {/* Advertisement box with centered X icon matching Image 3 */}
+            <div className="w-full min-h-[300px] sm:min-h-[340px] bg-[#edf2f7] border border-slate-300 flex flex-col items-center justify-between p-6 text-center">
+              <span className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-500">
+                ADVERTISEMENT
+              </span>
+              <div className="w-12 h-12 flex items-center justify-center text-slate-400">
+                <svg className="w-10 h-10 stroke-slate-300" viewBox="0 0 24 24" fill="none" strokeWidth="1.5">
+                  <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
               </div>
-
-              <div className="divide-y divide-slate-100">
-                {TRENDING_NEWS_ITEMS.map((item, idx) => (
-                  <div key={item.id} className="flex gap-4 items-start py-3.5 first:pt-0 last:pb-0">
-                    <span className={`font-serif font-bold text-xl sm:text-2xl leading-none pt-0.5 ${idx === 0 ? 'text-[#8B0000]' : 'text-slate-300'}`}>
-                      {item.rank}
-                    </span>
-                    <div className="space-y-1">
-                      <Link
-                        href={item.link}
-                        className="font-sans font-bold text-xs sm:text-[13px] text-[#020618] hover:underline decoration-[#020618] decoration-1 underline-offset-[2px] transition-all leading-snug block"
-                      >
-                        {item.title}
-                      </Link>
-                      <span className="text-[11px] font-sans text-slate-400 block font-medium">
-                        {item.views}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <div />
             </div>
 
-            {/* 2. Advertisement Placeholder 1 (300 × 250 Banner) */}
-            <div className="bg-slate-50/80 border-2 border-dashed border-slate-300 rounded-2xl p-6 flex flex-col items-center justify-center text-center min-h-[250px] w-full">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">ADVERTISEMENT</span>
-              <span className="text-sm font-semibold text-slate-700 mt-1">300 × 250 Banner</span>
-              <span className="text-xs text-slate-400 mt-1">Your Advertisement Here</span>
+            {/* Laptop Desk Image matching Image 3 */}
+            <div className="w-full overflow-hidden bg-slate-100 border border-slate-200">
+              <img
+                src="/images/topic-sidebar-laptop.jpg"
+                alt="Workspace setup"
+                className="w-full h-auto object-cover"
+              />
             </div>
-
-            {/* 3. Advertisement Placeholder 2 (300 × 600 Banner) */}
-            <div className="bg-slate-50/80 border-2 border-dashed border-slate-300 rounded-2xl p-6 flex flex-col items-center justify-center text-center min-h-[500px] lg:min-h-[600px] w-full">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">ADVERTISEMENT</span>
-              <span className="text-sm font-semibold text-slate-700 mt-1">300 × 600 Banner</span>
-              <span className="text-xs text-slate-400 mt-1">Your Advertisement Here</span>
-            </div>
-
-          </aside>
-
+          </div>
         </div>
-      </main>
+      </div>
 
-
-      {/* 2. Footer Navigation */}
+      {/* Footer Navigation */}
       <Footer />
     </div>
   );
 }
-
