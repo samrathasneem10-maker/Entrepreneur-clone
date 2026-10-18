@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Search, X, SearchX, ChevronLeft, ChevronRight, Sparkles, Clock, User } from 'lucide-react';
 import { Header } from '@/layouts/Header';
 import { Footer } from '@/layouts/Footer';
-import { searchArticles, ALL_ARTICLES, Article } from '@/data/newsData';
+import { searchArticles, ALL_ARTICLES, Article, getArticleUrl } from '@/data/newsData';
 import { SearchSkeleton } from '@/components/skeletons/SearchSkeleton';
 
 const POPULAR_SEARCH_TAGS = [
@@ -192,7 +192,7 @@ function SearchContent() {
               {paginatedArticles.map((art) => (
                 <Link
                   key={art.id}
-                  href={`/article/${art.id}`}
+                  href={getArticleUrl(art)}
                   className="group bg-white border border-slate-200/90 rounded-2xl p-5 shadow-2xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
                 >
                   <div className="space-y-3">

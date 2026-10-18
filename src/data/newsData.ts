@@ -1,5 +1,6 @@
 export interface Article {
   id: string;
+  slug?: string;
   title: string;
   category: string;
   author: {
@@ -7,7 +8,7 @@ export interface Article {
     avatar?: string;
     title?: string;
   };
-  date: string;
+  date?: string;
   readTime?: string;
   excerpt?: string;
   imageUrl?: string;
@@ -63,11 +64,13 @@ export const HERO_ARTICLE: Article = {
 
 export const LATEST_ARTICLES: Article[] = [
   {
-    id: 'latest-1',
-    title: "When Growth Stalls, I Don't Spend More on Marketing. I Reset the Business",
-    category: 'Building a Business',
-    author: { name: 'Brian Scudamore' },
+    id: '53-side-hustle-ideas-to-make-extra-money-in-2026',
+    slug: '53-side-hustle-ideas-to-make-extra-money-in-2026',
+    title: '53 Side Hustle Ideas to Make Extra Money in 2026',
+    category: 'Finance & Economics',
+    author: { name: 'R.L. Adams' },
     date: '10m ago',
+    imageUrl: '/images/side-hustle-53.jpg',
   },
   {
     id: 'latest-2',
@@ -2150,8 +2153,27 @@ export const FRANCHISES_MAIN_SECTION_ARTICLES: Article[] = [
   },
 ];
 
+export const SIDE_HUSTLE_53_ARTICLE: Article = {
+  id: '53-side-hustle-ideas-to-make-extra-money-in-2026',
+  slug: '53-side-hustle-ideas-to-make-extra-money-in-2026',
+  title: '53 Side Hustle Ideas to Make Extra Money in 2026',
+  category: 'Finance & Economics',
+  author: {
+    name: 'R.L. ADAMS',
+    title: 'Writer',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300&auto=format&fit=crop',
+  },
+  editor: 'AMANDA BREEN',
+  date: 'JAN 26, 2026',
+  readTime: '8 min read',
+  excerpt: 'From freelancing to selling products, find out how to earn extra income today.',
+  imageUrl: '/images/side-hustle-53.jpg',
+  imageAspect: 'wide',
+};
+
 export const NOT_EVERY_BOSS_ARTICLE: Article = {
   id: 'not-every-boss-deserves-a-thank-you-card',
+  slug: 'not-every-boss-deserves-a-thank-you-card',
   title: "Not Every Boss Deserves a Thank-You Card. Here's What to Do When Your Boss Is a Bully.",
   category: 'BUILDING A BUSINESS',
   author: {
@@ -2168,6 +2190,7 @@ export const NOT_EVERY_BOSS_ARTICLE: Article = {
 };
 
 export const ALL_ARTICLES: Article[] = [
+  SIDE_HUSTLE_53_ARTICLE,
   NOT_EVERY_BOSS_ARTICLE,
   HERO_ARTICLE,
   ...LATEST_ARTICLES,
@@ -2184,31 +2207,122 @@ export const ALL_ARTICLES: Article[] = [
   ...ALL_TOPIC_ARTICLES,
 ];
 
-export function getArticleById(id: string): Article {
-  const found = ALL_ARTICLES.find((a) => a.id === id || a.id.toLowerCase() === (id || '').toLowerCase());
-  if (found) return found;
+export function slugifyTitle(title: string): string {
+  if (!title) return '';
+  return title
+    .toLowerCase()
+    .replace(/['’]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
 
-  if ((id || '').includes('boss') || (id || '').includes('building-a-business') || (id || '').includes('bully')) {
+export function getArticleSlug(article: { id?: string; title?: string; slug?: string }): string {
+  if (article.slug) return article.slug;
+  if (article.id === 'latest-1' || article.id === 'side-hustle-53') {
+    return '53-side-hustle-ideas-to-make-extra-money-in-2026';
+  }
+  if (article.id === 'not-every-boss-deserves-a-thank-you-card') {
+    return 'not-every-boss-deserves-a-thank-you-card';
+  }
+  if (article.id && article.id.includes('-') && !article.id.match(/^(latest|hero|sec|rel|topic|cat|art|vid|sh|grid)-\d+$/)) {
+    return article.id;
+  }
+  if (article.title) {
+    const slug = slugifyTitle(article.title);
+    if (slug) return slug;
+  }
+  return article.id || 'article';
+}
+
+export function getArticleUrl(article: { id?: string; title?: string; slug?: string }): string {
+  return `/article/${getArticleSlug(article)}`;
+}
+
+export function getArticleById(rawIdOrSlug: string): Article {
+  const param = decodeURIComponent(rawIdOrSlug || '').trim();
+  const slugParam = slugifyTitle(param);
+
+  // 1. Direct check for 53 Side Hustles article
+  if (
+    param === 'latest-1' ||
+    param === '53-side-hustle-ideas-to-make-extra-money-in-2026' ||
+    slugParam.includes('53-side-hustle') ||
+    slugParam.includes('extra-money') ||
+    slugParam.includes('side-hustle-ideas')
+  ) {
+    return SIDE_HUSTLE_53_ARTICLE;
+  }
+
+  // 2. Direct check for Not Every Boss article
+  if (
+    param.includes('boss') ||
+    param.includes('bully') ||
+    slugParam.includes('boss') ||
+    slugParam.includes('bully') ||
+    slugParam.includes('thank-you-card')
+  ) {
     return NOT_EVERY_BOSS_ARTICLE;
   }
-  
-  return {
-    id: id || 'hero-1',
-    title: 'How Design-Led Companies Build Stronger Customer Experiences and Higher Lifetime Value',
-    category: 'Building a Business',
-    author: {
-      name: 'Merilee Kern, MBA',
-      title: 'Writer',
-      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=300&auto=format&fit=crop',
-    },
 
-    date: 'July 25, 2026',
-    readTime: '6 min read',
+  // 3. Direct check for Hero article
+  if (param === 'hero-1' || slugParam.includes('mentored-people')) {
+    return HERO_ARTICLE;
+  }
 
-    excerpt: 'A company\'s financial statements tell only half the story. Discover why customer-centric design, cross-functional alignment, and strategic feedback loops drive sustainable growth.',
-    imageUrl: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=1200&auto=format&fit=crop',
-    imageAspect: 'wide',
-  };
+  // 4. Exact matches in ALL_ARTICLES
+  const found = ALL_ARTICLES.find((a) => {
+    if (a.id === param || a.id.toLowerCase() === param.toLowerCase()) return true;
+    if (a.slug && (a.slug === param || a.slug === slugParam)) return true;
+    if (slugifyTitle(a.title) === slugParam) return true;
+    if (slugifyTitle(a.id) === slugParam) return true;
+    return false;
+  });
+  if (found) return found;
+
+  // 5. Fuzzy match in ALL_ARTICLES
+  if (slugParam.length > 5) {
+    const fuzzy = ALL_ARTICLES.find((a) => {
+      const aSlug = a.slug || slugifyTitle(a.title);
+      return aSlug.includes(slugParam) || slugParam.includes(aSlug);
+    });
+    if (fuzzy) return fuzzy;
+  }
+
+  // 6. Custom slug support (e.g. "12-sick-4-hospitalized-as-fda-escalates-frozen-blueberry-recall" from reference screenshot)
+  if (param.includes('-') && param.split('-').length >= 3) {
+    const words = param.replace(/^article\//, '').split(/[-_]+/);
+    const formattedTitle = words
+      .map((word) => {
+        const lower = word.toLowerCase();
+        if (['as', 'a', 'an', 'and', 'or', 'in', 'on', 'at', 'to', 'for', 'of', 'by', 'the'].includes(lower)) {
+          return lower;
+        }
+        if (['fda', 'ai', 'ceo', 'owlet', 'esg', 'btc', 'usd'].includes(lower)) {
+          return word.toUpperCase();
+        }
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      })
+      .join(' ');
+
+    return {
+      id: slugParam,
+      slug: slugParam,
+      title: formattedTitle.charAt(0).toUpperCase() + formattedTitle.slice(1),
+      category: 'Health & Wellness',
+      author: {
+        name: 'Staff Reporter',
+        title: 'Editorial Team',
+      },
+      editor: 'AMANDA BREEN',
+      date: 'OCT 18, 2026',
+      readTime: '4 min read',
+      excerpt: `Latest breaking report and investigative analysis: ${formattedTitle}.`,
+      imageUrl: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=1200&auto=format&fit=crop',
+      imageAspect: 'wide',
+    };
+  }
+
+  return SIDE_HUSTLE_53_ARTICLE;
 }
 
 export function getTopicDataBySlug(slugInput: string): TopicPageData {

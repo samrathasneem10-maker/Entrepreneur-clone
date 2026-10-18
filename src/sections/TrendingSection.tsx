@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Flame } from 'lucide-react';
 import { Badge } from '@/components/Badge';
-import { TRENDING_STORIES } from '@/data/newsData';
+import { TRENDING_STORIES, getArticleUrl } from '@/data/newsData';
 
 export const TrendingSection: React.FC = () => {
   return (
@@ -39,7 +39,7 @@ export const TrendingSection: React.FC = () => {
                 </Badge>
 
                 <h3 className="text-base font-bold font-sans text-slate-100 leading-snug group-hover:text-blue-400 transition-colors">
-                  <Link href={`/article/${story.id}`}>{story.title}</Link>
+                  <Link href={getArticleUrl(story)}>{story.title}</Link>
                 </h3>
               </div>
 

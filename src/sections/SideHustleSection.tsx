@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Check } from 'lucide-react';
-import { SIDE_HUSTLE_ARTICLES } from '@/data/newsData';
+import { SIDE_HUSTLE_ARTICLES, getArticleUrl } from '@/data/newsData';
 
 export const SideHustleSection: React.FC = () => {
   const [selectedCount, setSelectedCount] = useState(0);
@@ -80,7 +80,7 @@ export const SideHustleSection: React.FC = () => {
 
                   <h3 className="text-base sm:text-lg lg:text-[18.5px] font-serif font-bold text-[#020618] leading-[1.3] tracking-tight mb-2">
                     <Link
-                      href={`/article/${article.id}`}
+                      href={getArticleUrl(article)}
                       className="text-[#020618] no-underline hover:underline decoration-[#020618] decoration-1 underline-offset-[3px] transition-all"
                     >
                       {article.title}

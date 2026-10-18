@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import {
@@ -16,7 +16,7 @@ import {
 import { Header } from '@/layouts/Header';
 import { Footer } from '@/layouts/Footer';
 import { ArticleCard } from '@/components/ArticleCard';
-import { getArticleById, ALL_ARTICLES, LATEST_ARTICLES } from '@/data/newsData';
+import { getArticleById, getArticleSlug, slugifyTitle, ALL_ARTICLES, LATEST_ARTICLES } from '@/data/newsData';
 
 const LATEST_SIDEBAR_ARTICLES = [
   {
@@ -110,28 +110,58 @@ const RELATED_CONTENT_ITEMS = [
 
 export default function ArticleDetailPage() {
   const params = useParams();
-  const articleId = typeof params?.id === 'string' ? params.id : 'not-every-boss-deserves-a-thank-you-card';
+  const articleId = typeof params?.id === 'string' ? params.id : '53-side-hustle-ideas-to-make-extra-money-in-2026';
   const rawArticle = getArticleById(articleId);
 
-  const isBossArticle = articleId.includes('boss') || articleId.includes('bully');
+  const isBossArticle = articleId.includes('boss') || articleId.includes('bully') || (rawArticle?.id || '').includes('boss');
+  const is53SideHustle =
+    articleId === 'latest-1' ||
+    articleId.includes('53-side-hustle') ||
+    articleId.includes('extra-money') ||
+    (rawArticle?.id || '').includes('53-side-hustle');
 
-  // Metadata matching user's reference screenshot (53 Side Hustle Ideas) or authentic Boss article
   const article = {
     ...rawArticle,
-    category: isBossArticle ? 'Building a Business' : 'Finance & Economics',
+    category: isBossArticle
+      ? 'Building a Business'
+      : is53SideHustle
+      ? 'Finance & Economics'
+      : (rawArticle.category || 'Finance & Economics'),
     title: isBossArticle
       ? 'Not Every Boss Deserves a Thank-You Card. Here’s What to Do When Your Boss Is a Bully.'
-      : '53 Side Hustle Ideas to Make Extra Money in 2026',
+      : is53SideHustle
+      ? '53 Side Hustle Ideas to Make Extra Money in 2026'
+      : rawArticle.title,
     excerpt: isBossArticle
       ? 'As some of us celebrate National Boss’s Day, it’s important to remember that not everyone has a good relationship with their boss.'
-      : 'From freelancing to selling products, find out how to earn extra income today.',
+      : is53SideHustle
+      ? 'From freelancing to selling products, find out how to earn extra income today.'
+      : (rawArticle.excerpt || ''),
     author: {
-      name: isBossArticle ? 'MITA MALLICK' : 'R.L. ADAMS',
+      name: isBossArticle
+        ? 'MITA MALLICK'
+        : is53SideHustle
+        ? 'R.L. ADAMS'
+        : (rawArticle.author?.name || 'R.L. ADAMS'),
+      avatar: rawArticle.author?.avatar,
+      title: rawArticle.author?.title,
     },
-    editor: isBossArticle ? 'KARA MCINTYRE' : 'AMANDA BREEN',
-    date: isBossArticle ? 'OCT 14, 2026' : 'JAN 26, 2026',
-    imageUrl: isBossArticle ? (rawArticle?.imageUrl || '/images/hero-mentor.jpg') : '/images/side-hustle-53.jpg',
+    editor: isBossArticle ? 'KARA MCINTYRE' : is53SideHustle ? 'AMANDA BREEN' : (rawArticle.editor || 'AMANDA BREEN'),
+    date: isBossArticle ? 'OCT 14, 2026' : is53SideHustle ? 'JAN 26, 2026' : (rawArticle.date || 'JAN 26, 2026'),
+    imageUrl: isBossArticle
+      ? (rawArticle.imageUrl || '/images/hero-mentor.jpg')
+      : is53SideHustle
+      ? '/images/side-hustle-53.jpg'
+      : (rawArticle.imageUrl || '/images/side-hustle-53.jpg'),
   };
+
+  // Synchronize browser address bar to canonical title slug if accessed via 'latest-1' or older IDs
+  useEffect(() => {
+    const canonicalSlug = getArticleSlug(article);
+    if (articleId && articleId !== canonicalSlug && typeof window !== 'undefined') {
+      window.history.replaceState(null, '', `/article/${canonicalSlug}`);
+    }
+  }, [articleId, article]);
 
   const [copied, setCopied] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
@@ -196,10 +226,10 @@ export default function ArticleDetailPage() {
             {/* Category Heading matching reference image */}
             <div className="mb-2">
               <Link
-                href="/topic/thought-leaders"
+                href={`/topic/${slugifyTitle(article.category || 'finance-economics')}`}
                 className="text-xs sm:text-[13px] font-sans font-bold uppercase tracking-wider text-[#1642D0] hover:underline"
               >
-                Thought Leaders
+                {article.category || 'FINANCE & ECONOMICS'}
               </Link>
             </div>
 

@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Badge } from './Badge';
-import { Article } from '@/data/newsData';
+import { Article, getArticleUrl } from '@/data/newsData';
 
 interface ArticleCardProps {
   article: Article;
@@ -69,7 +69,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
           
           <h2 className="text-3xl sm:text-4xl lg:text-[38px] xl:text-[42px] font-serif font-bold text-[#020618] leading-[1.18] tracking-tight mb-3.5">
             <Link
-              href={`/article/${article.id}`}
+              href={getArticleUrl(article)}
               className="text-[#020618] no-underline hover:underline decoration-[#020618] decoration-1 underline-offset-[5px] transition-all"
             >
               {title}
@@ -142,7 +142,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
           
           <h3 className="text-base sm:text-lg font-serif font-bold text-[#020618] leading-snug tracking-tight mb-2">
             <Link
-              href={`/article/${article.id}`}
+              href={getArticleUrl(article)}
               className="text-[#020618] no-underline hover:underline decoration-[#020618] decoration-1 underline-offset-[3px] transition-all"
             >
               {title}
@@ -169,7 +169,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
         
         <h3 className="text-base sm:text-[17px] xl:text-[17.5px] font-serif font-bold text-[#020618] leading-[1.32] tracking-tight">
           <Link
-            href={`/article/${article.id}`}
+            href={getArticleUrl(article)}
             className="text-[#020618] no-underline hover:underline decoration-[#020618] decoration-1 underline-offset-[3px] transition-all"
           >
             {title}
@@ -200,7 +200,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
           <Badge className="text-[11px] text-[#193CB8] mb-1">{category}</Badge>
           <h4 className="text-sm font-bold font-serif text-[#020618] leading-tight mb-1">
             <Link
-              href={`/article/${article.id}`}
+              href={getArticleUrl(article)}
               className="text-[#020618] no-underline hover:underline decoration-[#020618] decoration-1 underline-offset-[2px] transition-all"
             >
               {title}
@@ -251,7 +251,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
 
         <h3 className={`${isCenter ? 'text-xl sm:text-[22px] max-w-sm' : 'text-lg sm:text-[18.5px] xl:text-[19px]'} font-serif font-bold text-[#020618] leading-[1.3] tracking-tight mb-2`}>
           <Link
-            href={`/article/${article.id}`}
+            href={getArticleUrl(article)}
             className="text-[#020618] no-underline hover:underline decoration-[#020618] decoration-1 underline-offset-[3px] transition-all"
           >
             {title}
