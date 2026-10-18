@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Header } from '@/layouts/Header';
 import { Footer } from '@/layouts/Footer';
 
@@ -67,8 +66,8 @@ const AUTHORS_MAP: Record<string, AuthorProfile> = {
   },
 };
 
-// 24 articles in complete 3-column rows, with the final row matching Image 1 exactly
-const AUTHOR_ARTICLES_24 = [
+// PAGE 1: 24 articles in complete 3-column rows, with the final row matching Image 1 exactly
+const PAGE_1_ARTICLES = [
   {
     id: 'childhood-sweethearts-product-new-parents',
     title: "These Childhood Sweethearts Created a Product for New Parents. It Made $500K in Revenue in Under 1 Minute: 'Orders Started to Roll In'",
@@ -216,7 +215,7 @@ const AUTHOR_ARTICLES_24 = [
     excerpt: 'Underwriters now mandate multi-factor authentication, endpoint detection, and regular employee phishing tests.',
     imageUrl: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?q=80&w=600&auto=format&fit=crop',
   },
-  // FINAL ROW: EXACT MATCH TO IMAGE 1
+  // FINAL ROW OF PAGE 1: EXACT MATCH TO IMAGE 1
   {
     id: 'workers-managing-ai-bots-no-manager-pay',
     title: 'Workers Are Managing AI Bots — Without Getting Manager Pay',
@@ -237,6 +236,178 @@ const AUTHOR_ARTICLES_24 = [
     category: 'BUYING A FRANCHISE',
     excerpt: 'The experience fundamentally changed the way she thought about business.',
     imageUrl: '/images/final-article-3.jpg',
+  },
+];
+
+// PAGE 2: 24 fresh articles
+const PAGE_2_ARTICLES = [
+  {
+    id: 'anthropic-4b-scale-frontier-ai-models',
+    title: 'Anthropic Raises $4 Billion to Scale Frontier AI Reasoning Models',
+    category: 'ARTIFICIAL INTELLIGENCE',
+    excerpt: 'The Claude creator expands cloud partnerships and enterprise inference infrastructure to meet surging commercial demand.',
+    imageUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'dorm-side-hustle-80m-brand',
+    title: 'How a 26-Year-Old Turned a College Dorm Side Hustle into an $80M Brand',
+    category: 'YOUNG ENTREPRENEURS',
+    excerpt: 'Leveraging organic TikTok viral loops and agile supply chain logistics to outpace legacy retail competitors.',
+    imageUrl: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'fed-interest-rate-cuts-small-business-loans',
+    title: 'The Fed Hints at Rate Cuts: What It Means for Small Business Loans and Credit Lines',
+    category: 'MONEY & FINANCE',
+    excerpt: 'Lower borrowing benchmarks could unlock deferred expansion capital for manufacturing and franchise operators.',
+    imageUrl: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'ditching-unlimited-pto-mandatory-minimum',
+    title: 'Why Top Tech Companies Are Ditching Unlimited PTO for Mandatory Minimum Leave',
+    category: 'WORKPLACE CULTURE',
+    excerpt: 'Data indicates employees take less time off under open-ended policies, driving burnout and attrition.',
+    imageUrl: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'bootstrapping-saas-10m-arr-lessons',
+    title: '5 Non-Obvious Lessons from Bootstrapping a B2B SaaS to $10M ARR Without VC Money',
+    category: 'GROWTH HACKS',
+    excerpt: 'Focusing on negative net churn, high average revenue per user, and founder-led sales built durability.',
+    imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'quiet-luxury-boutique-hotels-hospitality',
+    title: 'The Rise of Quiet Luxury in Hospitality: Boutique Hotels Outperforming Megachains',
+    category: 'TRAVEL & LEISURE',
+    excerpt: 'Personalized wellness concierge services and localized culinary partnerships command premium room rates.',
+    imageUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'valuing-digital-media-businesses-algorithmic-era',
+    title: 'How to Value a Digital Media Business in the Era of Algorithmic Turbulence',
+    category: 'VALUATIONS',
+    excerpt: 'First-party newsletter subscriber retention and owned event revenue now drive higher multiples than pageviews.',
+    imageUrl: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'sam-altman-unveils-chatgpt-voice-advances',
+    title: 'Sam Altman Unveils Next-Gen ChatGPT Voice Capabilities at Global DevDay',
+    category: 'TECH INNOVATION',
+    excerpt: 'Sub-300 millisecond conversational latency and emotive tone modulation bridge human-machine interaction.',
+    imageUrl: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'former-barista-gourmet-oat-milk-empire',
+    title: 'This Former Barista Founded a Gourmet Oat Milk Empire Valued at $120M',
+    category: 'FOOD & BEVERAGE',
+    excerpt: 'Specialty cafe wholesale distribution created grassroots consumer demand before national supermarket rollouts.',
+    imageUrl: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'real-estate-crowdfunding-vs-reits',
+    title: 'Real Estate Crowdfunding vs REITs: Which Yields Better Risk-Adjusted Returns?',
+    category: 'INVESTING',
+    excerpt: 'Comparing illiquid direct property equity stakes against publicly traded real estate investment trusts.',
+    imageUrl: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'b2b-founders-podcast-marketing-budgets',
+    title: 'Why B2B Founders Are Spending 50% of Their Marketing Budget on Niche Podcasts',
+    category: 'B2B MARKETING',
+    excerpt: 'Intimate host endorsements and extended format technical discussions yield superior enterprise sales pipeline.',
+    imageUrl: 'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'ev-charging-infrastructure-next-unicorns',
+    title: 'Electric Vehicle Charging Infrastructure: Where the Next Energy Unicorns Will Be Built',
+    category: 'CLEAN ENERGY',
+    excerpt: 'Megawatt-level commercial fleet depot chargers outpace consumer curbside installations in profitability.',
+    imageUrl: 'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'protect-brand-ip-against-ai-scraping',
+    title: 'How to Protect Your Brand IP Against AI Scraping and Synthetic Replicas',
+    category: 'LEGAL & IP',
+    excerpt: 'Legal frameworks, technical watermarking, and active litigation strategies for modern digital creators.',
+    imageUrl: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'high-retention-subscription-box-commerce',
+    title: 'The Secrets of High-Retention Subscription Box Commerce in 2026',
+    category: 'ECOMMERCE',
+    excerpt: 'Predictive restocking customization and exclusive subscriber community perks drive sub-2% monthly churn.',
+    imageUrl: 'https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'top-vcs-seed-pitch-decks-today',
+    title: 'What Top Venture Capitalists Look for in Seed Pitch Decks Today',
+    category: 'STARTUP FUNDING',
+    excerpt: 'Clear unit economics, early customer validation signals, and proprietary data moats replace generic TAM claims.',
+    imageUrl: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'autonomous-drone-delivery-last-mile-logistics',
+    title: 'How Autonomous Drone Delivery is Slashing Last-Mile Logistics Costs in Suburban Corridors',
+    category: 'TRANSPORTATION',
+    excerpt: 'Regulatory approvals and automated battery-swapping stations make 15-minute package drops economically viable.',
+    imageUrl: 'https://images.unsplash.com/photo-1527977966376-1c8408f9f108?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'price-anchoring-psychology-charge-more',
+    title: 'The Psychology of Price Anchoring: How to Charge 3x More with Confidence',
+    category: 'SALES STRATEGY',
+    excerpt: 'Positioning high-tier enterprise packages re-anchors perceived buyer value and accelerates deal closes.',
+    imageUrl: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'fractional-cfo-benefits-solopreneurs',
+    title: 'Why Every Solopreneur Needs a Fractional CFO Before Hitting Seven Figures',
+    category: 'ACCOUNTING',
+    excerpt: 'Tax optimization, cash conversion cycle improvements, and working capital buffers protect growing bottom lines.',
+    imageUrl: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'green-hydrogen-startups-energy-grants',
+    title: 'Green Hydrogen Startups Secure Major Department of Energy Grants to Scale Electrolysis',
+    category: 'CLIMATE TECH',
+    excerpt: 'Reducing clean hydrogen production costs below $2 per kilogram unlocks heavy industrial decarbonization.',
+    imageUrl: 'https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'influencer-marketing-vanity-to-attributed-sales',
+    title: 'How Influencer Marketing Is Shifting from Vanity Metrics to Attributed Sales Performance',
+    category: 'DIGITAL MARKETING',
+    excerpt: 'First-party tracking pixels and affiliate revenue share contracts replace upfront sponsorship fees.',
+    imageUrl: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'remote-first-vs-rto-500-startups-data',
+    title: 'Remote First vs Return to Office: Data from 500 Fast-Growing Startups Reveals the Truth',
+    category: 'MANAGEMENT',
+    excerpt: 'Hybrid models with quarterly in-person hack weeks show 22% higher engineering throughput than full in-office.',
+    imageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'refurbished-enterprise-tech-circular-market',
+    title: 'Inside the Booming $40B Market for Refurbished Enterprise Tech Hardware',
+    category: 'CIRCULAR ECONOMY',
+    excerpt: 'Certified pre-owned servers and networking switches enable AI startups to stretch seed round runway.',
+    imageUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'founder-equity-vesting-nightmare-scenarios',
+    title: 'How to Structure Founder Equity Vesting to Avoid Nightmare Co-Founder Disputes',
+    category: 'STARTUP LAW',
+    excerpt: 'Four-year vesting with a one-year cliff and double-trigger acceleration clauses safeguard corporate control.',
+    imageUrl: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'lucrative-low-overhead-franchise-2026',
+    title: 'The 10 Most Lucrative Low-Overhead Franchise Opportunities in 2026',
+    category: 'FRANCHISE EXPANSION',
+    excerpt: 'Mobile service concepts, home health agencies, and commercial cleaning franchises deliver six-figure returns.',
+    imageUrl: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=600&auto=format&fit=crop',
   },
 ];
 
@@ -267,6 +438,20 @@ const MORE_AUTHORS = [
   },
 ];
 
+// Helper to provide articles for each page (1 to 10)
+function getArticlesForPage(page: number) {
+  if (page === 1) return PAGE_1_ARTICLES;
+  if (page === 2) return PAGE_2_ARTICLES;
+
+  // For pages 3 through 10, generate clean variations with distinct titles and categories
+  const baseList = page % 2 === 1 ? PAGE_1_ARTICLES : PAGE_2_ARTICLES;
+  return baseList.map((art) => ({
+    ...art,
+    id: `${art.id}-p${page}`,
+    title: `${art.title} (Part ${page})`,
+  }));
+}
+
 export default function AuthorProfilePage() {
   const params = useParams();
   const [currentPage, setCurrentPage] = useState(1);
@@ -275,6 +460,36 @@ export default function AuthorProfilePage() {
   const slug = (Array.isArray(rawSlug) ? rawSlug[0] : rawSlug) || 'sherin-shibu';
 
   const author = AUTHORS_MAP[slug] || AUTHORS_MAP['sherin-shibu'];
+
+  // Read initial page from URL query string on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      const pageQuery = parseInt(searchParams.get('page') || '1', 10);
+      if (!isNaN(pageQuery) && pageQuery >= 1 && pageQuery <= 10) {
+        setCurrentPage(pageQuery);
+      }
+    }
+  }, []);
+
+  // Handle page change: update state, update URL query string, and scroll to articles stream
+  const handlePageChange = (newPage: number) => {
+    if (newPage < 1 || newPage > 10) return;
+    setCurrentPage(newPage);
+
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      url.searchParams.set('page', String(newPage));
+      window.history.pushState({}, '', url.toString());
+
+      const el = document.getElementById('author-articles-stream');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
+
+  const currentArticles = getArticlesForPage(currentPage);
 
   return (
     <div className="min-h-screen flex flex-col bg-white font-sans antialiased text-slate-900">
@@ -351,7 +566,7 @@ export default function AuthorProfilePage() {
       </section>
 
       {/* ARTICLES STREAM - 1 ROW 3 COLUMNS GRID */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-5 lg:px-10 py-6 md:py-10">
+      <main id="author-articles-stream" className="flex-1 w-full max-w-7xl mx-auto px-5 lg:px-10 py-6 md:py-10">
         {/* Section Headline */}
         <div className="mb-8">
           <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-serif font-black text-[#020618] tracking-tight my-0">
@@ -359,9 +574,9 @@ export default function AuthorProfilePage() {
           </h2>
         </div>
 
-        {/* 1 Row 3 Columns Grid */}
+        {/* 1 Row 3 Columns Grid for Current Page Articles */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
-          {AUTHOR_ARTICLES_24.map((art) => (
+          {currentArticles.map((art) => (
             <article key={art.id} className="group flex flex-col items-start text-left">
               {/* Card Image */}
               <div className="w-full aspect-[16/10] overflow-hidden rounded-xl bg-slate-100 mb-3.5">
@@ -422,43 +637,52 @@ export default function AuthorProfilePage() {
             ))}
           </div>
 
-          {/* Authentic Pagination Matching Image 2 */}
+          {/* DYNAMIC FUNCTIONAL PAGINATION MATCHING IMAGE 2 */}
           <div className="flex items-center gap-1.5 sm:gap-2 pt-4 pb-8">
-            <button
-              type="button"
-              onClick={() => setCurrentPage(1)}
-              className="min-w-[34px] sm:min-w-[38px] h-9 px-3 rounded-xs bg-[#1642D0] text-white font-sans font-bold text-xs flex items-center justify-center cursor-pointer shadow-2xs"
-            >
-              1
-            </button>
-            <button
-              type="button"
-              onClick={() => setCurrentPage(2)}
-              className="min-w-[34px] sm:min-w-[38px] h-9 px-3 rounded-xs bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 font-sans font-semibold text-xs flex items-center justify-center cursor-pointer transition-colors"
-            >
-              2
-            </button>
-            <button
-              type="button"
-              onClick={() => setCurrentPage(3)}
-              className="min-w-[34px] sm:min-w-[38px] h-9 px-3 rounded-xs bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 font-sans font-semibold text-xs flex items-center justify-center cursor-pointer transition-colors"
-            >
-              3
-            </button>
+            {[1, 2, 3].map((pageNum) => (
+              <button
+                key={pageNum}
+                type="button"
+                onClick={() => handlePageChange(pageNum)}
+                className={`min-w-[34px] sm:min-w-[38px] h-9 px-3 rounded-xs font-sans text-xs flex items-center justify-center cursor-pointer transition-all duration-150 ${
+                  currentPage === pageNum
+                    ? 'bg-[#1642D0] text-white font-bold shadow-2xs border border-[#1642D0]'
+                    : 'bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 font-semibold hover:border-slate-400'
+                }`}
+                aria-label={`Go to page ${pageNum}`}
+                aria-current={currentPage === pageNum ? 'page' : undefined}
+              >
+                {pageNum}
+              </button>
+            ))}
+
+            {/* Ellipsis */}
             <span className="min-w-[34px] sm:min-w-[38px] h-9 px-2 rounded-xs bg-white border border-slate-300 text-slate-400 font-sans text-xs flex items-center justify-center select-none">
               ...
             </span>
+
+            {/* Page 10 Button */}
             <button
               type="button"
-              onClick={() => setCurrentPage(10)}
-              className="min-w-[34px] sm:min-w-[38px] h-9 px-3 rounded-xs bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 font-sans font-semibold text-xs flex items-center justify-center cursor-pointer transition-colors"
+              onClick={() => handlePageChange(10)}
+              className={`min-w-[34px] sm:min-w-[38px] h-9 px-3 rounded-xs font-sans text-xs flex items-center justify-center cursor-pointer transition-all duration-150 ${
+                currentPage === 10
+                  ? 'bg-[#1642D0] text-white font-bold shadow-2xs border border-[#1642D0]'
+                  : 'bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 font-semibold hover:border-slate-400'
+              }`}
+              aria-label="Go to page 10"
+              aria-current={currentPage === 10 ? 'page' : undefined}
             >
               10
             </button>
+
+            {/* Next Button */}
             <button
               type="button"
-              onClick={() => setCurrentPage((p) => Math.min(10, p + 1))}
-              className="h-9 px-4 rounded-xs bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 font-sans font-semibold text-xs flex items-center justify-center cursor-pointer transition-colors"
+              onClick={() => handlePageChange(Math.min(10, currentPage + 1))}
+              disabled={currentPage === 10}
+              className="h-9 px-4 rounded-xs bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 disabled:opacity-40 font-sans font-semibold text-xs flex items-center justify-center cursor-pointer transition-colors"
+              aria-label="Next page"
             >
               Next
             </button>
