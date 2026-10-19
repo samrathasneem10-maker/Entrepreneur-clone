@@ -145,7 +145,7 @@ export const TransformAISection: React.FC = () => {
             className="w-full bg-[#edf2f7] border border-slate-300 flex flex-col items-center justify-center p-6 text-center shadow-2xs"
           >
             <span className="text-sm sm:text-base md:text-lg font-semibold text-slate-600 font-sans">
-              Advertisement Banner
+              1346 × 520 Banner
             </span>
             <span className="text-xs sm:text-sm text-slate-400 font-sans mt-0.5 sm:mt-1">
               Your Advertisement Here
