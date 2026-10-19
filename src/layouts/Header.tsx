@@ -193,16 +193,16 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
         </div>
 
         {/* Lower Header Bar: Left-aligned Custom Navigation Topics */}
-        <nav className="px-5 lg:px-10 py-2 sm:py-2.5 bg-white hidden lg:block">
+        <nav className="px-4 lg:px-6 xl:px-10 py-2 sm:py-2.5 bg-white hidden lg:block overflow-x-auto no-scrollbar">
           <div className="w-full flex items-center justify-start font-sans">
             
-            {/* Custom Primary Navigation Topics grouped closer together */}
-            <ul className="flex items-center gap-6 lg:gap-7 xl:gap-8">
+            {/* Custom Primary Navigation Topics with 8 categories */}
+            <ul className="flex items-center gap-3.5 lg:gap-4 xl:gap-5 2xl:gap-7 whitespace-nowrap min-w-max">
               {NAVIGATION_STRUCTURE.primary.map((item) => (
-                <li key={item.label} className="relative group py-1">
+                <li key={item.label} className="relative group py-1 shrink-0">
                   <Link
                     href={item.href}
-                    className="text-[13px] xl:text-[14px] font-bold uppercase tracking-wider text-[#020618] hover:text-[#1642D0] transition-colors flex items-center gap-1"
+                    className="text-[11px] lg:text-[11.5px] xl:text-[12.5px] 2xl:text-[13.5px] font-bold uppercase tracking-wider text-[#020618] hover:text-[#1642D0] transition-colors flex items-center gap-1 whitespace-nowrap"
                   >
                     {item.label}
                   </Link>

@@ -362,11 +362,14 @@ export interface NavItem {
 
 export const NAVIGATION_STRUCTURE: { primary: NavItem[] } = {
   primary: [
-    { label: 'Markets & Investing', href: '/topic/markets-investing' },
+    { label: 'Breaking Business News', href: '/topic/breaking-business-news' },
+    { label: 'Markets and Investing', href: '/topic/markets-investing' },
+    { label: 'Startups and Entrepreneurship', href: '/topic/startups-entrepreneurship' },
+    { label: 'Technology and AI', href: '/topic/technology-ai' },
+    { label: 'Leadership', href: '/topic/leadership' },
+    { label: 'Research and Insights', href: '/topic/research-insights' },
     { label: 'Economy', href: '/topic/economy' },
-    { label: 'Technology & AI', href: '/topic/technology-ai' },
-    { label: 'International Business', href: '/topic/international-business' },
-    { label: 'Research & Insights', href: '/topic/research-insights' },
+    { label: 'Banking and Finance', href: '/topic/banking-finance' },
   ],
 };
 
@@ -2410,7 +2413,19 @@ export function getArticleById(rawIdOrSlug: string): Article {
 }
 
 export function getTopicDataBySlug(slugInput: string): TopicPageData {
-  const slug = (slugInput || 'breaking-business-news').toLowerCase();
+  let slug = (slugInput || 'breaking-business-news').toLowerCase();
+
+  const aliasMap: Record<string, string> = {
+    'markets-and-investing': 'markets-investing',
+    'startups-and-entrepreneurship': 'startups-entrepreneurship',
+    'technology-and-ai': 'technology-ai',
+    'research-and-insights': 'research-insights',
+    'banking-and-finance': 'banking-finance',
+  };
+  if (aliasMap[slug]) {
+    slug = aliasMap[slug];
+  }
+
   const matched = CATEGORY_TOPICS_DATA[slug] || CATEGORY_TOPICS_DATA['breaking-business-news'];
 
   return {

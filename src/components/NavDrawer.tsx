@@ -14,20 +14,20 @@ interface NavDrawerProps {
 
 const SIDEBAR_TOPICS = [
   { label: 'Breaking Business News', href: '/topic/breaking-business-news' },
-  { label: 'Markets & Investing', href: '/topic/markets-investing' },
+  { label: 'Markets and Investing', href: '/topic/markets-investing' },
+  { label: 'Startups and Entrepreneurship', href: '/topic/startups-entrepreneurship' },
+  { label: 'Technology and AI', href: '/topic/technology-ai' },
+  { label: 'Leadership', href: '/topic/leadership' },
+  { label: 'Research and Insights', href: '/topic/research-insights' },
   { label: 'Economy', href: '/topic/economy' },
+  { label: 'Banking and Finance', href: '/topic/banking-finance' },
   { label: 'Corporate News', href: '/topic/corporate-news' },
-  { label: 'Startups & Entrepreneurship', href: '/topic/startups-entrepreneurship' },
-  { label: 'Banking & Finance', href: '/topic/banking-finance' },
-  { label: 'Technology & AI', href: '/topic/technology-ai' },
   { label: 'Real Estate', href: '/topic/real-estate' },
   { label: 'International Business', href: '/topic/international-business' },
-  { label: 'Leadership', href: '/topic/leadership' },
   { label: 'Marketing & Branding', href: '/topic/marketing-branding' },
   { label: 'Sustainability (ESG)', href: '/topic/sustainability-esg' },
   { label: 'Company Profiles', href: '/topic/company-profiles' },
   { label: 'CEO Interviews', href: '/topic/ceo-interviews' },
-  { label: 'Research & Insights', href: '/topic/research-insights' },
 ];
 
 export const NavDrawer: React.FC<NavDrawerProps> = ({ isOpen, onClose, onOpenSearch }) => {
