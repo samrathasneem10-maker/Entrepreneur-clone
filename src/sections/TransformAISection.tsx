@@ -135,19 +135,22 @@ export const TransformAISection: React.FC = () => {
           ))}
         </div>
 
-        {/* Promotional / Advertisement Banner: America's Favorite Mom & Pop Shops 2026 */}
-        <div className="mt-8 sm:mt-10 md:mt-12 w-full">
-          <Link
-            href="/topic/mom-and-pop-shops"
-            className="block w-full overflow-hidden rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md transition-all duration-300 group cursor-pointer"
-            aria-label="Entrepreneur - America's Favorite Mom & Pop Shops 2026 - See the list"
+        {/* Advertisement Banner matching Image 2 style with Image 1 dimensions */}
+        <div className="mt-8 sm:mt-10 md:mt-12 w-full text-center">
+          <span className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-400 block mb-2">
+            ADVERTISEMENT
+          </span>
+          <div
+            style={{ aspectRatio: '1346 / 520' }}
+            className="w-full bg-[#edf2f7] border border-slate-300 flex flex-col items-center justify-center p-6 text-center shadow-2xs"
           >
-            <img
-              src="/images/mom-and-pop-shops-banner.png"
-              alt="Entrepreneur - America's Favorite Mom & Pop Shops 2026 - See the list"
-              className="w-full h-auto object-cover block rounded-xl sm:rounded-2xl group-hover:scale-[1.008] transition-transform duration-500"
-            />
-          </Link>
+            <span className="text-sm sm:text-base md:text-lg font-semibold text-slate-600 font-sans">
+              Advertisement Banner
+            </span>
+            <span className="text-xs sm:text-sm text-slate-400 font-sans mt-0.5 sm:mt-1">
+              Your Advertisement Here
+            </span>
+          </div>
         </div>
 
       </div>
