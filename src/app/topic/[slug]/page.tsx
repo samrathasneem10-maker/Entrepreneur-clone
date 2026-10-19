@@ -862,7 +862,7 @@ export default function DynamicTopicPage() {
           <img
             src="/images/topic-hero-leaders.jpg"
             alt="How Great Leaders Build Teams That Thrive"
-            className="w-full h-auto max-h-[460px] object-cover group-hover:scale-[1.01] transition-transform duration-500"
+            className="w-full h-[calc(100vh-250px)] min-h-[500px] sm:min-h-[580px] lg:min-h-[680px] xl:min-h-[740px] max-h-[850px] object-cover object-center group-hover:scale-[1.01] transition-transform duration-500"
           />
         </Link>
 
