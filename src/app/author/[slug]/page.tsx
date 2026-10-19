@@ -586,13 +586,15 @@ export default function AuthorProfilePage() {
           {currentArticles.map((art) => (
             <article key={art.id} className="group flex flex-col items-start text-left">
               {/* Card Image */}
-              <div className="w-full aspect-[16/10] overflow-hidden rounded-xl bg-slate-100 mb-3.5">
-                <img
-                  src={art.imageUrl}
-                  alt={art.title}
-                  className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 rounded-xl"
-                />
-              </div>
+              <Link href={`/article/${art.id}`} className="block w-full cursor-pointer">
+                <div className="w-full aspect-[16/10] overflow-hidden rounded-xl bg-slate-100 mb-3.5 border border-slate-200/60">
+                  <img
+                    src={art.imageUrl}
+                    alt={art.title}
+                    className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 rounded-xl"
+                  />
+                </div>
+              </Link>
 
               {/* Card Category */}
               <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-1.5 block">

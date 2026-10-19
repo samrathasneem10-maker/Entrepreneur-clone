@@ -33,7 +33,7 @@ export const BusinessCategoryCards: React.FC = () => {
 
             {/* Row 1: Featured Article with Image & Bold Big Title */}
             <article className="group">
-              <Link href="/topic/leadership" className="block overflow-hidden rounded-xl">
+              <Link href="/article/an-introverts-case-for-skipping-small-talk" className="block overflow-hidden rounded-xl">
                 <div className="relative w-full aspect-[16/10] overflow-hidden rounded-xl border border-slate-200/80 shadow-2xs">
                   <img
                     src="/images/category-leadership.png"
@@ -45,13 +45,13 @@ export const BusinessCategoryCards: React.FC = () => {
 
               <div className="mt-3">
                 <Link
-                  href="/article/not-every-boss-deserves-a-thank-you-card"
+                  href="/topic/leadership"
                   className="text-xs font-bold font-sans text-[#1642D0] uppercase tracking-wider block mb-1 hover:underline"
                 >
                   BUILDING A BUSINESS
                 </Link>
                 <h4 className="text-base sm:text-[17px] font-serif font-bold text-[#020618] leading-[1.3] m-0">
-                  <Link href="/topic/leadership" className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors">
+                  <Link href="/article/an-introverts-case-for-skipping-small-talk" className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors">
                     An Introvert&apos;s Case for Skipping Small Talk and Building Real Connections
                   </Link>
                 </h4>
@@ -64,7 +64,7 @@ export const BusinessCategoryCards: React.FC = () => {
             {/* Row 2: Medium Title Article */}
             <article className="group">
               <Link
-                href="/article/not-every-boss-deserves-a-thank-you-card"
+                href="/topic/leadership"
                 className="text-xs font-bold font-sans text-[#1642D0] uppercase tracking-wider block mb-1 hover:underline"
               >
                 BUILDING A BUSINESS
@@ -88,7 +88,7 @@ export const BusinessCategoryCards: React.FC = () => {
                 BUSINESS NEWS
               </span>
               <h4 className="text-sm sm:text-[15px] font-serif font-bold text-[#020618] leading-[1.3] m-0">
-                <Link href="/topic/leadership" className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors">
+                <Link href="/article/he-leads-a-240-billion-food-giant" className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors">
                   He Leads a $240 Billion Food Giant. Here&apos;s the Difficult Management Rule He Follows.
                 </Link>
               </h4>
@@ -108,7 +108,7 @@ export const BusinessCategoryCards: React.FC = () => {
 
             {/* Row 1: Featured Article with Image, Bold Big Title & Register Now Button */}
             <article className="group">
-              <Link href="/topic/business-ideas" className="block overflow-hidden rounded-xl">
+              <Link href="/article/how-to-know-if-your-business-idea-will-actually-work" className="block overflow-hidden rounded-xl">
                 <div className="relative w-full aspect-[16/10] overflow-hidden rounded-xl border border-slate-200/80 shadow-2xs">
                   <img
                     src="/images/category-business-ideas.png"
@@ -123,7 +123,7 @@ export const BusinessCategoryCards: React.FC = () => {
                   BUILDING A BUSINESS | THURSDAY, OCTOBER 15 AT 2PM EDT
                 </span>
                 <h4 className="text-base sm:text-[17px] font-serif font-bold text-[#020618] leading-[1.3] m-0">
-                  <Link href="/topic/business-ideas" className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors">
+                  <Link href="/article/how-to-know-if-your-business-idea-will-actually-work" className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors">
                     How to Know If Your Business Idea Will Actually Work
                   </Link>
                 </h4>
@@ -131,7 +131,7 @@ export const BusinessCategoryCards: React.FC = () => {
                 {/* Middle Blue Register Now Button */}
                 <div className="mt-3">
                   <Link
-                    href="/topic/business-ideas"
+                    href="/article/how-to-know-if-your-business-idea-will-actually-work"
                     className="px-5 py-2 bg-[#1642D0] hover:bg-blue-800 text-white font-bold text-xs sm:text-[13px] font-sans rounded-[4px] transition-colors inline-block shadow-xs cursor-pointer"
                   >
                     Register Now
@@ -149,7 +149,7 @@ export const BusinessCategoryCards: React.FC = () => {
                 BUILDING A BUSINESS
               </span>
               <h4 className="text-sm sm:text-[15px] font-serif font-bold text-[#020618] leading-[1.3] m-0">
-                <Link href="/topic/business-ideas" className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors">
+                <Link href="/article/that-business-idea-you-couldnt-justify-worth-revisiting" className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors">
                   That Business Idea You Couldn&apos;t Justify Years Ago Is Worth Revisiting, Thanks to AI
                 </Link>
               </h4>
@@ -164,7 +164,7 @@ export const BusinessCategoryCards: React.FC = () => {
                 TECH
               </span>
               <h4 className="text-sm sm:text-[15px] font-serif font-bold text-[#020618] leading-[1.3] m-0">
-                <Link href="/topic/business-ideas" className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors">
+                <Link href="/article/replace-hours-of-typing-capture-ideas-faster-dictation-tool" className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors">
                   Replace Hours of Typing and Capture Ideas Faster with a $60 Lifetime Dictation Tool
                 </Link>
               </h4>
@@ -184,7 +184,7 @@ export const BusinessCategoryCards: React.FC = () => {
 
             {/* Row 1: Featured Article with Image & Bold Big Title */}
             <article className="group">
-              <Link href="/topic/technology" className="block overflow-hidden rounded-xl">
+              <Link href="/article/how-ai-is-helping-companies-catch-performance-issues" className="block overflow-hidden rounded-xl">
                 <div className="relative w-full aspect-[16/10] overflow-hidden rounded-xl border border-slate-200/80 shadow-2xs">
                   <img
                     src="/images/category-technology.png"
@@ -199,7 +199,7 @@ export const BusinessCategoryCards: React.FC = () => {
                   TECH
                 </span>
                 <h4 className="text-base sm:text-[17px] font-serif font-bold text-[#020618] leading-[1.3] m-0">
-                  <Link href="/topic/technology" className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors">
+                  <Link href="/article/how-ai-is-helping-companies-catch-performance-issues" className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors">
                     How AI Is Helping Companies Catch Performance Issues Before They Turn Into Major Incidents
                   </Link>
                 </h4>
@@ -215,7 +215,7 @@ export const BusinessCategoryCards: React.FC = () => {
                 TECH
               </span>
               <h4 className="text-sm sm:text-[15px] font-serif font-bold text-[#020618] leading-[1.3] m-0">
-                <Link href="/topic/technology" className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors">
+                <Link href="/article/metas-muse-wants-to-own-the-moment-before-purchase" className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors">
                   Meta&apos;s Muse Wants to Own the Moment Before the Purchase
                 </Link>
               </h4>
@@ -230,7 +230,7 @@ export const BusinessCategoryCards: React.FC = () => {
                 BUILDING A BUSINESS
               </span>
               <h4 className="text-sm sm:text-[15px] font-serif font-bold text-[#020618] leading-[1.3] m-0">
-                <Link href="/topic/technology" className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors">
+                <Link href="/article/ai-has-turned-software-security-into-a-race" className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors">
                   AI Has Turned Software Security Into a Race You Can&apos;t Afford to Lose
                 </Link>
               </h4>

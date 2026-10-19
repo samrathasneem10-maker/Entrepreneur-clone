@@ -96,13 +96,16 @@ export const OvercomingImpossibleSection: React.FC = () => {
 
           {/* Right Column: Event Graphic Banner (increased height) */}
           <div className="lg:col-span-6 w-full">
-            <div className="relative w-full aspect-[1.15] sm:aspect-[1.08] xl:aspect-[1.10] max-h-[460px] overflow-hidden rounded-2xl shadow-sm border border-slate-200/80">
+            <a
+              href="#reserve"
+              className="block relative w-full aspect-[1.15] sm:aspect-[1.08] xl:aspect-[1.10] max-h-[460px] overflow-hidden rounded-2xl shadow-sm border border-slate-200/80 cursor-pointer group"
+            >
               <img
                 src="/images/overcoming-impossible-live.png"
                 alt="Overcoming Impossible Live - An Entrepreneur Level Up Event"
-                className="w-full h-full object-cover block"
+                className="w-full h-full object-cover block group-hover:scale-[1.01] transition-transform duration-300"
               />
-            </div>
+            </a>
           </div>
 
         </div>

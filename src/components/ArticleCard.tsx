@@ -168,25 +168,30 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
   // 3. Compact Stream Card (Category badge + bold title + Date • ReadTime)
   if (variant === 'compact') {
     return (
-      <article className={`group flex-1 flex flex-col justify-center py-3 xl:py-3.5 border-b border-slate-200/80 w-full ${className}`}>
-        <Badge className="mb-1 text-[#193CB8] font-bold text-xs sm:text-[13px] uppercase tracking-wider">{category}</Badge>
+      <article className={`group relative flex-1 flex flex-col justify-center py-3 xl:py-3.5 border-b border-slate-200/80 w-full cursor-pointer ${className}`}>
+        <Link
+          href={getArticleUrl(article)}
+          className="absolute inset-0 z-0"
+          aria-label={title}
+        />
         
-        <h3 className="text-base sm:text-[17px] xl:text-[17.5px] font-serif font-bold text-[#020618] leading-[1.32] tracking-tight">
-          <Link
-            href={getArticleUrl(article)}
-            className="text-[#020618] no-underline hover:underline decoration-[#020618] decoration-1 underline-offset-[3px] transition-all"
-          >
-            {title}
-          </Link>
-        </h3>
+        <div className="relative z-10 pointer-events-none">
+          <Badge className="mb-1 text-[#193CB8] font-bold text-xs sm:text-[13px] uppercase tracking-wider">{category}</Badge>
+          
+          <h3 className="text-base sm:text-[17px] xl:text-[17.5px] font-serif font-bold text-[#020618] leading-[1.32] tracking-tight">
+            <span className="text-[#020618] group-hover:underline decoration-[#020618] decoration-1 underline-offset-[3px] transition-all">
+              {title}
+            </span>
+          </h3>
 
-        {showMetadata && (
-          <div className="flex items-center gap-1.5 text-xs text-slate-500 font-sans font-normal mt-1.5">
-            <span>{dateStr}</span>
-            <span className="text-slate-400">•</span>
-            <span>{readStr}</span>
-          </div>
-        )}
+          {showMetadata && (
+            <div className="flex items-center gap-1.5 text-xs text-slate-500 font-sans font-normal mt-1.5">
+              <span>{dateStr}</span>
+              <span className="text-slate-400">•</span>
+              <span>{readStr}</span>
+            </div>
+          )}
+        </div>
       </article>
     );
   }

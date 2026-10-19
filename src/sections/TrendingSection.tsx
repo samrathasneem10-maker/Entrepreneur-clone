@@ -27,8 +27,11 @@ export const TrendingSection: React.FC = () => {
         {/* 5-Column Grid Spanning Full Width */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
           {TRENDING_STORIES.map((story) => (
-            <article key={story.id} className="group relative flex flex-col justify-between p-5 bg-slate-900/80 hover:bg-slate-900 rounded-xl border border-slate-800 transition-all hover:border-slate-700 w-full">
-              
+            <Link
+              key={story.id}
+              href={getArticleUrl(story)}
+              className="group relative flex flex-col justify-between p-5 bg-slate-900/80 hover:bg-slate-900 rounded-xl border border-slate-800 transition-all hover:border-slate-700 w-full cursor-pointer no-underline block"
+            >
               <div>
                 <div className="text-4xl font-black font-serif text-slate-500 group-hover:text-amber-400 transition-colors mb-2">
                   #{story.rank}
@@ -39,15 +42,14 @@ export const TrendingSection: React.FC = () => {
                 </Badge>
 
                 <h3 className="text-base font-bold font-sans text-slate-100 leading-snug group-hover:text-blue-400 transition-colors">
-                  <Link href={getArticleUrl(story)}>{story.title}</Link>
+                  {story.title}
                 </h3>
               </div>
 
               <div className="mt-4 pt-3 border-t border-slate-800 text-[11px] text-slate-400 uppercase font-semibold">
                 By {story.author.name}
               </div>
-
-            </article>
+            </Link>
           ))}
         </div>
 
