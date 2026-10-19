@@ -2189,7 +2189,64 @@ export const NOT_EVERY_BOSS_ARTICLE: Article = {
   imageAspect: 'wide',
 };
 
+export const HOW_GREAT_LEADERS_BUILD_TEAMS_ARTICLE: Article = {
+  id: 'how-great-leaders-build-teams-that-thrive',
+  slug: 'how-great-leaders-build-teams-that-thrive',
+  title: 'How Great Leaders Build Teams That Thrive',
+  category: 'Thought Leaders',
+  author: {
+    name: 'Jissan Cherian',
+    title: 'Executive Contributor',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300&auto=format&fit=crop',
+  },
+  editor: 'AMANDA BREEN',
+  date: 'OCT 18, 2026',
+  readTime: '6 min read',
+  excerpt: "Strong leadership isn't just about making decisions — it's about creating an environment where people can grow, contribute and succeed.",
+  imageUrl: '/images/topic-hero-leaders.jpg',
+  imageAspect: 'wide',
+};
+
+export const POWER_OF_EFFECTIVE_COMMUNICATION_ARTICLE: Article = {
+  id: 'power-of-effective-communication-leadership',
+  slug: 'power-of-effective-communication-leadership',
+  title: 'The Power of Effective Communication in Leadership',
+  category: 'Thought Leaders',
+  author: {
+    name: 'Terry Rice',
+    title: 'Contributor',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=300&auto=format&fit=crop',
+  },
+  editor: 'KARA MCINTYRE',
+  date: 'OCT 17, 2026',
+  readTime: '5 min read',
+  excerpt: "Great leaders don't just give direction — they listen, inspire and bring people together.",
+  imageUrl: '/images/topic-sub-1.jpg',
+  imageAspect: 'wide',
+};
+
+export const COLLABORATION_DRIVES_INNOVATION_ARTICLE: Article = {
+  id: 'collaboration-drives-innovation-growth',
+  slug: 'collaboration-drives-innovation-growth',
+  title: 'Collaboration Drives Innovation and Growth',
+  category: 'Thought Leaders',
+  author: {
+    name: 'Ben Angel',
+    title: 'Contributor',
+    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300&auto=format&fit=crop',
+  },
+  editor: 'AMANDA BREEN',
+  date: 'OCT 16, 2026',
+  readTime: '5 min read',
+  excerpt: "When great minds work together, new ideas turn into real progress.",
+  imageUrl: '/images/topic-sub-2.jpg',
+  imageAspect: 'wide',
+};
+
 export const ALL_ARTICLES: Article[] = [
+  HOW_GREAT_LEADERS_BUILD_TEAMS_ARTICLE,
+  POWER_OF_EFFECTIVE_COMMUNICATION_ARTICLE,
+  COLLABORATION_DRIVES_INNOVATION_ARTICLE,
   SIDE_HUSTLE_53_ARTICLE,
   NOT_EVERY_BOSS_ARTICLE,
   HERO_ARTICLE,
@@ -2264,7 +2321,34 @@ export function getArticleById(rawIdOrSlug: string): Article {
     return NOT_EVERY_BOSS_ARTICLE;
   }
 
-  // 3. Direct check for Hero article
+  // 3. Direct check for How Great Leaders Build Teams article
+  if (
+    param === 'how-great-leaders-build-teams-that-thrive' ||
+    slugParam.includes('great-leaders-build-teams') ||
+    slugParam.includes('leaders-build-teams') ||
+    slugParam.includes('teams-that-thrive')
+  ) {
+    return HOW_GREAT_LEADERS_BUILD_TEAMS_ARTICLE;
+  }
+
+  // 3b. Direct checks for Thought Leaders sub-cards
+  if (
+    param === 'power-of-effective-communication-leadership' ||
+    slugParam.includes('power-of-effective-communication') ||
+    slugParam.includes('communication-in-leadership')
+  ) {
+    return POWER_OF_EFFECTIVE_COMMUNICATION_ARTICLE;
+  }
+
+  if (
+    param === 'collaboration-drives-innovation-growth' ||
+    slugParam.includes('collaboration-drives-innovation') ||
+    slugParam.includes('innovation-and-growth')
+  ) {
+    return COLLABORATION_DRIVES_INNOVATION_ARTICLE;
+  }
+
+  // 4. Direct check for Hero article
   if (param === 'hero-1' || slugParam.includes('mentored-people')) {
     return HERO_ARTICLE;
   }

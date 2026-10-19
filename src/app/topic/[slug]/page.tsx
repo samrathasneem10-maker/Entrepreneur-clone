@@ -855,13 +855,16 @@ export default function DynamicTopicPage() {
       {/* Main Hero Story: Full width image + THOUGHT LEADERS + Full length bold heading + Natural full width summary */}
       <div className="w-full max-w-7xl mx-auto px-5 lg:px-10 pb-8">
         {/* Full width hero image matching Image 3 */}
-        <div className="w-full overflow-hidden bg-slate-100">
+        <Link
+          href="/article/how-great-leaders-build-teams-that-thrive"
+          className="block w-full overflow-hidden bg-slate-100 group cursor-pointer"
+        >
           <img
             src="/images/topic-hero-leaders.jpg"
             alt="How Great Leaders Build Teams That Thrive"
-            className="w-full h-auto max-h-[460px] object-cover"
+            className="w-full h-auto max-h-[460px] object-cover group-hover:scale-[1.01] transition-transform duration-500"
           />
-        </div>
+        </Link>
 
         {/* Story details */}
         <div className="pt-4">
@@ -871,7 +874,12 @@ export default function DynamicTopicPage() {
 
           {/* Full length bold heading matching Image 2 */}
           <h1 className="text-2xl sm:text-3xl lg:text-[38px] xl:text-[42px] font-serif font-bold text-[#020618] leading-[1.18] tracking-tight my-2">
-            How Great Leaders Build Teams That Thrive
+            <Link
+              href="/article/how-great-leaders-build-teams-that-thrive"
+              className="hover:text-[#1642D0] hover:underline transition-colors"
+            >
+              How Great Leaders Build Teams That Thrive
+            </Link>
           </h1>
 
           {/* Natural full-width continuous summary matching user requirement */}
@@ -887,11 +895,16 @@ export default function DynamicTopicPage() {
           {/* Card 1 */}
           <article className="group flex flex-col items-start text-left w-full">
             <div className="w-full aspect-[16/10] overflow-hidden bg-slate-100 mb-3.5">
-              <img
-                src="/images/topic-sub-1.jpg"
-                alt="The Power of Effective Communication in Leadership"
-                className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
-              />
+              <Link
+                href="/article/power-of-effective-communication-leadership"
+                className="block w-full h-full cursor-pointer"
+              >
+                <img
+                  src="/images/topic-sub-1.jpg"
+                  alt="The Power of Effective Communication in Leadership"
+                  className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
+                />
+              </Link>
             </div>
             <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-1.5 block">
               THOUGHT LEADERS
@@ -909,11 +922,16 @@ export default function DynamicTopicPage() {
           {/* Card 2 */}
           <article className="group flex flex-col items-start text-left w-full">
             <div className="w-full aspect-[16/10] overflow-hidden bg-slate-100 mb-3.5">
-              <img
-                src="/images/topic-sub-2.jpg"
-                alt="Collaboration Drives Innovation and Growth"
-                className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
-              />
+              <Link
+                href="/article/collaboration-drives-innovation-growth"
+                className="block w-full h-full cursor-pointer"
+              >
+                <img
+                  src="/images/topic-sub-2.jpg"
+                  alt="Collaboration Drives Innovation and Growth"
+                  className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
+                />
+              </Link>
             </div>
             <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-1.5 block">
               THOUGHT LEADERS
