@@ -136,12 +136,16 @@ export default function ArticleDetailPage() {
   const articleId = typeof params?.id === 'string' ? params.id : '53-side-hustle-ideas-to-make-extra-money-in-2026';
   const rawArticle = getArticleById(articleId);
 
-  const isBossArticle = articleId.includes('boss') || articleId.includes('bully') || (rawArticle?.id || '').includes('boss');
+  const isBossArticle =
+    articleId === 'not-every-boss-deserves-a-thank-you-card' ||
+    articleId === 'boss-bully' ||
+    articleId.includes('not-every-boss-deserves') ||
+    (rawArticle?.id || '') === 'not-every-boss-deserves-a-thank-you-card';
   const is53SideHustle =
     articleId === 'latest-1' ||
-    articleId.includes('53-side-hustle') ||
-    articleId.includes('extra-money') ||
-    (rawArticle?.id || '').includes('53-side-hustle');
+    articleId === 'side-hustle-53' ||
+    articleId === '53-side-hustle-ideas-to-make-extra-money-in-2026' ||
+    (rawArticle?.id || '') === '53-side-hustle-ideas-to-make-extra-money-in-2026';
 
   const article = {
     ...rawArticle,
@@ -168,8 +172,19 @@ export default function ArticleDetailPage() {
         : (rawArticle.author?.name || 'SHERIN SHIBU'),
       avatar: isBossArticle
         ? (rawArticle.author?.avatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=300&auto=format&fit=crop')
-        : '/images/author-sherin.png',
-      title: isBossArticle ? 'Executive Contributor' : 'Entrepreneur Staff',
+        : is53SideHustle
+        ? '/images/author-sherin.png'
+        : (rawArticle.author?.avatar || '/images/author-sherin.png'),
+      title: isBossArticle
+        ? 'Executive Contributor'
+        : is53SideHustle
+        ? 'Entrepreneur Staff'
+        : (rawArticle.author?.title || 'Entrepreneur Staff'),
+      bio: isBossArticle
+        ? 'Mita Mallick is a corporate change-maker and author of the Wall Street Journal and USA Today bestseller, Reimagine Inclusion: Debunking 13 Myths to Transform Your Workplace.'
+        : is53SideHustle
+        ? 'Sherin Shibu is a business news reporter at Entrepreneur.com. She previously worked for PCMag, Business Insider, and specializes in business trends, consumer technology, and entrepreneurship.'
+        : (rawArticle.author?.bio || 'Business news reporter and contributor at Entrepreneur.com, covering high-growth ventures, market trends, and modern workplace leadership.'),
     },
     editor: isBossArticle ? 'KARA MCINTYRE' : is53SideHustle ? 'AMANDA BREEN' : (rawArticle.editor || 'AMANDA BREEN'),
     date: isBossArticle ? 'OCT 14, 2026' : is53SideHustle ? 'JAN 26, 2026' : (rawArticle.date || 'JAN 26, 2026'),
@@ -708,22 +723,27 @@ export default function ArticleDetailPage() {
               <div className="flex items-start gap-4 sm:gap-5 pb-6 mb-6">
                 <div className="w-14 h-14 rounded-full overflow-hidden shrink-0 border border-slate-200 shadow-2xs">
                   <img
-                    src="/images/author-sherin.png"
-                    alt="Sherin Shibu"
+                    src={article.author?.avatar || '/images/author-sherin.png'}
+                    alt={article.author?.name || 'Sherin Shibu'}
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
                     <h4 className="font-serif font-bold text-base sm:text-lg text-[#020618] my-0 leading-tight">
-                      Sherin Shibu
+                      <Link
+                        href={`/author/${(article.author?.name || 'sherin-shibu').toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+                        className="hover:text-[#1642D0] hover:underline transition-colors"
+                      >
+                        {article.author?.name || 'Sherin Shibu'}
+                      </Link>
                     </h4>
                     <a
                       href="https://linkedin.com"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center justify-center w-3.5 h-3.5 bg-[#0A66C2] rounded-[2px] text-white text-[9px] font-bold ml-0.5 leading-none hover:opacity-90 transition-opacity"
-                      aria-label="Sherin Shibu LinkedIn Profile"
+                      aria-label={`${article.author?.name || 'Author'} LinkedIn Profile`}
                     >
                       in
                     </a>
@@ -732,13 +752,16 @@ export default function ArticleDetailPage() {
                     <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
                       <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                     </svg>
-                    <span>Entrepreneur Staff</span>
+                    <span>{article.author?.title || 'Entrepreneur Staff'}</span>
                   </div>
                   <p className="text-xs sm:text-[13.5px] font-serif text-slate-600 leading-relaxed my-0 pt-1.5">
-                    Sherin Shibu is a business news reporter at Entrepreneur.com. She previously worked for PCMag, Business...{' '}
-                    <a href="#" className="text-[#1642D0] underline underline-offset-2 hover:text-[#0d2d8d]">
+                    {article.author?.bio || 'Business news reporter at Entrepreneur.com, covering trends in business, tech, and enterprise.'}{' '}
+                    <Link
+                      href={`/author/${(article.author?.name || 'sherin-shibu').toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+                      className="text-[#1642D0] underline underline-offset-2 hover:text-[#0d2d8d]"
+                    >
                       Read more
-                    </a>
+                    </Link>
                   </p>
                 </div>
               </div>
@@ -913,23 +936,22 @@ export default function ArticleDetailPage() {
               {/* 6 Latest Articles matching Image 1 */}
               <div className="space-y-6 sm:space-y-7">
                 {LATEST_SIDEBAR_ARTICLES.map((art) => (
-                  <article key={art.id} className="group">
-                    <h4 className="text-[16px] sm:text-[17px] font-serif font-bold text-[#020618] leading-[1.3] my-0">
-                      <Link
-                        href={art.link}
-                        className="text-[#020618] hover:text-[#1642D0] hover:underline transition-colors"
-                      >
+                  <article key={art.id} className="relative group cursor-pointer">
+                    {/* Stretched link for full card clickability */}
+                    <Link href={art.link} className="absolute inset-0 z-0" aria-label={art.title} />
+                    <h4 className="text-[16px] sm:text-[17px] font-serif font-bold text-[#020618] leading-[1.3] my-0 relative z-10 pointer-events-none">
+                      <span className="text-[#020618] group-hover:text-[#1642D0] group-hover:underline transition-colors">
                         {art.title}
-                      </Link>
+                      </span>
                     </h4>
-                    <div className="flex items-center justify-between gap-3 text-xs sm:text-[12px] font-sans mt-2.5">
+                    <div className="flex items-center justify-between gap-3 text-xs sm:text-[12px] font-sans mt-2.5 relative z-10">
                       <Link
                         href={art.categoryHref || `/topic/${slugifyTitle(art.category)}`}
                         className="font-bold text-[#1642D0] hover:underline transition-colors tracking-wide truncate"
                       >
                         {art.category}
                       </Link>
-                      <span className="text-slate-500 font-medium text-[11px] sm:text-[11.5px] whitespace-nowrap shrink-0">
+                      <span className="text-slate-500 font-medium text-[11px] sm:text-[11.5px] whitespace-nowrap shrink-0 pointer-events-none">
                         {art.time}
                       </span>
                     </div>
@@ -952,34 +974,32 @@ export default function ArticleDetailPage() {
           {/* 3-Column Grid matching reference screenshot */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
             {RELATED_CONTENT_ITEMS.map((item) => (
-              <article key={item.id} className="group flex flex-col">
-                <Link
-                  href={item.slug}
-                  className="block overflow-hidden rounded-xl border border-slate-200/60 shadow-2xs aspect-[16/9.5] bg-slate-100"
-                >
+              <article key={item.id} className="relative group flex flex-col cursor-pointer">
+                {/* Stretched link so the entire card is clickable */}
+                <Link href={item.slug} className="absolute inset-0 z-0" aria-label={item.title} />
+
+                <div className="block overflow-hidden rounded-xl border border-slate-200/60 shadow-2xs aspect-[16/9.5] bg-slate-100 pointer-events-none">
                   <img
                     src={item.imageUrl}
                     alt={item.title}
                     className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
                   />
-                </Link>
+                </div>
 
-                <div className="pt-3.5 flex flex-col flex-1">
+                <div className="pt-3.5 flex flex-col flex-1 relative z-10">
                   <Link
                     href={`/topic/${item.category.toLowerCase().replace(/\s+/g, '-')}`}
-                    className="text-xs font-sans font-bold uppercase tracking-wider text-[#1642D0] hover:underline mb-2 block"
+                    className="text-xs font-sans font-bold uppercase tracking-wider text-[#1642D0] hover:underline mb-2 block w-fit"
                   >
                     {item.category}
                   </Link>
 
-                  <h3 className="text-[17.5px] sm:text-[18.5px] font-serif font-bold text-[#020618] leading-[1.3] group-hover:text-[#1642D0] transition-colors mb-2.5">
-                    <Link href={item.slug} className="hover:underline">
-                      {item.title}
-                    </Link>
+                  <h3 className="text-[17.5px] sm:text-[18.5px] font-serif font-bold text-[#020618] leading-[1.3] group-hover:text-[#1642D0] group-hover:underline transition-colors mb-2.5 pointer-events-none">
+                    {item.title}
                   </h3>
 
                   <div className="mt-auto text-xs font-sans uppercase tracking-wider text-slate-500 font-medium">
-                    <span className="text-slate-400 font-semibold">BY </span>
+                    <span className="text-slate-400 font-semibold pointer-events-none">BY </span>
                     <Link
                       href={`/author/${item.author.toLowerCase().replace(/\s+/g, '-')}`}
                       className="text-[#1642D0] font-bold hover:underline"

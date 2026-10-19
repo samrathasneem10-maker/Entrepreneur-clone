@@ -73,39 +73,84 @@ export const LATEST_ARTICLES: Article[] = [
     imageUrl: '/images/side-hustle-53.jpg',
   },
   {
-    id: 'latest-2',
+    id: 'youve-been-overlooking-your-best-idea-people-ai-is-about-to-fix-that',
+    slug: 'youve-been-overlooking-your-best-idea-people-ai-is-about-to-fix-that',
     title: "You've Been Overlooking Your Best Idea People. AI Is About to Fix That.",
     category: 'Building a Business',
-    author: { name: 'Ben Angel' },
+    author: {
+      name: 'Sherin Shibu',
+      title: 'Entrepreneur Staff',
+      avatar: '/images/author-sherin.png',
+      bio: 'Sherin Shibu is a business news reporter at Entrepreneur.com. She previously worked for PCMag, Business Insider, and specializes in business trends, consumer technology, and entrepreneurship.',
+    },
     date: '25m ago',
+    readTime: '4 min read',
+    excerpt: 'Frontline employees hold the most actionable operational insights. New enterprise AI tools finally give leaders a way to capture, rank, and execute them.',
+    imageUrl: '/images/rushing-ai-cx.jpg',
   },
   {
-    id: 'latest-3',
+    id: 'why-leaders-blame-culture-instead-of-their-own-behavior',
+    slug: 'why-leaders-blame-culture-instead-of-their-own-behavior',
     title: 'Why Leaders Blame Culture Instead of Their Own Behavior',
     category: 'Thought Leaders',
-    author: { name: 'Matt Domo' },
+    author: {
+      name: 'Matt Domo',
+      title: 'Founder & CEO of FifthVantage',
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=300&auto=format&fit=crop',
+      bio: 'Matt Domo is the founder and CEO of FifthVantage. He spent decades in leadership at Microsoft and AWS helping executives lead high-performing teams.',
+    },
     date: '40m ago',
+    readTime: '4 min read',
+    excerpt: 'True organizational change starts in the executive suite. How self-awareness prevents cultural dysfunction.',
+    imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=800&auto=format&fit=crop',
   },
   {
-    id: 'latest-4',
+    id: 'i-retired-at-36-and-started-over-at-41',
+    slug: 'i-retired-at-36-and-started-over-at-41',
     title: 'I Retired at 36 and Started Over at 41. Here Are 5 Lessons I Learned About Time.',
     category: 'Entrepreneurs',
-    author: { name: 'Reid Zeising' },
+    author: {
+      name: 'Reid Zeising',
+      title: 'Entrepreneur & Investor',
+      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300&auto=format&fit=crop',
+      bio: 'Reid Zeising is a serial entrepreneur, private equity investor, and mentor to early-stage founders.',
+    },
     date: '1h ago',
+    readTime: '5 min read',
+    excerpt: 'Early retirement sounds appealing until you lose your daily sense of purpose. Key lessons on time management and legacy.',
+    imageUrl: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=800&auto=format&fit=crop',
   },
   {
-    id: 'latest-5',
+    id: '5-things-to-ask-a-credit-card-processor-before-signing',
+    slug: '5-things-to-ask-a-credit-card-processor-before-signing',
     title: '5 Things to Ask a Credit Card Processor Before Signing a Contract',
     category: 'Building a Business',
-    author: { name: 'Marko Kling' },
+    author: {
+      name: 'Marko Kling',
+      title: 'Fintech Specialist & Payments Consultant',
+      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=300&auto=format&fit=crop',
+      bio: 'Marko Kling is a fintech specialist advising high-volume small businesses on merchant processing fees and software integration.',
+    },
     date: '2h ago',
+    readTime: '4 min read',
+    excerpt: 'Hidden processing fees and multi-year termination penalties can bleed merchant margins. What to ask sales reps before signing.',
+    imageUrl: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?q=80&w=800&auto=format&fit=crop',
   },
   {
-    id: 'latest-6',
+    id: 'she-grew-up-on-food-stamps-now-runs-8-figure-startup',
+    slug: 'she-grew-up-on-food-stamps-now-runs-8-figure-startup',
     title: 'She Grew Up on Food Stamps. Now She Runs an 8-Figure Startup.',
     category: 'Building a Business',
-    author: { name: 'Joe Cecala' },
+    author: {
+      name: 'Joe Cecala',
+      title: 'Senior Business Columnist',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=300&auto=format&fit=crop',
+      bio: 'Joe Cecala covers bootstrapping founder journeys and breakthrough scaling stories across venture and consumer brands.',
+    },
     date: '3h ago',
+    readTime: '6 min read',
+    excerpt: 'Grit, relentless frugality, and learning to sell without shame allowed this founder to bootstrap an eight-figure retail brand.',
+    imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop',
   },
 ];
 
@@ -2246,10 +2291,225 @@ export const COLLABORATION_DRIVES_INNOVATION_ARTICLE: Article = {
   imageAspect: 'wide',
 };
 
+export const BEN_ANGEL_ARTICLES: Article[] = [
+  {
+    id: 'how-to-biohack-your-brain-for-peak-performance',
+    slug: 'how-to-biohack-your-brain-for-peak-performance',
+    title: 'How to Biohack Your Brain for Peak Focus and Performance',
+    category: 'Thought Leaders',
+    author: {
+      name: 'Ben Angel',
+      title: 'Entrepreneur Network Contributor',
+      avatar: '/images/more-author-2.jpg',
+      bio: "Ben Angel is the author of 'Unstoppable: A 90-Day Plan to Biohack Your Mind and Body for Success'. He has helped thousands of entrepreneurs maximize their cognitive performance and productivity.",
+    },
+    editor: 'AMANDA BREEN',
+    date: '2h ago',
+    readTime: '5 min read',
+    excerpt: 'Proven neuroscience frameworks to eliminate brain fog, optimize daily cognitive output, and sustain high energy without burnout.',
+    imageUrl: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=600&auto=format&fit=crop',
+    imageAspect: 'wide',
+  },
+  {
+    id: 'collaboration-drives-innovation-growth',
+    slug: 'collaboration-drives-innovation-growth',
+    title: 'Collaboration Drives Innovation and Growth',
+    category: 'Thought Leaders',
+    author: {
+      name: 'Ben Angel',
+      title: 'Entrepreneur Network Contributor',
+      avatar: '/images/more-author-2.jpg',
+      bio: "Ben Angel is the author of 'Unstoppable: A 90-Day Plan to Biohack Your Mind and Body for Success'. He has helped thousands of entrepreneurs maximize their cognitive performance and productivity.",
+    },
+    editor: 'AMANDA BREEN',
+    date: '4h ago',
+    readTime: '5 min read',
+    excerpt: 'When great minds work together, new ideas turn into real progress. How cross-functional teams build unstoppable momentum.',
+    imageUrl: '/images/topic-sub-2.jpg',
+    imageAspect: 'wide',
+  },
+  {
+    id: 'unstoppable-90-day-plan-to-biohack-your-mind',
+    slug: 'unstoppable-90-day-plan-to-biohack-your-mind',
+    title: 'The 90-Day Biohack Blueprint: How to Reclaim Energy, Focus and Drive',
+    category: 'Leadership',
+    author: {
+      name: 'Ben Angel',
+      title: 'Entrepreneur Network Contributor',
+      avatar: '/images/more-author-2.jpg',
+      bio: "Ben Angel is the author of 'Unstoppable: A 90-Day Plan to Biohack Your Mind and Body for Success'. He has helped thousands of entrepreneurs maximize their cognitive performance and productivity.",
+    },
+    editor: 'AMANDA BREEN',
+    date: '1d ago',
+    readTime: '6 min read',
+    excerpt: 'Eliminate chronic decision fatigue and optimize physical resilience using behavioral biohacking systems.',
+    imageUrl: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=600&auto=format&fit=crop',
+    imageAspect: 'wide',
+  },
+];
+
+export const ARTICLE_PAGE_FEATURED_ARTICLES: Article[] = [
+  {
+    id: 'an-introverts-case-for-skipping-small-talk',
+    slug: 'an-introverts-case-for-skipping-small-talk',
+    title: "An Introvert's Case for Skipping Small Talk and Building Real Connections",
+    category: 'Building a Business',
+    author: {
+      name: 'Aytekin Tank',
+      title: 'Founder & CEO of Jotform',
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=300&auto=format&fit=crop',
+      bio: 'Aytekin Tank is the founder and CEO of Jotform and author of Automate Your Busywork. He writes about productivity, tech, and entrepreneurship.',
+    },
+    editor: 'AMANDA BREEN',
+    date: '3h ago',
+    readTime: '4 min read',
+    excerpt: 'Introverts can turn intentional, deep conversations into lasting professional networks without the exhaustion of endless networking events.',
+    imageUrl: '/images/related-introvert.png',
+  },
+  {
+    id: 'he-leads-a-240-billion-food-giant',
+    slug: 'he-leads-a-240-billion-food-giant',
+    title: "He Leads a $240 Billion Food Giant. Here’s the Difficult Management Rule He Follows.",
+    category: 'Markets and Investing',
+    author: {
+      name: 'Sherin Shibu',
+      title: 'Entrepreneur Staff',
+      avatar: '/images/author-sherin.png',
+      bio: 'Sherin Shibu is a business news reporter at Entrepreneur.com covering global markets, corporate governance, and consumer giants.',
+    },
+    editor: 'AMANDA BREEN',
+    date: '7h ago',
+    readTime: '5 min read',
+    excerpt: 'Decisive operational leadership requires eliminating redundant approvals and empowering unit leaders with true autonomy.',
+    imageUrl: '/images/related-food-giant.png',
+  },
+  {
+    id: 'how-this-trio-built-a-supply-chain-powerhouse',
+    slug: 'how-this-trio-built-a-supply-chain-powerhouse',
+    title: 'How This Trio Built a Multi-Million Dollar Supply Chain Powerhouse From a Garage',
+    category: 'Building a Business',
+    author: {
+      name: 'Jason Feifer',
+      title: 'Editor in Chief, Entrepreneur',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300&auto=format&fit=crop',
+      bio: 'Jason Feifer is the editor in chief of Entrepreneur magazine, podcast host, and author of Build for Tomorrow.',
+    },
+    editor: 'AMANDA BREEN',
+    date: '1d ago',
+    readTime: '6 min read',
+    excerpt: 'Bootstrapping a logistics firm requires obsessive customer obsession, tight cash flow management, and ruthless prioritization.',
+    imageUrl: '/images/related-founders-warehouse.png',
+  },
+  {
+    id: 'taking-the-leap-what-great-leaders-do',
+    slug: 'taking-the-leap-what-great-leaders-do',
+    title: "Taking the Leap: What Great Leaders Do When the Path Ahead Isn't Clear",
+    category: 'Leadership',
+    author: {
+      name: 'Terry Rice',
+      title: 'Business Consultant & Speaker',
+      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300&auto=format&fit=crop',
+      bio: 'Terry Rice is a business development consultant and podcast host helping solopreneurs build thriving digital enterprises.',
+    },
+    editor: 'AMANDA BREEN',
+    date: '1d ago',
+    readTime: '5 min read',
+    excerpt: 'When facing unprecedented market disruptions, leading with curiosity and conviction separates visionary founders from the pack.',
+    imageUrl: '/images/related-jumping-cliff.png',
+  },
+  {
+    id: 'ai-is-changing-your-company-culture',
+    slug: 'ai-is-changing-your-company-culture',
+    title: 'AI Is Changing Your Company Culture Whether You Planned for It or Not',
+    category: 'Technology and AI',
+    author: {
+      name: 'Amanda Breen',
+      title: 'Senior Features Editor',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=300&auto=format&fit=crop',
+      bio: 'Amanda Breen is a senior features editor at Entrepreneur, reporting on the intersection of generative artificial intelligence and enterprise culture.',
+    },
+    editor: 'AMANDA BREEN',
+    date: '5h ago',
+    readTime: '4 min read',
+    excerpt: 'Adopting generative AI fundamentally shifts internal team trust, performance reviews, and creative autonomy across knowledge workers.',
+    imageUrl: '/images/related-robot-hands.png',
+  },
+  {
+    id: 'apple-amazon-and-microsoft-want-these-new-ai-gadgets',
+    slug: 'apple-amazon-and-microsoft-want-these-new-ai-gadgets',
+    title: 'Apple, Amazon and Microsoft Want These New AI Gadgets',
+    category: 'Breaking Business News',
+    author: {
+      name: 'Sherin Shibu',
+      title: 'Entrepreneur Staff',
+      avatar: '/images/author-sherin.png',
+      bio: 'Sherin Shibu is a business news reporter at Entrepreneur.com covering emerging consumer technology and tech titan battles.',
+    },
+    editor: 'AMANDA BREEN',
+    date: '3h ago',
+    readTime: '4 min read',
+    excerpt: 'Big tech is racing to acquire ambient computing startups to win the next hardware form factor beyond smartphones.',
+    imageUrl: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'america-finally-got-a-new-sunscreen',
+    slug: 'america-finally-got-a-new-sunscreen',
+    title: 'America Finally Got a New Sunscreen. Europeans Have Been Sporting It Since 1999.',
+    category: 'Research and Insights',
+    author: {
+      name: 'Amanda Breen',
+      title: 'Senior Features Editor',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=300&auto=format&fit=crop',
+      bio: 'Amanda Breen is a senior features editor at Entrepreneur covering wellness and consumer innovation.',
+    },
+    editor: 'AMANDA BREEN',
+    date: '4h ago',
+    readTime: '5 min read',
+    excerpt: 'Regulatory logjams delayed modern UV filters for decades in the United States while European formulas captured global market share.',
+    imageUrl: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'this-popular-pickleball-franchisor-filed-for-bankruptcy',
+    slug: 'this-popular-pickleball-franchisor-filed-for-bankruptcy',
+    title: "This Popular Pickleball Franchisor Filed for Bankruptcy. Its Founder Says, 'I Own It'",
+    category: 'Startups and Entrepreneurship',
+    author: {
+      name: 'Jason Feifer',
+      title: 'Editor in Chief, Entrepreneur',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300&auto=format&fit=crop',
+      bio: 'Jason Feifer is the editor in chief of Entrepreneur magazine, podcast host, and author of Build for Tomorrow.',
+    },
+    editor: 'AMANDA BREEN',
+    date: '4h ago',
+    readTime: '6 min read',
+    excerpt: 'Rapid expansion and skyrocketing commercial leases strained liquidity before court-supervised reorganization took over.',
+    imageUrl: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'creators-are-handing-their-video-edits-to-ai',
+    slug: 'creators-are-handing-their-video-edits-to-ai',
+    title: "Creators Are Handing Their Video Edits to AI. Here's Where It Starts to Backfire.",
+    category: 'Technology and AI',
+    author: {
+      name: 'Terry Rice',
+      title: 'Business Consultant & Speaker',
+      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300&auto=format&fit=crop',
+      bio: 'Terry Rice is a business development consultant and podcast host helping solopreneurs build thriving digital enterprises.',
+    },
+    editor: 'AMANDA BREEN',
+    date: '6h ago',
+    readTime: '5 min read',
+    excerpt: 'Algorithmic pacing and generic synthetic voiceovers are suppressing engagement on YouTube and TikTok as audiences crave authenticity.',
+    imageUrl: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?q=80&w=600&auto=format&fit=crop',
+  },
+];
+
 export const ALL_ARTICLES: Article[] = [
   HOW_GREAT_LEADERS_BUILD_TEAMS_ARTICLE,
   POWER_OF_EFFECTIVE_COMMUNICATION_ARTICLE,
   COLLABORATION_DRIVES_INNOVATION_ARTICLE,
+  ...BEN_ANGEL_ARTICLES,
+  ...ARTICLE_PAGE_FEATURED_ARTICLES,
   SIDE_HUSTLE_53_ARTICLE,
   NOT_EVERY_BOSS_ARTICLE,
   HERO_ARTICLE,
@@ -2305,21 +2565,19 @@ export function getArticleById(rawIdOrSlug: string): Article {
   // 1. Direct check for 53 Side Hustles article
   if (
     param === 'latest-1' ||
+    param === 'side-hustle-53' ||
     param === '53-side-hustle-ideas-to-make-extra-money-in-2026' ||
-    slugParam.includes('53-side-hustle') ||
-    slugParam.includes('extra-money') ||
-    slugParam.includes('side-hustle-ideas')
+    slugParam === '53-side-hustle-ideas-to-make-extra-money-in-2026'
   ) {
     return SIDE_HUSTLE_53_ARTICLE;
   }
 
   // 2. Direct check for Not Every Boss article
   if (
-    param.includes('boss') ||
-    param.includes('bully') ||
-    slugParam.includes('boss') ||
-    slugParam.includes('bully') ||
-    slugParam.includes('thank-you-card')
+    param === 'not-every-boss-deserves-a-thank-you-card' ||
+    param === 'boss-bully' ||
+    slugParam === 'not-every-boss-deserves-a-thank-you-card' ||
+    slugParam.includes('not-every-boss-deserves')
   ) {
     return NOT_EVERY_BOSS_ARTICLE;
   }
@@ -2356,7 +2614,7 @@ export function getArticleById(rawIdOrSlug: string): Article {
     return HERO_ARTICLE;
   }
 
-  // 4. Exact matches in ALL_ARTICLES
+  // 5. Exact matches in ALL_ARTICLES
   const found = ALL_ARTICLES.find((a) => {
     if (a.id === param || a.id.toLowerCase() === param.toLowerCase()) return true;
     if (a.slug && (a.slug === param || a.slug === slugParam)) return true;
@@ -2366,7 +2624,7 @@ export function getArticleById(rawIdOrSlug: string): Article {
   });
   if (found) return found;
 
-  // 5. Fuzzy match in ALL_ARTICLES
+  // 6. Fuzzy match in ALL_ARTICLES
   if (slugParam.length > 5) {
     const fuzzy = ALL_ARTICLES.find((a) => {
       const aSlug = a.slug || slugifyTitle(a.title);
@@ -2375,41 +2633,41 @@ export function getArticleById(rawIdOrSlug: string): Article {
     if (fuzzy) return fuzzy;
   }
 
-  // 6. Custom slug support (e.g. "12-sick-4-hospitalized-as-fda-escalates-frozen-blueberry-recall" from reference screenshot)
-  if (param.includes('-') && param.split('-').length >= 3) {
-    const words = param.replace(/^article\//, '').split(/[-_]+/);
-    const formattedTitle = words
-      .map((word) => {
-        const lower = word.toLowerCase();
-        if (['as', 'a', 'an', 'and', 'or', 'in', 'on', 'at', 'to', 'for', 'of', 'by', 'the'].includes(lower)) {
-          return lower;
-        }
-        if (['fda', 'ai', 'ceo', 'owlet', 'esg', 'btc', 'usd'].includes(lower)) {
-          return word.toUpperCase();
-        }
-        return word.charAt(0).toUpperCase() + word.slice(1);
-      })
-      .join(' ');
+  // 7. Dedicated dynamic article generation so each article opens its own dedicated page
+  const words = slugParam.split(/[-_]+/);
+  const formattedTitle = words
+    .map((word) => {
+      const lower = word.toLowerCase();
+      if (['as', 'a', 'an', 'and', 'or', 'in', 'on', 'at', 'to', 'for', 'of', 'by', 'the', 'with', 'from'].includes(lower)) {
+        return lower;
+      }
+      if (['fda', 'ai', 'ceo', 'owlet', 'esg', 'btc', 'usd', 'smb', 'smbs', 'etf', 'etfs', 'b2b'].includes(lower)) {
+        return word.toUpperCase();
+      }
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(' ');
 
-    return {
-      id: slugParam,
-      slug: slugParam,
-      title: formattedTitle.charAt(0).toUpperCase() + formattedTitle.slice(1),
-      category: 'Health & Wellness',
-      author: {
-        name: 'Staff Reporter',
-        title: 'Editorial Team',
-      },
-      editor: 'AMANDA BREEN',
-      date: 'OCT 18, 2026',
-      readTime: '4 min read',
-      excerpt: `Latest breaking report and investigative analysis: ${formattedTitle}.`,
-      imageUrl: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=1200&auto=format&fit=crop',
-      imageAspect: 'wide',
-    };
-  }
+  const titleCase = formattedTitle ? formattedTitle.charAt(0).toUpperCase() + formattedTitle.slice(1) : 'Business Insights & Strategic Leadership';
 
-  return SIDE_HUSTLE_53_ARTICLE;
+  return {
+    id: slugParam || param || 'article',
+    slug: slugParam || param || 'article',
+    title: titleCase,
+    category: 'Building a Business',
+    author: {
+      name: 'Sherin Shibu',
+      title: 'Entrepreneur Staff',
+      avatar: '/images/author-sherin.png',
+      bio: 'Sherin Shibu is a business news reporter at Entrepreneur.com. She previously worked for PCMag, Business Insider, and specializes in business trends, consumer technology, and entrepreneurship.',
+    },
+    editor: 'AMANDA BREEN',
+    date: 'OCT 19, 2026',
+    readTime: '4 min read',
+    excerpt: `Exclusive reporting and in-depth business analysis: ${titleCase}.`,
+    imageUrl: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=1200&auto=format&fit=crop',
+    imageAspect: 'wide',
+  };
 }
 
 export function getTopicDataBySlug(slugInput: string): TopicPageData {

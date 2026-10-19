@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { Header } from '@/layouts/Header';
 import { Footer } from '@/layouts/Footer';
+import { getArticleUrl } from '@/data/newsData';
 
 interface AuthorProfile {
   name: string;
@@ -418,35 +419,59 @@ const PAGE_2_ARTICLES = [
   },
 ];
 
-const MORE_AUTHORS = [
+const BEN_ANGEL_AUTHOR_ARTICLES = [
   {
-    name: 'Dean Guida',
-    title: "Founder and CEO of Infragistics, Author of 'When Grit Is Not Enough'",
-    avatar: '/images/more-author-1.jpg',
-    href: '/author/dean-guida',
+    id: 'how-to-biohack-your-brain-for-peak-performance',
+    title: 'How to Biohack Your Brain for Peak Focus and Performance',
+    category: 'THOUGHT LEADERS',
+    excerpt: 'Proven neuroscience frameworks to eliminate brain fog, optimize daily cognitive output, and sustain high energy without burnout.',
+    imageUrl: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=600&auto=format&fit=crop',
   },
   {
-    name: 'Ben Angel',
-    title: 'Entrepreneur Network Contributor',
-    avatar: '/images/more-author-2.jpg',
-    href: '/author/ben-angel',
+    id: 'collaboration-drives-innovation-growth',
+    title: 'Collaboration Drives Innovation and Growth',
+    category: 'THOUGHT LEADERS',
+    excerpt: 'When great minds work together, new ideas turn into real progress. How cross-functional teams build unstoppable momentum.',
+    imageUrl: '/images/topic-sub-2.jpg',
   },
   {
-    name: 'Rob Aquino',
-    title: 'CEO of JBS Corp',
-    avatar: '/images/more-author-3.jpg',
-    href: '/author/rob-aquino',
-  },
-  {
-    name: 'Molly Cavanah',
-    title: 'VP of Revenue Growth & Data',
-    avatar: '/images/more-author-4.jpg',
-    href: '/author/molly-cavanah',
+    id: 'unstoppable-90-day-plan-to-biohack-your-mind',
+    title: 'The 90-Day Biohack Blueprint: How to Reclaim Energy, Focus and Drive',
+    category: 'LEADERSHIP',
+    excerpt: 'Eliminate chronic decision fatigue and optimize physical resilience using behavioral biohacking systems.',
+    imageUrl: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=600&auto=format&fit=crop',
   },
 ];
 
 // Helper to provide articles for each page (1 to 10)
-function getArticlesForPage(page: number) {
+function getArticlesForPage(slug: string, page: number) {
+  if (slug === 'ben-angel') {
+    if (page === 1) return BEN_ANGEL_AUTHOR_ARTICLES;
+    return [
+      {
+        id: `optimizing-deep-sleep-cycles-p${page}`,
+        title: `Optimizing Deep Sleep Cycles: The Founder's Secret Weapon (Vol. ${page})`,
+        category: 'HEALTH & WELLNESS',
+        excerpt: 'Why 7 hours of restorative sleep beats an extra hour of late-night grinding for long-term cognitive endurance.',
+        imageUrl: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?q=80&w=600&auto=format&fit=crop',
+      },
+      {
+        id: `reversing-burnout-before-it-derails-growth-p${page}`,
+        title: `Reversing Burnout Before It Derails Your Company's Growth (Part ${page})`,
+        category: 'LEADERSHIP',
+        excerpt: 'Recognizing early micro-symptoms of neural exhaustion and resetting executive nervous system equilibrium.',
+        imageUrl: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?q=80&w=600&auto=format&fit=crop',
+      },
+      {
+        id: `neurochemistry-of-high-stakes-negotiations-p${page}`,
+        title: `The Neurochemistry of High-Stakes Negotiations (Edition ${page})`,
+        category: 'NEGOTIATION',
+        excerpt: 'How regulating cortisol and dopamine response allows founders to close complex multi-million dollar deals.',
+        imageUrl: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=600&auto=format&fit=crop',
+      },
+    ];
+  }
+
   if (page === 1) return PAGE_1_ARTICLES;
   if (page === 2) return PAGE_2_ARTICLES;
 
@@ -496,7 +521,7 @@ export default function AuthorProfilePage() {
     }
   };
 
-  const currentArticles = getArticlesForPage(currentPage);
+  const currentArticles = getArticlesForPage(slug, currentPage);
 
   return (
     <div className="min-h-screen flex flex-col bg-white font-sans antialiased text-slate-900">
@@ -551,19 +576,6 @@ export default function AuthorProfilePage() {
               <p className="font-serif text-slate-700 text-sm sm:text-[15px] leading-relaxed max-w-2xl my-0">
                 {author.bio}
               </p>
-
-              {/* Callout Box matching Image 1 */}
-              <div className="mt-5 inline-block bg-[#f0f5ff] rounded-lg px-4 sm:px-5 py-3 shadow-[0_2px_8px_rgba(0,0,0,0.03)] border border-blue-100/60">
-                <p className="font-serif text-xs sm:text-[13.5px] text-slate-700 my-0">
-                  Want to write for Entrepreneur too?{' '}
-                  <Link
-                    href="/newsletters"
-                    className="font-serif font-bold text-[#1642D0] hover:underline"
-                  >
-                    Apply to join Entrepreneur Leadership network.
-                  </Link>
-                </p>
-              </div>
             </div>
           </div>
 
@@ -584,31 +596,36 @@ export default function AuthorProfilePage() {
         {/* 1 Row 3 Columns Grid for Current Page Articles */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
           {currentArticles.map((art) => (
-            <article key={art.id} className="group flex flex-col items-start text-left">
+            <article key={art.id} className="relative group flex flex-col items-start text-left cursor-pointer">
+              {/* Stretched link so the entire card is clickable */}
+              <Link
+                href={getArticleUrl(art)}
+                className="absolute inset-0 z-0"
+                aria-label={art.title}
+              />
+
               {/* Card Image */}
-              <Link href={`/article/${art.id}`} className="block w-full cursor-pointer">
-                <div className="w-full aspect-[16/10] overflow-hidden rounded-xl bg-slate-100 mb-3.5 border border-slate-200/60">
-                  <img
-                    src={art.imageUrl}
-                    alt={art.title}
-                    className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 rounded-xl"
-                  />
-                </div>
-              </Link>
+              <div className="w-full aspect-[16/10] overflow-hidden rounded-xl bg-slate-100 mb-3.5 border border-slate-200/60 pointer-events-none">
+                <img
+                  src={art.imageUrl}
+                  alt={art.title}
+                  className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 rounded-xl"
+                />
+              </div>
 
               {/* Card Category */}
-              <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-1.5 block">
+              <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-1.5 block relative z-10 pointer-events-none">
                 {art.category}
               </span>
 
               {/* Card Title */}
-              <h3 className="font-serif font-bold text-base sm:text-[18px] text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-0">
-                <Link href={`/article/${art.id}`}>{art.title}</Link>
+              <h3 className="font-serif font-bold text-base sm:text-[18px] text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-0 relative z-10 pointer-events-none">
+                {art.title}
               </h3>
 
               {/* Card Excerpt */}
               {art.excerpt && (
-                <p className="font-serif text-slate-600 text-xs sm:text-[13.5px] leading-relaxed line-clamp-3 mt-2 my-0">
+                <p className="font-serif text-slate-600 text-xs sm:text-[13.5px] leading-relaxed line-clamp-3 mt-2 my-0 relative z-10 pointer-events-none">
                   {art.excerpt}
                 </p>
               )}
@@ -616,86 +633,55 @@ export default function AuthorProfilePage() {
           ))}
         </div>
 
-        {/* HORIZONTAL DIVIDER LINE ABOVE 'MORE AUTHORS YOU MIGHT LIKE' MATCHING IMAGE 2 */}
-        <div className="border-t border-slate-200 mt-16 pt-10">
-          {/* Section Headline matching Image 2 */}
-          <div className="mb-8">
-            <h2 className="text-2xl sm:text-3xl lg:text-[32px] font-serif font-black text-[#020618] tracking-tight my-0">
-              More Authors You Might Like
-            </h2>
-          </div>
-
-          {/* 4 Authors Row matching Image 2 */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8 text-center pt-2 pb-10">
-            {MORE_AUTHORS.map((auth) => (
-              <div key={auth.name} className="flex flex-col items-center">
-                <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-full overflow-hidden mb-3.5">
-                  <img
-                    src={auth.avatar}
-                    alt={auth.name}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
-                  />
-                </div>
-                <h4 className="font-serif font-bold text-sm sm:text-base text-[#020618] hover:text-[#1642D0] cursor-pointer my-0 transition-colors">
-                  <Link href={auth.href}>{auth.name}</Link>
-                </h4>
-                <p className="font-serif text-slate-600 text-[11px] sm:text-xs leading-snug mt-1 mx-auto max-w-[190px] my-0">
-                  {auth.title}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          {/* DYNAMIC FUNCTIONAL PAGINATION MATCHING IMAGE 2 */}
-          <div className="flex items-center gap-1.5 sm:gap-2 pt-4 pb-8">
-            {[1, 2, 3].map((pageNum) => (
-              <button
-                key={pageNum}
-                type="button"
-                onClick={() => handlePageChange(pageNum)}
-                className={`min-w-[34px] sm:min-w-[38px] h-9 px-3 rounded-xs font-sans text-xs flex items-center justify-center cursor-pointer transition-all duration-150 ${
-                  currentPage === pageNum
-                    ? 'bg-[#1642D0] text-white font-bold shadow-2xs border border-[#1642D0]'
-                    : 'bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 font-semibold hover:border-slate-400'
-                }`}
-                aria-label={`Go to page ${pageNum}`}
-                aria-current={currentPage === pageNum ? 'page' : undefined}
-              >
-                {pageNum}
-              </button>
-            ))}
-
-            {/* Ellipsis */}
-            <span className="min-w-[34px] sm:min-w-[38px] h-9 px-2 rounded-xs bg-white border border-slate-300 text-slate-400 font-sans text-xs flex items-center justify-center select-none">
-              ...
-            </span>
-
-            {/* Page 10 Button */}
+        {/* DYNAMIC FUNCTIONAL PAGINATION MATCHING IMAGE 3 */}
+        <div className="flex items-center justify-center gap-1.5 sm:gap-2 pt-12 pb-8">
+          {[1, 2, 3].map((pageNum) => (
             <button
+              key={pageNum}
               type="button"
-              onClick={() => handlePageChange(10)}
-              className={`min-w-[34px] sm:min-w-[38px] h-9 px-3 rounded-xs font-sans text-xs flex items-center justify-center cursor-pointer transition-all duration-150 ${
-                currentPage === 10
-                  ? 'bg-[#1642D0] text-white font-bold shadow-2xs border border-[#1642D0]'
+              onClick={() => handlePageChange(pageNum)}
+              className={`min-w-[36px] sm:min-w-[40px] h-9 sm:h-10 px-3 rounded-[3px] font-sans text-xs sm:text-[13px] flex items-center justify-center cursor-pointer transition-all duration-150 ${
+                currentPage === pageNum
+                  ? 'bg-[#1642D0] text-white font-bold border border-[#1642D0]'
                   : 'bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 font-semibold hover:border-slate-400'
               }`}
-              aria-label="Go to page 10"
-              aria-current={currentPage === 10 ? 'page' : undefined}
+              aria-label={`Go to page ${pageNum}`}
+              aria-current={currentPage === pageNum ? 'page' : undefined}
             >
-              10
+              {pageNum}
             </button>
+          ))}
 
-            {/* Next Button */}
-            <button
-              type="button"
-              onClick={() => handlePageChange(Math.min(10, currentPage + 1))}
-              disabled={currentPage === 10}
-              className="h-9 px-4 rounded-xs bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 disabled:opacity-40 font-sans font-semibold text-xs flex items-center justify-center cursor-pointer transition-colors"
-              aria-label="Next page"
-            >
-              Next
-            </button>
-          </div>
+          {/* Ellipsis */}
+          <span className="min-w-[36px] sm:min-w-[40px] h-9 sm:h-10 px-2 rounded-[3px] bg-white border border-slate-300 text-slate-400 font-sans text-xs sm:text-[13px] flex items-center justify-center select-none">
+            ...
+          </span>
+
+          {/* Page 10 Button */}
+          <button
+            type="button"
+            onClick={() => handlePageChange(10)}
+            className={`min-w-[36px] sm:min-w-[40px] h-9 sm:h-10 px-3 rounded-[3px] font-sans text-xs sm:text-[13px] flex items-center justify-center cursor-pointer transition-all duration-150 ${
+              currentPage === 10
+                ? 'bg-[#1642D0] text-white font-bold border border-[#1642D0]'
+                : 'bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 font-semibold hover:border-slate-400'
+            }`}
+            aria-label="Go to page 10"
+            aria-current={currentPage === 10 ? 'page' : undefined}
+          >
+            10
+          </button>
+
+          {/* Next Button */}
+          <button
+            type="button"
+            onClick={() => handlePageChange(Math.min(10, currentPage + 1))}
+            disabled={currentPage === 10}
+            className="h-9 sm:h-10 px-4 rounded-[3px] bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 disabled:opacity-40 font-sans font-semibold text-xs sm:text-[13px] flex items-center justify-center cursor-pointer transition-colors"
+            aria-label="Next page"
+          >
+            Next
+          </button>
         </div>
       </main>
 
