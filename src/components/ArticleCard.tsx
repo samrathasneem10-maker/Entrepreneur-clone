@@ -96,19 +96,21 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
 
           {imageUrl && showImage && (
             <figure className="relative w-full aspect-square overflow-hidden rounded-xl border border-slate-200 mt-1">
-              <img
-                src={imageUrl}
-                alt={title}
-                referrerPolicy="no-referrer"
-                onError={(e) => {
-                  const target = e.currentTarget;
-                  if (!target.dataset.fallback) {
-                    target.dataset.fallback = 'true';
-                    target.src = '/images/hero-mentor.jpg';
-                  }
-                }}
-                className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-500 rounded-xl"
-              />
+              <Link href={getArticleUrl(article)} className="block w-full h-full cursor-pointer">
+                <img
+                  src={imageUrl}
+                  alt={title}
+                  referrerPolicy="no-referrer"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (!target.dataset.fallback) {
+                      target.dataset.fallback = 'true';
+                      target.src = '/images/hero-mentor.jpg';
+                    }
+                  }}
+                  className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-500 rounded-xl"
+                />
+              </Link>
             </figure>
           )}
 
@@ -128,12 +130,14 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
       <article className={`group flex flex-row-reverse items-start justify-between gap-5 pb-5 mb-5 border-b border-slate-200 last:border-b-0 last:mb-0 last:pb-0 w-full ${className}`}>
         {imageUrl && showImage && (
           <figure className="relative flex-shrink-0 w-[120px] h-[120px] sm:w-[150px] sm:h-[150px] aspect-square overflow-hidden rounded-lg border border-slate-200">
-            <img
-              src={imageUrl}
-              alt={title}
-              referrerPolicy="no-referrer"
-              className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 rounded-lg"
-            />
+            <Link href={getArticleUrl(article)} className="block w-full h-full cursor-pointer">
+              <img
+                src={imageUrl}
+                alt={title}
+                referrerPolicy="no-referrer"
+                className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 rounded-lg"
+              />
+            </Link>
           </figure>
         )}
 
@@ -193,7 +197,9 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
       <article className={`group flex gap-4 items-center py-2.5 border-b border-slate-200/80 last:border-b-0 w-full ${className}`}>
         {imageUrl && (
           <figure className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 border border-slate-200 aspect-square">
-            <img src={imageUrl} alt={title} referrerPolicy="no-referrer" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+            <Link href={getArticleUrl(article)} className="block w-full h-full cursor-pointer">
+              <img src={imageUrl} alt={title} referrerPolicy="no-referrer" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+            </Link>
           </figure>
         )}
         <div className="flex flex-col">
@@ -225,24 +231,26 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
     <article className={`group flex flex-col w-full ${className}`}>
       {imageUrl && showImage && (
         <figure className={`relative w-full aspect-video ${isCenter ? 'sm:aspect-[16/10]' : ''} overflow-hidden rounded-xl mb-3.5 border border-slate-200`}>
-          <img
-            src={imageUrl}
-            alt={title}
-            referrerPolicy="no-referrer"
-            onError={(e) => {
-              const target = e.currentTarget;
-              if (!target.dataset.fallback) {
-                target.dataset.fallback = 'true';
-                if (article.id === 'sec-1') target.src = '/images/jeff-bezos.jpg';
-                else if (article.id === 'sec-2') target.src = '/images/kurt-workman.jpg';
-                else if (article.id === 'grid-1') target.src = '/images/innovation-leadership.jpg';
-                else if (article.id === 'grid-2') target.src = '/images/career-decision.jpg';
-                else if (article.id === 'grid-3') target.src = '/images/apple-smart-home.jpg';
-                else target.src = 'https://images.unsplash.com/photo-1558002038-1055907df827?q=80&w=800&auto=format&fit=crop';
-              }
-            }}
-            className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-500 rounded-xl"
-          />
+          <Link href={getArticleUrl(article)} className="block w-full h-full cursor-pointer">
+            <img
+              src={imageUrl}
+              alt={title}
+              referrerPolicy="no-referrer"
+              onError={(e) => {
+                const target = e.currentTarget;
+                if (!target.dataset.fallback) {
+                  target.dataset.fallback = 'true';
+                  if (article.id === 'sec-1') target.src = '/images/jeff-bezos.jpg';
+                  else if (article.id === 'sec-2') target.src = '/images/kurt-workman.jpg';
+                  else if (article.id === 'grid-1') target.src = '/images/innovation-leadership.jpg';
+                  else if (article.id === 'grid-2') target.src = '/images/career-decision.jpg';
+                  else if (article.id === 'grid-3') target.src = '/images/apple-smart-home.jpg';
+                  else target.src = 'https://images.unsplash.com/photo-1558002038-1055907df827?q=80&w=800&auto=format&fit=crop';
+                }
+              }}
+              className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-500 rounded-xl"
+            />
+          </Link>
         </figure>
       )}
 

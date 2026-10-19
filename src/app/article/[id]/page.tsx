@@ -164,10 +164,12 @@ export default function ArticleDetailPage() {
       name: isBossArticle
         ? 'MITA MALLICK'
         : is53SideHustle
-        ? 'R.L. ADAMS'
-        : (rawArticle.author?.name || 'R.L. ADAMS'),
-      avatar: rawArticle.author?.avatar,
-      title: rawArticle.author?.title,
+        ? 'SHERIN SHIBU'
+        : (rawArticle.author?.name || 'SHERIN SHIBU'),
+      avatar: isBossArticle
+        ? (rawArticle.author?.avatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=300&auto=format&fit=crop')
+        : '/images/author-sherin.png',
+      title: isBossArticle ? 'Executive Contributor' : 'Entrepreneur Staff',
     },
     editor: isBossArticle ? 'KARA MCINTYRE' : is53SideHustle ? 'AMANDA BREEN' : (rawArticle.editor || 'AMANDA BREEN'),
     date: isBossArticle ? 'OCT 14, 2026' : is53SideHustle ? 'JAN 26, 2026' : (rawArticle.date || 'JAN 26, 2026'),
@@ -379,16 +381,16 @@ export default function ArticleDetailPage() {
       {/* Main Article Container with 2-Column Layout */}
       <main className="flex-1 w-full max-w-7xl mx-auto px-5 lg:px-10 pt-4 pb-10">
         
-        {/* Top < BACK TO NEWSFEED bar + horizontal line matching reference image 1 */}
+        {/* Top < BACK TO HOME bar + horizontal line matching reference image 1 */}
         <div className="w-full mb-6">
           <Link
             href="/"
             className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-slate-800 transition-colors font-sans"
           >
             <span className="text-sm font-semibold select-none">&lt;</span>
-            <span>BACK TO NEWSFEED</span>
+            <span>BACK TO HOME</span>
           </Link>
-          {/* Horizontal line under < BACK TO NEWSFEED matching Image 1 */}
+          {/* Horizontal line under < BACK TO HOME matching Image 1 */}
           <div className="border-b border-slate-200 mt-2.5" />
         </div>
 
@@ -426,10 +428,10 @@ export default function ArticleDetailPage() {
             <div className="flex items-center gap-2.5 text-xs sm:text-[13px] font-sans font-bold uppercase tracking-wider text-slate-800 py-0.5">
               <span className="text-slate-600 font-bold">BY</span>
               <Link
-                href={`/author/${(article.author?.name || 'rl-adams').toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+                href={`/author/${(article.author?.name || 'sherin-shibu').toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
                 className="text-[#1642D0] hover:underline font-bold"
               >
-                {article.author?.name || 'R.L. ADAMS'}
+                {article.author?.name || 'SHERIN SHIBU'}
               </Link>
               <span className="text-slate-300 font-normal">|</span>
               <span className="text-slate-500 font-normal">

@@ -64,6 +64,13 @@ const AUTHORS_MAP: Record<string, AuthorProfile> = {
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300&auto=format&fit=crop',
     bio: 'R.L. Adams is a software engineer, serial entrepreneur, and bestselling author of dozens of books on online business, search engine optimization, and passive income generation.',
   },
+  'sherin-shibu': {
+    name: 'Sherin Shibu',
+    role: 'Business News Reporter',
+    badge: 'Entrepreneur Staff',
+    avatar: '/images/author-sherin.png',
+    bio: 'Sherin Shibu is a business news reporter at Entrepreneur.com. She previously worked for PCMag, Business Insider, and specializes in business trends, consumer technology, and entrepreneurship.',
+  },
 };
 
 // PAGE 1: 24 articles in complete 3-column rows, with the final row matching Image 1 exactly

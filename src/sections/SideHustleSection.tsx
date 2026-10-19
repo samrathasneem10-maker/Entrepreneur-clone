@@ -102,11 +102,13 @@ export const SideHustleSection: React.FC = () => {
 
                 {article.imageUrl && (
                   <figure className="relative w-24 h-24 sm:w-28 sm:h-28 flex-shrink-0 overflow-hidden rounded-xl border border-slate-200/80">
-                    <img
-                      src={article.imageUrl}
-                      alt={article.title}
-                      className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300 rounded-xl"
-                    />
+                    <Link href={getArticleUrl(article)} className="block w-full h-full cursor-pointer">
+                      <img
+                        src={article.imageUrl}
+                        alt={article.title}
+                        className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300 rounded-xl"
+                      />
+                    </Link>
                   </figure>
                 )}
               </article>

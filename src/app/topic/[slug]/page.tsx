@@ -970,13 +970,16 @@ export default function DynamicTopicPage() {
                   key={art.id}
                   className={`flex gap-4 sm:gap-5 items-start ${index === 0 ? 'pt-0' : 'pt-6'}`}
                 >
-                  <div className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 overflow-hidden bg-slate-100">
+                  <Link
+                    href={`/article/${art.id}`}
+                    className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 overflow-hidden bg-slate-100 block cursor-pointer group/thumb"
+                  >
                     <img
                       src={art.image}
                       alt={art.title}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover group-hover/thumb:scale-105 transition-transform duration-300"
                     />
-                  </div>
+                  </Link>
                   <div className="flex-1 min-w-0">
                     <span className="text-[11px] font-bold text-[#1642D0] uppercase tracking-wider font-sans block mb-1">
                       {art.category}
