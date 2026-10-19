@@ -949,11 +949,20 @@ export default function DynamicTopicPage() {
       </div>
 
       {/* Bottom Section: Left Stream (10 Articles per page + NEXT/PREVIOUS Controls) & Right Sidebar (Large Ad + Laptop Image) */}
-      <div className="w-full max-w-7xl mx-auto px-5 lg:px-10 pb-16">
+      <div id="articles-list-section" className="w-full max-w-7xl mx-auto px-5 lg:px-10 pb-16 scroll-mt-20">
+        
+        {/* MORE NEWS Heading and Line matching Image 1 & Image 2 */}
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#020618] uppercase tracking-wider my-0">
+            MORE NEWS
+          </h2>
+          <div className="border-b border-slate-900 mt-2.5" />
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
           {/* Left Column: Bordered box with 10 articles per page */}
-          <div id="articles-list-section" className="lg:col-span-7 bg-white border border-slate-200 p-5 sm:p-6 shadow-2xs h-fit">
+          <div className="lg:col-span-7 bg-white border border-slate-200 p-5 sm:p-6 shadow-2xs h-fit">
             <div className="space-y-6 divide-y divide-slate-100">
               {currentArticles.map((art, index) => (
                 <article
