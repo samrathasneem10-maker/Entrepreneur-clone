@@ -27,37 +27,49 @@ const LATEST_SIDEBAR_ARTICLES = [
   {
     id: 'latest-side-1',
     title: 'Apple, Amazon and Microsoft Want These New AI Gadgets on Your Holiday Wish List',
-    time: '3 HOURS AGO',
+    category: 'Breaking Business News',
+    categoryHref: '/topic/breaking-business-news',
+    time: '3 hours ago',
     link: '/article/apple-amazon-and-microsoft-want-these-new-ai-gadgets',
   },
   {
     id: 'latest-side-2',
     title: 'America Finally Got a New Sunscreen. Europeans Have Been Sporting It Since 1999.',
-    time: '4 HOURS AGO',
+    category: 'Research and Insights',
+    categoryHref: '/topic/research-insights',
+    time: '4 hours ago',
     link: '/article/america-finally-got-a-new-sunscreen',
   },
   {
     id: 'latest-side-3',
     title: "This Popular Pickleball Franchisor Filed for Bankruptcy. Its Founder Says, 'I Own It'",
-    time: '4 HOURS AGO',
+    category: 'Startups and Entrepreneurship',
+    categoryHref: '/topic/startups-entrepreneurship',
+    time: '4 hours ago',
     link: '/article/this-popular-pickleball-franchisor-filed-for-bankruptcy',
   },
   {
     id: 'latest-side-4',
     title: 'AI Is Changing Your Company Culture Whether You Planned for It or Not.',
-    time: '5 HOURS AGO',
+    category: 'Leadership',
+    categoryHref: '/topic/leadership',
+    time: '5 hours ago',
     link: '/article/ai-is-changing-your-company-culture',
   },
   {
     id: 'latest-side-5',
     title: "Creators Are Handing Their Video Edits to AI. Here's Where It Starts to Backfire.",
-    time: '6 HOURS AGO',
+    category: 'Technology and AI',
+    categoryHref: '/topic/technology-ai',
+    time: '6 hours ago',
     link: '/article/creators-are-handing-their-video-edits-to-ai',
   },
   {
     id: 'latest-side-6',
     title: "He Leads a $240 Billion Food Giant. Here's the Difficult Management Rule He Follows.",
-    time: '7 HOURS AGO',
+    category: 'Markets and Investing',
+    categoryHref: '/topic/markets-investing',
+    time: '7 hours ago',
     link: '/article/he-leads-a-240-billion-food-giant',
   },
 ];
@@ -908,9 +920,16 @@ export default function ArticleDetailPage() {
                         {art.title}
                       </Link>
                     </h4>
-                    <div className="flex items-center gap-2 text-[11px] font-sans uppercase tracking-wider text-slate-500 mt-2 font-medium">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#5A6E85] shrink-0" />
-                      <span>{art.time}</span>
+                    <div className="flex items-center justify-between gap-3 text-xs sm:text-[12px] font-sans mt-2.5">
+                      <Link
+                        href={art.categoryHref || `/topic/${slugifyTitle(art.category)}`}
+                        className="font-bold text-[#1642D0] hover:underline transition-colors tracking-wide truncate"
+                      >
+                        {art.category}
+                      </Link>
+                      <span className="text-slate-500 font-medium text-[11px] sm:text-[11.5px] whitespace-nowrap shrink-0">
+                        {art.time}
+                      </span>
                     </div>
                   </article>
                 ))}
