@@ -142,14 +142,30 @@ export const SideHustleSection: React.FC = () => {
 
             {/* Email Form */}
             <form
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault();
-                alert(`Subscribed to ${selectedCount} newsletters!`);
+                const form = e.currentTarget;
+                const emailInput = form.elements.namedItem('email') as HTMLInputElement | null;
+                const emailVal = emailInput?.value;
+                if (emailVal) {
+                  try {
+                    await fetch('/api/newsletter', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ email: emailVal }),
+                    });
+                  } catch (err) {
+                    console.warn('Failed to save to database:', err);
+                  }
+                  alert(`Subscribed successfully to ${selectedCount} newsletters!`);
+                  form.reset();
+                }
               }}
               className="space-y-2 mb-5"
             >
               <div className="flex gap-2">
                 <input
+                  name="email"
                   type="email"
                   placeholder="Enter your email"
                   required

@@ -369,20 +369,69 @@ export default function ArticleDetailPage() {
     }
   };
 
-  const handlePostComment = () => {
+  // Fetch comments from MySQL database for this article
+  useEffect(() => {
+    const slug = getArticleSlug(article);
+    if (!slug) return;
+    fetch(`/api/comments?articleSlug=${slug}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success && Array.isArray(data.data) && data.data.length > 0) {
+          const dbComments = data.data.map((c: any) => ({
+            id: `db-${c.id}`,
+            author: c.author,
+            avatar: c.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=120&auto=format&fit=crop',
+            date: c.created_at
+              ? new Date(c.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+              : 'Recently',
+            text: c.text,
+            likes: c.likes || 0,
+          }));
+          setCommentsList((prev) => {
+            const existingIds = new Set(dbComments.map((d: any) => d.id));
+            const filteredPrev = prev.filter((p) => !existingIds.has(p.id));
+            return [...dbComments, ...filteredPrev];
+          });
+        }
+      })
+      .catch((err) => console.warn('Could not fetch comments from MySQL:', err));
+  }, [articleId]);
+
+  const handlePostComment = async () => {
     if (!commentText.trim()) return;
+    const authorName = user ? user.name : 'Community Member';
+    const authorAvatar = user ? '' : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=120&auto=format&fit=crop';
+    const text = commentText.trim();
+    const slug = getArticleSlug(article);
+
     const newComment = {
       id: `c-${Date.now()}`,
-      author: user ? user.name : 'Community Member',
-      avatar: user ? '' : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=120&auto=format&fit=crop',
+      author: authorName,
+      avatar: authorAvatar,
       date: 'Just now',
-      text: commentText.trim(),
+      text: text,
       likes: 0,
     };
     setCommentsList([newComment, ...commentsList]);
     setCommentText('');
     setCommentSuccess(true);
     setTimeout(() => setCommentSuccess(false), 4000);
+
+    // Persist comment to MySQL database
+    try {
+      await fetch('/api/comments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          articleSlug: slug,
+          author: authorName,
+          avatar: authorAvatar,
+          text: text,
+        }),
+      });
+    } catch (err) {
+      console.warn('Failed to save comment to MySQL:', err);
+    }
   };
 
   // 8 Related articles for the bottom grid
