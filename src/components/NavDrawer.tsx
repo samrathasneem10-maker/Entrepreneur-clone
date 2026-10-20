@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
-import { X, Search, User } from 'lucide-react';
+import { X, Search, User, LogOut } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthContext';
 
 interface NavDrawerProps {
@@ -31,7 +31,7 @@ const SIDEBAR_TOPICS = [
 ];
 
 export const NavDrawer: React.FC<NavDrawerProps> = ({ isOpen, onClose, onOpenSearch }) => {
-  const { openLogin } = useAuth();
+  const { user, openLogin, logout } = useAuth();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -84,18 +84,44 @@ export const NavDrawer: React.FC<NavDrawerProps> = ({ isOpen, onClose, onOpenSea
               <Search className="w-5 h-5" />
             </button>
 
-            {/* Login Icon */}
-            <button
-              onClick={() => {
-                onClose();
-                openLogin();
-              }}
-              className="p-2 text-slate-700 hover:text-[#1642D0] hover:bg-slate-100 rounded-full transition-colors cursor-pointer"
-              aria-label="Sign In"
-              title="Sign In"
-            >
-              <User className="w-5 h-5" />
-            </button>
+            {/* Login / User Profile Icon */}
+            {user ? (
+              <div className="flex items-center gap-1">
+                <Link
+                  href={user.role ? `/dashboard/${user.role}` : '/dashboard'}
+                  onClick={onClose}
+                  className="flex items-center gap-1.5 p-1.5 hover:bg-slate-100 rounded-full transition-colors"
+                  title={`Go to ${user.role} dashboard`}
+                >
+                  <div className="w-7 h-7 rounded-full bg-[#1642D0] text-white flex items-center justify-center text-[11px] font-extrabold uppercase">
+                    {user.name.charAt(0)}
+                  </div>
+                </Link>
+                <button
+                  onClick={() => {
+                    logout();
+                    onClose();
+                  }}
+                  className="p-1.5 text-slate-500 hover:text-rose-600 transition-colors cursor-pointer"
+                  title="Sign Out"
+                  aria-label="Sign Out"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => {
+                  onClose();
+                  openLogin();
+                }}
+                className="p-2 text-slate-700 hover:text-[#1642D0] hover:bg-slate-100 rounded-full transition-colors cursor-pointer"
+                aria-label="Sign In"
+                title="Sign In"
+              >
+                <User className="w-5 h-5" />
+              </button>
+            )}
 
             {/* Close Icon */}
             <button

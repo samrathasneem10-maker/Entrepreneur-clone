@@ -1,33 +1,39 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { InputField } from './InputField';
 import { PasswordInput } from './PasswordInput';
 import { useAuth } from './AuthContext';
 
 export const LoginForm: React.FC = () => {
+  const router = useRouter();
   const { openSignup, loginUser } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [authError, setAuthError] = useState('');
 
   const handleGoogleSignIn = () => {
     loginUser({
       name: 'Google User',
       email: 'user@gmail.com',
+      role: 'reader',
     });
+    router.push('/dashboard/reader');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     let valid = true;
     setEmailError('');
     setPasswordError('');
+    setAuthError('');
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email.trim() || !emailRegex.test(email.trim())) {
@@ -40,11 +46,40 @@ export const LoginForm: React.FC = () => {
       valid = false;
     }
 
-    if (valid) {
-      loginUser({
-        name: email.split('@')[0],
-        email: email.trim(),
+    if (!valid) return;
+
+    setIsLoading(true);
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+          password,
+        }),
       });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        setAuthError(data.error || 'Invalid credentials. Please verify your email and password.');
+        setIsLoading(false);
+        return;
+      }
+
+      // Successful login: update context with user profile & role
+      loginUser(data.user);
+
+      // Redirect immediately to the user's specific dashboard
+      const targetUrl = data.redirectUrl || '/dashboard/reader';
+      router.push(targetUrl);
+    } catch (err: any) {
+      setAuthError('Network or server error. Please ensure database is connected.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -66,9 +101,18 @@ export const LoginForm: React.FC = () => {
           Login
         </h2>
         <p className="text-[11px] font-sans font-bold uppercase tracking-wider text-slate-400 my-0">
-          SIGN IN TO YOUR ACCOUNT
+          SIGN IN TO YOUR DASHBOARD
         </p>
       </div>
+
+      {/* Auth Error Alert Box */}
+      {authError && (
+        <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-left animate-in fade-in duration-200">
+          <p className="text-xs font-sans text-red-700 font-semibold my-0 leading-snug">
+            {authError}
+          </p>
+        </div>
+      )}
 
       {/* 3. Google Login Button */}
       <div>
@@ -118,8 +162,9 @@ export const LoginForm: React.FC = () => {
           onChange={(e) => {
             setEmail(e.target.value);
             setEmailError('');
+            setAuthError('');
           }}
-          placeholder="e.g. reader@entrepreneur.com"
+          placeholder="e.g. name@example.com"
           error={emailError}
         />
 
@@ -130,6 +175,7 @@ export const LoginForm: React.FC = () => {
           onChange={(e) => {
             setPassword(e.target.value);
             setPasswordError('');
+            setAuthError('');
           }}
           placeholder="Enter secure passcode"
           error={passwordError}
@@ -137,9 +183,17 @@ export const LoginForm: React.FC = () => {
 
         <button
           type="submit"
-          className="w-full py-3 px-4 bg-[#1642D0] hover:bg-blue-800 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-colors cursor-pointer shadow-2xs mt-2"
+          disabled={isLoading}
+          className="w-full py-3 px-4 bg-[#1642D0] hover:bg-blue-800 disabled:opacity-60 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-colors cursor-pointer shadow-2xs mt-2 flex items-center justify-center gap-2"
         >
-          SIGN IN
+          {isLoading ? (
+            <>
+              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <span>AUTHENTICATING...</span>
+            </>
+          ) : (
+            <span>SIGN IN</span>
+          )}
         </button>
       </form>
 

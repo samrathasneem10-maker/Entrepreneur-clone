@@ -1,10 +1,12 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 export interface UserProfile {
+  id?: number;
   name: string;
   email: string;
+  role: 'reader' | 'writer' | 'admin' | string;
 }
 
 export type AuthMode = 'login' | 'signup';
@@ -18,7 +20,7 @@ interface AuthContextType {
   closeAuth: () => void;
   setMode: (mode: AuthMode) => void;
   loginUser: (user: UserProfile) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -27,6 +29,33 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [mode, setMode] = useState<AuthMode>('login');
+
+  // Hydrate user session from localStorage and verify with /api/auth/me on mount
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('entrepreneur_user');
+      if (stored) {
+        setUser(JSON.parse(stored));
+      }
+    } catch {
+      // ignore
+    }
+
+    // Verify session with server
+    fetch('/api/auth/me')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.authenticated && data?.user) {
+          setUser(data.user);
+          try {
+            localStorage.setItem('entrepreneur_user', JSON.stringify(data.user));
+          } catch {
+            // ignore
+          }
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const openLogin = () => {
     setMode('login');
@@ -45,10 +74,21 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const loginUser = (profile: UserProfile) => {
     setUser(profile);
     setIsOpen(false);
+    try {
+      localStorage.setItem('entrepreneur_user', JSON.stringify(profile));
+    } catch {
+      // ignore
+    }
   };
 
-  const logout = () => {
+  const logout = async () => {
     setUser(null);
+    try {
+      localStorage.removeItem('entrepreneur_user');
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch {
+      // ignore
+    }
   };
 
   return (

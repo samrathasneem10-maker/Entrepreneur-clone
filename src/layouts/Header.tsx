@@ -148,14 +148,21 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
               {/* Sign In / User Profile */}
               {user ? (
                 <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1.5 p-1.5 text-[#020618] text-xs sm:text-[13px] font-bold">
-                    <div className="w-6 h-6 rounded-full bg-[#1642D0] text-white flex items-center justify-center text-[10px] font-extrabold uppercase">
+                  <Link
+                    href={user.role ? `/dashboard/${user.role}` : '/dashboard'}
+                    className="flex items-center gap-1.5 p-1.5 text-[#020618] hover:text-[#1642D0] text-xs sm:text-[13px] font-bold group transition-colors cursor-pointer"
+                    title={`Go to ${user.role} dashboard`}
+                  >
+                    <div className="w-6 h-6 rounded-full bg-[#1642D0] text-white flex items-center justify-center text-[10px] font-extrabold uppercase group-hover:bg-[#1132a8] transition-colors">
                       {user.name.charAt(0)}
                     </div>
                     <span className="hidden sm:inline truncate max-w-[100px]">
                       {user.name}
                     </span>
-                  </div>
+                    <span className="hidden md:inline text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
+                      {user.role}
+                    </span>
+                  </Link>
                   <button
                     onClick={logout}
                     className="p-1 text-slate-500 hover:text-rose-600 transition-colors cursor-pointer"
