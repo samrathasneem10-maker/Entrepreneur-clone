@@ -54,6 +54,7 @@ export const SignupForm: React.FC = () => {
     loginUser({
       name: 'Google User',
       email: 'user@gmail.com',
+      role: 'reader',
     });
   };
 
@@ -74,6 +75,7 @@ export const SignupForm: React.FC = () => {
       loginUser({
         name: name.trim(),
         email: email.trim(),
+        role: 'reader',
       });
     }
   };

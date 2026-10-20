@@ -7,6 +7,7 @@ export interface Article {
     name: string;
     avatar?: string;
     title?: string;
+    bio?: string;
   };
   date?: string;
   readTime?: string;
