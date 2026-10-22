@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
-import { X, Search, User, LogOut, ChevronDown, ChevronRight, Layers } from 'lucide-react';
+import { X, Search, User, LogOut, ChevronDown, ChevronRight } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthContext';
 import { MAIN_CATEGORIES } from '@/data/categoriesData';
 
@@ -13,7 +13,7 @@ interface NavDrawerProps {
   onOpenSearch?: () => void;
 }
 
-export const NavDrawer: React.FC<NavDrawerProps> = ({ isOpen, onClose, onOpenSearch }) => {
+export const NavDrawer: React.FC<NavDrawerProps> = ({ isOpen, onClose }) => {
   const { user, openLogin, logout } = useAuth();
   const [mounted, setMounted] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState<Record<number, boolean>>({});
@@ -66,9 +66,6 @@ export const NavDrawer: React.FC<NavDrawerProps> = ({ isOpen, onClose, onOpenSea
     }).filter(Boolean) as typeof MAIN_CATEGORIES;
   }, [filterQuery]);
 
-  // Total counts
-  const totalSubcategories = MAIN_CATEGORIES.reduce((acc, cat) => acc + cat.subcategories.length, 0);
-
   if (!isOpen || !mounted) return null;
 
   const drawerContent = (
@@ -79,28 +76,20 @@ export const NavDrawer: React.FC<NavDrawerProps> = ({ isOpen, onClose, onOpenSea
       {/* Drawer Container: pinned to full viewport height, non-scrolling shell */}
       <div className="relative bg-white w-full max-w-sm sm:max-w-md h-full max-h-screen flex flex-col shadow-2xl border-r border-slate-200 z-10 animate-in slide-in-from-left duration-300">
         
-        {/* Header inside Drawer: Logo, Search Icon, Login Icon, Close Icon (Pinned shrink-0) */}
-        <div className="p-4 sm:p-5 border-b border-slate-200 flex items-center justify-between shrink-0 bg-white">
-          <div className="flex items-center gap-2">
-            <span className="font-serif font-black text-2xl tracking-tighter text-slate-950">
+        {/* Header inside Drawer: Centered Entrepreneur Logo, User & Close controls (Search icon removed per user marking) */}
+        <div className="relative p-4 sm:p-5 border-b border-slate-200 flex items-center justify-between shrink-0 bg-white h-16">
+          {/* Left placeholder to balance right buttons */}
+          <div className="w-16 shrink-0" />
+
+          {/* Centered Entrepreneur Logo (middle of the top) */}
+          <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center select-none pointer-events-none">
+            <span className="font-serif font-black text-2xl tracking-tighter text-slate-950 whitespace-nowrap">
               Entrepreneur<span className="text-red-700 font-sans text-xs align-super ml-0.5">®</span>
             </span>
           </div>
 
-          <div className="flex items-center gap-1 sm:gap-2">
-            {/* Search Icon */}
-            <button
-              onClick={() => {
-                onClose();
-                if (onOpenSearch) onOpenSearch();
-              }}
-              className="p-2 text-slate-700 hover:text-[#1642D0] hover:bg-slate-100 rounded-full transition-colors cursor-pointer"
-              aria-label="Search"
-              title="Search"
-            >
-              <Search className="w-5 h-5" />
-            </button>
-
+          {/* Right: User/Profile + Close Icon */}
+          <div className="flex items-center gap-1 sm:gap-2 z-10 shrink-0">
             {/* Login / User Profile Icon */}
             {user ? (
               <div className="flex items-center gap-1">
@@ -151,17 +140,8 @@ export const NavDrawer: React.FC<NavDrawerProps> = ({ isOpen, onClose, onOpenSea
           </div>
         </div>
 
-        {/* Quick Filter Box & Stats Indicator */}
+        {/* Quick Filter Box (Stats indicator row removed as marked in user image) */}
         <div className="px-5 py-3 border-b border-slate-100 bg-slate-50 shrink-0">
-          <div className="flex items-center justify-between text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">
-            <span className="flex items-center gap-1.5">
-              <Layers className="w-3.5 h-3.5 text-[#1642D0]" />
-              20 Main Categories
-            </span>
-            <span className="text-slate-400">
-              {totalSubcategories} Subcategories
-            </span>
-          </div>
           <div className="relative">
             <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
