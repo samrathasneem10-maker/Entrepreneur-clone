@@ -81,24 +81,14 @@ export const SignupForm: React.FC = () => {
   };
 
   return (
-    <div className="space-y-5 text-center">
-      {/* 1. Entrepreneur Logo */}
-      <div className="flex justify-center items-baseline pt-1 select-none">
-        <span className="font-logo font-black text-3xl sm:text-4xl tracking-[-0.04em] text-[#000000] leading-none">
-          Entrepreneur
-        </span>
-        <span className="text-[#000000] text-[10px] font-sans font-bold ml-[1px] leading-none align-baseline">
-          ®
-        </span>
-      </div>
-
+    <div className="space-y-5 text-center pt-1">
       {/* 2. Title & Subtitle */}
-      <div className="space-y-1 text-left">
-        <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#020618] my-0 leading-tight">
-          Sign Up
+      <div className="space-y-1 text-center">
+        <h2 className="text-2xl sm:text-[25px] font-sans font-bold text-slate-800 my-0 leading-tight">
+          Create an Account
         </h2>
-        <p className="text-[11px] font-sans font-bold uppercase tracking-wider text-slate-400 my-0">
-          CREATE YOUR ACCOUNT
+        <p className="text-xs sm:text-[13px] text-slate-500 my-0">
+          Join Entrepreneur for exclusive access and daily insights
         </p>
       </div>
 

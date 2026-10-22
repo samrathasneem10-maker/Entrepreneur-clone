@@ -2,21 +2,22 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { InputField } from './InputField';
-import { PasswordInput } from './PasswordInput';
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from './AuthContext';
 
 export const LoginForm: React.FC = () => {
   const router = useRouter();
-  const { openSignup, loginUser } = useAuth();
+  const { openSignup, loginUser, closeAuth } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [authError, setAuthError] = useState('');
+  const [forgotSent, setForgotSent] = useState(false);
 
   const handleGoogleSignIn = () => {
     loginUser({
@@ -24,7 +25,17 @@ export const LoginForm: React.FC = () => {
       email: 'user@gmail.com',
       role: 'reader',
     });
+    closeAuth();
     router.push('/dashboard/reader');
+  };
+
+  const handleForgotPassword = () => {
+    if (!email.trim()) {
+      setEmailError('Please enter your email above to reset password.');
+      return;
+    }
+    setForgotSent(true);
+    setTimeout(() => setForgotSent(false), 5000);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -72,6 +83,7 @@ export const LoginForm: React.FC = () => {
 
       // Successful login: update context with user profile & role
       loginUser(data.user);
+      closeAuth();
 
       // Redirect immediately to the user's specific dashboard
       const targetUrl = data.redirectUrl || '/dashboard/reader';
@@ -84,42 +96,52 @@ export const LoginForm: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 text-center">
-      {/* 1. Entrepreneur Logo */}
-      <div className="flex justify-center items-baseline pt-2 select-none">
-        <span className="font-logo font-black text-3xl sm:text-4xl tracking-[-0.04em] text-[#000000] leading-none">
-          Entrepreneur
-        </span>
-        <span className="text-[#000000] text-[10px] font-sans font-bold ml-[1px] leading-none align-baseline">
-          ®
-        </span>
+    <div className="w-full flex flex-col pt-1">
+      {/* 1. Title */}
+      <h2 className="text-2xl sm:text-[25px] font-sans font-bold text-slate-800 text-center tracking-tight my-0">
+        Login to Entrepreneur
+      </h2>
+
+      {/* 2. Subtitle */}
+      <p className="text-xs sm:text-[13px] text-slate-500 text-center mt-2.5 mb-1 max-w-[280px] mx-auto leading-relaxed font-normal">
+        Sign into your account via email or using a social account
+      </p>
+
+      {/* 3. I don't have an account link */}
+      <div className="text-center mb-5 mt-1">
+        <button
+          type="button"
+          onClick={openSignup}
+          className="text-xs sm:text-[13px] text-[#1642D0] hover:underline font-normal cursor-pointer"
+        >
+          I don&apos;t have an account
+        </button>
       </div>
 
-      {/* 2. Title & Subtitle */}
-      <div className="space-y-1 text-left">
-        <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#020618] my-0 leading-tight">
-          Login
-        </h2>
-        <p className="text-[11px] font-sans font-bold uppercase tracking-wider text-slate-400 my-0">
-          SIGN IN TO YOUR DASHBOARD
-        </p>
-      </div>
-
-      {/* Auth Error Alert Box */}
+      {/* Auth Error Banner */}
       {authError && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-left animate-in fade-in duration-200">
-          <p className="text-xs font-sans text-red-700 font-semibold my-0 leading-snug">
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md text-left animate-in fade-in duration-200">
+          <p className="text-xs font-sans text-red-700 font-medium my-0 leading-snug">
             {authError}
           </p>
         </div>
       )}
 
-      {/* 3. Google Login Button */}
-      <div>
+      {/* Forgot Password Success Banner */}
+      {forgotSent && (
+        <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 rounded-md text-left animate-in fade-in duration-200">
+          <p className="text-xs font-sans text-emerald-800 font-medium my-0 leading-snug">
+            Password reset instructions have been dispatched to {email}.
+          </p>
+        </div>
+      )}
+
+      {/* 4. Social Sign In (Facebook removed per red cross-out, Google kept) */}
+      <div className="mb-5">
         <button
           type="button"
           onClick={handleGoogleSignIn}
-          className="w-full py-2.5 px-4 bg-white hover:bg-slate-50 border border-slate-300/90 rounded-xl text-xs sm:text-sm font-sans font-bold text-slate-700 transition-colors flex items-center justify-center gap-3 cursor-pointer shadow-2xs"
+          className="w-full py-2.5 px-4 bg-white hover:bg-slate-50 border border-slate-200 rounded-md text-xs sm:text-[13px] font-sans font-normal text-slate-600 transition-colors flex items-center justify-center gap-2.5 cursor-pointer shadow-2xs"
         >
           {/* Multi-colored Google Icon */}
           <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24">
@@ -140,73 +162,110 @@ export const LoginForm: React.FC = () => {
               d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
             />
           </svg>
-          <span>Continue with Google</span>
+          <span>Sign in with Google</span>
         </button>
       </div>
 
-      {/* 4. Divider */}
-      <div className="relative flex items-center justify-center">
-        <div className="border-t border-slate-200/90 w-full" />
-        <span className="bg-white px-3 text-[10px] font-sans font-bold uppercase tracking-widest text-slate-400 absolute">
-          OR EMAIL CREDENTIALS
-        </span>
+      {/* Subtle Divider (or-text removed per red cross-out annotation) */}
+      <div className="relative flex items-center justify-center mb-5">
+        <div className="border-t border-slate-200 w-full" />
       </div>
 
-      {/* 5. Form */}
-      <form onSubmit={handleSubmit} className="space-y-4 pt-1">
-        <InputField
-          id="login-email"
-          label="BUSINESS EMAIL"
-          type="email"
-          value={email}
-          onChange={(e) => {
-            setEmail(e.target.value);
-            setEmailError('');
-            setAuthError('');
-          }}
-          placeholder="e.g. name@example.com"
-          error={emailError}
-        />
+      {/* 5. Email & Password Form */}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Email Field */}
+        <div className="flex flex-col text-left">
+          <label
+            htmlFor="modal-login-email"
+            className="flex items-center gap-1.5 text-xs sm:text-[13px] font-semibold text-slate-800 mb-1.5"
+          >
+            <Mail className="w-3.5 h-3.5 text-slate-800 stroke-[2.2]" />
+            <span>Email</span>
+          </label>
+          <input
+            id="modal-login-email"
+            type="email"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setEmailError('');
+              setAuthError('');
+            }}
+            placeholder=""
+            className="w-full px-3.5 py-2.5 bg-[#f8fafc] border border-slate-300 rounded-md text-sm text-slate-900 focus:bg-white focus:outline-none focus:border-[#1642D0] focus:ring-1 focus:ring-[#1642D0] transition-colors"
+          />
+          {emailError && (
+            <span className="text-[11px] text-red-600 mt-1 font-medium">{emailError}</span>
+          )}
+        </div>
 
-        <PasswordInput
-          id="login-password"
-          label="PASSWORD"
-          value={password}
-          onChange={(e) => {
-            setPassword(e.target.value);
-            setPasswordError('');
-            setAuthError('');
-          }}
-          placeholder="Enter secure passcode"
-          error={passwordError}
-        />
+        {/* Password Field */}
+        <div className="flex flex-col text-left">
+          <label
+            htmlFor="modal-login-password"
+            className="flex items-center gap-1.5 text-xs sm:text-[13px] font-semibold text-slate-800 mb-1.5"
+          >
+            <Lock className="w-3.5 h-3.5 text-slate-800 stroke-[2.2]" />
+            <span>Password</span>
+          </label>
+          <div className="relative w-full">
+            <input
+              id="modal-login-password"
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setPasswordError('');
+                setAuthError('');
+              }}
+              placeholder=""
+              className="w-full px-3.5 py-2.5 pr-10 bg-[#f8fafc] border border-slate-300 rounded-md text-sm text-slate-900 focus:bg-white focus:outline-none focus:border-[#1642D0] focus:ring-1 focus:ring-[#1642D0] transition-colors"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors p-1 cursor-pointer"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? (
+                <EyeOff className="w-4 h-4" />
+              ) : (
+                <Eye className="w-4 h-4" />
+              )}
+            </button>
+          </div>
+          {passwordError && (
+            <span className="text-[11px] text-red-600 mt-1 font-medium">{passwordError}</span>
+          )}
+        </div>
 
+        {/* Forgot Password Row (Stay logged in is removed per red cross-out) */}
+        <div className="flex items-center justify-end pt-0.5">
+          <button
+            type="button"
+            onClick={handleForgotPassword}
+            className="text-xs sm:text-[13px] text-[#1642D0] hover:underline font-normal cursor-pointer"
+          >
+            I forgot my password
+          </button>
+        </div>
+
+        {/* Yellow Login Button matching reference image (#fde047) */}
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full py-3 px-4 bg-[#1642D0] hover:bg-blue-800 disabled:opacity-60 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-colors cursor-pointer shadow-2xs mt-2 flex items-center justify-center gap-2"
+          className="w-full py-3 px-4 bg-[#fde047] hover:bg-[#facc15] active:bg-[#eab308] disabled:opacity-60 text-slate-950 font-bold text-sm sm:text-base rounded-md transition-colors cursor-pointer shadow-xs mt-3 flex items-center justify-center gap-2"
         >
           {isLoading ? (
             <>
-              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              <span>AUTHENTICATING...</span>
+              <span className="w-4 h-4 border-2 border-slate-900 border-t-transparent rounded-full animate-spin" />
+              <span>Logging in...</span>
             </>
           ) : (
-            <span>SIGN IN</span>
+            <span>Login</span>
           )}
         </button>
       </form>
-
-      {/* 6. Switch to Signup Link */}
-      <div className="pt-2">
-        <button
-          type="button"
-          onClick={openSignup}
-          className="text-xs font-sans font-bold text-[#B91C1C] hover:text-red-800 transition-colors cursor-pointer"
-        >
-          New to Entrepreneur? Create secure account
-        </button>
-      </div>
     </div>
   );
 };
