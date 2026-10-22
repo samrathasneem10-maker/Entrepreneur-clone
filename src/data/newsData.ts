@@ -52,6 +52,119 @@ export const MARKET_TICKERS: MarketTickerItem[] = [
   { symbol: 'GOLD', name: 'Gold', price: '$2,321.10', change: '+12.40', changePercent: '+0.54%', isPositive: true },
 ];
 
+export const HERO_GROWTH_DECISION_ARTICLE: Article = {
+  id: 'this-is-the-growth-decision-founders-shouldnt-wait-to-make',
+  slug: 'this-is-the-growth-decision-founders-shouldnt-wait-to-make',
+  title: "This Is the Growth Decision Founders Shouldn't Wait to Make",
+  category: 'Building a Business',
+  author: {
+    name: 'Scott Smrkovski',
+    avatar: '/images/home-hero/author-scott.png',
+    title: 'Executive Contributor',
+  },
+  date: 'Oct 21, 2026',
+  readTime: '8 min read',
+  excerpt: "The right growth decision at the right time can unlock massive opportunities. Here's what founders need to consider before it's too late.",
+  imageUrl: '/images/home-hero/hero-growth-decision.png',
+};
+
+export const UBER_DRIVER_BONUSES_ARTICLE: Article = {
+  id: 'uber-is-offering-big-driver-bonuses-ahead-of-holiday-rush',
+  slug: 'uber-is-offering-big-driver-bonuses-ahead-of-holiday-rush',
+  title: 'Uber Is Offering Big Driver Bonuses Ahead of Holiday Rush',
+  category: 'Business News',
+  author: {
+    name: 'Sherin Shibu',
+    avatar: '/images/author-sherin.png',
+    title: 'Entrepreneur Staff',
+  },
+  date: 'Oct 21, 2026',
+  readTime: '5 min read',
+  excerpt: 'Uber announces incentives and seasonal bonus packages for drivers preparing for record holiday transportation demand.',
+  imageUrl: '/images/home-hero/uber-bonuses.png',
+};
+
+export const HOMEPAGE_LATEST_STREAM: Article[] = [
+  {
+    id: 'my-3-step-process-for-picking-or-nixing-a-co-founder',
+    slug: 'my-3-step-process-for-picking-or-nixing-a-co-founder',
+    title: 'My 3-Step Process for Picking (or Nixing) a Co-Founder, After 30 Years of Starting Companies',
+    category: 'BUILDING A BUSINESS',
+    author: { name: 'Sherin Shibu', avatar: '/images/author-sherin.png' },
+    date: '2 hours ago',
+    imageUrl: '/images/home-hero/latest-1-cofounder.png',
+  },
+  {
+    id: '7-lessons-every-founder-learns-the-hard-way',
+    slug: '7-lessons-every-founder-learns-the-hard-way',
+    title: '7 Lessons Every Founder Learns the Hard Way',
+    category: 'BUILDING A BUSINESS',
+    author: { name: 'Sherin Shibu', avatar: '/images/author-sherin.png' },
+    date: '4 hours ago',
+    imageUrl: '/images/home-hero/latest-2-lightbulb.png',
+  },
+  {
+    id: 'how-to-escape-ai-brain-fry-and-prioritize-peace-over-productivity',
+    slug: 'how-to-escape-ai-brain-fry-and-prioritize-peace-over-productivity',
+    title: 'How to Escape AI Brain Fry and Prioritize Peace Over Productivity',
+    category: 'BUSINESS NEWS',
+    author: { name: 'Sherin Shibu', avatar: '/images/author-sherin.png' },
+    date: '6 hours ago',
+    imageUrl: '/images/home-hero/latest-3-ai-brain-fry.png',
+  },
+  {
+    id: 'your-financial-statements-saw-the-cash-crunch-coming-did-you',
+    slug: 'your-financial-statements-saw-the-cash-crunch-coming-did-you',
+    title: 'Your Financial Statements Saw the Cash Crunch Coming. Did You?',
+    category: 'BUSINESS ACCOUNTING',
+    author: { name: 'Sherin Shibu', avatar: '/images/author-sherin.png' },
+    date: '8 hours ago',
+    imageUrl: '/images/home-hero/latest-4-financials.png',
+  },
+  {
+    id: 'global-markets-steady-as-investors-eye-year-end-growth',
+    slug: 'global-markets-steady-as-investors-eye-year-end-growth',
+    title: 'Global Markets Steady as Investors Eye Year-End Growth',
+    category: 'GLOBAL BUSINESS',
+    author: { name: 'Sherin Shibu', avatar: '/images/author-sherin.png' },
+    date: '10 hours ago',
+    imageUrl: '/images/home-hero/latest-5-global-markets.png',
+  },
+];
+
+export const HOMEPAGE_RIGHT_STREAM: Article[] = [
+  {
+    id: 'companies-are-rethinking-workplace-culture-in-a-hybrid-world',
+    slug: 'companies-are-rethinking-workplace-culture-in-a-hybrid-world',
+    title: 'Companies Are Rethinking Workplace Culture in a Hybrid World',
+    category: 'BUSINESS NEWS',
+    author: { name: 'Sherin Shibu', avatar: '/images/author-sherin.png' },
+    date: 'Oct 21, 2026',
+    readTime: '6 min read',
+    imageUrl: '/images/home-hero/right-1-hybrid-work.png',
+  },
+  {
+    id: 'global-markets-steady-as-investors-eye-year-end-growth-2',
+    slug: 'global-markets-steady-as-investors-eye-year-end-growth',
+    title: 'Global Markets Steady as Investors Eye Year-End Growth',
+    category: 'GLOBAL BUSINESS',
+    author: { name: 'Sherin Shibu', avatar: '/images/author-sherin.png' },
+    date: 'Oct 21, 2026',
+    readTime: '4 min read',
+    imageUrl: '/images/home-hero/right-2-global-markets.png',
+  },
+  {
+    id: 'ai-is-reshaping-the-way-startups-build-products',
+    slug: 'ai-is-reshaping-the-way-startups-build-products',
+    title: 'AI Is Reshaping the Way Startups Build Products',
+    category: 'TECH & INNOVATION',
+    author: { name: 'Sherin Shibu', avatar: '/images/author-sherin.png' },
+    date: 'Oct 21, 2026',
+    readTime: '5 min read',
+    imageUrl: '/images/home-hero/right-3-ai-startups.png',
+  },
+];
+
 export const HERO_ARTICLE: Article = {
   id: 'hero-1',
   title: "I've Mentored People for 20 Years. I Use These 4 Steps to Help Them Advance",

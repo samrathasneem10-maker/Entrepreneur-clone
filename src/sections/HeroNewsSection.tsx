@@ -1,79 +1,314 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { ArticleCard } from '@/components/ArticleCard';
-import { HERO_ARTICLE, LATEST_ARTICLES, SECONDARY_FEATURED } from '@/data/newsData';
+import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  HERO_GROWTH_DECISION_ARTICLE,
+  UBER_DRIVER_BONUSES_ARTICLE,
+  HOMEPAGE_LATEST_STREAM,
+  HOMEPAGE_RIGHT_STREAM,
+  Article,
+} from '@/data/newsData';
+
+const HERO_SLIDES: Article[] = [
+  HERO_GROWTH_DECISION_ARTICLE,
+  {
+    id: 'solopreneur-playbook-from-zero-to-eight-figures',
+    slug: 'solopreneur-playbook-from-zero-to-eight-figures',
+    title: 'The Solopreneur Playbook: Scaling to Eight Figures Without Burning Out',
+    category: 'Startups & Entrepreneurship',
+    author: {
+      name: 'Scott Smrkovski',
+      avatar: '/images/home-hero/author-scott.png',
+      title: 'Executive Contributor',
+    },
+    date: 'Oct 20, 2026',
+    readTime: '6 min read',
+    excerpt: 'Disciplined capital efficiency, direct customer relationships, and lean systems outlast venture-fueled hyper-growth hype.',
+    imageUrl: 'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1200&auto=format&fit=crop',
+  },
+  {
+    id: 'how-decisive-executive-frameworks-enable-rapid-growth',
+    slug: 'how-decisive-executive-frameworks-enable-rapid-growth',
+    title: 'How Decisive Executive Frameworks Enable Rapid Strategic Transformation',
+    category: 'Leadership & Management',
+    author: {
+      name: 'Scott Smrkovski',
+      avatar: '/images/home-hero/author-scott.png',
+      title: 'Executive Contributor',
+    },
+    date: 'Oct 19, 2026',
+    readTime: '7 min read',
+    excerpt: 'Why top CEOs distinguish reversible two-way doors from company-defining commitments during high-stakes pivots.',
+    imageUrl: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=1200&auto=format&fit=crop',
+  },
+  {
+    id: 'autonomous-ai-agents-transforming-enterprise',
+    slug: 'autonomous-ai-agents-transforming-enterprise',
+    title: 'Autonomous AI Agents Are Transforming Daily Enterprise Workflows',
+    category: 'Technology & Super Intelligence',
+    author: {
+      name: 'Scott Smrkovski',
+      avatar: '/images/home-hero/author-scott.png',
+      title: 'Executive Contributor',
+    },
+    date: 'Oct 18, 2026',
+    readTime: '5 min read',
+    excerpt: 'How leading technology enterprises multiply team velocity and eliminate operational bottlenecks with custom AI models.',
+    imageUrl: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=1200&auto=format&fit=crop',
+  },
+];
 
 export const HeroNewsSection: React.FC = () => {
-  return (
-    <section className="bg-white py-6 md:py-8 w-full">
-      <div className="w-full">
-        
-        {/* Main 3-Column Layout: Left (22%), Center (50%), Right (28%) */}
-        <div className="flex flex-col md:flex-wrap md:flex-row xl:flex-nowrap gap-6 xl:gap-7 items-stretch">
-          
-          {/* 1. Left Column: Latest News Stream (xl:w-[22%] order-2 xl:order-1) */}
-          <div className="w-full md:w-4/12 xl:w-[22%] order-2 xl:order-1 m-0 xl:pr-5 border-t xl:border-t-0 border-slate-200 pt-6 xl:pt-0 flex flex-col justify-between">
-            
-            {/* Content Heading */}
-            <div className="mb-1 pb-1">
-              <div className="flex items-center justify-between">
-                <h2 className="my-0 flex text-[#020618] font-extrabold text-2xl lg:text-[28px] font-serif leading-none">
-                  <Link href="/latest" className="hover:underline">Latest</Link>
-                </h2>
+  const [activeSlide, setActiveSlide] = useState(0);
 
-                <Link
-                  href="/latest"
-                  aria-label="Read more about Latest"
-                  className="flex items-center no-underline hover:underline text-xs font-extrabold text-[#020618] uppercase tracking-wider ml-4"
-                >
-                  See All
-                  <svg aria-hidden="true" fill="currentColor" className="w-5 h-5 fill-current ml-1 text-[#193CB8]" viewBox="0 0 24 24">
-                    <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12s4.48 10 10 10 10-4.48 10-10m-10 1H8v-2h4V8l4 4-4 4z"/>
-                  </svg>
+  const prevSlide = () => {
+    setActiveSlide((prev) => (prev === 0 ? HERO_SLIDES.length - 1 : prev - 1));
+  };
+
+  const nextSlide = () => {
+    setActiveSlide((prev) => (prev === HERO_SLIDES.length - 1 ? 0 : prev + 1));
+  };
+
+  const currentHero = HERO_SLIDES[activeSlide];
+
+  return (
+    <section className="bg-white pt-4 pb-6 sm:pb-8 w-full">
+      <div className="w-full">
+        {/* Main 3-Column Layout: Left (26%), Center (46%), Right (28%) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 xl:gap-6 items-stretch">
+          
+          {/* ========================================================= */}
+          {/* 1. LEFT COLUMN: Latest (approx 26% width)                */}
+          {/* ========================================================= */}
+          <div className="lg:col-span-3 flex flex-col justify-between">
+            {/* Header: Latest + See All [->] */}
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <h2 className="font-serif font-black text-2xl sm:text-[28px] text-[#020618] leading-none my-0">
+                <Link href="/latest" className="hover:underline">
+                  Latest
                 </Link>
-              </div>
+              </h2>
+
+              <Link
+                href="/latest"
+                className="flex items-center gap-1.5 text-xs font-bold text-[#020618] hover:text-[#1642D0] transition-colors group"
+                aria-label="See all latest articles"
+              >
+                <span>See All</span>
+                <div className="w-5 h-5 bg-[#1642D0] group-hover:bg-blue-800 text-white rounded-xs flex items-center justify-center transition-colors">
+                  <ArrowRight className="w-3 h-3 stroke-[2.5]" />
+                </div>
+              </Link>
             </div>
 
-            {/* Stream List */}
-            <div className="flex-1 flex flex-col justify-between">
-              {LATEST_ARTICLES.slice(0, 6).map((article) => (
-                <ArticleCard
-                  key={article.id}
-                  article={article}
-                  variant="compact"
-                  showMetadata={false}
-                />
+            {/* List of 5 Articles */}
+            <div className="divide-y divide-slate-100 flex-1 flex flex-col justify-between pt-1">
+              {HOMEPAGE_LATEST_STREAM.map((art, index) => (
+                <article
+                  key={art.id}
+                  className={`py-3 first:pt-2 last:pb-0 flex items-start justify-between gap-3 group`}
+                >
+                  <div className="flex-1 min-w-0 pr-1">
+                    <span className="text-[10px] font-bold text-[#1642D0] uppercase tracking-wider block font-sans mb-1">
+                      {art.category}
+                    </span>
+                    <h3 className="font-serif font-bold text-[12.5px] sm:text-[13px] leading-snug text-[#020618] group-hover:underline line-clamp-3 my-0">
+                      <Link href={`/article/${art.slug || art.id}`}>
+                        {art.title}
+                      </Link>
+                    </h3>
+                    <span className="text-[11px] text-slate-400 font-sans block mt-1.5">
+                      {art.date}
+                    </span>
+                  </div>
+
+                  <Link
+                    href={`/article/${art.slug || art.id}`}
+                    className="w-[84px] h-[64px] sm:w-[90px] sm:h-[68px] shrink-0 rounded-xs overflow-hidden bg-slate-100 block cursor-pointer"
+                  >
+                    <img
+                      src={art.imageUrl}
+                      alt={art.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </Link>
+                </article>
               ))}
             </div>
           </div>
 
-          {/* 2. Center Column: Main Featured Hero Box (xl:w-[50%] order-1 xl:order-2) */}
-          <div className="w-full md:w-8/12 xl:w-[50%] order-1 xl:order-2 m-0 md:pr-3 xl:px-2">
-            <ArticleCard
-              article={HERO_ARTICLE}
-              variant="hero"
-              showExcerpt={false}
-              showAuthor={true}
-              showMetadata={false}
-            />
+          {/* ========================================================= */}
+          {/* 2. CENTER COLUMN: Main Featured Hero Card (approx 46%)   */}
+          {/* ========================================================= */}
+          <div className="lg:col-span-6 flex flex-col">
+            <div className="relative rounded-xs overflow-hidden bg-[#070b19] text-white flex flex-col justify-end min-h-[480px] sm:min-h-[520px] lg:min-h-[550px] shadow-sm group">
+              {/* Background Image */}
+              <img
+                src={currentHero.imageUrl || '/images/home-hero/hero-growth-decision.png'}
+                alt={currentHero.title}
+                className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-[1.01] transition-transform duration-500"
+              />
+
+              {/* Gradient Dark Overlay to ensure perfect text contrast like reference screenshot */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/75 to-transparent" />
+
+              {/* Hero Content Overlay */}
+              <div className="relative z-10 p-5 sm:p-7 flex flex-col justify-end">
+                {/* Category Badge */}
+                <Link
+                  href="/topic/startups-entrepreneurship"
+                  className="inline-block bg-[#1642D0] hover:bg-blue-700 text-white text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-xs mb-2.5 w-fit font-sans transition-colors"
+                >
+                  {currentHero.category}
+                </Link>
+
+                {/* Title */}
+                <h1 className="font-serif font-bold text-2xl sm:text-3xl lg:text-[34px] xl:text-[36px] leading-[1.18] tracking-tight text-white my-1.5">
+                  <Link
+                    href={`/article/${currentHero.slug || currentHero.id}`}
+                    className="hover:underline"
+                  >
+                    {currentHero.title}
+                  </Link>
+                </h1>
+
+                {/* Excerpt */}
+                {currentHero.excerpt && (
+                  <p className="font-sans text-xs sm:text-sm text-slate-200 leading-relaxed mt-1.5 max-w-xl my-0 line-clamp-2">
+                    {currentHero.excerpt}
+                  </p>
+                )}
+
+                {/* Author Info */}
+                <div className="flex items-center gap-2.5 mt-3.5">
+                  <img
+                    src={currentHero.author?.avatar || '/images/home-hero/author-scott.png'}
+                    alt={currentHero.author?.name || 'Author'}
+                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover border border-slate-500"
+                  />
+                  <div className="text-xs font-sans">
+                    <span className="font-bold text-white block">
+                      By {currentHero.author?.name || 'Scott Smrkovski'}
+                    </span>
+                    <span className="text-slate-300 text-[11px]">
+                      {currentHero.date} • {currentHero.readTime || '8 min read'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Carousel Controls Row */}
+                <div className="flex items-center justify-between pt-4 mt-3 border-t border-white/15">
+                  {/* Indicator Bars */}
+                  <div className="flex items-center gap-1.5">
+                    {HERO_SLIDES.map((_, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setActiveSlide(idx)}
+                        aria-label={`Go to slide ${idx + 1}`}
+                        className={`h-1 rounded-full transition-all cursor-pointer ${
+                          activeSlide === idx
+                            ? 'w-8 bg-[#1642D0]'
+                            : 'w-7 bg-white/40 hover:bg-white/60'
+                        }`}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Prev / Next Arrows */}
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={prevSlide}
+                      aria-label="Previous slide"
+                      className="w-7 h-7 sm:w-8 sm:h-8 rounded-xs border border-white/30 hover:border-white/80 bg-black/40 hover:bg-black/70 text-white flex items-center justify-center transition-colors cursor-pointer"
+                    >
+                      <ChevronLeft className="w-4 h-4 stroke-[2]" />
+                    </button>
+                    <button
+                      onClick={nextSlide}
+                      aria-label="Next slide"
+                      className="w-7 h-7 sm:w-8 sm:h-8 rounded-xs border border-white/30 hover:border-white/80 bg-black/40 hover:bg-black/70 text-white flex items-center justify-center transition-colors cursor-pointer"
+                    >
+                      <ChevronRight className="w-4 h-4 stroke-[2]" />
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
           </div>
 
-          {/* 3. Right Column: Secondary Featured Stories (xl:w-[28%] order-3) */}
-          <div className="w-full xl:w-[28%] order-3 m-0 border-t xl:border-t-0 border-slate-200 pt-6 xl:pt-0 xl:pl-5 space-y-6">
-            {SECONDARY_FEATURED.map((article) => (
-              <div key={article.id} className="border-b border-slate-200/80 pb-5">
-                <ArticleCard
-                  article={article}
-                  variant="featured"
-                  showExcerpt={false}
-                  showMetadata={false}
+          {/* ========================================================= */}
+          {/* 3. RIGHT COLUMN: Top Uber Card + 3 Articles (approx 28%)  */}
+          {/* ========================================================= */}
+          <div className="lg:col-span-3 flex flex-col justify-between space-y-4">
+            
+            {/* Top Featured Card: Uber Driver Bonuses */}
+            <article className="rounded-xs overflow-hidden bg-[#070b19] text-white group cursor-pointer flex flex-col shadow-xs">
+              <Link
+                href={`/article/${UBER_DRIVER_BONUSES_ARTICLE.slug}`}
+                className="w-full aspect-[16/9] overflow-hidden bg-slate-900 block"
+              >
+                <img
+                  src={UBER_DRIVER_BONUSES_ARTICLE.imageUrl}
+                  alt={UBER_DRIVER_BONUSES_ARTICLE.title}
+                  className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
                 />
+              </Link>
+              <div className="p-3.5 pb-4">
+                <span className="inline-block bg-[#1642D0] text-white text-[9.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-xs w-fit font-sans">
+                  {UBER_DRIVER_BONUSES_ARTICLE.category}
+                </span>
+                <h3 className="font-serif font-bold text-base sm:text-[17px] leading-snug text-white group-hover:underline mt-1.5 my-0">
+                  <Link href={`/article/${UBER_DRIVER_BONUSES_ARTICLE.slug}`}>
+                    {UBER_DRIVER_BONUSES_ARTICLE.title}
+                  </Link>
+                </h3>
+                <span className="text-[11px] text-slate-400 font-sans block mt-1.5">
+                  {UBER_DRIVER_BONUSES_ARTICLE.date} • {UBER_DRIVER_BONUSES_ARTICLE.readTime}
+                </span>
               </div>
-            ))}
+            </article>
+
+            {/* Bottom 3 Horizontal Articles */}
+            <div className="divide-y divide-slate-100 flex-1 flex flex-col justify-between pt-1">
+              {HOMEPAGE_RIGHT_STREAM.map((art) => (
+                <article
+                  key={art.id}
+                  className="py-2.5 first:pt-1 last:pb-0 flex items-start justify-between gap-3 group"
+                >
+                  <div className="flex-1 min-w-0 pr-1">
+                    <span className="text-[10px] font-bold text-[#1642D0] uppercase tracking-wider block font-sans mb-0.5">
+                      {art.category}
+                    </span>
+                    <h4 className="font-serif font-bold text-[12.5px] sm:text-[13px] leading-snug text-[#020618] group-hover:underline line-clamp-3 my-0">
+                      <Link href={`/article/${art.slug || art.id}`}>
+                        {art.title}
+                      </Link>
+                    </h4>
+                    <span className="text-[11px] text-slate-400 font-sans block mt-1">
+                      {art.date} • {art.readTime}
+                    </span>
+                  </div>
+
+                  <Link
+                    href={`/article/${art.slug || art.id}`}
+                    className="w-[90px] h-[58px] sm:w-[100px] sm:h-[62px] shrink-0 rounded-xs overflow-hidden bg-slate-100 block cursor-pointer"
+                  >
+                    <img
+                      src={art.imageUrl}
+                      alt={art.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </Link>
+                </article>
+              ))}
+            </div>
+
           </div>
 
         </div>
-
       </div>
     </section>
   );
