@@ -1,3 +1,7 @@
+import { MAIN_CATEGORIES, getCategoryBySlug, getAllFlattenedCategories, type MainCategory, type SubCategory } from './categoriesData';
+
+export { MAIN_CATEGORIES, getCategoryBySlug, getAllFlattenedCategories, type MainCategory, type SubCategory };
+
 export interface Article {
   id: string;
   slug?: string;
@@ -407,16 +411,14 @@ export interface NavItem {
 }
 
 export const NAVIGATION_STRUCTURE: { primary: NavItem[] } = {
-  primary: [
-    { label: 'Breaking Business News', href: '/topic/breaking-business-news' },
-    { label: 'Markets and Investing', href: '/topic/markets-investing' },
-    { label: 'Startups and Entrepreneurship', href: '/topic/startups-entrepreneurship' },
-    { label: 'Technology and AI', href: '/topic/technology-ai' },
-    { label: 'Leadership', href: '/topic/leadership' },
-    { label: 'Research and Insights', href: '/topic/research-insights' },
-    { label: 'Economy', href: '/topic/economy' },
-    { label: 'Banking and Finance', href: '/topic/banking-finance' },
-  ],
+  primary: MAIN_CATEGORIES.map((cat) => ({
+    label: cat.name,
+    href: `/topic/${cat.slug}`,
+    subcategories: cat.subcategories.map((sub) => ({
+      label: sub.name,
+      href: `/topic/${sub.slug}`,
+    })),
+  })),
 };
 
 export interface FranchiseItem {
@@ -599,6 +601,10 @@ export interface TopicPageData {
   slug: string;
   description: string;
   articles: Article[];
+  parentTitle?: string;
+  parentSlug?: string;
+  subcategories?: { name: string; slug: string; description?: string }[];
+  isSubcategory?: boolean;
 }
 
 export const CATEGORY_TOPICS_DATA: Record<string, { title: string; description: string; articles: Article[] }> = {
@@ -2672,26 +2678,72 @@ export function getArticleById(rawIdOrSlug: string): Article {
 }
 
 export function getTopicDataBySlug(slugInput: string): TopicPageData {
-  let slug = (slugInput || 'breaking-business-news').toLowerCase();
+  let slug = (slugInput || 'breaking-news').toLowerCase().trim();
+
+  const categoryLookup = getCategoryBySlug(slug);
 
   const aliasMap: Record<string, string> = {
+    'breaking-business-news': 'breaking-news',
     'markets-and-investing': 'markets-investing',
+    'economy': 'economy-policy',
     'startups-and-entrepreneurship': 'startups-entrepreneurship',
-    'technology-and-ai': 'technology-ai',
+    'entrepreneurs': 'startups-entrepreneurship',
+    'building-a-business': 'startups-entrepreneurship',
+    'technology-ai': 'technology-super-intelligence',
+    'technology-and-ai': 'technology-super-intelligence',
+    'real-estate': 'real-estate-property',
+    'international-business': 'global-business',
+    'leadership': 'leadership-management',
+    'sustainability': 'sustainability-esg',
+    'ceo-interviews': 'interviews-opinions',
+    'interviews': 'interviews-opinions',
     'research-and-insights': 'research-insights',
     'banking-and-finance': 'banking-finance',
   };
-  if (aliasMap[slug]) {
-    slug = aliasMap[slug];
+  const resolvedSlug = aliasMap[slug] || slug;
+
+  const matchedLegacy = CATEGORY_TOPICS_DATA[slug] || CATEGORY_TOPICS_DATA[resolvedSlug] || CATEGORY_TOPICS_DATA['breaking-business-news'];
+
+  if (categoryLookup) {
+    const { main, sub } = categoryLookup;
+    if (sub) {
+      const topicArticles = (CATEGORY_TOPICS_DATA[sub.slug]?.articles) ||
+        (matchedLegacy?.articles && matchedLegacy.articles.length > 0
+          ? matchedLegacy.articles
+          : (CATEGORY_TOPICS_DATA[main.slug]?.articles || CATEGORY_TOPICS_DATA['breaking-business-news']?.articles || []));
+
+      return {
+        title: sub.name,
+        slug: sub.slug,
+        parentTitle: main.name,
+        parentSlug: main.slug,
+        description: sub.description || `${sub.name} news, in-depth reports, and business analysis.`,
+        articles: topicArticles,
+        subcategories: main.subcategories,
+        isSubcategory: true,
+      };
+    } else {
+      const topicArticles = CATEGORY_TOPICS_DATA[main.slug]?.articles ||
+        (matchedLegacy?.articles && matchedLegacy.articles.length > 0
+          ? matchedLegacy.articles
+          : CATEGORY_TOPICS_DATA['breaking-business-news']?.articles || []);
+
+      return {
+        title: main.name,
+        slug: main.slug,
+        description: main.description,
+        articles: topicArticles,
+        subcategories: main.subcategories,
+        isSubcategory: false,
+      };
+    }
   }
 
-  const matched = CATEGORY_TOPICS_DATA[slug] || CATEGORY_TOPICS_DATA['breaking-business-news'];
-
   return {
-    title: matched.title,
-    slug: slug,
-    description: matched.description,
-    articles: matched.articles,
+    title: matchedLegacy?.title || 'Business News',
+    slug: resolvedSlug,
+    description: matchedLegacy?.description || 'Exclusive business coverage, trends, and market analysis.',
+    articles: matchedLegacy?.articles || [],
   };
 }
 

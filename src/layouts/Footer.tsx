@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { MAIN_CATEGORIES } from '@/data/categoriesData';
 
 // Bold circular dashed divider line matching reference screenshot
 const CircleDashedDivider: React.FC = () => (
@@ -114,6 +115,32 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* 1st DASHED LINE (Bold Circle Dots) */}
+        <CircleDashedDivider />
+
+        {/* 20 Main Categories Explorer Bar */}
+        <div className="py-4 sm:py-5">
+          <div className="flex items-center justify-between mb-3.5">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
+              Browse All 20 Business Categories
+            </span>
+            <span className="text-[11px] font-medium text-slate-400">
+              153 Subcategories
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {MAIN_CATEGORIES.map((cat) => (
+              <Link
+                key={cat.slug}
+                href={`/topic/${cat.slug}`}
+                className="text-xs text-slate-300 hover:text-white bg-slate-900/90 hover:bg-[#1642D0] px-3 py-1.5 rounded-sm border border-slate-800 transition-colors"
+              >
+                {cat.name}
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* DASHED LINE (Bold Circle Dots) */}
         <CircleDashedDivider />
 
         {/* MIDDLE SECTION: 4 Directory Link Columns */}

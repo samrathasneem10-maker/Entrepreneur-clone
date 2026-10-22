@@ -216,16 +216,29 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
 
                   {/* Dropdown Hover Menu */}
                   {item.subcategories && (
-                    <div className="absolute top-full left-0 w-64 bg-white shadow-xl rounded-b-xl border border-slate-200 py-3 hidden group-hover:block animate-in fade-in duration-150 z-50">
-                      {item.subcategories.map((sub) => (
+                    <div className="absolute top-full left-0 min-w-[270px] max-w-[340px] max-h-[460px] overflow-y-auto bg-white shadow-xl rounded-b-xl border border-slate-200 py-2 hidden group-hover:block animate-in fade-in duration-150 z-50">
+                      <div className="px-3.5 py-1.5 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                          {item.subcategories.length} Subcategories
+                        </span>
                         <Link
-                          key={sub.label}
-                          href={sub.href}
-                          className="block px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-[#1642D0] transition-colors"
+                          href={item.href}
+                          className="text-[10px] font-bold text-[#1642D0] hover:underline"
                         >
-                          {sub.label}
+                          View All &rarr;
                         </Link>
-                      ))}
+                      </div>
+                      <div className="py-1">
+                        {item.subcategories.map((sub) => (
+                          <Link
+                            key={sub.label}
+                            href={sub.href}
+                            className="block px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
+                          >
+                            {sub.label}
+                          </Link>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </li>

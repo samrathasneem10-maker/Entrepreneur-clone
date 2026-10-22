@@ -827,14 +827,72 @@ export default function DynamicTopicPage() {
       {/* Breadcrumb Bar */}
       <div className="bg-white border-b border-slate-200/80 py-2.5 px-5 lg:px-10 text-xs text-slate-600 font-sans">
         <div className="w-full max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto no-scrollbar">
-          <Link href="/" className="hover:text-[#1642D0] transition-colors">
+          <Link href="/" className="hover:text-[#1642D0] transition-colors shrink-0">
             Home
           </Link>
           <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-          <span className="text-slate-900 font-bold uppercase tracking-wider">
-            {topicData.title || 'THOUGHT LEADERS'}
+          {topicData.parentTitle && topicData.parentSlug && (
+            <>
+              <Link href={`/topic/${topicData.parentSlug}`} className="hover:text-[#1642D0] transition-colors whitespace-nowrap shrink-0">
+                {topicData.parentTitle}
+              </Link>
+              <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+            </>
+          )}
+          <span className="text-slate-900 font-bold uppercase tracking-wider whitespace-nowrap truncate">
+            {topicData.title || 'TOPICS'}
           </span>
         </div>
+      </div>
+
+      {/* Category Header & Subcategory Badges Bar */}
+      <div className="w-full max-w-7xl mx-auto px-5 lg:px-10 pt-5 pb-2">
+        <div className="pb-3 border-b border-slate-200">
+          <span className="text-[11px] font-bold text-[#1642D0] uppercase tracking-wider font-sans block mb-1">
+            {topicData.parentTitle ? `${topicData.parentTitle} • Subcategory` : 'Category'}
+          </span>
+          <h1 className="text-2xl sm:text-3xl lg:text-[38px] font-serif font-black text-[#020618] tracking-tight my-1">
+            {topicData.title}
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-600 font-sans max-w-3xl my-1 leading-relaxed">
+            {topicData.description}
+          </p>
+        </div>
+
+        {/* Subcategories Filter Pills Bar */}
+        {topicData.subcategories && topicData.subcategories.length > 0 && (
+          <div className="py-3 flex items-center gap-2 overflow-x-auto no-scrollbar border-b border-slate-100">
+            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 shrink-0 mr-1">
+              Subcategories ({topicData.subcategories.length}):
+            </span>
+            <Link
+              href={`/topic/${topicData.parentSlug || topicData.slug}`}
+              className={`px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${
+                !topicData.isSubcategory
+                  ? 'bg-[#1642D0] text-white shadow-xs'
+                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+              }`}
+            >
+              All {topicData.parentTitle || topicData.title}
+            </Link>
+            {topicData.subcategories.map((sub) => {
+              const isActive = topicData.slug === sub.slug;
+              return (
+                <Link
+                  key={sub.slug}
+                  href={`/topic/${sub.slug}`}
+                  className={`px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${
+                    isActive
+                      ? 'bg-[#1642D0] text-white shadow-xs'
+                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-[#1642D0]'
+                  }`}
+                >
+                  {sub.name}
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* 1st Top Advertisement Banner: Reduced size */}
@@ -869,7 +927,7 @@ export default function DynamicTopicPage() {
         {/* Story details */}
         <div className="pt-4">
           <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans block mb-1">
-            THOUGHT LEADERS
+            {topicData.title}
           </span>
 
           {/* Full length bold heading matching Image 2 */}
@@ -907,7 +965,7 @@ export default function DynamicTopicPage() {
               </Link>
             </div>
             <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-1.5 block">
-              THOUGHT LEADERS
+              {topicData.title}
             </span>
             <h2 className="font-serif font-bold text-[15px] sm:text-[15.5px] md:text-[16px] lg:text-[16px] xl:text-[18.5px] tracking-tight text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-1.5 min-h-[24px] sm:min-h-[26px] flex items-center">
               <Link href="/article/power-of-effective-communication-leadership">
@@ -934,7 +992,7 @@ export default function DynamicTopicPage() {
               </Link>
             </div>
             <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-1.5 block">
-              THOUGHT LEADERS
+              {topicData.title}
             </span>
             <h2 className="font-serif font-bold text-[15px] sm:text-[15.5px] md:text-[16px] lg:text-[16px] xl:text-[18.5px] tracking-tight text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-1.5 min-h-[24px] sm:min-h-[26px] flex items-center">
               <Link href="/article/collaboration-drives-innovation-growth">
