@@ -81,7 +81,7 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
 
         
         {/* Upper Header Bar: Menu Dots + Logo (Left) and Controls (Right) */}
-        <div className="px-5 lg:px-10 py-3 sm:py-3.5">
+        <div className="w-full max-w-7xl xl:max-w-[1360px] 2xl:max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-3.5">
           <div className="w-full flex items-center justify-between">
             
             {/* Left: Menu Dots Grid + Logo */}
@@ -130,7 +130,7 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
               </Link>
             </div>
 
-            {/* Right: Search Icon + Sign In Controls (Shifted to right edge) */}
+            {/* Right: Search Icon + Sign In Controls */}
             <div className="flex items-center gap-4 sm:gap-6 font-sans text-[#020618]">
               
               {/* Search Toggle Link */}
@@ -143,7 +143,6 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
                 <Search className="w-5 h-5 stroke-[2.2]" />
                 <span className="hidden sm:inline font-bold uppercase tracking-wider text-xs sm:text-[13px]">Search</span>
               </Link>
-
 
               {/* Sign In / User Profile */}
               {user ? (
@@ -199,54 +198,53 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
           </div>
         </div>
 
-        {/* Lower Header Bar: Left-aligned Custom Navigation Topics */}
-        <nav className="px-4 lg:px-6 xl:px-10 py-2 sm:py-2.5 bg-white hidden lg:block overflow-x-auto no-scrollbar">
-          <div className="w-full flex items-center justify-start font-sans">
-            
-            {/* Custom Primary Navigation Topics with 8 categories */}
-            <ul className="flex items-center gap-3.5 lg:gap-4 xl:gap-5 2xl:gap-7 whitespace-nowrap min-w-max">
-              {NAVIGATION_STRUCTURE.primary.map((item) => (
-                <li key={item.label} className="relative group py-1 shrink-0">
-                  <Link
-                    href={item.href}
-                    className="text-[11px] lg:text-[11.5px] xl:text-[12.5px] 2xl:text-[13.5px] font-bold uppercase tracking-wider text-[#020618] hover:text-[#1642D0] transition-colors flex items-center gap-1 whitespace-nowrap"
-                  >
-                    {item.label}
-                  </Link>
+        {/* Lower Header Bar: 8 Primary Navigation Categories matching reference screenshot */}
+        <div className="border-t border-slate-100 bg-white">
+          <div className="w-full max-w-7xl xl:max-w-[1360px] 2xl:max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+            <nav className="py-2 sm:py-2.5 overflow-x-auto no-scrollbar font-sans">
+              <ul className="flex items-center lg:justify-between gap-4 sm:gap-5 lg:gap-3 xl:gap-4 whitespace-nowrap min-w-max lg:min-w-0">
+                {NAVIGATION_STRUCTURE.primary.map((item) => (
+                  <li key={item.label} className="relative group py-1 shrink-0">
+                    <Link
+                      href={item.href}
+                      className="text-[11px] sm:text-[11.5px] lg:text-[11px] xl:text-[12px] font-bold uppercase tracking-wider text-[#020618] hover:text-[#1642D0] transition-colors flex items-center gap-1 whitespace-nowrap"
+                    >
+                      {item.label}
+                    </Link>
 
-                  {/* Dropdown Hover Menu */}
-                  {item.subcategories && (
-                    <div className="absolute top-full left-0 min-w-[270px] max-w-[340px] max-h-[460px] overflow-y-auto bg-white shadow-xl rounded-b-xl border border-slate-200 py-2 hidden group-hover:block animate-in fade-in duration-150 z-50">
-                      <div className="px-3.5 py-1.5 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                          {item.subcategories.length} Subcategories
-                        </span>
-                        <Link
-                          href={item.href}
-                          className="text-[10px] font-bold text-[#1642D0] hover:underline"
-                        >
-                          View All &rarr;
-                        </Link>
-                      </div>
-                      <div className="py-1">
-                        {item.subcategories.map((sub) => (
+                    {/* Dropdown Hover Menu (Desktop & Laptops) */}
+                    {item.subcategories && (
+                      <div className="absolute top-full left-0 min-w-[270px] max-w-[340px] max-h-[460px] overflow-y-auto bg-white shadow-xl rounded-b-xl border border-slate-200 py-2 hidden group-hover:block animate-in fade-in duration-150 z-50">
+                        <div className="px-3.5 py-1.5 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                            {item.subcategories.length} Subcategories
+                          </span>
                           <Link
-                            key={sub.label}
-                            href={sub.href}
-                            className="block px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
+                            href={item.href}
+                            className="text-[10px] font-bold text-[#1642D0] hover:underline"
                           >
-                            {sub.label}
+                            View All &rarr;
                           </Link>
-                        ))}
+                        </div>
+                        <div className="py-1">
+                          {item.subcategories.map((sub) => (
+                            <Link
+                              key={sub.label}
+                              href={sub.href}
+                              className="block px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
+                            >
+                              {sub.label}
+                            </Link>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </li>
-              ))}
-            </ul>
-
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </nav>
           </div>
-        </nav>
+        </div>
 
         {/* Reading Progress Bar (Article Detail Pages Only) */}
         {showProgressBar && (

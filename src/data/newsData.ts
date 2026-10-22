@@ -557,15 +557,121 @@ export interface NavItem {
   subcategories?: { label: string; href: string }[];
 }
 
+export const PRIMARY_NAV_ITEMS: NavItem[] = [
+  {
+    label: 'Breaking Business News',
+    href: '/topic/breaking-business-news',
+    subcategories: [
+      { label: 'Breaking Headlines', href: '/topic/breaking-headlines' },
+      { label: 'Business Alerts', href: '/topic/business-alerts' },
+      { label: 'Major Announcements', href: '/topic/major-announcements' },
+      { label: 'Business Crises', href: '/topic/business-crises' },
+    ],
+  },
+  {
+    label: 'Markets and Investing',
+    href: '/topic/markets-investing',
+    subcategories: [
+      { label: 'Stock Market', href: '/topic/stock-market' },
+      { label: 'Global Market Indices', href: '/topic/global-market-indices' },
+      { label: 'Bonds & Fixed Income', href: '/topic/bonds-fixed-income' },
+      { label: 'Forex & Currency', href: '/topic/forex-currency' },
+      { label: 'Commodities & Gold', href: '/topic/commodities-gold' },
+      { label: 'Cryptocurrency', href: '/topic/cryptocurrency' },
+      { label: 'Investment Strategies', href: '/topic/investment-strategies' },
+      { label: 'Portfolio Management', href: '/topic/portfolio-management' },
+      { label: 'Market Analysis', href: '/topic/market-analysis' },
+    ],
+  },
+  {
+    label: 'Startups and Entrepreneurship',
+    href: '/topic/startups-entrepreneurship',
+    subcategories: [
+      { label: 'Startup News', href: '/topic/startup-news' },
+      { label: 'Founder Stories', href: '/topic/founder-stories' },
+      { label: 'Startup Funding', href: '/topic/startup-funding' },
+      { label: 'Venture Capital', href: '/topic/venture-capital' },
+      { label: 'Startup Strategies', href: '/topic/startup-strategies' },
+    ],
+  },
+  {
+    label: 'Technology and AI',
+    href: '/topic/technology-ai',
+    subcategories: [
+      { label: 'Artificial Intelligence', href: '/topic/artificial-intelligence' },
+      { label: 'Super Intelligence', href: '/topic/super-intelligence' },
+      { label: 'AI Startups', href: '/topic/ai-startups' },
+      { label: 'Enterprise Technology', href: '/topic/enterprise-technology' },
+      { label: 'Software & SaaS', href: '/topic/software-saas' },
+      { label: 'Cybersecurity', href: '/topic/cybersecurity' },
+      { label: 'Cloud Computing', href: '/topic/cloud-computing' },
+      { label: 'Semiconductors & Chips', href: '/topic/semiconductors-chips' },
+      { label: 'Robotics & Automation', href: '/topic/robotics-automation' },
+      { label: 'Consumer Electronics', href: '/topic/consumer-electronics' },
+      { label: 'Tech Policy & Regulation', href: '/topic/tech-policy-regulation' },
+    ],
+  },
+  {
+    label: 'Leadership',
+    href: '/topic/leadership',
+    subcategories: [
+      { label: 'CEO Leadership', href: '/topic/ceo-leadership' },
+      { label: 'Executive Management', href: '/topic/executive-management' },
+      { label: 'Leadership Strategies', href: '/topic/leadership-strategies' },
+      { label: 'Workplace Culture', href: '/topic/workplace-culture' },
+      { label: 'Human Resources', href: '/topic/human-resources' },
+      { label: 'Talent & Recruitment', href: '/topic/talent-recruitment' },
+      { label: 'Employee Experience', href: '/topic/employee-experience' },
+      { label: 'Business Productivity', href: '/topic/business-productivity' },
+      { label: 'Corporate Governance', href: '/topic/corporate-governance' },
+      { label: 'Career Development', href: '/topic/career-development' },
+      { label: 'Women in Leadership', href: '/topic/women-in-leadership' },
+    ],
+  },
+  {
+    label: 'Research and Insights',
+    href: '/topic/research-insights',
+    subcategories: [
+      { label: 'Industry Reports', href: '/topic/industry-reports' },
+      { label: 'Market Research', href: '/topic/market-research' },
+      { label: 'Economic Research', href: '/topic/economic-research' },
+    ],
+  },
+  {
+    label: 'Economy',
+    href: '/topic/economy',
+    subcategories: [
+      { label: 'Global Economy', href: '/topic/global-economy' },
+      { label: 'National Economies', href: '/topic/national-economies' },
+      { label: 'Inflation & Cost of Living', href: '/topic/inflation-cost-of-living' },
+      { label: 'Interest Rates', href: '/topic/interest-rates' },
+      { label: 'Monetary Policy', href: '/topic/monetary-policy' },
+      { label: 'Fiscal Policy & Taxation', href: '/topic/fiscal-policy-taxation' },
+      { label: 'Employment & Labour Markets', href: '/topic/employment-labour-markets' },
+      { label: 'International Trade', href: '/topic/international-trade' },
+      { label: 'Economic Growth', href: '/topic/economic-growth' },
+      { label: 'Economic Forecasts', href: '/topic/economic-forecasts' },
+    ],
+  },
+  {
+    label: 'Banking and Finance',
+    href: '/topic/banking-finance',
+    subcategories: [
+      { label: 'Banking News', href: '/topic/banking-news' },
+      { label: 'Central Banks', href: '/topic/central-banks' },
+      { label: 'Digital Banking', href: '/topic/digital-banking' },
+      { label: 'Fintech', href: '/topic/fintech' },
+      { label: 'Digital Payments', href: '/topic/digital-payments' },
+      { label: 'Loans & Credit', href: '/topic/loans-credit' },
+      { label: 'Insurance', href: '/topic/insurance' },
+      { label: 'Wealth Management', href: '/topic/wealth-management' },
+      { label: 'Financial Regulation', href: '/topic/financial-regulation' },
+    ],
+  },
+];
+
 export const NAVIGATION_STRUCTURE: { primary: NavItem[] } = {
-  primary: MAIN_CATEGORIES.map((cat) => ({
-    label: cat.name,
-    href: `/topic/${cat.slug}`,
-    subcategories: cat.subcategories.map((sub) => ({
-      label: sub.name,
-      href: `/topic/${sub.slug}`,
-    })),
-  })),
+  primary: PRIMARY_NAV_ITEMS,
 };
 
 export interface FranchiseItem {
