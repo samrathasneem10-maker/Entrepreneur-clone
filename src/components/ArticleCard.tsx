@@ -247,9 +247,10 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
                   target.dataset.fallback = 'true';
                   if (article.id === 'sec-1') target.src = '/images/jeff-bezos.jpg';
                   else if (article.id === 'sec-2') target.src = '/images/kurt-workman.jpg';
-                  else if (article.id === 'grid-1') target.src = '/images/innovation-leadership.jpg';
-                  else if (article.id === 'grid-2') target.src = '/images/career-decision.jpg';
-                  else if (article.id === 'grid-3') target.src = '/images/apple-smart-home.jpg';
+                  else if (article.id === 'grid-1') target.src = '/images/home-hero/grid-card-1.png';
+                  else if (article.id === 'grid-2') target.src = '/images/home-hero/grid-card-2.png';
+                  else if (article.id === 'grid-3') target.src = '/images/home-hero/grid-card-3.png';
+                  else if (article.id === 'grid-4') target.src = '/images/home-hero/grid-card-4.png';
                   else target.src = 'https://images.unsplash.com/photo-1558002038-1055907df827?q=80&w=800&auto=format&fit=crop';
                 }
               }}

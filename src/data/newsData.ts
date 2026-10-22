@@ -298,32 +298,66 @@ export const SECONDARY_FEATURED: Article[] = [
 export const TOP_STORIES_GRID: Article[] = [
   {
     id: 'grid-1',
+    slug: 'the-leadership-skill-that-takes-innovation-further',
     title: 'The Leadership Skill That Takes Innovation Further',
-    category: 'Building a Business',
-    author: { name: 'Michal Beressi Golomb' },
-    date: 'October 26, 2026',
-    excerpt: "Great innovation doesn't happen in isolation. The right partnerships can take breakthrough technology further and help shape what comes next for an entire industry.",
-    imageUrl: 'https://www.entrepreneur.com/wp-content/uploads/sites/2/2026/10/leadership-technology-breakthroughs-1026_g2165668876.jpg',
+    category: 'BUILDING A BUSINESS',
+    author: {
+      name: 'Michael Andrews Cooper',
+      avatar: '/images/home-hero/author-scott.png',
+      title: 'Executive Leadership Strategist',
+      bio: 'Michael Andrews Cooper is an executive coach and innovation strategist who advises fast-growing startups and Fortune 500 leadership teams on turning early concepts into scalable enterprises.',
+    },
+    date: 'Oct 22, 2026',
+    excerpt: 'Great ideas need more than talent to go further. The right leadership can turn early thinking into real-world impact and help innovation survive in uncertain times.',
+    imageUrl: '/images/home-hero/grid-card-1.png',
     imageAspect: 'video',
   },
   {
     id: 'grid-2',
+    slug: 'the-simple-test-to-use-early-in-your-career-that-pays-off-for-decades',
     title: 'The Simple Test to Use Early in Your Career That Pays Off for Decades',
-    category: 'Building a Business',
-    author: { name: 'Brendan Keegan' },
-    date: 'October 26, 2026',
-    excerpt: 'Before any big decision, ask: Will my future self thank me for this, or pay for it?',
-    imageUrl: 'https://www.entrepreneur.com/wp-content/uploads/sites/2/2026/10/big-decision-1026-g-1477732795.jpg',
+    category: 'BUILDING A BUSINESS',
+    author: {
+      name: 'Brandon Morgan',
+      avatar: '/images/home-hero/author-scott.png',
+      title: 'Career & Growth Advisor',
+      bio: 'Brandon Morgan writes about professional decision-making frameworks, executive habits, and long-term career resilience for entrepreneurs and modern professionals.',
+    },
+    date: 'Oct 22, 2026',
+    excerpt: 'Before big decisions, a small test can bring clarity, reduce risk and help you choose a career path that truly fits.',
+    imageUrl: '/images/home-hero/grid-card-2.png',
     imageAspect: 'video',
   },
   {
     id: 'grid-3',
+    slug: 'apple-is-reportedly-creating-new-devices-for-your-smart-home',
     title: 'Apple Is Reportedly Creating New Devices for Your Smart Home',
-    category: 'Business News',
-    author: { name: 'Sherin Shibu' },
-    date: 'October 26, 2026',
-    excerpt: "An unusual partnership with LG will help power Apple's push into smart home devices.",
-    imageUrl: '/images/apple-smart-home.jpg',
+    category: 'BUSINESS NEWS',
+    author: {
+      name: 'Benjamin Ahmed',
+      avatar: '/images/author-sherin.png',
+      title: 'Consumer Tech Reporter',
+      bio: 'Benjamin Ahmed is a technology journalist covering consumer hardware, smart home ecosystems, AI assistants, and enterprise product roadmaps at Entrepreneur.',
+    },
+    date: 'Oct 22, 2026',
+    excerpt: 'An internal push may point to a new line of Apple smart-home products, with a focus on more connected and intuitive devices.',
+    imageUrl: '/images/home-hero/grid-card-3.png',
+    imageAspect: 'video',
+  },
+  {
+    id: 'grid-4',
+    slug: 'apple-reportedly-creating-new-devices-smart-home',
+    title: 'Apple Is Reportedly Creating New Devices for Your Smart Home',
+    category: 'BUSINESS NEWS',
+    author: {
+      name: 'Benjamin Ahmed',
+      avatar: '/images/author-sherin.png',
+      title: 'Consumer Tech Reporter',
+      bio: 'Benjamin Ahmed is a technology journalist covering consumer hardware, smart home ecosystems, AI assistants, and enterprise product roadmaps at Entrepreneur.',
+    },
+    date: 'Oct 22, 2026',
+    excerpt: 'An internal push may point to a new line of Apple smart-home products, with a focus on more connected and intuitive devices.',
+    imageUrl: '/images/home-hero/grid-card-4.png',
     imageAspect: 'video',
   },
 ];
@@ -2727,6 +2761,36 @@ export function getArticleById(rawIdOrSlug: string): Article {
     slugParam.includes('innovation-and-growth')
   ) {
     return COLLABORATION_DRIVES_INNOVATION_ARTICLE;
+  }
+
+  // 3c. Direct checks for 4-Card Top Stories Grid
+  if (
+    param === 'grid-1' ||
+    param === 'the-leadership-skill-that-takes-innovation-further' ||
+    slugParam.includes('leadership-skill-that-takes-innovation')
+  ) {
+    return TOP_STORIES_GRID[0];
+  }
+  if (
+    param === 'grid-2' ||
+    param === 'the-simple-test-to-use-early-in-your-career-that-pays-off-for-decades' ||
+    slugParam.includes('simple-test-to-use-early-in-your-career')
+  ) {
+    return TOP_STORIES_GRID[1];
+  }
+  if (
+    param === 'grid-3' ||
+    param === 'apple-is-reportedly-creating-new-devices-for-your-smart-home' ||
+    slugParam === 'apple-is-reportedly-creating-new-devices-for-your-smart-home'
+  ) {
+    return TOP_STORIES_GRID[2];
+  }
+  if (
+    param === 'grid-4' ||
+    param === 'apple-reportedly-creating-new-devices-smart-home' ||
+    slugParam === 'apple-reportedly-creating-new-devices-smart-home'
+  ) {
+    return TOP_STORIES_GRID[3];
   }
 
   // 4. Direct check for Hero article

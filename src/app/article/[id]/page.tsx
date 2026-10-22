@@ -146,6 +146,19 @@ export default function ArticleDetailPage() {
     articleId === 'side-hustle-53' ||
     articleId === '53-side-hustle-ideas-to-make-extra-money-in-2026' ||
     (rawArticle?.id || '') === '53-side-hustle-ideas-to-make-extra-money-in-2026';
+  const isLeadershipSkill =
+    articleId === 'grid-1' ||
+    articleId.includes('leadership-skill') ||
+    (rawArticle?.slug || '').includes('leadership-skill');
+  const isCareerTest =
+    articleId === 'grid-2' ||
+    articleId.includes('simple-test') ||
+    (rawArticle?.slug || '').includes('simple-test');
+  const isSmartHome =
+    articleId === 'grid-3' ||
+    articleId === 'grid-4' ||
+    articleId.includes('smart-home') ||
+    (rawArticle?.slug || '').includes('smart-home');
 
   const article = {
     ...rawArticle,
@@ -638,18 +651,82 @@ export default function ArticleDetailPage() {
                 Key Takeaways
               </h2>
               <ul className="mt-4 space-y-3 text-base sm:text-[16.5px] font-serif text-slate-800 leading-relaxed list-none p-0">
-                <li className="flex items-start gap-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#1642D0] mt-2.5 shrink-0 block" />
-                  <span>
-                    Side hustles can help you pay off debt, save up an emergency fund and create new financial freedom.
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#1642D0] mt-2.5 shrink-0 block" />
-                  <span>
-                    The highest-earning side hustles in 2026 combine specialized skills, digital distribution, and recurring client relationships.
-                  </span>
-                </li>
+                {isBossArticle ? (
+                  <>
+                    <li className="flex items-start gap-3">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#1642D0] mt-2.5 shrink-0 block" />
+                      <span>
+                        Bullying behavior from leadership should never be normalized as just a demanding personality.
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#1642D0] mt-2.5 shrink-0 block" />
+                      <span>
+                        Thorough external documentation and boundary setting are essential to protecting your professional standing.
+                      </span>
+                    </li>
+                  </>
+                ) : isLeadershipSkill ? (
+                  <>
+                    <li className="flex items-start gap-3">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#1642D0] mt-2.5 shrink-0 block" />
+                      <span>
+                        Breakthrough innovation requires more than raw talent—it demands leaders who bridge vision with operational momentum.
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#1642D0] mt-2.5 shrink-0 block" />
+                      <span>
+                        Fostering psychological safety while maintaining rigorous accountability empowers teams to take calculated risks and survive uncertain markets.
+                      </span>
+                    </li>
+                  </>
+                ) : isCareerTest ? (
+                  <>
+                    <li className="flex items-start gap-3">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#1642D0] mt-2.5 shrink-0 block" />
+                      <span>
+                        Ask early before career choices: &ldquo;Will my future self thank me for this, or pay for it?&rdquo;
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#1642D0] mt-2.5 shrink-0 block" />
+                      <span>
+                        Compounding returns in your career come from high-leverage foundational skills chosen with long-term intentionality.
+                      </span>
+                    </li>
+                  </>
+                ) : isSmartHome ? (
+                  <>
+                    <li className="flex items-start gap-3">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#1642D0] mt-2.5 shrink-0 block" />
+                      <span>
+                        Apple is reportedly developing tabletop displays and connected hardware to unify the domestic Apple Intelligence experience.
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#1642D0] mt-2.5 shrink-0 block" />
+                      <span>
+                        Deep Matter protocol support and customized robotics indicate a major expansion of Apple&apos;s smart home ecosystem.
+                      </span>
+                    </li>
+                  </>
+                ) : (
+                  <>
+                    <li className="flex items-start gap-3">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#1642D0] mt-2.5 shrink-0 block" />
+                      <span>
+                        Side hustles can help you pay off debt, save up an emergency fund and create new financial freedom.
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#1642D0] mt-2.5 shrink-0 block" />
+                      <span>
+                        The highest-earning side hustles in 2026 combine specialized skills, digital distribution, and recurring client relationships.
+                      </span>
+                    </li>
+                  </>
+                )}
               </ul>
             </div>
 
@@ -741,6 +818,87 @@ export default function ArticleDetailPage() {
                   </h2>
                   <p className="m-0">
                     When your boss is the bully, speaking up can feel really risky. Understand and validate what you are experiencing. Document what&apos;s happening. Finally, map out your options and protect your mental health and career trajectory.
+                  </p>
+                </>
+              ) : isLeadershipSkill ? (
+                <>
+                  <p className="m-0">
+                    Great ideas need more than raw talent to make an impact. Across fast-moving sectors, early breakthroughs often stall not from lack of technological prowess, but from leadership frameworks incapable of converting experimental spark into scalable operations.
+                  </p>
+
+                  <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#1642D0] pt-6 mb-3 tracking-tight">
+                    1. Translating Vision Into Execution Cadence
+                  </h2>
+                  <p className="m-0">
+                    The most effective innovators don&apos;t just generate novel concepts—they create a shared vocabulary and operational rhythm that allows cross-functional teams to test, iterate, and refine ideas without friction. When team members understand exactly how their individual contributions feed into the overarching business strategy, innovation ceases to be an occasional brainstorming session and becomes daily practice.
+                  </p>
+
+                  <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#1642D0] pt-6 mb-3 tracking-tight">
+                    2. Building Psychological Safety with High Accountability
+                  </h2>
+                  <p className="m-0">
+                    Calculated risk-taking is the lifeblood of technological advancement. Leaders who foster environments where failure is treated as critical diagnostic data—rather than a punishable offense—unlock an exponential degree of team initiative and creative resilience in uncertain macroeconomic cycles.
+                  </p>
+
+                  <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#1642D0] pt-6 mb-3 tracking-tight">
+                    3. Sustaining Momentum Through Market Headwinds
+                  </h2>
+                  <p className="m-0">
+                    Turbulent markets frequently pressure companies to retreat into defensive postures. Visionary leaders counterbalance this instinct by preserving core R&amp;D priorities, cultivating key strategic alliances, and positioning their organizations to capture asymmetric upside as market conditions normalize.
+                  </p>
+                </>
+              ) : isCareerTest ? (
+                <>
+                  <p className="m-0">
+                    Early in your professional journey, the sheer volume of opportunities and paths can lead to decision paralysis or, worse, choices dictated purely by short-term prestige. Applying a simple, repeatable mental heuristic helps cut through ambient noise and anchor your career in compound growth.
+                  </p>
+
+                  <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#1642D0] pt-6 mb-3 tracking-tight">
+                    1. The 10-Year Future Self Heuristic
+                  </h2>
+                  <p className="m-0">
+                    Before accepting a role, launching a venture, or committing to an arduous skill curve, ask yourself: &ldquo;In ten years, will my future self thank me for enduring this challenge, or pay the price for taking the easier detour?&rdquo; This simple perspective shifts your focus from temporary friction to lasting leverage.
+                  </p>
+
+                  <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#1642D0] pt-6 mb-3 tracking-tight">
+                    2. Prioritizing Skills with Compounding Leverage
+                  </h2>
+                  <p className="m-0">
+                    Not all experience appreciates equally. Foundational proficiencies in strategic communication, capital allocation, systems architecture, and talent recruitment compound over decades regardless of how industry paradigms shift.
+                  </p>
+
+                  <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#1642D0] pt-6 mb-3 tracking-tight">
+                    3. Building Reputational Capital Early
+                  </h2>
+                  <p className="m-0">
+                    Integrity, follow-through, and generosity in professional relationships create an invisible balance sheet of goodwill. Decades later, your most pivotal career breakthroughs will trace back to the trust you built early on.
+                  </p>
+                </>
+              ) : isSmartHome ? (
+                <>
+                  <p className="m-0">
+                    Apple is reportedly accelerating its long-anticipated push into the domestic ecosystem, engineering a new wave of smart-home hardware powered by on-device Apple Intelligence and deep interoperability standards.
+                  </p>
+
+                  <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#1642D0] pt-6 mb-3 tracking-tight">
+                    1. A Dedicated Smart Home Command Display
+                  </h2>
+                  <p className="m-0">
+                    Industry supply chain reports suggest Apple is preparing an iPad-like command center designed to mount on walls or rest on tabletop stands. Running a specialized lightweight homeOS, the device is engineered to control HomeKit accessories, conduct FaceTime calls, and display ambient widgets with seamless handoff.
+                  </p>
+
+                  <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#1642D0] pt-6 mb-3 tracking-tight">
+                    2. Apple Intelligence as the Home Operating System
+                  </h2>
+                  <p className="m-0">
+                    Rather than relying on rigid voice commands, the forthcoming devices leverage Apple Intelligence models to understand conversational context, predict routine adjustments, and coordinate multi-device home automation scenarios with zero user friction.
+                  </p>
+
+                  <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#1642D0] pt-6 mb-3 tracking-tight">
+                    3. Ecosystem Convergence and the Matter Standard
+                  </h2>
+                  <p className="m-0">
+                    By expanding support for the cross-industry Matter connectivity protocol, Apple is removing historic walled-garden limitations, making its upcoming hardware a viable universal hub for millions of connected households globally.
                   </p>
                 </>
               ) : (
