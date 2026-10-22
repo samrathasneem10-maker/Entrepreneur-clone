@@ -362,6 +362,144 @@ export const TOP_STORIES_GRID: Article[] = [
   },
 ];
 
+export interface StartupsEntrepreneurshipData {
+  featured: Article;
+  items: Article[];
+}
+
+export const STARTUPS_ENTREPRENEURSHIP_SECTION: StartupsEntrepreneurshipData = {
+  featured: {
+    id: 'startups-say-it-sooner',
+    slug: 'the-say-it-sooner-rule-that-prevents-small-team-problems-from-becoming-big-ones',
+    title: "The 'Say It Sooner' Rule That Prevents Small Team Problems From Becoming Big Ones",
+    category: 'THOUGHT LEADERS',
+    author: {
+      name: 'Ruthann Peace Brown',
+      title: 'Executive Leadership Strategist',
+      bio: 'Ruthann Peace Brown advises executives and high-growth leadership teams on organizational trust, proactive communication, and conflict resolution.',
+    },
+    date: 'Oct 22, 2026',
+    readTime: '6 min read',
+    excerpt: 'The strongest workplace cultures are built by leaders who normalize honest conversations before misunderstandings turn into resentment.',
+    imageUrl: '/images/startups/say-it-sooner.png',
+  },
+  items: [
+    {
+      id: 'startups-introvert-connections',
+      slug: 'an-introverts-case-for-skipping-small-talk-and-building-real-connections',
+      title: "An Introvert's Case for Skipping Small Talk and Building Real Connections",
+      category: 'BUILDING A BUSINESS',
+      author: {
+        name: 'Aytekin Tank',
+        title: 'Founder & Author',
+        bio: 'Aytekin Tank is the founder and CEO of Jotform and author of Automate Your Busywork. He writes about mindful productivity and founder psychology.',
+      },
+      date: 'Oct 22, 2026',
+      readTime: '5 min read',
+      excerpt: 'How introspective founders and entrepreneurs can bypass awkward small talk to create lasting, high-impact business relationships.',
+      imageUrl: '/images/startups/introvert-connections.png',
+    },
+    {
+      id: 'startups-boss-bully',
+      slug: 'not-every-boss-deserves-a-thank-you-card-heres-what-to-do-when-your-boss-is-a-bully',
+      title: "Not Every Boss Deserves a Thank-You Card. Here's What to Do When Your Boss Is a Bully.",
+      category: 'BUILDING A BUSINESS',
+      author: {
+        name: 'Mita Mallick',
+        title: 'Corporate Culture & Inclusion Leader',
+        bio: 'Mita Mallick is a corporate change-maker, Harvard Business Review contributor, and Wall Street Journal bestselling author on inclusive leadership.',
+      },
+      date: 'Oct 22, 2026',
+      readTime: '7 min read',
+      excerpt: 'Workplace bullying undermines team psychological safety and career momentum. Here are concrete steps to stand your ground and thrive.',
+      imageUrl: '/images/startups/boss-bully.png',
+    },
+    {
+      id: 'startups-franchise-creative',
+      slug: 'this-former-engineer-and-preschool-teacher-teamed-up-to-start-a-creative-business',
+      title: "This Former Engineer and Preschool Teacher Teamed Up to Start a Creative Business: 'Haven't Regretted Choosing a Franchise.'",
+      category: 'BUYING A FRANCHISE',
+      author: {
+        name: 'Sherin Shibu',
+        avatar: '/images/author-sherin.png',
+        title: 'Entrepreneur Staff Writer',
+        bio: 'Sherin Shibu covers franchise expansion, small business journeys, and emerging retail innovators for Entrepreneur Media.',
+      },
+      date: 'Oct 22, 2026',
+      readTime: '6 min read',
+      excerpt: 'Two founders brought their engineering precision and early childhood passion together to run a bustling community pottery studio.',
+      imageUrl: '/images/startups/franchise-creative.png',
+    },
+  ],
+};
+
+export const ECONOMY_POLICY_ARTICLES: Article[] = [
+  {
+    id: 'economy-global-resilience',
+    slug: 'global-economy-shows-unexpected-resilience-amid-policy-uncertainty',
+    title: 'Global Economy Shows Unexpected Resilience Amid Policy Uncertainty',
+    category: 'GLOBAL ECONOMY',
+    author: {
+      name: 'James Carter',
+      avatar: '/images/authors/james-carter.png',
+      title: 'Global Markets & Economics Editor',
+      bio: 'James Carter reports on international fiscal policy, central banking developments, and macroeconomic indicators.',
+    },
+    date: 'Oct 22, 2026',
+    readTime: '6 min read',
+    excerpt: 'Despite persistent inflation and geopolitical risks, global growth remains steadier than expected, driven by stronger consumer demand and resilient labour markets.',
+    imageUrl: '/images/economy/global-resilience.png',
+  },
+  {
+    id: 'economy-central-banks',
+    slug: 'central-banks-signal-cautious-path-as-interest-rate-debate-continues',
+    title: 'Central Banks Signal Cautious Path as Interest Rate Debate Continues',
+    category: 'MONETARY POLICY',
+    author: {
+      name: 'Sophia Lim',
+      avatar: '/images/authors/sophia-lim.png',
+      title: 'Senior Monetary Policy Correspondent',
+      bio: 'Sophia Lim analyzes monetary policy trajectories, central bank rate decisions, and currency movements across G20 economies.',
+    },
+    date: 'Oct 22, 2026',
+    readTime: '5 min read',
+    excerpt: 'Policymakers remain divided on the timing of rate cuts, with inflation progress slowing and economic data sending mixed signals across major economies.',
+    imageUrl: '/images/economy/central-banks.png',
+  },
+  {
+    id: 'economy-global-trade',
+    slug: 'global-trade-outlook-improves-as-key-markets-ease-tariff-pressures',
+    title: 'Global Trade Outlook Improves as Key Markets Ease Tariff Pressures',
+    category: 'INTERNATIONAL TRADE',
+    author: {
+      name: 'Michael Reeves',
+      avatar: '/images/authors/michael-reeves.png',
+      title: 'Trade Policy & Supply Chain Analyst',
+      bio: 'Michael Reeves covers bilateral trade agreements, supply chain adjustments, and multinational commercial corridors.',
+    },
+    date: 'Oct 22, 2026',
+    readTime: '7 min read',
+    excerpt: 'Recent policy shifts and new trade agreements are boosting confidence in global commerce, with exporters seeing renewed growth opportunities.',
+    imageUrl: '/images/economy/global-trade.png',
+  },
+  {
+    id: 'economy-policy-impact',
+    slug: 'cross-border-commerce-and-trade-pacts-expand-growth',
+    title: 'Global Trade Outlook Improves as Key Markets Ease Tariff Pressures',
+    category: 'INTERNATIONAL TRADE',
+    author: {
+      name: 'Michael Reeves',
+      avatar: '/images/authors/michael-reeves.png',
+      title: 'Trade Policy & Supply Chain Analyst',
+      bio: 'Michael Reeves covers bilateral trade agreements, supply chain adjustments, and multinational commercial corridors.',
+    },
+    date: 'Oct 22, 2026',
+    readTime: '7 min read',
+    excerpt: 'Recent policy shifts and new trade agreements are boosting confidence in global commerce, with exporters seeing renewed growth opportunities.',
+    imageUrl: '/images/economy/policy-impact.png',
+  },
+];
+
 export const SIDE_HUSTLE_ARTICLES: Article[] = [
   {
     id: 'sh-1',
@@ -2776,6 +2914,9 @@ export const ALL_ARTICLES: Article[] = [
   ...LATEST_ARTICLES,
   ...SECONDARY_FEATURED,
   ...TOP_STORIES_GRID,
+  STARTUPS_ENTREPRENEURSHIP_SECTION.featured,
+  ...STARTUPS_ENTREPRENEURSHIP_SECTION.items,
+  ...ECONOMY_POLICY_ARTICLES,
   ...SIDE_HUSTLE_ARTICLES,
   ...TRENDING_STORIES,
   ...MARKETS_INVESTING_ARTICLES,

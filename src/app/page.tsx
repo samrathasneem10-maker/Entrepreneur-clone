@@ -3,6 +3,9 @@ import { Header } from '@/layouts/Header';
 import { Footer } from '@/layouts/Footer';
 import { HeroNewsSection } from '@/sections/HeroNewsSection';
 import { FeaturedGridSection } from '@/sections/FeaturedGridSection';
+import { StartupsEntrepreneurshipSection } from '@/sections/StartupsEntrepreneurshipSection';
+import { EconomyPublicPolicySection } from '@/sections/EconomyPublicPolicySection';
+import { AdvertisementSection } from '@/sections/AdvertisementSection';
 import { OvercomingImpossibleSection } from '@/sections/OvercomingImpossibleSection';
 import { SideHustleSection } from '@/sections/SideHustleSection';
 import { EntrepreneursSection } from '@/sections/EntrepreneursSection';
@@ -34,31 +37,40 @@ export default function Home() {
         {/* 2. Top Stories Featured Grid */}
         <FeaturedGridSection />
 
-        {/* 3. Overcoming Impossible Live Section */}
+        {/* 3. Startups & Entrepreneurship Section (Image 1) */}
+        <StartupsEntrepreneurshipSection />
+
+        {/* 4. Economy & Public Policy Section (Image 2) */}
+        <EconomyPublicPolicySection />
+
+        {/* 5. Centered Advertisement Banner Section (Image 3) */}
+        <AdvertisementSection />
+
+        {/* 6. Overcoming Impossible Live Section */}
         <OvercomingImpossibleSection />
 
-        {/* 4. Side Hustle Section (with Entrepreneur Newsletters widget) */}
+        {/* 7. Side Hustle Section (with Entrepreneur Newsletters widget) */}
         <SideHustleSection />
 
-        {/* 4. Entrepreneurs Section */}
+        {/* 8. Entrepreneurs Section */}
         <EntrepreneursSection />
 
-        {/* 5. Transform Your Business with Agentic AI Section */}
+        {/* 9. Transform Your Business with Agentic AI Section */}
         <TransformAISection />
 
-        {/* 6. Franchises Main Section (Task 1: Screenshot 1) */}
+        {/* 10. Franchises Main Section */}
         <FranchisesMainSection />
 
-        {/* 7. Franchise Lists Section */}
+        {/* 11. Franchise Lists Section */}
         <FranchiseSection />
 
-        {/* 8. Latest Videos Section (Task 2 & 3: Screenshot 2) */}
+        {/* 12. Latest Videos Section */}
         <VideosSection />
 
-        {/* 9. Categories Section (Task 4: Screenshot 3 & 4) */}
+        {/* 13. Categories Section */}
         <BusinessCategoryCards />
 
-        {/* 10. Entrepreneur Magazine Showcase (Task 5: Screenshot 5) */}
+        {/* 14. Entrepreneur Magazine Showcase */}
         <MagazineSection />
       </main>
 
