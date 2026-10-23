@@ -825,8 +825,8 @@ export default function DynamicTopicPage() {
       <Header />
 
       {/* Breadcrumb Bar */}
-      <div className="bg-white border-b border-slate-200/80 py-2.5 px-5 lg:px-10 text-xs text-slate-600 font-sans">
-        <div className="w-full max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto no-scrollbar">
+      <div className="bg-white border-b border-slate-200/80 py-2.5 px-4 sm:px-6 lg:px-8 text-xs text-slate-600 font-sans">
+        <div className="w-full max-w-[1680px] mx-auto flex items-center gap-2 overflow-x-auto no-scrollbar">
           <Link href="/" className="hover:text-[#1642D0] transition-colors shrink-0">
             Home
           </Link>
@@ -846,7 +846,7 @@ export default function DynamicTopicPage() {
       </div>
 
       {/* Category Header & Subcategory Badges Bar */}
-      <div className="w-full max-w-7xl mx-auto px-5 lg:px-10 pt-5 pb-2">
+      <div className="w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 pt-5 pb-2">
         <div className="pb-3 border-b border-slate-200">
           <span className="text-[11px] font-bold text-[#1642D0] uppercase tracking-wider font-sans block mb-1">
             {topicData.parentTitle ? `${topicData.parentTitle} • Subcategory` : 'Category'}
@@ -895,32 +895,17 @@ export default function DynamicTopicPage() {
         )}
       </div>
 
-      {/* 1st Top Advertisement Banner: Reduced size */}
-      <div className="w-full max-w-7xl mx-auto px-5 lg:px-10 pt-4 pb-4 sm:pt-5 sm:pb-5 text-center">
-        <span className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-400 block mb-1.5">
-          ADVERTISEMENT
-        </span>
-        <div className="w-full max-w-[728px] mx-auto min-h-[90px] bg-[#edf2f7] border border-slate-300 shadow-2xs flex flex-col items-center justify-center py-3.5 px-4 text-center">
-          <span className="text-xs font-semibold text-slate-600 font-sans">
-            Leaderboard Banner 728 × 90
-          </span>
-          <span className="text-[11px] text-slate-400 font-sans mt-0.5">
-            Your Advertisement Here
-          </span>
-        </div>
-      </div>
-
       {/* Main Hero Story: Full width image + THOUGHT LEADERS + Full length bold heading + Natural full width summary */}
-      <div className="w-full max-w-7xl mx-auto px-5 lg:px-10 pb-8">
+      <div className="w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 pb-8">
         {/* Full width hero image matching Image 3 */}
         <Link
           href="/article/how-great-leaders-build-teams-that-thrive"
-          className="block w-full overflow-hidden bg-slate-100 group cursor-pointer"
+          className="block w-full overflow-hidden rounded-xl bg-slate-100 group cursor-pointer border border-slate-200/80 shadow-xs"
         >
           <img
             src="/images/topic-hero-leaders.jpg"
             alt="How Great Leaders Build Teams That Thrive"
-            className="w-full h-[calc(100vh-250px)] min-h-[500px] sm:min-h-[580px] lg:min-h-[680px] xl:min-h-[740px] max-h-[850px] object-cover object-center group-hover:scale-[1.01] transition-transform duration-500"
+            className="w-full aspect-[16/8] sm:aspect-[2.2/1] md:aspect-[2.4/1] max-h-[500px] object-cover object-center group-hover:scale-[1.01] transition-transform duration-500 rounded-xl"
           />
         </Link>
 
@@ -948,7 +933,7 @@ export default function DynamicTopicPage() {
       </div>
 
       {/* 2-Column Sub-Featured Cards matching Image 2 */}
-      <div className="w-full max-w-7xl mx-auto px-5 lg:px-10 pb-10">
+      <div className="w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 pb-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           {/* Card 1 */}
           <article className="group flex flex-col items-start text-left w-full">
@@ -1007,7 +992,7 @@ export default function DynamicTopicPage() {
       </div>
 
       {/* Bottom Section: Left Stream (10 Articles per page + NEXT/PREVIOUS Controls) & Right Sidebar (Large Ad + Laptop Image) */}
-      <div id="articles-list-section" className="w-full max-w-7xl mx-auto px-5 lg:px-10 pb-16 scroll-mt-20">
+      <div id="articles-list-section" className="w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 pb-16 scroll-mt-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
           {/* Left Column: MORE NEWS heading + Bordered box with 10 articles per page */}
@@ -1114,33 +1099,51 @@ export default function DynamicTopicPage() {
           {/* Right Column: Sidebar with 2 Advertisements (Articles 1-5 & Articles 6-9) */}
           <div className="lg:col-span-5 space-y-6 relative">
             
-            {/* 1st Sidebar Advertisement: 300 × 400 */}
+            {/* 1st Sidebar Advertisement */}
             <div className="w-full text-center">
               <span className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-400 block mb-2">
                 ADVERTISEMENT
               </span>
-              <div className="w-full h-[400px] min-h-[400px] bg-[#edf2f7] border border-slate-300 flex flex-col items-center justify-center p-6 text-center shadow-2xs">
-                <span className="text-xs sm:text-[13px] font-semibold text-slate-600 font-sans">
-                  300 × 400 Banner
+              <div className="w-full rounded-xl overflow-hidden bg-gradient-to-br from-[#0a0f1d] via-[#101935] to-[#0b1329] border border-slate-800 p-6 text-white text-center shadow-md">
+                <span className="inline-block px-2.5 py-1 rounded text-[10px] font-sans font-black uppercase tracking-wider bg-amber-400 text-slate-950 mb-3">
+                  EXCLUSIVE BRIEFING
                 </span>
-                <span className="text-[11px] text-slate-400 font-sans mt-0.5">
-                  Your Advertisement Here
-                </span>
+                <h4 className="font-serif font-bold text-lg leading-snug mb-2 text-white">
+                  Unlock Insider Market Intelligence & Playbooks
+                </h4>
+                <p className="text-xs text-slate-300 font-sans mb-4 leading-relaxed">
+                  Join 100,000+ executives receiving daily tactical growth playbooks.
+                </p>
+                <Link
+                  href="/subscribe"
+                  className="inline-block w-full py-2.5 px-4 rounded-lg bg-[#1642D0] hover:bg-[#1235a8] text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-sm"
+                >
+                  Start Free Trial
+                </Link>
               </div>
             </div>
 
-            {/* 2nd Sidebar Advertisement: 300 × 700 (Sticky to move along with the section when scrolling down) */}
+            {/* 2nd Sidebar Advertisement (Sticky) */}
             <div className="w-full text-center lg:sticky lg:top-24 z-10 transition-all">
               <span className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-400 block mb-2">
                 ADVERTISEMENT
               </span>
-              <div className="w-full h-[700px] min-h-[700px] bg-[#edf2f7] border border-slate-300 flex flex-col items-center justify-center p-6 text-center shadow-2xs">
-                <span className="text-xs sm:text-[13px] font-semibold text-slate-600 font-sans">
-                  300 × 700 Banner
+              <div className="w-full rounded-xl overflow-hidden bg-gradient-to-br from-[#080d1a] via-[#0f172a] to-[#020617] border border-slate-800 p-6 text-white text-center shadow-md">
+                <span className="inline-block px-2.5 py-1 rounded text-[10px] font-sans font-black uppercase tracking-wider bg-blue-500 text-white mb-3">
+                  ENTREPRENEUR+ VIP
                 </span>
-                <span className="text-[11px] text-slate-400 font-sans mt-0.5">
-                  Your Advertisement Here
-                </span>
+                <h4 className="font-serif font-bold text-lg leading-snug mb-2 text-white">
+                  All-Access Magazine & Video Masterclasses
+                </h4>
+                <p className="text-xs text-slate-300 font-sans mb-4 leading-relaxed">
+                  Stream on-demand workshops with world-class founders and venture capitalists.
+                </p>
+                <Link
+                  href="/subscribe"
+                  className="inline-block w-full py-2.5 px-4 rounded-lg bg-[#1642D0] hover:bg-[#1235a8] text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-sm"
+                >
+                  Get VIP Access
+                </Link>
               </div>
             </div>
 

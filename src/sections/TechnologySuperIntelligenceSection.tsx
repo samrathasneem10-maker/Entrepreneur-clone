@@ -41,9 +41,9 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
       </div>
 
       {/* 3-Column Responsive Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 items-start">
-        {/* Left Column: 5 Stacked Tech Feeds (3.5 cols) */}
-        <div className="lg:col-span-4 xl:col-span-3 flex flex-col divide-y divide-slate-200 order-2 lg:order-1">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+        {/* Left Column: 5 Stacked Tech Feeds */}
+        <div className="lg:col-span-4 xl:col-span-4 flex flex-col divide-y divide-slate-200 order-2 lg:order-1">
           {leftItems.map((item) => (
             <article key={item.id} className="group py-3 sm:py-3.5 first:pt-0 last:pb-0">
               <Link
@@ -130,8 +130,8 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
           </article>
         </div>
 
-        {/* Right Column: 2 Cards (AI Startups & Semiconductors) (3.5 cols) */}
-        <div className="lg:col-span-4 xl:col-span-4 flex flex-col gap-6 order-3 divide-y lg:divide-y-0 divide-slate-200">
+        {/* Right Column: 2 Cards (AI Startups & Semiconductors) */}
+        <div className="lg:col-span-4 xl:col-span-3 flex flex-col gap-6 order-3 divide-y lg:divide-y-0 divide-slate-200">
           {rightCards.map((card, idx) => (
             <article
               key={card.id}

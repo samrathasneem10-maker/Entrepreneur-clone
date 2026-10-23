@@ -84,7 +84,7 @@ function SearchContent() {
 
       {/* Breadcrumb Navigation Line */}
       <div className="bg-slate-50/80 border-b border-slate-200 py-2.5 px-5 lg:px-10 text-xs text-slate-600 font-sans">
-        <div className="w-full max-w-7xl mx-auto flex items-center gap-2">
+        <div className="w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-2">
           <Link href="/" className="hover:text-[#1642D0] transition-colors">
             Home
           </Link>
@@ -157,7 +157,7 @@ function SearchContent() {
       </section>
 
       {/* 2. MAIN RESULTS AREA */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-5 lg:px-10 py-10 md:py-12">
+      <main className="flex-1 w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12">
         {/* Results Count Header */}
         <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-slate-200 mb-8">
           <div>

@@ -10,15 +10,13 @@ import { GlobalBusinessSection } from '@/sections/GlobalBusinessSection';
 import { TechnologySuperIntelligenceSection } from '@/sections/TechnologySuperIntelligenceSection';
 import { TrendingResilienceSection } from '@/sections/TrendingResilienceSection';
 import { LuxuryLifestyleSection } from '@/sections/LuxuryLifestyleSection';
-import { OvercomingImpossibleSection } from '@/sections/OvercomingImpossibleSection';
-import { SideHustleSection } from '@/sections/SideHustleSection';
-import { EntrepreneursSection } from '@/sections/EntrepreneursSection';
-import { TransformAISection } from '@/sections/TransformAISection';
-import { FranchisesMainSection } from '@/sections/FranchisesMainSection';
-import { FranchiseSection } from '@/sections/FranchiseSection';
-import { VideosSection } from '@/sections/VideosSection';
-import { BusinessCategoryCards } from '@/sections/BusinessCategoryCards';
-import { MagazineSection } from '@/sections/MagazineSection';
+import { InterviewsOpinionsSection } from '@/sections/InterviewsOpinionsSection';
+import { CompanyProfilesSection } from '@/sections/CompanyProfilesSection';
+import { EnergyCommoditiesSection } from '@/sections/EnergyCommoditiesSection';
+import { BusinessLegalAffairsSection } from '@/sections/BusinessLegalAffairsSection';
+import { RetailEcommerceSection } from '@/sections/RetailEcommerceSection';
+import { ResearchInsightsSection } from '@/sections/ResearchInsightsSection';
+import { MarketingBrandingSection } from '@/sections/MarketingBrandingSection';
 
 export default function Home() {
   return (
@@ -33,12 +31,12 @@ export default function Home() {
         </a>
       </div>
 
-      {/* Main Page Body: Decreased left/right empty space by using wider max-w and tighter padding */}
-      <main className="flex-1 w-full max-w-[1460px] 2xl:max-w-[1560px] mx-auto px-3 sm:px-4 md:px-5 lg:px-6">
-        {/* 1. Hero News Section */}
+      {/* Main Page Body: efficiently utilizing screen width with tight, elegant margins */}
+      <main className="flex-1 w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8">
+        {/* 1. Hero News Section (Kept untouched for user customization) */}
         <HeroNewsSection />
 
-        {/* 2. Top Stories Featured Grid */}
+        {/* 2. Top Stories Featured Grid (Kept untouched for user customization) */}
         <FeaturedGridSection />
 
         {/* 3. Startups & Entrepreneurship Section */}
@@ -47,53 +45,50 @@ export default function Home() {
         {/* 4. Economy & Public Policy Section */}
         <EconomyPublicPolicySection />
 
-        {/* 5. Centered Advertisement Banner Section */}
+        {/* 5. Centered Advertisement Banner 1 */}
         <AdvertisementSection />
 
-        {/* 6. Global Business Section (Uploaded Image 1) */}
+        {/* 6. Global Business Section */}
         <GlobalBusinessSection />
 
-        {/* 7. Technology & Super Intelligence Section (Uploaded Image 2) */}
+        {/* 7. Technology & Super Intelligence Section */}
         <TechnologySuperIntelligenceSection />
 
-        {/* 8. Centered Advertisement Section (Uploaded Image 3) */}
+        {/* 8. Centered Advertisement Banner 2 */}
         <AdvertisementSection />
 
-        {/* 9. Global Resilience & Trending News 01-05 (Uploaded Image 4) */}
+        {/* 9. Global Resilience & Trending News 01-05 */}
         <TrendingResilienceSection />
 
-        {/* 10. Luxury & Lifestyle Section (Uploaded Image 5) */}
+        {/* 10. Luxury & Lifestyle Section */}
         <LuxuryLifestyleSection />
 
-        {/* 11. Bottom Advertisement Banner (Uploaded Image 5 Bottom Ad Slot) */}
+        {/* 11. Centered Advertisement Banner 3 */}
         <AdvertisementSection />
 
-        {/* 12. Overcoming Impossible Live Section */}
-        <OvercomingImpossibleSection />
+        {/* 12. Interviews & Opinions Section */}
+        <InterviewsOpinionsSection />
 
-        {/* 13. Side Hustle Section */}
-        <SideHustleSection />
+        {/* 13. The Leaders | Company Profiles Section */}
+        <CompanyProfilesSection />
 
-        {/* 14. Entrepreneurs Section */}
-        <EntrepreneursSection />
+        {/* 14. Energy & Commodities Section */}
+        <EnergyCommoditiesSection />
 
-        {/* 15. Transform Your Business with Agentic AI Section */}
-        <TransformAISection />
+        {/* 15. Business & Legal Affairs Section */}
+        <BusinessLegalAffairsSection />
 
-        {/* 16. Franchises Main Section */}
-        <FranchisesMainSection />
+        {/* 16. Centered Advertisement Banner 4 */}
+        <AdvertisementSection />
 
-        {/* 17. Franchise Lists Section */}
-        <FranchiseSection />
+        {/* 17. Retail & E-commerce Section */}
+        <RetailEcommerceSection />
 
-        {/* 18. Latest Videos Section */}
-        <VideosSection />
+        {/* 18. Research & Insights Section */}
+        <ResearchInsightsSection />
 
-        {/* 19. Categories Section */}
-        <BusinessCategoryCards />
-
-        {/* 20. Entrepreneur Magazine Showcase */}
-        <MagazineSection />
+        {/* 19. Marketing & Branding Section */}
+        <MarketingBrandingSection />
       </main>
 
       {/* Expanded Multi-Column Footer */}
