@@ -456,7 +456,7 @@ export default function ArticleDetailPage() {
       <Header showProgressBar={true} />
 
       {/* Main Article Container with 2-Column Layout */}
-      <main className="flex-1 w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-10">
+      <main className="flex-1 w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pt-4 pb-10">
         
         {/* Top < BACK TO HOME bar + horizontal line matching reference image 1 */}
         <div className="w-full mb-6">

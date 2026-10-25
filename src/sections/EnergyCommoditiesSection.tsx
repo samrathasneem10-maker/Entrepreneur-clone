@@ -36,15 +36,15 @@ export const EnergyCommoditiesSection: React.FC = () => {
         </Link>
       </div>
 
-      {/* 3-Column Composite Grid matching Image 3: Left (38%), Middle (34%), Right (28%) */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_1.2fr_1fr] gap-6 lg:gap-7 xl:gap-8 items-stretch">
+      {/* 3-Column Composite Grid matching Reference Image 1: Left Lead (38%), Middle 2 Cards (35%), Right 4 Stories (27%) */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1.38fr_1.26fr_1fr] gap-6 lg:gap-7 xl:gap-8 items-stretch w-full">
         
-        {/* Left Column: Big Lead Story with Oil Refinery Image */}
+        {/* Left Column: Big Lead Story with Oil Pumpjack & Refinery Image */}
         <div className="flex flex-col justify-between h-full">
           <article className="group flex flex-col justify-between h-full">
             <Link href={leadUrl} className="flex flex-col justify-between h-full no-underline text-inherit cursor-pointer">
               <div className="flex flex-col">
-                <figure className="relative w-full aspect-[16/9.5] overflow-hidden rounded-xs mb-3.5 border border-slate-200/90 bg-slate-100 flex-shrink-0">
+                <figure className="relative w-full aspect-[16/10] overflow-hidden rounded-xs mb-3.5 border border-slate-200/90 bg-slate-100 flex-shrink-0">
                   <img
                     src={lead.imageUrl}
                     alt={lead.title}
@@ -60,12 +60,12 @@ export const EnergyCommoditiesSection: React.FC = () => {
                   {lead.title}
                 </h3>
 
-                <p className="text-xs sm:text-[13px] text-slate-600 font-serif leading-relaxed mb-3 line-clamp-3">
+                <p className="text-xs sm:text-[13.5px] text-slate-600 font-serif leading-relaxed mb-3 line-clamp-3">
                   {lead.excerpt}
                 </p>
               </div>
 
-              <div className="mt-auto pt-1 text-xs font-sans text-slate-500 flex items-center gap-2">
+              <div className="mt-auto pt-2 text-xs font-sans text-slate-500 flex items-center gap-2">
                 <span>{lead.date}</span>
                 <span className="text-slate-300">•</span>
                 <span>{lead.readTime}</span>
@@ -74,15 +74,15 @@ export const EnergyCommoditiesSection: React.FC = () => {
           </article>
         </div>
 
-        {/* Middle Column: Two Stacked Stories with Large Images on Left matching Image 3 */}
-        <div className="flex flex-col justify-between h-full gap-5">
+        {/* Middle Column: Two Stacked Stories with Large Images matching Reference Image 1 */}
+        <div className="flex flex-col justify-between h-full gap-5 sm:gap-6">
           {middle.map((item) => {
             const itemUrl = getArticleUrl(item);
             return (
               <article key={item.id} className="group flex-1 flex flex-col justify-between">
-                <Link href={itemUrl} className="flex flex-row gap-3.5 sm:gap-4 items-start h-full no-underline text-inherit cursor-pointer">
-                  {/* Wide Rectangle Image */}
-                  <figure className="relative w-40 sm:w-48 md:w-52 aspect-[16/10] rounded-xs overflow-hidden flex-shrink-0 border border-slate-200/90 bg-slate-100">
+                <Link href={itemUrl} className="flex flex-row gap-3.5 sm:gap-4 items-stretch h-full no-underline text-inherit cursor-pointer">
+                  {/* Large Proportional Image */}
+                  <figure className="relative w-[46%] sm:w-[48%] aspect-[16/10.5] rounded-xs overflow-hidden flex-shrink-0 border border-slate-200/90 bg-slate-100">
                     <img
                       src={item.imageUrl}
                       alt={item.title}
@@ -90,25 +90,25 @@ export const EnergyCommoditiesSection: React.FC = () => {
                     />
                   </figure>
 
-                  {/* Details on Right */}
-                  <div className="flex-1 min-w-0 flex flex-col justify-between h-full">
+                  {/* Story Details on Right */}
+                  <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
                     <div>
                       <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1 block">
                         {item.category}
                       </span>
 
-                      <h3 className="text-[14px] sm:text-[15px] font-serif font-bold text-slate-900 leading-snug mb-1 group-hover:underline underline-offset-2 transition-all line-clamp-2">
+                      <h3 className="text-[14px] sm:text-[15.5px] xl:text-[16.5px] font-serif font-bold text-slate-900 leading-snug mb-1.5 group-hover:underline underline-offset-2 transition-all line-clamp-2">
                         {item.title}
                       </h3>
 
                       {item.excerpt && (
-                        <p className="text-[11px] sm:text-xs text-slate-600 font-serif leading-relaxed line-clamp-2 mb-1">
+                        <p className="text-[11px] sm:text-xs text-slate-600 font-serif leading-relaxed line-clamp-2 mb-1.5">
                           {item.excerpt}
                         </p>
                       )}
                     </div>
 
-                    <div className="mt-auto text-[10px] sm:text-[11px] font-sans text-slate-500 pt-1">
+                    <div className="mt-auto text-[10.5px] sm:text-[11px] font-sans text-slate-500 pt-1">
                       <span>{item.date}</span>
                       <span className="mx-1 text-slate-300">•</span>
                       <span>{item.readTime}</span>
@@ -120,15 +120,15 @@ export const EnergyCommoditiesSection: React.FC = () => {
           })}
         </div>
 
-        {/* Right Column: 4 Compact News Items with Enlarged Thumbnails matching Image 3 */}
-        <div className="flex flex-col justify-between h-full divide-y divide-slate-100">
+        {/* Right Column: 4 Compact News Items with Full-Width Alignment matching Reference Image 1 */}
+        <div className="flex flex-col justify-between h-full gap-3 sm:gap-3.5 xl:gap-4">
           {right.map((item) => {
             const itemUrl = getArticleUrl(item);
             return (
-              <article key={item.id} className="group flex-1 flex items-center py-2 sm:py-2.5 first:pt-0 last:pb-0">
-                <Link href={itemUrl} className="flex items-center gap-3 w-full no-underline text-inherit cursor-pointer">
+              <article key={item.id} className="group flex-1 flex items-stretch">
+                <Link href={itemUrl} className="flex items-center gap-3 sm:gap-3.5 w-full no-underline text-inherit cursor-pointer">
                   {/* Enlarged Thumbnail */}
-                  <figure className="relative w-24 sm:w-28 md:w-30 aspect-[16/10] flex-shrink-0 overflow-hidden rounded-xs bg-slate-100 border border-slate-200/90">
+                  <figure className="relative w-[36%] sm:w-[38%] max-w-[145px] aspect-[16/10] flex-shrink-0 overflow-hidden rounded-xs bg-slate-100 border border-slate-200/90">
                     <img
                       src={item.imageUrl}
                       alt={item.title}
@@ -136,14 +136,17 @@ export const EnergyCommoditiesSection: React.FC = () => {
                     />
                   </figure>
 
-                  <div className="flex-1 min-w-0">
-                    <span className="text-[9.5px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-0.5 block">
-                      {item.category}
-                    </span>
-                    <h4 className="text-[12px] sm:text-[13px] font-serif font-bold text-slate-900 leading-snug line-clamp-2 group-hover:underline underline-offset-2 transition-all">
-                      {item.title}
-                    </h4>
-                    <div className="text-[10px] font-sans text-slate-500">
+                  {/* Thumbnail Details */}
+                  <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+                    <div>
+                      <span className="text-[10px] sm:text-[10.5px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-0.5 block">
+                        {item.category}
+                      </span>
+                      <h4 className="text-[12px] sm:text-[13px] xl:text-[13.5px] font-serif font-bold text-slate-900 leading-snug line-clamp-2 group-hover:underline underline-offset-2 transition-all">
+                        {item.title}
+                      </h4>
+                    </div>
+                    <div className="text-[10px] sm:text-[10.5px] font-sans text-slate-500 mt-auto pt-0.5">
                       <span>{item.date}</span>
                       <span className="mx-1 text-slate-300">•</span>
                       <span>{item.readTime}</span>

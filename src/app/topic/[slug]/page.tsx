@@ -825,8 +825,8 @@ export default function DynamicTopicPage() {
       <Header />
 
       {/* Breadcrumb Bar */}
-      <div className="bg-white py-2.5 px-4 sm:px-6 lg:px-8 text-xs text-slate-600 font-sans">
-        <div className="w-full max-w-[1680px] mx-auto flex items-center gap-2 overflow-x-auto no-scrollbar">
+      <div className="bg-white py-2.5 px-4 sm:px-6 lg:px-8 xl:px-10 text-xs text-slate-600 font-sans">
+        <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 flex items-center gap-2 overflow-x-auto no-scrollbar">
           <Link href="/" className="hover:text-[#1642D0] transition-colors shrink-0">
             Home
           </Link>
@@ -846,7 +846,7 @@ export default function DynamicTopicPage() {
       </div>
 
       {/* Category Header */}
-      <div className="w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 pt-5 pb-3">
+      <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pt-5 pb-3">
         <div>
           <span className="text-[11px] font-bold text-[#1642D0] uppercase tracking-wider font-sans block mb-1">
             {topicData.parentTitle ? `${topicData.parentTitle} • Subcategory` : 'Category'}
@@ -858,7 +858,7 @@ export default function DynamicTopicPage() {
       </div>
 
       {/* Main Hero Story: Full width image + THOUGHT LEADERS + Full length bold heading + Natural full width summary */}
-      <div className="w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+      <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pb-8">
         {/* Full width hero image matching Image 3 */}
         <Link
           href="/article/how-great-leaders-build-teams-that-thrive"
@@ -895,7 +895,7 @@ export default function DynamicTopicPage() {
       </div>
 
       {/* 2-Column Sub-Featured Cards matching Image 2 */}
-      <div className="w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 pb-10">
+      <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pb-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           {/* Card 1 */}
           <article className="group flex flex-col items-start text-left w-full">
@@ -954,7 +954,7 @@ export default function DynamicTopicPage() {
       </div>
 
       {/* Bottom Section: Left Stream (10 Articles per page + NEXT/PREVIOUS Controls) & Right Sidebar (Large Ad + Laptop Image) */}
-      <div id="articles-list-section" className="w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 pb-16 scroll-mt-20">
+      <div id="articles-list-section" className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pb-16 scroll-mt-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           
           {/* Left Column: MORE NEWS heading + Bordered box with 10 articles per page */}

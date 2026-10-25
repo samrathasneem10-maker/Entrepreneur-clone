@@ -88,7 +88,7 @@ export const Footer: React.FC = () => {
 
   return (
     <footer className="bg-[#020618] text-white font-sans w-full py-6 sm:py-8 border-t border-slate-900">
-      <div className="w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
         
         {/* TOP SECTION: Newsletter Subscription */}
         <div className="py-5 sm:py-6 flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-10">

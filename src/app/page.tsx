@@ -31,8 +31,8 @@ export default function Home() {
         </a>
       </div>
 
-      {/* Main Page Body: efficiently utilizing screen width with tight, elegant margins */}
-      <main className="flex-1 w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Main Page Body: wide screen layout matching Reference Image 3 with clean side margins */}
+      <main className="flex-1 w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
         {/* 1. Hero News Section */}
         <HeroNewsSection />
 

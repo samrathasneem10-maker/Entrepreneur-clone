@@ -81,7 +81,7 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
 
         
         {/* Upper Header Bar: Menu Dots + Logo (Left) and Controls (Right) */}
-        <div className="w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-3.5">
+        <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 py-3 sm:py-3.5">
           <div className="w-full flex items-center justify-between">
             
             {/* Left: Menu Dots Grid + Logo */}
@@ -200,7 +200,7 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
 
         {/* Lower Header Bar: 8 Primary Navigation Categories matching reference screenshot */}
         <div className="border-t border-slate-100 bg-white">
-          <div className="w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
             <nav className="py-2 sm:py-2.5 overflow-x-auto no-scrollbar font-sans">
               <ul className="flex items-center lg:justify-between gap-4 sm:gap-5 lg:gap-3 xl:gap-4 whitespace-nowrap min-w-max lg:min-w-0">
                 {NAVIGATION_STRUCTURE.primary.map((item) => (

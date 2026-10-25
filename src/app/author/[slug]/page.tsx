@@ -523,7 +523,7 @@ export default function AuthorProfilePage() {
 
       {/* TOP AUTHOR PROFILE SECTION - EXACT MATCH TO IMAGE 1 */}
       <section className="bg-white pt-10 pb-4 md:pt-14 md:pb-6 px-5 lg:px-10">
-        <div className="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8 md:gap-12">
             {/* Author Avatar: Clean circle without border */}
             <div className="shrink-0">
@@ -578,7 +578,7 @@ export default function AuthorProfilePage() {
       </section>
 
       {/* ARTICLES STREAM - 1 ROW 3 COLUMNS GRID */}
-      <main id="author-articles-stream" className="flex-1 w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10">
+      <main id="author-articles-stream" className="flex-1 w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 py-6 md:py-10">
         {/* Section Headline */}
         <div className="mb-8">
           <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-serif font-black text-[#020618] tracking-tight my-0">
