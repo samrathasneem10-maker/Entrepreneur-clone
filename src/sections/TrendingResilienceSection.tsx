@@ -87,7 +87,7 @@ export const TrendingResilienceSection: React.FC = () => {
                   </span>
 
                   {/* Enlarged Thumbnail */}
-                  <figure className="relative w-28 sm:w-36 md:w-40 aspect-[16/9] rounded-xs overflow-hidden flex-shrink-0 border border-slate-200/90 bg-slate-100">
+                  <figure className="relative w-36 sm:w-44 md:w-48 lg:w-44 xl:w-52 aspect-[16/9.5] rounded-xs overflow-hidden flex-shrink-0 border border-slate-200/90 bg-slate-100">
                     <img
                       src={item.imageUrl}
                       alt={item.title}

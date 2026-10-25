@@ -126,7 +126,7 @@ export const HeroNewsSection: React.FC = () => {
 
                   <Link
                     href={`/article/${art.slug || art.id}`}
-                    className="w-[100px] h-[76px] sm:w-[108px] sm:h-[82px] shrink-0 rounded-xs overflow-hidden bg-slate-100 block cursor-pointer"
+                    className="w-[116px] h-[82px] sm:w-[126px] sm:h-[88px] md:w-[136px] md:h-[94px] shrink-0 rounded-xs overflow-hidden bg-slate-100 block cursor-pointer"
                   >
                     <img
                       src={art.imageUrl}
@@ -294,7 +294,7 @@ export const HeroNewsSection: React.FC = () => {
 
                   <Link
                     href={`/article/${art.slug || art.id}`}
-                    className="w-[124px] h-[74px] sm:w-[136px] sm:h-[78px] shrink-0 rounded-xs overflow-hidden bg-slate-100 block cursor-pointer"
+                    className="w-[136px] h-[84px] sm:w-[148px] sm:h-[92px] md:w-[158px] md:h-[98px] shrink-0 rounded-xs overflow-hidden bg-slate-100 block cursor-pointer"
                   >
                     <img
                       src={art.imageUrl}

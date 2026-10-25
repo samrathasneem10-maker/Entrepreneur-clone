@@ -82,7 +82,7 @@ export const EnergyCommoditiesSection: React.FC = () => {
               <article key={item.id} className="group flex-1 flex flex-col justify-between">
                 <Link href={itemUrl} className="flex flex-row gap-3.5 sm:gap-4 items-stretch h-full no-underline text-inherit cursor-pointer">
                   {/* Large Proportional Image */}
-                  <figure className="relative w-[46%] sm:w-[48%] aspect-[16/10.5] rounded-xs overflow-hidden flex-shrink-0 border border-slate-200/90 bg-slate-100">
+                  <figure className="relative w-[48%] sm:w-[50%] aspect-[16/10.5] rounded-xs overflow-hidden flex-shrink-0 border border-slate-200/90 bg-slate-100">
                     <img
                       src={item.imageUrl}
                       alt={item.title}
@@ -128,7 +128,7 @@ export const EnergyCommoditiesSection: React.FC = () => {
               <article key={item.id} className="group flex-1 flex items-stretch">
                 <Link href={itemUrl} className="flex items-center gap-3 sm:gap-3.5 w-full no-underline text-inherit cursor-pointer">
                   {/* Enlarged Thumbnail */}
-                  <figure className="relative w-[36%] sm:w-[38%] max-w-[145px] aspect-[16/10] flex-shrink-0 overflow-hidden rounded-xs bg-slate-100 border border-slate-200/90">
+                  <figure className="relative w-[38%] sm:w-[42%] max-w-[160px] aspect-[16/10] flex-shrink-0 overflow-hidden rounded-xs bg-slate-100 border border-slate-200/90">
                     <img
                       src={item.imageUrl}
                       alt={item.title}

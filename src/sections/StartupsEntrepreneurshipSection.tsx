@@ -128,7 +128,7 @@ export const StartupsEntrepreneurshipSection: React.FC = () => {
 
                   {/* Right Thumbnail */}
                   {item.imageUrl && (
-                    <figure className="relative w-44 sm:w-52 md:w-56 lg:w-60 aspect-[16/9.2] flex-shrink-0 overflow-hidden rounded-xs border border-slate-200/90 bg-slate-100">
+                    <figure className="relative w-52 sm:w-60 md:w-64 lg:w-68 xl:w-76 aspect-[16/9.5] flex-shrink-0 overflow-hidden rounded-xs border border-slate-200/90 bg-slate-100">
                       <img
                         src={item.imageUrl}
                         alt={item.title}

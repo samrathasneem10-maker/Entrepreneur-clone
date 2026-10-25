@@ -42,19 +42,19 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
       </div>
 
       {/* 3-Column Responsive Grid: Left, Middle, and Right perfectly aligned at top and bottom */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1.35fr_1.1fr] gap-5 lg:gap-6 items-stretch">
+      <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_1.35fr_1.1fr] gap-6 lg:gap-7 items-stretch">
         
         {/* Left Column: 5 Stacked Tech Items with Equal Vertical Rhythm */}
         <div className="flex flex-col justify-between h-full divide-y divide-slate-100 order-2 lg:order-1">
           {leftItems.map((item) => (
-            <article key={item.id} className="group flex-1 flex items-center py-2 sm:py-2.5 first:pt-0 last:pb-0">
+            <article key={item.id} className="group flex-1 flex items-center py-2.5 sm:py-3 first:pt-0 last:pb-0">
               <Link
                 href={getArticleUrl(item)}
-                className="flex items-center gap-3.5 w-full no-underline text-inherit cursor-pointer"
+                className="flex items-center gap-3.5 sm:gap-4 w-full no-underline text-inherit cursor-pointer"
                 aria-label={item.title}
               >
-                {/* High-clarity thumbnail */}
-                <figure className="relative w-24 sm:w-28 md:w-30 aspect-[16/10] rounded-xs overflow-hidden flex-shrink-0 border border-slate-200/90 bg-slate-100">
+                {/* Large high-clarity thumbnail matching Reference Image 1 */}
+                <figure className="relative w-32 sm:w-36 md:w-40 xl:w-44 aspect-[16/10.5] rounded-xs overflow-hidden flex-shrink-0 border border-slate-200/90 bg-slate-100">
                   <img
                     src={item.imageUrl}
                     alt={item.title}
@@ -88,8 +88,8 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
               aria-label={featured.title}
             >
               <div className="flex flex-col">
-                {/* Pure Image on Top - No Text Overlay */}
-                <figure className="relative w-full aspect-[16/9.2] max-h-[225px] overflow-hidden rounded-xs mb-3 border border-slate-200/90 bg-slate-100 flex-shrink-0">
+                {/* Pure Large Image on Top matching Reference Image 1 */}
+                <figure className="relative w-full aspect-[16/10.8] overflow-hidden rounded-xs mb-3.5 border border-slate-200/90 bg-slate-100 flex-shrink-0">
                   <img
                     src={featured.imageUrl}
                     alt={featured.title}
@@ -138,7 +138,7 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
         </div>
 
         {/* Right Column: 2 Cards (AI Startups & Semiconductors) - Sized to match left and center height */}
-        <div className="flex flex-col justify-between h-full gap-4 sm:gap-4.5 order-3">
+        <div className="flex flex-col justify-between h-full gap-5 sm:gap-6 order-3">
           {rightCards.map((card) => (
             <article
               key={card.id}
@@ -150,8 +150,8 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
                 aria-label={card.title}
               >
                 <div>
-                  {/* Pure Image on Top - Sleek horizontal aspect ratio */}
-                  <figure className="relative w-full aspect-[16/7.5] max-h-[120px] overflow-hidden rounded-xs mb-2 border border-slate-200/90 bg-slate-100 flex-shrink-0">
+                  {/* Large Proportional Image on Top matching Reference Image 1 */}
+                  <figure className="relative w-full aspect-[16/10] overflow-hidden rounded-xs mb-2.5 border border-slate-200/90 bg-slate-100 flex-shrink-0">
                     <img
                       src={card.imageUrl}
                       alt={card.title}
