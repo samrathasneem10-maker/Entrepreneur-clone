@@ -8,7 +8,7 @@ export const LuxuryLifestyleSection: React.FC = () => {
   return (
     <section className="bg-white pt-8 sm:pt-10 pb-8 sm:pb-10 w-full">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4 sm:mb-5">
+      <div className="flex items-center justify-between mb-5 sm:mb-6">
         <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
           Luxury &amp; Lifestyle
         </h2>
@@ -33,13 +33,7 @@ export const LuxuryLifestyleSection: React.FC = () => {
         </Link>
       </div>
 
-      {/* Empty Black Box Banner */}
-      <div
-        className="w-full h-24 sm:h-28 md:h-32 bg-black rounded-lg sm:rounded-xl mb-6 sm:mb-8 border border-neutral-900"
-        aria-hidden="true"
-      />
-
-      {/* 4-Card Responsive Grid */}
+      {/* 4-Card Responsive Grid: Images clearly displayed with respective text underneath */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-8 items-stretch">
         {LUXURY_LIFESTYLE_SECTION.map((card) => {
           const cardUrl = getArticleUrl(card);
@@ -50,7 +44,7 @@ export const LuxuryLifestyleSection: React.FC = () => {
                 className="flex flex-col justify-between h-full no-underline text-inherit cursor-pointer"
                 aria-label={card.title}
               >
-                {/* Image */}
+                {/* Image clearly displayed on top */}
                 <figure className="relative w-full aspect-[16/10] overflow-hidden rounded-lg sm:rounded-xl mb-3.5 border border-slate-200/90 bg-slate-100 flex-shrink-0">
                   <img
                     src={card.imageUrl}
@@ -59,24 +53,21 @@ export const LuxuryLifestyleSection: React.FC = () => {
                   />
                 </figure>
 
-                {/* Category */}
+                {/* Respective text placed underneath each image */}
                 <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1.5 block">
                   {card.category}
                 </span>
 
-                {/* Title */}
                 <h3 className="text-[16px] sm:text-[17px] lg:text-[18px] font-serif font-bold text-slate-900 leading-[1.3] tracking-tight mb-2 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 transition-all">
                   {card.title}
                 </h3>
 
-                {/* Excerpt */}
                 {card.excerpt && (
                   <p className="text-xs sm:text-[13px] text-slate-600 font-serif leading-relaxed mb-3 line-clamp-3 flex-1">
                     {card.excerpt}
                   </p>
                 )}
 
-                {/* Date / Read Time */}
                 <div className="mt-auto text-[11px] font-sans text-slate-500 pt-1">
                   <span>{card.date}</span>
                   <span className="mx-1.5 text-slate-300">•</span>

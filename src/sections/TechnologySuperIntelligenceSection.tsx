@@ -10,7 +10,7 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
   return (
     <section className="bg-white pt-8 sm:pt-10 pb-8 sm:pb-10 w-full">
       {/* Header with Title, Subtitle and See All */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-4 sm:mb-5 gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-5 sm:mb-6 gap-3">
         <div>
           <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
             Technology &amp; Super Intelligence
@@ -40,13 +40,7 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
         </Link>
       </div>
 
-      {/* Empty Black Box Banner */}
-      <div
-        className="w-full h-24 sm:h-28 md:h-32 bg-black rounded-lg sm:rounded-xl mb-6 sm:mb-8 border border-neutral-900"
-        aria-hidden="true"
-      />
-
-      {/* 3-Column Responsive Grid: Left (4 cols), Center (5 cols), Right (3 cols) with balanced images and equal vertical alignment */}
+      {/* 3-Column Responsive Grid: Images first, text separately below each image */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
         {/* Left Column: Stacked Tech Feeds with all 5 high-clarity items */}
         <div className="lg:col-span-4 xl:col-span-4 flex flex-col justify-between h-full divide-y divide-slate-100 order-2 lg:order-1">
@@ -83,7 +77,7 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
           ))}
         </div>
 
-        {/* Center Column: Big AI Robot Lead Story (5 cols) */}
+        {/* Center Column: Big AI Robot Lead Story - Image on top, text separately below */}
         <div className="lg:col-span-4 xl:col-span-5 flex flex-col justify-between h-full order-1 lg:order-2">
           <article className="group flex flex-col justify-between w-full h-full">
             <Link
@@ -92,6 +86,7 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
               aria-label={featured.title}
             >
               <div className="flex flex-col">
+                {/* Pure Image on Top - No Text Overlay */}
                 <figure className="relative w-full aspect-[16/10] overflow-hidden rounded-xl mb-3.5 border border-slate-200/90 bg-slate-100 flex-shrink-0">
                   <img
                     src={featured.imageUrl}
@@ -100,6 +95,7 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
                   />
                 </figure>
 
+                {/* Content Placed Separately Below the Image */}
                 <span className="text-[11px] sm:text-xs font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1.5 block">
                   {featured.category}
                 </span>
@@ -139,7 +135,7 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
           </article>
         </div>
 
-        {/* Right Column: 2 Cards (AI Startups & Semiconductors) (3 cols) */}
+        {/* Right Column: 2 Cards (AI Startups & Semiconductors) - Images on top, text separately below */}
         <div className="lg:col-span-4 xl:col-span-3 flex flex-col justify-between h-full gap-5 order-3">
           {rightCards.map((card) => (
             <article
@@ -152,6 +148,7 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
                 aria-label={card.title}
               >
                 <div>
+                  {/* Pure Image on Top - No Text Overlay */}
                   <figure className="relative w-full aspect-[16/10] overflow-hidden rounded-xl mb-2.5 border border-slate-200/90 bg-slate-100 flex-shrink-0">
                     <img
                       src={card.imageUrl}
@@ -159,6 +156,8 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
                       className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 rounded-xl"
                     />
                   </figure>
+
+                  {/* Content Placed Separately Below the Image */}
                   <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1 block">
                     {card.category}
                   </span>

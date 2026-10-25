@@ -845,54 +845,16 @@ export default function DynamicTopicPage() {
         </div>
       </div>
 
-      {/* Category Header & Subcategory Badges Bar */}
-      <div className="w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 pt-5 pb-2">
-        <div className="pb-2">
+      {/* Category Header */}
+      <div className="w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 pt-5 pb-3">
+        <div>
           <span className="text-[11px] font-bold text-[#1642D0] uppercase tracking-wider font-sans block mb-1">
             {topicData.parentTitle ? `${topicData.parentTitle} • Subcategory` : 'Category'}
           </span>
           <h1 className="text-2xl sm:text-3xl lg:text-[38px] font-serif font-black text-[#020618] tracking-tight my-1">
             {topicData.title}
           </h1>
-          <p className="text-xs sm:text-sm text-slate-600 font-sans max-w-3xl my-1 leading-relaxed">
-            {topicData.description}
-          </p>
         </div>
-
-        {/* Subcategories Filter Pills Bar */}
-        {topicData.subcategories && topicData.subcategories.length > 0 && (
-          <div className="py-3 flex items-center gap-2 overflow-x-auto no-scrollbar">
-            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 shrink-0 mr-1">
-              Subcategories ({topicData.subcategories.length}):
-            </span>
-            <Link
-              href={`/topic/${topicData.parentSlug || topicData.slug}`}
-              className={`px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${
-                !topicData.isSubcategory
-                  ? 'bg-[#1642D0] text-white shadow-xs'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-              }`}
-            >
-              All {topicData.parentTitle || topicData.title}
-            </Link>
-            {topicData.subcategories.map((sub) => {
-              const isActive = topicData.slug === sub.slug;
-              return (
-                <Link
-                  key={sub.slug}
-                  href={`/topic/${sub.slug}`}
-                  className={`px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${
-                    isActive
-                      ? 'bg-[#1642D0] text-white shadow-xs'
-                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-[#1642D0]'
-                  }`}
-                >
-                  {sub.name}
-                </Link>
-              );
-            })}
-          </div>
-        )}
       </div>
 
       {/* Main Hero Story: Full width image + THOUGHT LEADERS + Full length bold heading + Natural full width summary */}
@@ -1098,51 +1060,33 @@ export default function DynamicTopicPage() {
           {/* Right Column: Sidebar with 2 Advertisements (Articles 1-5 & Articles 6-9) */}
           <div className="lg:col-span-5 space-y-6 relative">
             
-            {/* 1st Sidebar Advertisement */}
+            {/* 1st Sidebar Advertisement: 300 × 400 */}
             <div className="w-full text-center">
               <span className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-400 block mb-2">
                 ADVERTISEMENT
               </span>
-              <div className="w-full rounded-xl overflow-hidden bg-gradient-to-br from-[#0a0f1d] via-[#101935] to-[#0b1329] border border-slate-800 p-6 text-white text-center shadow-md">
-                <span className="inline-block px-2.5 py-1 rounded text-[10px] font-sans font-black uppercase tracking-wider bg-amber-400 text-slate-950 mb-3">
-                  EXCLUSIVE BRIEFING
+              <div className="w-full h-[400px] min-h-[400px] bg-[#edf2f7] border border-slate-300 flex flex-col items-center justify-center p-6 text-center shadow-2xs">
+                <span className="text-xs sm:text-[13px] font-semibold text-slate-600 font-sans">
+                  300 × 400 Banner
                 </span>
-                <h4 className="font-serif font-bold text-lg leading-snug mb-2 text-white">
-                  Unlock Insider Market Intelligence & Playbooks
-                </h4>
-                <p className="text-xs text-slate-300 font-sans mb-4 leading-relaxed">
-                  Join 100,000+ executives receiving daily tactical growth playbooks.
-                </p>
-                <Link
-                  href="/subscribe"
-                  className="inline-block w-full py-2.5 px-4 rounded-lg bg-[#1642D0] hover:bg-[#1235a8] text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-sm"
-                >
-                  Start Free Trial
-                </Link>
+                <span className="text-[11px] text-slate-400 font-sans mt-0.5">
+                  Your Advertisement Here
+                </span>
               </div>
             </div>
 
-            {/* 2nd Sidebar Advertisement (Sticky) */}
+            {/* 2nd Sidebar Advertisement: 300 × 700 (Sticky to move along with the section when scrolling down) */}
             <div className="w-full text-center lg:sticky lg:top-24 z-10 transition-all">
               <span className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-400 block mb-2">
                 ADVERTISEMENT
               </span>
-              <div className="w-full rounded-xl overflow-hidden bg-gradient-to-br from-[#080d1a] via-[#0f172a] to-[#020617] border border-slate-800 p-6 text-white text-center shadow-md">
-                <span className="inline-block px-2.5 py-1 rounded text-[10px] font-sans font-black uppercase tracking-wider bg-blue-500 text-white mb-3">
-                  ENTREPRENEUR+ VIP
+              <div className="w-full h-[700px] min-h-[700px] bg-[#edf2f7] border border-slate-300 flex flex-col items-center justify-center p-6 text-center shadow-2xs">
+                <span className="text-xs sm:text-[13px] font-semibold text-slate-600 font-sans">
+                  300 × 700 Banner
                 </span>
-                <h4 className="font-serif font-bold text-lg leading-snug mb-2 text-white">
-                  All-Access Magazine & Video Masterclasses
-                </h4>
-                <p className="text-xs text-slate-300 font-sans mb-4 leading-relaxed">
-                  Stream on-demand workshops with world-class founders and venture capitalists.
-                </p>
-                <Link
-                  href="/subscribe"
-                  className="inline-block w-full py-2.5 px-4 rounded-lg bg-[#1642D0] hover:bg-[#1235a8] text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-sm"
-                >
-                  Get VIP Access
-                </Link>
+                <span className="text-[11px] text-slate-400 font-sans mt-0.5">
+                  Your Advertisement Here
+                </span>
               </div>
             </div>
 
