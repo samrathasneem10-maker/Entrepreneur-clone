@@ -36,9 +36,9 @@ export const StartupsEntrepreneurshipSection: React.FC = () => {
       </div>
 
       {/* 2-Column Balanced Grid: Left Featured (6 cols) + Right Stacked (6 cols) perfectly aligned at top and bottom */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
+      <div className="grid grid-cols-1 lg:grid-cols-[1.12fr_1fr] gap-6 lg:gap-8 items-stretch">
         {/* Left Column: Big Lead Story (col-span-6) */}
-        <div className="lg:col-span-6 flex flex-col justify-between h-full">
+        <div className="flex flex-col justify-between h-full">
           <article className="group flex flex-col justify-between h-full">
             <Link
               href={getArticleUrl(featured)}
@@ -47,11 +47,11 @@ export const StartupsEntrepreneurshipSection: React.FC = () => {
             >
               <div className="flex flex-col">
                 {/* Featured Image */}
-                <figure className="relative w-full aspect-[16/10] overflow-hidden rounded-xl mb-3.5 border border-slate-200/90 bg-slate-100 flex-shrink-0">
+                <figure className="relative w-full aspect-[16/9] overflow-hidden rounded-xs mb-3.5 border border-slate-200/90 bg-slate-100 flex-shrink-0">
                   <img
                     src={featured.imageUrl}
                     alt={featured.title}
-                    className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300 rounded-xl"
+                    className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300 rounded-xs"
                     onError={(e) => {
                       const target = e.currentTarget;
                       if (!target.dataset.fallback) {
@@ -92,7 +92,7 @@ export const StartupsEntrepreneurshipSection: React.FC = () => {
         </div>
 
         {/* Right Column: Stacked 3 Articles matching Image 2 with equal vertical spacing & no excerpts */}
-        <div className="lg:col-span-6 flex flex-col justify-between h-full divide-y divide-slate-200">
+        <div className="flex flex-col justify-between h-full divide-y divide-slate-200">
           {items.slice(0, 3).map((item) => {
             const itemUrl = getArticleUrl(item);
             return (
@@ -128,11 +128,11 @@ export const StartupsEntrepreneurshipSection: React.FC = () => {
 
                   {/* Right Thumbnail */}
                   {item.imageUrl && (
-                    <figure className="relative w-32 sm:w-36 md:w-40 aspect-[16/10] flex-shrink-0 overflow-hidden rounded-xl border border-slate-200/90 bg-slate-100">
+                    <figure className="relative w-44 sm:w-52 md:w-56 lg:w-60 aspect-[16/9.2] flex-shrink-0 overflow-hidden rounded-xs border border-slate-200/90 bg-slate-100">
                       <img
                         src={item.imageUrl}
                         alt={item.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 rounded-xl"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 rounded-xs"
                         onError={(e) => {
                           const target = e.currentTarget;
                           if (!target.dataset.fallback) {

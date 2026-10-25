@@ -9,7 +9,7 @@ export const GlobalBusinessSection: React.FC = () => {
 
   return (
     <section className="bg-white pt-8 sm:pt-10 pb-8 sm:pb-10 w-full">
-      {/* Section Header (Clean without horizontal divider line) */}
+      {/* Section Header */}
       <div className="flex items-center justify-between mb-5 sm:mb-6">
         <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
           Global Business
@@ -36,67 +36,73 @@ export const GlobalBusinessSection: React.FC = () => {
       </div>
 
       {/* Main Grid: Left Featured (6 cols) + Right Complex (6 cols) aligned at top and bottom */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
-        {/* Left Column: Big Lead Story */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
+        
+        {/* Left Column: Big Lead Story with Pure Photograph Background & HTML Text Overlay matching Image 4 */}
         <div className="lg:col-span-6 flex flex-col justify-between h-full">
           <article className="group flex flex-col justify-between w-full h-full">
-            <Link
-              href={getArticleUrl(featured)}
-              className="flex flex-col justify-between h-full no-underline text-inherit cursor-pointer"
-              aria-label={featured.title}
-            >
-              <div className="flex flex-col">
-                <figure className="relative w-full aspect-[16/10] overflow-hidden rounded-xl mb-3.5 border border-slate-200/90 bg-slate-100 flex-shrink-0">
-                  <img
-                    src={featured.imageUrl}
-                    alt={featured.title}
-                    className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300 rounded-xl"
-                  />
-                </figure>
+            <div className="relative h-full flex-1 w-full rounded-xs overflow-hidden bg-[#070b19] text-white flex flex-col justify-end min-h-[460px] sm:min-h-[500px] shadow-sm">
+              {/* Clean Photo Background - strictly no embedded text */}
+              <img
+                src={featured.imageUrl}
+                alt={featured.title}
+                className="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-102 transition-transform duration-500"
+              />
 
-                <span className="text-[11px] sm:text-xs font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1.5 block">
+              {/* Gradient Dark Overlay for contrast */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/85 to-transparent" />
+
+              {/* Text Overlay: 100% Real Selectable Vector Typography */}
+              <div className="relative z-10 p-5 sm:p-7 flex flex-col justify-end">
+                {/* Category Badge */}
+                <span className="inline-block bg-[#1642D0] text-white text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-xs mb-2.5 w-fit font-sans">
                   {featured.category}
                 </span>
 
-                <h3 className="text-xl sm:text-2xl lg:text-[23px] xl:text-[25px] font-serif font-bold text-slate-900 leading-[1.22] tracking-tight mb-2 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 transition-all">
-                  {featured.title}
+                {/* Lead Headline as Real HTML Text */}
+                <h3 className="font-serif font-bold text-xl sm:text-2xl lg:text-[26px] xl:text-[28px] leading-[1.2] tracking-tight text-white my-1.5">
+                  <Link
+                    href={getArticleUrl(featured)}
+                    className="hover:underline text-white no-underline"
+                  >
+                    {featured.title}
+                  </Link>
                 </h3>
 
+                {/* Excerpt */}
                 {featured.excerpt && (
-                  <p className="text-xs sm:text-[13px] text-slate-600 font-serif font-normal leading-relaxed mb-3 line-clamp-2">
+                  <p className="font-sans text-xs sm:text-[13px] text-slate-200 leading-relaxed mt-1.5 max-w-xl my-0 line-clamp-3">
                     {featured.excerpt}
                   </p>
                 )}
-              </div>
 
-              {/* Author & Read Time */}
-              <div className="mt-auto pt-1 flex items-center gap-2 text-xs font-sans text-slate-500">
-                {featured.author?.avatar && (
-                  <img
-                    src={featured.author.avatar}
-                    alt={featured.author.name}
-                    className="w-6 h-6 rounded-full object-cover border border-slate-200 flex-shrink-0"
-                  />
-                )}
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="text-slate-500 font-medium">BY</span>
-                  <span className="text-[#1642D0] font-bold uppercase group-hover:underline">
-                    {featured.author?.name}
-                  </span>
-                  <span className="text-slate-300">•</span>
-                  <span className="text-slate-500">{featured.date}</span>
-                  <span className="text-slate-300">•</span>
-                  <span className="text-slate-500">{featured.readTime}</span>
+                {/* Author Info */}
+                <div className="flex items-center gap-2.5 mt-3.5 pt-1">
+                  {featured.author?.avatar && (
+                    <img
+                      src={featured.author.avatar}
+                      alt={featured.author.name}
+                      className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover border border-slate-500 flex-shrink-0"
+                    />
+                  )}
+                  <div className="text-xs font-sans">
+                    <span className="font-bold text-white uppercase tracking-wider block">
+                      BY {featured.author?.name}
+                    </span>
+                    <span className="text-slate-300 text-[11px]">
+                      {featured.date} • {featured.readTime}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </Link>
+            </div>
           </article>
         </div>
 
         {/* Right Column: 2 Top Cards + 3 Numbered Rows (01, 02, 03) */}
-        <div className="lg:col-span-6 flex flex-col justify-between h-full gap-5">
+        <div className="lg:col-span-6 flex flex-col justify-between h-full gap-4 sm:gap-5">
           {/* Top 2 Cards Side-by-Side */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 pb-4 border-b border-slate-100">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 pb-3 border-b border-slate-100">
             {topCards.map((card) => (
               <article key={card.id} className="group flex flex-col justify-between">
                 <Link
@@ -105,11 +111,11 @@ export const GlobalBusinessSection: React.FC = () => {
                   aria-label={card.title}
                 >
                   <div>
-                    <figure className="relative w-full aspect-[16/10] overflow-hidden rounded-xl mb-2.5 border border-slate-200/90 bg-slate-100 flex-shrink-0">
+                    <figure className="relative w-full aspect-[16/9.5] overflow-hidden rounded-xs mb-2.5 border border-slate-200/90 bg-slate-100 flex-shrink-0">
                       <img
                         src={card.imageUrl}
                         alt={card.title}
-                        className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 rounded-xl"
+                        className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 rounded-xs"
                       />
                     </figure>
                     <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1 block">
@@ -129,21 +135,21 @@ export const GlobalBusinessSection: React.FC = () => {
             ))}
           </div>
 
-          {/* Bottom 3 Numbered Rows (01, 02, 03) */}
+          {/* Bottom 3 Numbered Rows (01, 02, 03) with enlarged Europe flag image */}
           <div className="flex flex-col justify-between flex-1 divide-y divide-slate-100">
             {numberedItems.map((item) => (
-              <article key={item.id} className="group flex-1 flex items-center py-2.5 sm:py-3 first:pt-0 last:pb-0">
+              <article key={item.id} className="group flex-1 flex items-center py-2 sm:py-2.5 first:pt-0 last:pb-0">
                 <Link
                   href={getArticleUrl(item)}
-                  className="flex items-center justify-between gap-4 w-full no-underline text-inherit cursor-pointer"
+                  className="flex items-center justify-between gap-3 sm:gap-4 w-full no-underline text-inherit cursor-pointer"
                   aria-label={item.title}
                 >
-                  {/* Thumbnail */}
-                  <figure className="relative w-[110px] sm:w-[125px] aspect-[16/10] rounded-xl overflow-hidden flex-shrink-0 border border-slate-200/90 bg-slate-100">
+                  {/* Thumbnail (Enlarged and crisp) */}
+                  <figure className="relative w-32 sm:w-36 md:w-40 aspect-[16/9] rounded-xs overflow-hidden flex-shrink-0 border border-slate-200/90 bg-slate-100">
                     <img
                       src={item.imageUrl}
                       alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 rounded-xl"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 rounded-xs"
                     />
                   </figure>
 
@@ -162,7 +168,7 @@ export const GlobalBusinessSection: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Big Number (01, 02, 03) */}
+                  {/* Big Number (01, 02, 03) on the Far Right */}
                   <span className="text-3xl sm:text-4xl font-serif text-slate-300 font-light select-none flex-shrink-0">
                     {`0${item.rank}`}
                   </span>

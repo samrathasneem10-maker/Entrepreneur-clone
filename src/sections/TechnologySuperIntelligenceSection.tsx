@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { TECH_SUPER_INTELLIGENCE_SECTION, getArticleUrl } from '@/data/newsData';
 
 export const TechnologySuperIntelligenceSection: React.FC = () => {
-  const { leftItems, featured, rightCards } = TECH_SUPER_INTELLIGENCE_SECTION;
+  const { featured, leftItems, rightCards } = TECH_SUPER_INTELLIGENCE_SECTION;
 
   return (
     <section className="bg-white pt-8 sm:pt-10 pb-8 sm:pb-10 w-full">
@@ -19,9 +19,10 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
             Exploring AI breakthroughs, emerging technologies, and the innovations shaping a smarter future.
           </p>
         </div>
+
         <Link
-          href="/category/technology-ai"
-          className="inline-flex items-center gap-2 group text-xs sm:text-sm font-sans font-bold tracking-wider uppercase text-slate-800 hover:text-[#1642D0] transition-colors flex-shrink-0 self-start sm:self-auto"
+          href="/category/tech-superintelligence"
+          className="inline-flex items-center gap-2 group text-xs sm:text-sm font-sans font-bold tracking-wider uppercase text-slate-800 hover:text-[#1642D0] transition-colors flex-shrink-0"
         >
           <span>SEE ALL</span>
           <span className="w-5 h-5 sm:w-6 sm:h-6 bg-[#1642D0] group-hover:bg-[#1235a8] text-white flex items-center justify-center rounded transition-colors shadow-sm">
@@ -40,10 +41,11 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
         </Link>
       </div>
 
-      {/* 3-Column Responsive Grid: Images first, text separately below each image */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
+      {/* 3-Column Responsive Grid matching Image 5: Left (30%), Center (38%), Right (32%) */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1.35fr_1.1fr] gap-5 lg:gap-6 items-stretch">
+        
         {/* Left Column: Stacked Tech Feeds with all 5 high-clarity items */}
-        <div className="lg:col-span-4 xl:col-span-4 flex flex-col justify-between h-full divide-y divide-slate-100 order-2 lg:order-1">
+        <div className="flex flex-col justify-between h-full divide-y divide-slate-100 order-2 lg:order-1">
           {leftItems.map((item) => (
             <article key={item.id} className="group flex-1 flex items-center py-2.5 first:pt-0 last:pb-0">
               <Link
@@ -52,11 +54,11 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
                 aria-label={item.title}
               >
                 {/* High-clarity thumbnail */}
-                <figure className="relative w-24 sm:w-28 md:w-32 aspect-[16/10] rounded-xl overflow-hidden flex-shrink-0 border border-slate-200/90 bg-slate-100">
+                <figure className="relative w-28 sm:w-32 md:w-34 aspect-[16/10] rounded-xs overflow-hidden flex-shrink-0 border border-slate-200/90 bg-slate-100">
                   <img
                     src={item.imageUrl}
                     alt={item.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 rounded-xl"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 rounded-xs"
                   />
                 </figure>
                 <div className="flex-1 min-w-0">
@@ -77,8 +79,8 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
           ))}
         </div>
 
-        {/* Center Column: Big AI Robot Lead Story - Image on top, text separately below */}
-        <div className="lg:col-span-4 xl:col-span-5 flex flex-col justify-between h-full order-1 lg:order-2">
+        {/* Center Column: Big AI Robot Lead Story - Image on top, text separately below matching Image 5 */}
+        <div className="flex flex-col justify-between h-full order-1 lg:order-2">
           <article className="group flex flex-col justify-between w-full h-full">
             <Link
               href={getArticleUrl(featured)}
@@ -87,11 +89,11 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
             >
               <div className="flex flex-col">
                 {/* Pure Image on Top - No Text Overlay */}
-                <figure className="relative w-full aspect-[16/10] overflow-hidden rounded-xl mb-3.5 border border-slate-200/90 bg-slate-100 flex-shrink-0">
+                <figure className="relative w-full aspect-[16/8.8] overflow-hidden rounded-xs mb-3.5 border border-slate-200/90 bg-slate-100 flex-shrink-0">
                   <img
                     src={featured.imageUrl}
                     alt={featured.title}
-                    className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300 rounded-xl"
+                    className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300 rounded-xs"
                   />
                 </figure>
 
@@ -105,7 +107,7 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
                 </h3>
 
                 {featured.excerpt && (
-                  <p className="text-xs sm:text-[13px] text-slate-600 font-serif leading-relaxed mb-3 line-clamp-2">
+                  <p className="text-xs sm:text-[13px] text-slate-600 font-serif leading-relaxed mb-3 line-clamp-3">
                     {featured.excerpt}
                   </p>
                 )}
@@ -135,8 +137,8 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
           </article>
         </div>
 
-        {/* Right Column: 2 Cards (AI Startups & Semiconductors) - Images on top, text separately below */}
-        <div className="lg:col-span-4 xl:col-span-3 flex flex-col justify-between h-full gap-5 order-3">
+        {/* Right Column: 2 Cards (AI Startups & Semiconductors) - Large images matching Image 5 */}
+        <div className="flex flex-col justify-between h-full gap-5 order-3">
           {rightCards.map((card) => (
             <article
               key={card.id}
@@ -149,11 +151,11 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
               >
                 <div>
                   {/* Pure Image on Top - No Text Overlay */}
-                  <figure className="relative w-full aspect-[16/10] overflow-hidden rounded-xl mb-2.5 border border-slate-200/90 bg-slate-100 flex-shrink-0">
+                  <figure className="relative w-full aspect-[16/8.8] overflow-hidden rounded-xs mb-2.5 border border-slate-200/90 bg-slate-100 flex-shrink-0">
                     <img
                       src={card.imageUrl}
                       alt={card.title}
-                      className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 rounded-xl"
+                      className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 rounded-xs"
                     />
                   </figure>
 
@@ -161,19 +163,28 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
                   <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1 block">
                     {card.category}
                   </span>
-                  <h4 className="text-[14px] sm:text-[15px] font-serif font-bold text-slate-900 leading-snug tracking-tight mb-1 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 line-clamp-2">
+
+                  <h4 className="text-[14px] sm:text-[15px] font-serif font-bold text-slate-900 leading-snug tracking-tight mb-1 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2">
                     {card.title}
                   </h4>
-                </div>
-                <div className="mt-auto text-[10px] sm:text-[11px] font-sans text-slate-500 pt-1">
-                  <span>{card.date}</span>
-                  <span className="mx-1 text-slate-300">•</span>
-                  <span>{card.readTime}</span>
+
+                  <div className="text-[10px] sm:text-[11px] font-sans text-slate-500 mb-1.5">
+                    <span>{card.date}</span>
+                    <span className="mx-1 text-slate-300">•</span>
+                    <span>{card.readTime}</span>
+                  </div>
+
+                  {card.excerpt && (
+                    <p className="text-xs text-slate-600 font-serif leading-relaxed line-clamp-2">
+                      {card.excerpt}
+                    </p>
+                  )}
                 </div>
               </Link>
             </article>
           ))}
         </div>
+
       </div>
     </section>
   );

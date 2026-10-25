@@ -77,12 +77,12 @@ export const HeroNewsSection: React.FC = () => {
     <section className="bg-white pt-4 pb-6 sm:pb-8 w-full">
       <div className="w-full">
         {/* Main 3-Column Layout: Left (26%), Center (46%), Right (28%) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 xl:gap-6 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1.6fr_1.25fr] gap-4 sm:gap-5 xl:gap-6 items-stretch">
           
           {/* ========================================================= */}
           {/* 1. LEFT COLUMN: Latest (approx 26% width)                */}
           {/* ========================================================= */}
-          <div className="lg:col-span-3 flex flex-col justify-between h-full">
+          <div className="flex flex-col justify-between h-full">
             {/* Header: Latest + See All [->] */}
             <div className="flex items-center justify-between pb-2 mb-2 flex-shrink-0">
               <h2 className="font-serif font-black text-2xl sm:text-[28px] text-[#020618] leading-none my-0">
@@ -126,7 +126,7 @@ export const HeroNewsSection: React.FC = () => {
 
                   <Link
                     href={`/article/${art.slug || art.id}`}
-                    className="w-[84px] h-[64px] sm:w-[90px] sm:h-[68px] shrink-0 rounded-xs overflow-hidden bg-slate-100 block cursor-pointer"
+                    className="w-[100px] h-[76px] sm:w-[108px] sm:h-[82px] shrink-0 rounded-xs overflow-hidden bg-slate-100 block cursor-pointer"
                   >
                     <img
                       src={art.imageUrl}
@@ -142,7 +142,7 @@ export const HeroNewsSection: React.FC = () => {
           {/* ========================================================= */}
           {/* 2. CENTER COLUMN: Main Featured Hero Card (approx 46%)   */}
           {/* ========================================================= */}
-          <div className="lg:col-span-6 flex flex-col h-full">
+          <div className="flex flex-col h-full">
             <div className="relative h-full flex-1 w-full rounded-xs overflow-hidden bg-[#070b19] text-white flex flex-col justify-end min-h-[480px] sm:min-h-[520px] lg:min-h-[560px] shadow-sm group">
               {/* Background Image */}
               <img
@@ -242,13 +242,13 @@ export const HeroNewsSection: React.FC = () => {
           {/* ========================================================= */}
           {/* 3. RIGHT COLUMN: Top Uber Card + 3 Articles (approx 28%)  */}
           {/* ========================================================= */}
-          <div className="lg:col-span-3 flex flex-col justify-between h-full">
+          <div className="flex flex-col justify-between h-full">
             
             {/* Top Featured Card: Uber Driver Bonuses */}
             <article className="rounded-xs overflow-hidden bg-[#070b19] text-white group cursor-pointer flex flex-col shadow-xs flex-shrink-0 mb-3.5">
               <Link
                 href={`/article/${UBER_DRIVER_BONUSES_ARTICLE.slug}`}
-                className="w-full aspect-[16/9] overflow-hidden bg-slate-900 block"
+                className="w-full aspect-[16/8.8] overflow-hidden bg-slate-900 block"
               >
                 <img
                   src={UBER_DRIVER_BONUSES_ARTICLE.imageUrl}
@@ -294,7 +294,7 @@ export const HeroNewsSection: React.FC = () => {
 
                   <Link
                     href={`/article/${art.slug || art.id}`}
-                    className="w-[90px] h-[58px] sm:w-[100px] sm:h-[62px] shrink-0 rounded-xs overflow-hidden bg-slate-100 block cursor-pointer"
+                    className="w-[124px] h-[74px] sm:w-[136px] sm:h-[78px] shrink-0 rounded-xs overflow-hidden bg-slate-100 block cursor-pointer"
                   >
                     <img
                       src={art.imageUrl}

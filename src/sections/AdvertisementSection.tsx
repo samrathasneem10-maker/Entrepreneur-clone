@@ -12,12 +12,12 @@ export const AdvertisementSection: React.FC<AdvertisementSectionProps> = ({
   return (
     <section
       aria-label="Advertisement"
-      className={`w-full py-6 sm:py-8 flex flex-col items-center justify-center ${className}`}
+      className={`w-full py-8 sm:py-10 flex flex-col items-center justify-center ${className}`}
     >
-      {/* Empty Black Box Rectangle with Sharp Corners matching reference image */}
-      <div className="w-full max-w-[760px] sm:max-w-[820px] lg:max-w-[880px] mx-auto px-2 sm:px-0">
+      {/* Empty Black Box Rectangle with Sharp Corners matching reference image 3 */}
+      <div className="w-full max-w-[820px] mx-auto px-4 flex justify-center">
         <div 
-          className="w-full h-32 sm:h-36 md:h-40 bg-black rounded-none border border-neutral-900 shadow-md"
+          className="w-full aspect-[3.5/1] max-h-[190px] min-h-[140px] bg-black rounded-none border border-black shadow-none"
           aria-hidden="true"
         />
       </div>
