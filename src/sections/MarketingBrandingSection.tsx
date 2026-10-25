@@ -33,8 +33,8 @@ export const MarketingBrandingSection: React.FC = () => {
         </Link>
       </div>
 
-      {/* 4-Card Responsive Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-8 items-stretch">
+      {/* 4-Card Grid matching Image 4 with balanced width and high-impact images */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6 xl:gap-7 items-stretch">
         {MARKETING_BRANDING_SECTION.map((card) => {
           const cardUrl = getArticleUrl(card);
           return (
@@ -44,40 +44,39 @@ export const MarketingBrandingSection: React.FC = () => {
                 className="flex flex-col justify-between h-full no-underline text-inherit cursor-pointer"
                 aria-label={card.title}
               >
-                {/* Image */}
-                <figure className="relative w-full aspect-[16/10] overflow-hidden rounded-lg sm:rounded-xl mb-3.5 border border-slate-200/90 bg-slate-100 flex-shrink-0">
-                  <img
-                    src={card.imageUrl}
-                    alt={card.title}
-                    className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300"
-                  />
-                </figure>
+                <div>
+                  {/* Clean Image on Top matching Image 4 */}
+                  <figure className="relative w-full aspect-[16/9.5] overflow-hidden rounded-xs mb-3 border border-slate-200/90 bg-slate-100 flex-shrink-0">
+                    <img
+                      src={card.imageUrl}
+                      alt={card.title}
+                      className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 rounded-xs"
+                    />
+                  </figure>
 
-                {/* Category */}
-                <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1.5 block">
-                  {card.category}
-                </span>
+                  {/* Blue Category Badge */}
+                  <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1 block">
+                    {card.category}
+                  </span>
 
-                {/* Title */}
-                <h3 className="text-[16px] sm:text-[17px] lg:text-[18px] font-serif font-bold text-slate-900 leading-[1.3] tracking-tight mb-2 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 transition-all">
-                  {card.title}
-                </h3>
+                  {/* Title */}
+                  <h3 className="text-[16px] sm:text-[17px] lg:text-[18px] font-serif font-bold text-slate-900 leading-[1.28] tracking-tight mb-2 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 transition-all">
+                    {card.title}
+                  </h3>
 
-                {/* Excerpt */}
-                {card.excerpt && (
-                  <p className="text-xs sm:text-[13px] text-slate-600 font-serif leading-relaxed mb-3 line-clamp-3 flex-1">
-                    {card.excerpt}
-                  </p>
-                )}
+                  {/* Excerpt */}
+                  {card.excerpt && (
+                    <p className="text-xs text-slate-600 font-serif leading-relaxed mb-3 line-clamp-3">
+                      {card.excerpt}
+                    </p>
+                  )}
+                </div>
 
-                {/* Date / Read Time / Author */}
-                <div className="mt-auto text-[11px] font-sans text-slate-500 pt-1 flex items-center justify-between">
-                  <span>{card.author?.name || 'Brand Strategist'}</span>
-                  <div className="flex items-center gap-1.5">
-                    <span>{card.date}</span>
-                    <span className="text-slate-300">•</span>
-                    <span>{card.readTime}</span>
-                  </div>
+                {/* Date & Read Time */}
+                <div className="mt-auto text-[11px] font-sans text-slate-500 pt-1 flex items-center gap-1.5">
+                  <span>{card.date}</span>
+                  <span className="text-slate-300">•</span>
+                  <span>{card.readTime}</span>
                 </div>
               </Link>
             </article>

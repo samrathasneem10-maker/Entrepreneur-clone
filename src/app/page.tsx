@@ -10,6 +10,7 @@ import { GlobalBusinessSection } from '@/sections/GlobalBusinessSection';
 import { TechnologySuperIntelligenceSection } from '@/sections/TechnologySuperIntelligenceSection';
 import { TrendingResilienceSection } from '@/sections/TrendingResilienceSection';
 import { LuxuryLifestyleSection } from '@/sections/LuxuryLifestyleSection';
+import { ShortsReelsSection } from '@/sections/ShortsReelsSection';
 import { InterviewsOpinionsSection } from '@/sections/InterviewsOpinionsSection';
 import { CompanyProfilesSection } from '@/sections/CompanyProfilesSection';
 import { EnergyCommoditiesSection } from '@/sections/EnergyCommoditiesSection';
@@ -33,10 +34,10 @@ export default function Home() {
 
       {/* Main Page Body: efficiently utilizing screen width with tight, elegant margins */}
       <main className="flex-1 w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8">
-        {/* 1. Hero News Section (Kept untouched for user customization) */}
+        {/* 1. Hero News Section */}
         <HeroNewsSection />
 
-        {/* 2. Top Stories Featured Grid (Kept untouched for user customization) */}
+        {/* 2. Top Stories Featured Grid */}
         <FeaturedGridSection />
 
         {/* 3. Startups & Entrepreneurship Section */}
@@ -63,31 +64,34 @@ export default function Home() {
         {/* 10. Luxury & Lifestyle Section */}
         <LuxuryLifestyleSection />
 
-        {/* 11. Centered Advertisement Banner 3 */}
+        {/* 11. Shorts & Reels Section */}
+        <ShortsReelsSection />
+
+        {/* 12. Centered Advertisement Banner 3 */}
         <AdvertisementSection />
 
-        {/* 12. Interviews & Opinions Section */}
+        {/* 13. Interviews & Opinions Section */}
         <InterviewsOpinionsSection />
 
-        {/* 13. The Leaders | Company Profiles Section */}
+        {/* 14. The Leaders | Company Profiles Section */}
         <CompanyProfilesSection />
 
-        {/* 14. Energy & Commodities Section */}
+        {/* 15. Energy & Commodities Section */}
         <EnergyCommoditiesSection />
 
-        {/* 15. Business & Legal Affairs Section */}
+        {/* 16. Business & Legal Affairs Section */}
         <BusinessLegalAffairsSection />
 
-        {/* 16. Centered Advertisement Banner 4 */}
+        {/* 17. Centered Advertisement Banner 4 */}
         <AdvertisementSection />
 
-        {/* 17. Retail & E-commerce Section */}
+        {/* 18. Retail & E-commerce Section */}
         <RetailEcommerceSection />
 
-        {/* 18. Research & Insights Section */}
+        {/* 19. Research & Insights Section */}
         <ResearchInsightsSection />
 
-        {/* 19. Marketing & Branding Section */}
+        {/* 20. Marketing & Branding Section */}
         <MarketingBrandingSection />
       </main>
 
