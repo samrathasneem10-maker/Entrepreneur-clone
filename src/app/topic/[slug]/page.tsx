@@ -955,10 +955,10 @@ export default function DynamicTopicPage() {
 
       {/* Bottom Section: Left Stream (10 Articles per page + NEXT/PREVIOUS Controls) & Right Sidebar (Large Ad + Laptop Image) */}
       <div id="articles-list-section" className="w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 pb-16 scroll-mt-20">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           
           {/* Left Column: MORE NEWS heading + Bordered box with 10 articles per page */}
-          <div className="lg:col-span-7 flex flex-col">
+          <div className="lg:col-span-7 flex flex-col h-full">
             {/* MORE NEWS Heading and Line */}
             <div className="flex items-center justify-between mb-5 sm:mb-6">
               <h2 className="text-xl sm:text-2xl font-serif font-bold text-slate-900 tracking-tight uppercase">
@@ -967,7 +967,7 @@ export default function DynamicTopicPage() {
             </div>
 
             {/* Bordered box with 10 articles per page */}
-            <div className="bg-white border border-slate-200 p-5 sm:p-6 shadow-2xs h-fit">
+            <div className="bg-white border border-slate-200 p-5 sm:p-6 shadow-2xs flex-1 flex flex-col justify-between">
             <div className="space-y-6 divide-y divide-slate-100">
               {currentArticles.map((art, index) => (
                 <article
@@ -1057,11 +1057,11 @@ export default function DynamicTopicPage() {
           </div>
           </div>
 
-          {/* Right Column: Sidebar with 2 Advertisements (Articles 1-5 & Articles 6-9) */}
-          <div className="lg:col-span-5 space-y-6 relative">
+          {/* Right Column: Sidebar with 2 Advertisements (Left & Right same alignment) */}
+          <div className="lg:col-span-5 flex flex-col h-full gap-6">
             
             {/* 1st Sidebar Advertisement: 300 × 400 */}
-            <div className="w-full text-center">
+            <div className="w-full text-center flex-shrink-0">
               <span className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-400 block mb-2">
                 ADVERTISEMENT
               </span>
@@ -1075,12 +1075,12 @@ export default function DynamicTopicPage() {
               </div>
             </div>
 
-            {/* 2nd Sidebar Advertisement: 300 × 700 (Sticky to move along with the section when scrolling down) */}
-            <div className="w-full text-center lg:sticky lg:top-24 z-10 transition-all">
-              <span className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-400 block mb-2">
+            {/* 2nd Sidebar Advertisement: Expands to match bottom alignment of left column */}
+            <div className="w-full text-center flex-1 flex flex-col">
+              <span className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-400 block mb-2 flex-shrink-0">
                 ADVERTISEMENT
               </span>
-              <div className="w-full h-[700px] min-h-[700px] bg-[#edf2f7] border border-slate-300 flex flex-col items-center justify-center p-6 text-center shadow-2xs">
+              <div className="w-full flex-1 min-h-[700px] bg-[#edf2f7] border border-slate-300 flex flex-col items-center justify-center p-6 text-center shadow-2xs">
                 <span className="text-xs sm:text-[13px] font-semibold text-slate-600 font-sans">
                   300 × 700 Banner
                 </span>

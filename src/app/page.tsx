@@ -12,7 +12,6 @@ import { TrendingResilienceSection } from '@/sections/TrendingResilienceSection'
 import { LuxuryLifestyleSection } from '@/sections/LuxuryLifestyleSection';
 import { InterviewsOpinionsSection } from '@/sections/InterviewsOpinionsSection';
 import { ShortsReelsSection } from '@/sections/ShortsReelsSection';
-import { CompanyProfilesSection } from '@/sections/CompanyProfilesSection';
 import { EnergyCommoditiesSection } from '@/sections/EnergyCommoditiesSection';
 import { BusinessLegalAffairsSection } from '@/sections/BusinessLegalAffairsSection';
 import { RetailEcommerceSection } from '@/sections/RetailEcommerceSection';
@@ -70,28 +69,25 @@ export default function Home() {
         {/* 12. Interviews & Opinions Section */}
         <InterviewsOpinionsSection />
 
-        {/* 13. Shorts & Reels Section (Positioned immediately after Interviews & Opinions) */}
+        {/* 13. Shorts & Reels Section */}
         <ShortsReelsSection />
 
-        {/* 14. The Leaders | Company Profiles Section */}
-        <CompanyProfilesSection />
-
-        {/* 15. Energy & Commodities Section */}
+        {/* 14. Energy & Commodities Section */}
         <EnergyCommoditiesSection />
 
-        {/* 16. Business & Legal Affairs Section */}
+        {/* 15. Business & Legal Affairs Section */}
         <BusinessLegalAffairsSection />
 
-        {/* 17. Centered Advertisement Banner 4 */}
+        {/* 16. Centered Advertisement Banner 4 */}
         <AdvertisementSection />
 
-        {/* 18. Retail & E-commerce Section */}
+        {/* 17. Retail & E-commerce Section */}
         <RetailEcommerceSection />
 
-        {/* 19. Research & Insights Section */}
+        {/* 18. Research & Insights Section */}
         <ResearchInsightsSection />
 
-        {/* 20. Marketing & Branding Section */}
+        {/* 19. Marketing & Branding Section */}
         <MarketingBrandingSection />
       </main>
 
