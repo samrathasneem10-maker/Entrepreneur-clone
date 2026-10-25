@@ -9,11 +9,11 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
 
   return (
     <section className="bg-white pt-8 sm:pt-10 pb-8 sm:pb-10 w-full">
-      {/* Header with Title, Subtitle and See All */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between pb-3 sm:pb-4 mb-6 border-b border-slate-200 gap-3">
+      {/* Header with Title, Subtitle and See All (Clean without horizontal divider line) */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-5 sm:mb-6 gap-3">
         <div>
           <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
-            Technology & Super Intelligence
+            Technology &amp; Super Intelligence
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 font-sans mt-1">
             Exploring AI breakthroughs, emerging technologies, and the innovations shaping a smarter future.
@@ -40,26 +40,27 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
         </Link>
       </div>
 
-      {/* 3-Column Responsive Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-        {/* Left Column: 5 Stacked Tech Feeds */}
-        <div className="lg:col-span-4 xl:col-span-4 flex flex-col divide-y divide-slate-200 order-2 lg:order-1">
-          {leftItems.map((item) => (
-            <article key={item.id} className="group py-3 sm:py-3.5 first:pt-0 last:pb-0">
+      {/* 3-Column Responsive Grid: Left (4 cols), Center (5 cols), Right (3 cols) with balanced images and equal vertical alignment */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
+        {/* Left Column: Stacked Tech Feeds with generous, clear, balanced images */}
+        <div className="lg:col-span-4 xl:col-span-4 flex flex-col justify-between h-full divide-y divide-slate-100 order-2 lg:order-1">
+          {leftItems.slice(0, 4).map((item) => (
+            <article key={item.id} className="group flex-1 flex items-center py-3 first:pt-0 last:pb-0">
               <Link
                 href={getArticleUrl(item)}
-                className="flex items-center gap-3.5 no-underline text-inherit cursor-pointer"
+                className="flex items-center gap-3.5 w-full no-underline text-inherit cursor-pointer"
                 aria-label={item.title}
               >
-                <figure className="relative w-[85px] sm:w-[95px] h-[58px] sm:h-[62px] rounded-md overflow-hidden flex-shrink-0 border border-slate-200/90 bg-slate-100">
+                {/* Generous, high-clarity thumbnail */}
+                <figure className="relative w-24 sm:w-28 md:w-32 aspect-[16/10] rounded-xl overflow-hidden flex-shrink-0 border border-slate-200/90 bg-slate-100">
                   <img
                     src={item.imageUrl}
                     alt={item.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 rounded-xl"
                   />
                 </figure>
                 <div className="flex-1 min-w-0">
-                  <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1 block">
+                  <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-0.5 block">
                     {item.category}
                   </span>
                   <h4 className="text-[13px] sm:text-[14px] font-serif font-bold text-slate-900 leading-snug tracking-tight line-clamp-2 mb-1 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2">
@@ -77,37 +78,39 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
         </div>
 
         {/* Center Column: Big AI Robot Lead Story (5 cols) */}
-        <div className="lg:col-span-4 xl:col-span-5 flex flex-col order-1 lg:order-2">
-          <article className="group flex flex-col w-full h-full">
+        <div className="lg:col-span-4 xl:col-span-5 flex flex-col justify-between h-full order-1 lg:order-2">
+          <article className="group flex flex-col justify-between w-full h-full">
             <Link
               href={getArticleUrl(featured)}
-              className="flex flex-col h-full no-underline text-inherit cursor-pointer"
+              className="flex flex-col justify-between h-full no-underline text-inherit cursor-pointer"
               aria-label={featured.title}
             >
-              <figure className="relative w-full aspect-[16/11] overflow-hidden rounded-xl mb-4 border border-slate-200/90 bg-slate-100 flex-shrink-0">
-                <img
-                  src={featured.imageUrl}
-                  alt={featured.title}
-                  className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
-                />
-              </figure>
+              <div className="flex flex-col">
+                <figure className="relative w-full aspect-[16/10] overflow-hidden rounded-xl mb-3.5 border border-slate-200/90 bg-slate-100 flex-shrink-0">
+                  <img
+                    src={featured.imageUrl}
+                    alt={featured.title}
+                    className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300 rounded-xl"
+                  />
+                </figure>
 
-              <span className="text-[11px] sm:text-xs font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-2 block">
-                {featured.category}
-              </span>
+                <span className="text-[11px] sm:text-xs font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1.5 block">
+                  {featured.category}
+                </span>
 
-              <h3 className="text-xl sm:text-2xl lg:text-[25px] font-serif font-bold text-slate-900 leading-[1.25] tracking-tight mb-2.5 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 transition-all">
-                {featured.title}
-              </h3>
+                <h3 className="text-xl sm:text-2xl lg:text-[23px] xl:text-[25px] font-serif font-bold text-slate-900 leading-[1.22] tracking-tight mb-2 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 transition-all">
+                  {featured.title}
+                </h3>
 
-              {featured.excerpt && (
-                <p className="text-sm text-slate-600 font-serif leading-relaxed mb-4 line-clamp-3">
-                  {featured.excerpt}
-                </p>
-              )}
+                {featured.excerpt && (
+                  <p className="text-xs sm:text-[13px] text-slate-600 font-serif leading-relaxed mb-3 line-clamp-2">
+                    {featured.excerpt}
+                  </p>
+                )}
+              </div>
 
               {/* Author byline */}
-              <div className="mt-auto pt-1 flex items-center gap-2 text-xs font-sans">
+              <div className="mt-auto pt-1 flex items-center gap-2 text-xs font-sans text-slate-500">
                 {featured.author?.avatar && (
                   <img
                     src={featured.author.avatar}
@@ -130,41 +133,38 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
           </article>
         </div>
 
-        {/* Right Column: 2 Cards (AI Startups & Semiconductors) */}
-        <div className="lg:col-span-4 xl:col-span-3 flex flex-col gap-6 order-3 divide-y lg:divide-y-0 divide-slate-200">
-          {rightCards.map((card, idx) => (
+        {/* Right Column: 2 Cards (AI Startups & Semiconductors) (3 cols) */}
+        <div className="lg:col-span-4 xl:col-span-3 flex flex-col justify-between h-full gap-5 order-3">
+          {rightCards.map((card) => (
             <article
               key={card.id}
-              className={`group flex flex-col ${idx !== 0 ? 'pt-6 lg:pt-0' : ''}`}
+              className="group flex-1 flex flex-col justify-between"
             >
               <Link
                 href={getArticleUrl(card)}
-                className="flex flex-col no-underline text-inherit cursor-pointer"
+                className="flex flex-col justify-between h-full no-underline text-inherit cursor-pointer"
                 aria-label={card.title}
               >
-                <figure className="relative w-full aspect-[16/9] overflow-hidden rounded-lg mb-3 border border-slate-200/90 bg-slate-100 flex-shrink-0">
-                  <img
-                    src={card.imageUrl}
-                    alt={card.title}
-                    className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300"
-                  />
-                </figure>
-                <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1.5 block">
-                  {card.category}
-                </span>
-                <h4 className="text-[15px] sm:text-[16px] font-serif font-bold text-slate-900 leading-snug tracking-tight mb-1.5 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2">
-                  {card.title}
-                </h4>
-                <div className="text-[10px] sm:text-[11px] font-sans text-slate-500 mb-2">
+                <div>
+                  <figure className="relative w-full aspect-[16/10] overflow-hidden rounded-xl mb-2.5 border border-slate-200/90 bg-slate-100 flex-shrink-0">
+                    <img
+                      src={card.imageUrl}
+                      alt={card.title}
+                      className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 rounded-xl"
+                    />
+                  </figure>
+                  <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1 block">
+                    {card.category}
+                  </span>
+                  <h4 className="text-[14px] sm:text-[15px] font-serif font-bold text-slate-900 leading-snug tracking-tight mb-1 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 line-clamp-2">
+                    {card.title}
+                  </h4>
+                </div>
+                <div className="mt-auto text-[10px] sm:text-[11px] font-sans text-slate-500 pt-1">
                   <span>{card.date}</span>
                   <span className="mx-1 text-slate-300">•</span>
                   <span>{card.readTime}</span>
                 </div>
-                {card.excerpt && (
-                  <p className="text-xs text-slate-600 font-serif leading-relaxed line-clamp-2">
-                    {card.excerpt}
-                  </p>
-                )}
               </Link>
             </article>
           ))}

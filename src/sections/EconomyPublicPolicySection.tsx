@@ -8,7 +8,7 @@ export const EconomyPublicPolicySection: React.FC = () => {
   return (
     <section className="bg-white pt-8 sm:pt-10 pb-8 sm:pb-10 w-full">
       {/* Section Header */}
-      <div className="flex items-center justify-between pb-3 sm:pb-4 mb-6 border-b border-slate-200">
+      <div className="flex items-center justify-between mb-5 sm:mb-6">
         <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
           Economy & Public Policy
         </h2>
@@ -34,14 +34,14 @@ export const EconomyPublicPolicySection: React.FC = () => {
       </div>
 
       {/* 4-Card Responsive Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-8 items-stretch">
         {ECONOMY_POLICY_ARTICLES.map((article, idx) => {
           const articleUrl = getArticleUrl(article);
           return (
-            <article key={`${article.id}-${idx}`} className="group flex flex-col w-full h-full">
+            <article key={`${article.id}-${idx}`} className="group flex flex-col justify-between w-full h-full">
               <Link
                 href={articleUrl}
-                className="flex flex-col h-full no-underline text-inherit cursor-pointer"
+                className="flex flex-col justify-between h-full no-underline text-inherit cursor-pointer"
                 aria-label={article.title}
               >
                 {/* Card Image */}

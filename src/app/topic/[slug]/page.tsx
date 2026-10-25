@@ -847,7 +847,7 @@ export default function DynamicTopicPage() {
 
       {/* Category Header & Subcategory Badges Bar */}
       <div className="w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 pt-5 pb-2">
-        <div className="pb-3 border-b border-slate-200">
+        <div className="pb-2">
           <span className="text-[11px] font-bold text-[#1642D0] uppercase tracking-wider font-sans block mb-1">
             {topicData.parentTitle ? `${topicData.parentTitle} • Subcategory` : 'Category'}
           </span>
@@ -998,7 +998,7 @@ export default function DynamicTopicPage() {
           {/* Left Column: MORE NEWS heading + Bordered box with 10 articles per page */}
           <div className="lg:col-span-7 flex flex-col">
             {/* MORE NEWS Heading and Line */}
-            <div className="flex items-center justify-between pb-3 sm:pb-4 mb-6 border-b border-slate-200">
+            <div className="flex items-center justify-between mb-5 sm:mb-6">
               <h2 className="text-xl sm:text-2xl font-serif font-bold text-slate-900 tracking-tight uppercase">
                 MORE NEWS
               </h2>

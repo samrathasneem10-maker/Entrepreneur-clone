@@ -8,7 +8,7 @@ export const InterviewsOpinionsSection: React.FC = () => {
   return (
     <section className="bg-white pt-8 sm:pt-10 pb-8 sm:pb-10 w-full">
       {/* Section Header */}
-      <div className="flex items-center justify-between pb-3 sm:pb-4 mb-6 border-b border-slate-200">
+      <div className="flex items-center justify-between mb-5 sm:mb-6">
         <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
           Interviews &amp; Opinions
         </h2>
@@ -34,14 +34,14 @@ export const InterviewsOpinionsSection: React.FC = () => {
       </div>
 
       {/* 4-Card Responsive Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-8 items-stretch">
         {INTERVIEWS_OPINIONS_SECTION.map((card) => {
           const cardUrl = getArticleUrl(card);
           return (
-            <article key={card.id} className="group flex flex-col w-full h-full">
+            <article key={card.id} className="group flex flex-col justify-between w-full h-full">
               <Link
                 href={cardUrl}
-                className="flex flex-col h-full no-underline text-inherit cursor-pointer"
+                className="flex flex-col justify-between h-full no-underline text-inherit cursor-pointer"
                 aria-label={card.title}
               >
                 {/* Image */}

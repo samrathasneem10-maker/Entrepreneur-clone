@@ -84,7 +84,7 @@ export const HeroNewsSection: React.FC = () => {
           {/* ========================================================= */}
           <div className="lg:col-span-3 flex flex-col justify-between h-full">
             {/* Header: Latest + See All [->] */}
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 flex-shrink-0">
+            <div className="flex items-center justify-between pb-2 mb-2 flex-shrink-0">
               <h2 className="font-serif font-black text-2xl sm:text-[28px] text-[#020618] leading-none my-0">
                 <Link href="/latest" className="hover:underline">
                   Latest

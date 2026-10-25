@@ -8,14 +8,14 @@ export const FeaturedGridSection: React.FC = () => {
   return (
     <section className="bg-white pt-8 sm:pt-10 pb-8 sm:pb-10 w-full">
       <div className="w-full">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-8 items-stretch">
           {TOP_STORIES_GRID.map((article) => {
             const articleUrl = getArticleUrl(article);
             return (
-              <article key={article.id} className="group flex flex-col w-full h-full">
+              <article key={article.id} className="group flex flex-col justify-between w-full h-full">
                 <Link
                   href={articleUrl}
-                  className="flex flex-col h-full no-underline text-inherit cursor-pointer"
+                  className="flex flex-col justify-between h-full no-underline text-inherit cursor-pointer"
                   aria-label={article.title}
                 >
                   {/* Card Image */}

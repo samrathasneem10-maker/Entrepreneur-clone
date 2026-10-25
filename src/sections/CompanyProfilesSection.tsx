@@ -8,7 +8,7 @@ export const CompanyProfilesSection: React.FC = () => {
   return (
     <section className="my-8 sm:my-10 w-full rounded-2xl bg-[#FDFBF7] border border-[#EBE5DA] p-6 sm:p-8 lg:p-10 shadow-xs">
       {/* Section Header */}
-      <div className="flex items-center justify-between pb-4 sm:pb-5 mb-6 border-b border-[#E5DFD4]">
+      <div className="flex items-center justify-between mb-5 sm:mb-6">
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#E26D2B] text-white shadow-xs">
             <svg

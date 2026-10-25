@@ -10,7 +10,7 @@ export const StartupsEntrepreneurshipSection: React.FC = () => {
   return (
     <section className="bg-white pt-8 sm:pt-10 pb-8 sm:pb-10 w-full">
       {/* Section Header with consistent border-b matching reference */}
-      <div className="flex items-center justify-between pb-3 sm:pb-4 mb-6 border-b border-slate-200">
+      <div className="flex items-center justify-between mb-5 sm:mb-6">
         <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
           Startups &amp; Entrepreneurship
         </h2>
