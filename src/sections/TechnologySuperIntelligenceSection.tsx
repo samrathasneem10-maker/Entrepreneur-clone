@@ -9,8 +9,8 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
 
   return (
     <section className="bg-white pt-8 sm:pt-10 pb-8 sm:pb-10 w-full">
-      {/* Header with Title, Subtitle and See All (Clean without horizontal divider line) */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-5 sm:mb-6 gap-3">
+      {/* Header with Title, Subtitle and See All */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-4 sm:mb-5 gap-3">
         <div>
           <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
             Technology &amp; Super Intelligence
@@ -40,18 +40,24 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
         </Link>
       </div>
 
+      {/* Empty Black Box Banner */}
+      <div
+        className="w-full h-24 sm:h-28 md:h-32 bg-black rounded-lg sm:rounded-xl mb-6 sm:mb-8 border border-neutral-900"
+        aria-hidden="true"
+      />
+
       {/* 3-Column Responsive Grid: Left (4 cols), Center (5 cols), Right (3 cols) with balanced images and equal vertical alignment */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
-        {/* Left Column: Stacked Tech Feeds with generous, clear, balanced images */}
+        {/* Left Column: Stacked Tech Feeds with all 5 high-clarity items */}
         <div className="lg:col-span-4 xl:col-span-4 flex flex-col justify-between h-full divide-y divide-slate-100 order-2 lg:order-1">
-          {leftItems.slice(0, 4).map((item) => (
-            <article key={item.id} className="group flex-1 flex items-center py-3 first:pt-0 last:pb-0">
+          {leftItems.map((item) => (
+            <article key={item.id} className="group flex-1 flex items-center py-2.5 first:pt-0 last:pb-0">
               <Link
                 href={getArticleUrl(item)}
                 className="flex items-center gap-3.5 w-full no-underline text-inherit cursor-pointer"
                 aria-label={item.title}
               >
-                {/* Generous, high-clarity thumbnail */}
+                {/* High-clarity thumbnail */}
                 <figure className="relative w-24 sm:w-28 md:w-32 aspect-[16/10] rounded-xl overflow-hidden flex-shrink-0 border border-slate-200/90 bg-slate-100">
                   <img
                     src={item.imageUrl}

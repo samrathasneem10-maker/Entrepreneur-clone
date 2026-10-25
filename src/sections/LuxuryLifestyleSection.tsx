@@ -8,9 +8,9 @@ export const LuxuryLifestyleSection: React.FC = () => {
   return (
     <section className="bg-white pt-8 sm:pt-10 pb-8 sm:pb-10 w-full">
       {/* Header */}
-      <div className="flex items-center justify-between mb-5 sm:mb-6">
+      <div className="flex items-center justify-between mb-4 sm:mb-5">
         <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
-          Luxury & Lifestyle
+          Luxury &amp; Lifestyle
         </h2>
         <Link
           href="/category/luxury-lifestyle"
@@ -32,6 +32,12 @@ export const LuxuryLifestyleSection: React.FC = () => {
           </span>
         </Link>
       </div>
+
+      {/* Empty Black Box Banner */}
+      <div
+        className="w-full h-24 sm:h-28 md:h-32 bg-black rounded-lg sm:rounded-xl mb-6 sm:mb-8 border border-neutral-900"
+        aria-hidden="true"
+      />
 
       {/* 4-Card Responsive Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-8 items-stretch">

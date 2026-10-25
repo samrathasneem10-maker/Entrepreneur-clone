@@ -10,7 +10,7 @@ export const EnergyCommoditiesSection: React.FC = () => {
 
   return (
     <section className="bg-white pt-8 sm:pt-10 pb-8 sm:pb-10 w-full">
-      {/* Section Header (Clean without horizontal divider line) */}
+      {/* Section Header */}
       <div className="flex items-center justify-between mb-5 sm:mb-6">
         <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
           Energy &amp; Commodities
@@ -65,8 +65,6 @@ export const EnergyCommoditiesSection: React.FC = () => {
               </div>
 
               <div className="mt-auto pt-1 text-xs font-sans text-slate-500 flex items-center gap-2">
-                <span>{lead.author?.name}</span>
-                <span className="text-slate-300">•</span>
                 <span>{lead.date}</span>
                 <span className="text-slate-300">•</span>
                 <span>{lead.readTime}</span>
@@ -75,35 +73,43 @@ export const EnergyCommoditiesSection: React.FC = () => {
           </article>
         </div>
 
-        {/* Middle Column: Two Stacked Stories (col-span-4) */}
+        {/* Middle Column: Two Stacked Horizontal Stories with Image on Left (col-span-4) */}
         <div className="md:col-span-6 lg:col-span-4 flex flex-col justify-between h-full gap-5">
           {middle.map((item) => {
             const itemUrl = getArticleUrl(item);
             return (
               <article key={item.id} className="group flex-1 flex flex-col justify-between">
-                <Link href={itemUrl} className="flex flex-col justify-between h-full no-underline text-inherit cursor-pointer">
-                  <div>
-                    <figure className="relative w-full aspect-[16/10] overflow-hidden rounded-xl mb-2.5 border border-slate-200/90 bg-slate-100 flex-shrink-0">
-                      <img
-                        src={item.imageUrl}
-                        alt={item.title}
-                        className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300 rounded-xl"
-                      />
-                    </figure>
+                <Link href={itemUrl} className="flex flex-row gap-3.5 items-start h-full no-underline text-inherit cursor-pointer">
+                  <figure className="relative w-32 sm:w-36 md:w-40 aspect-[4/3] rounded-xl overflow-hidden flex-shrink-0 border border-slate-200/90 bg-slate-100">
+                    <img
+                      src={item.imageUrl}
+                      alt={item.title}
+                      className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 rounded-xl"
+                    />
+                  </figure>
 
-                    <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1 block">
-                      {item.category}
-                    </span>
+                  <div className="flex-1 min-w-0 flex flex-col justify-between h-full">
+                    <div>
+                      <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1 block">
+                        {item.category}
+                      </span>
 
-                    <h3 className="text-[15px] sm:text-[16px] font-serif font-bold text-slate-900 leading-snug mb-1.5 group-hover:underline underline-offset-2 transition-all line-clamp-2">
-                      {item.title}
-                    </h3>
-                  </div>
+                      <h3 className="text-[14px] sm:text-[15px] font-serif font-bold text-slate-900 leading-snug mb-1 group-hover:underline underline-offset-2 transition-all line-clamp-2">
+                        {item.title}
+                      </h3>
 
-                  <div className="mt-auto text-[10px] sm:text-[11px] font-sans text-slate-500 flex items-center gap-2 pt-1">
-                    <span>{item.date}</span>
-                    <span className="text-slate-300">•</span>
-                    <span>{item.readTime}</span>
+                      {item.excerpt && (
+                        <p className="text-[11px] sm:text-xs text-slate-600 font-serif leading-relaxed line-clamp-2 mb-1">
+                          {item.excerpt}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="mt-auto text-[10px] sm:text-[11px] font-sans text-slate-500 pt-1">
+                      <span>{item.date}</span>
+                      <span className="mx-1 text-slate-300">•</span>
+                      <span>{item.readTime}</span>
+                    </div>
                   </div>
                 </Link>
               </article>
@@ -111,7 +117,7 @@ export const EnergyCommoditiesSection: React.FC = () => {
           })}
         </div>
 
-        {/* Right Column: 4 Compact Stacked News Items (col-span-3) */}
+        {/* Right Column: 4 Compact Stacked News Items with Thumbnail on Left (col-span-3) */}
         <div className="md:col-span-6 lg:col-span-3 flex flex-col justify-between h-full divide-y divide-slate-100">
           {right.map((item) => {
             const itemUrl = getArticleUrl(item);
@@ -135,6 +141,7 @@ export const EnergyCommoditiesSection: React.FC = () => {
                     </h4>
                     <span className="text-[10px] font-sans text-slate-400 mt-0.5 block">
                       {item.date}
+                      {item.readTime && ` • ${item.readTime}`}
                     </span>
                   </div>
                 </Link>
