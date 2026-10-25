@@ -6,7 +6,7 @@ import { DEEP_DIVE_ARTICLES } from '@/data/newsData';
 
 export const DeepDivesSection: React.FC = () => {
   return (
-    <section className="bg-white py-12 border-b border-slate-200 w-full">
+    <section className="bg-white py-12 w-full">
       <div className="w-full px-5 lg:px-10">
         
         {/* Header */}

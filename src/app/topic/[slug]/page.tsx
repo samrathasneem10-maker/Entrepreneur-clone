@@ -825,7 +825,7 @@ export default function DynamicTopicPage() {
       <Header />
 
       {/* Breadcrumb Bar */}
-      <div className="bg-white border-b border-slate-200/80 py-2.5 px-4 sm:px-6 lg:px-8 text-xs text-slate-600 font-sans">
+      <div className="bg-white py-2.5 px-4 sm:px-6 lg:px-8 text-xs text-slate-600 font-sans">
         <div className="w-full max-w-[1680px] mx-auto flex items-center gap-2 overflow-x-auto no-scrollbar">
           <Link href="/" className="hover:text-[#1642D0] transition-colors shrink-0">
             Home
@@ -861,7 +861,7 @@ export default function DynamicTopicPage() {
 
         {/* Subcategories Filter Pills Bar */}
         {topicData.subcategories && topicData.subcategories.length > 0 && (
-          <div className="py-3 flex items-center gap-2 overflow-x-auto no-scrollbar border-b border-slate-100">
+          <div className="py-3 flex items-center gap-2 overflow-x-auto no-scrollbar">
             <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 shrink-0 mr-1">
               Subcategories ({topicData.subcategories.length}):
             </span>
@@ -997,12 +997,11 @@ export default function DynamicTopicPage() {
           
           {/* Left Column: MORE NEWS heading + Bordered box with 10 articles per page */}
           <div className="lg:col-span-7 flex flex-col">
-            {/* MORE NEWS Heading and Line ONLY above the left articles stream */}
-            <div className="mb-4 sm:mb-5">
-              <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#020618] uppercase tracking-wider my-0">
+            {/* MORE NEWS Heading and Line */}
+            <div className="flex items-center justify-between pb-3 sm:pb-4 mb-6 border-b border-slate-200">
+              <h2 className="text-xl sm:text-2xl font-serif font-bold text-slate-900 tracking-tight uppercase">
                 MORE NEWS
               </h2>
-              <div className="border-b border-slate-900 mt-2.5" />
             </div>
 
             {/* Bordered box with 10 articles per page */}

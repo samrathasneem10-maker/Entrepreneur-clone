@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 export const OvercomingImpossibleSection: React.FC = () => {
   return (
-    <section className="bg-white pt-3 sm:pt-4 md:pt-5 pb-10 md:pb-14 border-b border-slate-200/80 w-full">
+    <section className="bg-white pt-3 sm:pt-4 md:pt-5 pb-10 md:pb-14 w-full">
       <div className="w-full">
         {/* Section Header */}
         <div className="flex items-center justify-between mb-6 pb-1">

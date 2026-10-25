@@ -8,7 +8,7 @@ export const GlobalBusinessSection: React.FC = () => {
   const { featured, topCards, numberedItems } = GLOBAL_BUSINESS_SECTION;
 
   return (
-    <section className="bg-white pt-8 sm:pt-10 pb-8 sm:pb-10 border-b border-slate-200/80 w-full">
+    <section className="bg-white pt-8 sm:pt-10 pb-8 sm:pb-10 w-full">
       {/* Section Header */}
       <div className="flex items-center justify-between pb-3 sm:pb-4 mb-6 border-b border-slate-200">
         <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">

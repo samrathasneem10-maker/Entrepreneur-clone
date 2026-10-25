@@ -6,7 +6,7 @@ import { MARKETS_INVESTING_ARTICLES } from '@/data/newsData';
 
 export const MarketsSection: React.FC = () => {
   return (
-    <section className="bg-slate-50 py-10 md:py-12 border-b border-slate-200 w-full">
+    <section className="bg-slate-50 py-10 md:py-12 w-full">
       
       {/* Embedded Markets Ticker Bar */}
       <div className="mb-8 w-full">

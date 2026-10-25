@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 export const BusinessCategoryCards: React.FC = () => {
   return (
-    <section className="bg-white py-10 md:py-14 border-b border-slate-200 w-full">
+    <section className="bg-white py-10 md:py-14 w-full">
       <div className="w-full">
         
         {/* Section Heading: Categories */}

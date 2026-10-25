@@ -28,7 +28,7 @@ export const MagazineSection: React.FC = () => {
   ];
 
   return (
-    <section className="bg-white py-10 sm:py-12 md:py-14 border-b border-slate-200 w-full">
+    <section className="bg-white py-10 sm:py-12 md:py-14 w-full">
       <div className="w-full">
         {/* Section Header: Title (Left) + See All (Right) */}
         <div className="mb-6 sm:mb-8 flex items-center justify-between">

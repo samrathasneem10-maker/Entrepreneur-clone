@@ -8,7 +8,7 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
   const { leftItems, featured, rightCards } = TECH_SUPER_INTELLIGENCE_SECTION;
 
   return (
-    <section className="bg-white pt-8 sm:pt-10 pb-8 sm:pb-10 border-b border-slate-200/80 w-full">
+    <section className="bg-white pt-8 sm:pt-10 pb-8 sm:pb-10 w-full">
       {/* Header with Title, Subtitle and See All */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between pb-3 sm:pb-4 mb-6 border-b border-slate-200 gap-3">
         <div>

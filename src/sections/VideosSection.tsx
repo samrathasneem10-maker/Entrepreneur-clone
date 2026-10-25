@@ -98,33 +98,36 @@ export const VideosSection: React.FC = () => {
   ];
 
   return (
-    <section className="bg-white py-10 md:py-12 border-b border-slate-200 w-full">
+    <section className="bg-white py-10 md:py-12 w-full">
       <div className="w-full">
         
-        {/* Top line with small gap above Latest Videos heading matching reference */}
-        <div className="border-t border-slate-200 pt-2 pb-1.5 mb-6">
-          <div className="flex items-center justify-between">
-            <h2 className="my-0 text-[#020618] font-bold text-2xl sm:text-3xl font-serif leading-none tracking-tight">
-              <Link href="/videos" className="hover:underline">
-                Latest Videos
-              </Link>
-            </h2>
-
-            <Link
-              href="/videos"
-              className="flex items-center no-underline hover:underline text-xs sm:text-[13px] font-bold text-[#020618] uppercase tracking-wider group"
-            >
-              <span>See All</span>
-              <svg
-                aria-hidden="true"
-                fill="currentColor"
-                className="w-5 h-5 fill-current ml-1.5 text-[#1642D0] group-hover:scale-105 transition-transform"
-                viewBox="0 0 24 24"
-              >
-                <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12s4.48 10 10 10 10-4.48 10-10m-10 1H8v-2h4V8l4 4-4 4z" />
-              </svg>
+        {/* Section Header */}
+        <div className="flex items-center justify-between pb-3 sm:pb-4 mb-6 border-b border-slate-200">
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
+            <Link href="/videos" className="hover:text-[#1642D0] transition-colors">
+              Latest Videos
             </Link>
-          </div>
+          </h2>
+
+          <Link
+            href="/videos"
+            className="inline-flex items-center gap-2 group text-xs sm:text-sm font-sans font-bold tracking-wider uppercase text-slate-800 hover:text-[#1642D0] transition-colors"
+          >
+            <span>SEE ALL</span>
+            <span className="w-5 h-5 sm:w-6 sm:h-6 bg-[#1642D0] group-hover:bg-[#1235a8] text-white flex items-center justify-center rounded transition-colors shadow-sm">
+              <svg
+                className="w-3 h-3 sm:w-3.5 sm:h-3.5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </span>
+          </Link>
         </div>
 
         {/* 6 Video Cards Grid (3 columns x 2 rows) */}

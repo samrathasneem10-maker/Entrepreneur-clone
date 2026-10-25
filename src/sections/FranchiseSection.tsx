@@ -141,7 +141,7 @@ export const FranchiseSection: React.FC = () => {
   ];
 
   return (
-    <section className="bg-white pt-2 pb-12 md:pb-16 border-b border-slate-200 w-full">
+    <section className="bg-white pt-2 pb-12 md:pb-16 w-full">
       <div className="w-full">
         {/* Section Heading: NO line above, NO line below, matching reference screenshot */}
         <div className="mb-6">
