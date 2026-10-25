@@ -10,8 +10,8 @@ import { GlobalBusinessSection } from '@/sections/GlobalBusinessSection';
 import { TechnologySuperIntelligenceSection } from '@/sections/TechnologySuperIntelligenceSection';
 import { TrendingResilienceSection } from '@/sections/TrendingResilienceSection';
 import { LuxuryLifestyleSection } from '@/sections/LuxuryLifestyleSection';
-import { ShortsReelsSection } from '@/sections/ShortsReelsSection';
 import { InterviewsOpinionsSection } from '@/sections/InterviewsOpinionsSection';
+import { ShortsReelsSection } from '@/sections/ShortsReelsSection';
 import { CompanyProfilesSection } from '@/sections/CompanyProfilesSection';
 import { EnergyCommoditiesSection } from '@/sections/EnergyCommoditiesSection';
 import { BusinessLegalAffairsSection } from '@/sections/BusinessLegalAffairsSection';
@@ -64,14 +64,14 @@ export default function Home() {
         {/* 10. Luxury & Lifestyle Section */}
         <LuxuryLifestyleSection />
 
-        {/* 11. Shorts & Reels Section */}
-        <ShortsReelsSection />
-
-        {/* 12. Centered Advertisement Banner 3 */}
+        {/* 11. Centered Advertisement Banner 3 */}
         <AdvertisementSection />
 
-        {/* 13. Interviews & Opinions Section */}
+        {/* 12. Interviews & Opinions Section */}
         <InterviewsOpinionsSection />
+
+        {/* 13. Shorts & Reels Section (Positioned immediately after Interviews & Opinions) */}
+        <ShortsReelsSection />
 
         {/* 14. The Leaders | Company Profiles Section */}
         <CompanyProfilesSection />
