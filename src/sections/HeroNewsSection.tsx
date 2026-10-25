@@ -82,9 +82,9 @@ export const HeroNewsSection: React.FC = () => {
           {/* ========================================================= */}
           {/* 1. LEFT COLUMN: Latest (approx 26% width)                */}
           {/* ========================================================= */}
-          <div className="lg:col-span-3 flex flex-col justify-between">
+          <div className="lg:col-span-3 flex flex-col justify-between h-full">
             {/* Header: Latest + See All [->] */}
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 flex-shrink-0">
               <h2 className="font-serif font-black text-2xl sm:text-[28px] text-[#020618] leading-none my-0">
                 <Link href="/latest" className="hover:underline">
                   Latest
@@ -142,8 +142,8 @@ export const HeroNewsSection: React.FC = () => {
           {/* ========================================================= */}
           {/* 2. CENTER COLUMN: Main Featured Hero Card (approx 46%)   */}
           {/* ========================================================= */}
-          <div className="lg:col-span-6 flex flex-col">
-            <div className="relative rounded-xs overflow-hidden bg-[#070b19] text-white flex flex-col justify-end min-h-[480px] sm:min-h-[520px] lg:min-h-[550px] shadow-sm group">
+          <div className="lg:col-span-6 flex flex-col h-full">
+            <div className="relative h-full flex-1 w-full rounded-xs overflow-hidden bg-[#070b19] text-white flex flex-col justify-end min-h-[480px] sm:min-h-[520px] lg:min-h-[560px] shadow-sm group">
               {/* Background Image */}
               <img
                 src={currentHero.imageUrl || '/images/home-hero/hero-growth-decision.png'}
@@ -242,10 +242,10 @@ export const HeroNewsSection: React.FC = () => {
           {/* ========================================================= */}
           {/* 3. RIGHT COLUMN: Top Uber Card + 3 Articles (approx 28%)  */}
           {/* ========================================================= */}
-          <div className="lg:col-span-3 flex flex-col justify-between space-y-4">
+          <div className="lg:col-span-3 flex flex-col justify-between h-full">
             
             {/* Top Featured Card: Uber Driver Bonuses */}
-            <article className="rounded-xs overflow-hidden bg-[#070b19] text-white group cursor-pointer flex flex-col shadow-xs">
+            <article className="rounded-xs overflow-hidden bg-[#070b19] text-white group cursor-pointer flex flex-col shadow-xs flex-shrink-0 mb-3.5">
               <Link
                 href={`/article/${UBER_DRIVER_BONUSES_ARTICLE.slug}`}
                 className="w-full aspect-[16/9] overflow-hidden bg-slate-900 block"
