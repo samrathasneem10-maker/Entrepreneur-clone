@@ -975,24 +975,16 @@ export default function ArticleDetailPage() {
 
               {/* Horizontal In-Article Advertisement */}
               <div className="my-8 max-w-[760px] mx-auto w-full">
-                <p className="text-[10px] sm:text-[11px] font-sans font-semibold uppercase tracking-[0.2em] text-slate-400 text-center mb-2 my-0 select-none">
+                <p className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-400 text-center mb-2 my-0 select-none">
                   ADVERTISEMENT
                 </p>
-                <div className="relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-[#0a0f1d] via-[#101935] to-[#0b1329] border border-slate-800 p-5 sm:p-6 text-white shadow-md flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <div>
-                    <span className="inline-block px-2 py-0.5 rounded text-[10px] font-sans font-black uppercase tracking-wider bg-amber-400 text-slate-950 mb-1">
-                      SPECIAL OFFER
-                    </span>
-                    <h4 className="font-serif font-bold text-base sm:text-lg text-white my-0 leading-snug">
-                      Scale Smarter With Proven Founder Playbooks
-                    </h4>
-                  </div>
-                  <Link
-                    href="/subscribe"
-                    className="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-[#1642D0] hover:bg-[#1235a8] text-white text-xs font-bold uppercase tracking-wider whitespace-nowrap shadow-sm"
-                  >
-                    Claim Offer →
-                  </Link>
+                <div className="w-full h-32 sm:h-36 bg-[#edf2f7] border border-slate-300 flex flex-col items-center justify-center p-5 text-center shadow-2xs rounded-none">
+                  <span className="text-xs sm:text-[13px] font-semibold text-slate-600 font-sans tracking-wide">
+                    300 × 400 Banner
+                  </span>
+                  <span className="text-[11px] text-slate-400 font-sans mt-0.5">
+                    Your Advertisement Here
+                  </span>
                 </div>
               </div>
 
@@ -1131,27 +1123,18 @@ export default function ArticleDetailPage() {
 
           {/* RIGHT SIDEBAR (Matching Images 1, 2, and 3) */}
           <aside className="lg:col-span-4 space-y-6 sticky top-24">
-            {/* 1. Top Right Sidebar Advertisement */}
+            {/* 1. Top Right Sidebar Advertisement matching Reference Image 2 style with Image 1 sidebar dimensions */}
             <div className="w-full max-w-[340px] mx-auto">
-              <p className="text-[10px] sm:text-[11px] font-sans font-semibold uppercase tracking-[0.2em] text-slate-400 text-center mb-2 my-0 select-none">
+              <p className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-400 text-center mb-2 my-0 select-none">
                 ADVERTISEMENT
               </p>
-              <div className="w-full rounded-xl overflow-hidden bg-gradient-to-br from-[#0a0f1d] via-[#101935] to-[#0b1329] border border-slate-800 p-5 text-white text-center shadow-md">
-                <span className="inline-block px-2.5 py-0.5 rounded text-[10px] font-sans font-black uppercase tracking-wider bg-amber-400 text-slate-950 mb-2">
-                  ENTREPRENEUR+ VIP
+              <div className="w-full h-44 sm:h-48 bg-[#edf2f7] border border-slate-300 flex flex-col items-center justify-center p-5 text-center shadow-2xs rounded-none">
+                <span className="text-xs sm:text-[13px] font-semibold text-slate-600 font-sans tracking-wide">
+                  300 × 400 Banner
                 </span>
-                <h4 className="font-serif font-bold text-base leading-snug mb-1.5 text-white">
-                  Unlock Exclusive Executive Briefings
-                </h4>
-                <p className="text-[11px] text-slate-300 font-sans mb-3 leading-relaxed">
-                  Join 100,000+ founders receiving daily tactical playbooks.
-                </p>
-                <Link
-                  href="/subscribe"
-                  className="inline-block w-full py-2 px-3 rounded-lg bg-[#1642D0] hover:bg-[#1235a8] text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-sm"
-                >
-                  Start Free Trial
-                </Link>
+                <span className="text-[11px] text-slate-400 font-sans mt-0.5">
+                  Your Advertisement Here
+                </span>
               </div>
             </div>
 
