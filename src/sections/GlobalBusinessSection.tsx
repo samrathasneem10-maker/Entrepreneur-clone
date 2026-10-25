@@ -36,13 +36,13 @@ export const GlobalBusinessSection: React.FC = () => {
       </div>
 
       {/* Main Grid: Left Featured (6 cols) + Right Complex (6 cols) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
         {/* Left Column: Big Lead Story */}
-        <div className="lg:col-span-6 flex flex-col">
-          <article className="group flex flex-col w-full h-full">
+        <div className="lg:col-span-6 flex flex-col justify-between h-full">
+          <article className="group flex flex-col justify-between w-full h-full">
             <Link
               href={getArticleUrl(featured)}
-              className="flex flex-col h-full no-underline text-inherit cursor-pointer"
+              className="flex flex-col justify-between h-full no-underline text-inherit cursor-pointer"
               aria-label={featured.title}
             >
               <figure className="relative w-full aspect-[16/11] overflow-hidden rounded-xl mb-4 border border-slate-200/90 bg-slate-100 flex-shrink-0">
