@@ -8,9 +8,9 @@ export const GlobalBusinessSection: React.FC = () => {
   const { featured, topCards, numberedItems } = GLOBAL_BUSINESS_SECTION;
 
   return (
-    <section className="bg-white pt-8 sm:pt-10 pb-8 sm:pb-10 w-full">
+    <section className="bg-white pt-5 sm:pt-6 pb-5 sm:pb-6 w-full">
       {/* Section Header */}
-      <div className="flex items-center justify-between mb-5 sm:mb-6">
+      <div className="flex items-center justify-between mb-3.5 sm:mb-4.5">
         <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
           Global Business
         </h2>
@@ -60,7 +60,7 @@ export const GlobalBusinessSection: React.FC = () => {
                 </span>
 
                 {/* Lead Headline as Real HTML Text */}
-                <h3 className="font-serif font-bold text-xl sm:text-2xl lg:text-[26px] xl:text-[28px] leading-[1.2] tracking-tight text-white my-1.5">
+                <h3 className="font-serif font-bold text-2xl sm:text-3xl lg:text-[28px] xl:text-[32px] leading-[1.2] tracking-tight text-white my-1.5">
                   <Link
                     href={getArticleUrl(featured)}
                     className="hover:underline text-white no-underline"
@@ -71,7 +71,7 @@ export const GlobalBusinessSection: React.FC = () => {
 
                 {/* Excerpt */}
                 {featured.excerpt && (
-                  <p className="font-sans text-xs sm:text-[13px] text-slate-200 leading-relaxed mt-1.5 max-w-xl my-0 line-clamp-3">
+                  <p className="font-sans text-xs sm:text-[14px] text-slate-200 leading-relaxed mt-1.5 max-w-xl my-0 line-clamp-3">
                     {featured.excerpt}
                   </p>
                 )}
@@ -121,7 +121,7 @@ export const GlobalBusinessSection: React.FC = () => {
                     <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1 block">
                       {card.category}
                     </span>
-                    <h4 className="text-[14px] sm:text-[15px] font-serif font-bold text-slate-900 leading-snug tracking-tight mb-1.5 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 line-clamp-2">
+                    <h4 className="text-[15px] sm:text-[16px] xl:text-[17px] font-serif font-bold text-slate-900 leading-snug tracking-tight mb-1.5 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 line-clamp-2">
                       {card.title}
                     </h4>
                   </div>
@@ -138,14 +138,14 @@ export const GlobalBusinessSection: React.FC = () => {
           {/* Bottom 3 Numbered Rows (01, 02, 03) with enlarged Europe flag image */}
           <div className="flex flex-col justify-between flex-1 divide-y divide-slate-100">
             {numberedItems.map((item) => (
-              <article key={item.id} className="group flex-1 flex items-center py-2 sm:py-2.5 first:pt-0 last:pb-0">
+              <article key={item.id} className="group flex-1 flex items-center py-2.5 sm:py-3 first:pt-0 last:pb-0">
                 <Link
                   href={getArticleUrl(item)}
                   className="flex items-center justify-between gap-3 sm:gap-4 w-full no-underline text-inherit cursor-pointer"
                   aria-label={item.title}
                 >
                   {/* Thumbnail (Enlarged and crisp) */}
-                  <figure className="relative w-36 sm:w-44 md:w-48 lg:w-44 xl:w-52 aspect-[16/9.5] rounded-xs overflow-hidden flex-shrink-0 border border-slate-200/90 bg-slate-100">
+                  <figure className="relative w-40 sm:w-48 md:w-52 lg:w-48 xl:w-56 aspect-[16/9.5] rounded-xs overflow-hidden flex-shrink-0 border border-slate-200/90 bg-slate-100">
                     <img
                       src={item.imageUrl}
                       alt={item.title}
@@ -158,7 +158,7 @@ export const GlobalBusinessSection: React.FC = () => {
                     <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-0.5 block">
                       {item.category}
                     </span>
-                    <h5 className="text-[13px] sm:text-[14px] lg:text-[15px] font-serif font-bold text-slate-900 leading-snug tracking-tight line-clamp-2 mb-1 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2">
+                    <h5 className="text-[14.5px] sm:text-[15.5px] lg:text-[16px] font-serif font-bold text-slate-900 leading-snug tracking-tight line-clamp-2 mb-1 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2">
                       {item.title}
                     </h5>
                     <div className="text-[10px] sm:text-[11px] font-sans text-slate-500">

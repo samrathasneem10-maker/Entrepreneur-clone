@@ -16,7 +16,7 @@ export const AdvertisementSection: React.FC<AdvertisementSectionProps> = ({
   return (
     <section
       aria-label="Advertisement"
-      className={`w-full py-8 sm:py-10 flex flex-col items-center justify-center ${className}`}
+      className={`w-full py-5 sm:py-6 flex flex-col items-center justify-center ${className}`}
     >
       {/* 1. Top ADVERTISEMENT Label matching Image 4 */}
       <div className="w-full text-center mb-2 sm:mb-2.5">

@@ -8,7 +8,7 @@ export const TrendingResilienceSection: React.FC = () => {
   const { featured, items } = TRENDING_RESILIENCE_SECTION;
 
   return (
-    <section className="bg-white pt-8 sm:pt-10 pb-8 sm:pb-10 w-full">
+    <section className="bg-white pt-5 sm:pt-6 pb-5 sm:pb-6 w-full">
       {/* 2-Column Grid matching Image 1: Left Lead Story (approx 52%) + Right Trending News (approx 48%) */}
       <div className="grid grid-cols-1 lg:grid-cols-[1.14fr_1fr] gap-6 lg:gap-8 xl:gap-10 items-stretch">
         
@@ -36,13 +36,13 @@ export const TrendingResilienceSection: React.FC = () => {
                 </span>
 
                 {/* Lead Headline */}
-                <h3 className="text-xl sm:text-2xl lg:text-[25px] xl:text-[27px] font-serif font-bold text-slate-900 leading-[1.22] tracking-tight mb-2 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 transition-all">
+                <h3 className="text-2xl sm:text-3xl lg:text-[28px] xl:text-[30px] font-serif font-bold text-slate-900 leading-[1.22] tracking-tight mb-2 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 transition-all">
                   {featured.title}
                 </h3>
 
                 {/* Excerpt */}
                 {featured.excerpt && (
-                  <p className="text-xs sm:text-[13px] text-slate-600 font-serif leading-relaxed mb-3 line-clamp-3">
+                  <p className="text-xs sm:text-[14px] text-slate-600 font-serif leading-relaxed mb-3 line-clamp-3">
                     {featured.excerpt}
                   </p>
                 )}
@@ -67,7 +67,7 @@ export const TrendingResilienceSection: React.FC = () => {
         <div className="flex flex-col justify-between h-full">
           {/* Trending News Heading aligned with top of left image */}
           <div className="pb-2 mb-1 flex-shrink-0">
-            <h3 className="text-xl sm:text-2xl font-serif font-bold text-slate-900 tracking-tight my-0">
+            <h3 className="text-2xl sm:text-[26px] font-serif font-bold text-slate-900 tracking-tight my-0">
               Trending News
             </h3>
           </div>
@@ -87,7 +87,7 @@ export const TrendingResilienceSection: React.FC = () => {
                   </span>
 
                   {/* Enlarged Thumbnail */}
-                  <figure className="relative w-36 sm:w-44 md:w-48 lg:w-44 xl:w-52 aspect-[16/9.5] rounded-xs overflow-hidden flex-shrink-0 border border-slate-200/90 bg-slate-100">
+                  <figure className="relative w-40 sm:w-48 md:w-52 lg:w-48 xl:w-56 aspect-[16/9.5] rounded-xs overflow-hidden flex-shrink-0 border border-slate-200/90 bg-slate-100">
                     <img
                       src={item.imageUrl}
                       alt={item.title}
@@ -100,7 +100,7 @@ export const TrendingResilienceSection: React.FC = () => {
                     <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-0.5 block">
                       {item.category}
                     </span>
-                    <h4 className="text-[13px] sm:text-[14px] lg:text-[15px] font-serif font-bold text-slate-900 leading-snug tracking-tight line-clamp-2 mb-1 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2">
+                    <h4 className="text-[14px] sm:text-[15px] lg:text-[15.5px] font-serif font-bold text-slate-900 leading-snug tracking-tight line-clamp-2 mb-1 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2">
                       {item.title}
                     </h4>
                     <div className="text-[10px] sm:text-[11px] font-sans text-slate-500">

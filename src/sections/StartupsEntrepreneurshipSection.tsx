@@ -8,9 +8,9 @@ export const StartupsEntrepreneurshipSection: React.FC = () => {
   const { featured, items } = STARTUPS_ENTREPRENEURSHIP_SECTION;
 
   return (
-    <section className="bg-white pt-8 sm:pt-10 pb-8 sm:pb-10 w-full">
+    <section className="bg-white pt-5 sm:pt-6 pb-5 sm:pb-6 w-full">
       {/* Section Header with consistent border-b matching reference */}
-      <div className="flex items-center justify-between mb-5 sm:mb-6">
+      <div className="flex items-center justify-between mb-3.5 sm:mb-4.5">
         <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
           Startups &amp; Entrepreneurship
         </h2>
@@ -68,13 +68,13 @@ export const StartupsEntrepreneurshipSection: React.FC = () => {
                 </span>
 
                 {/* Lead Story Title */}
-                <h3 className="text-xl sm:text-2xl lg:text-[23px] xl:text-[25px] font-serif font-bold text-slate-900 leading-[1.22] tracking-tight mb-2 text-left group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 transition-all">
+                <h3 className="text-2xl sm:text-3xl lg:text-[28px] xl:text-[30px] font-serif font-bold text-slate-900 leading-[1.22] tracking-tight mb-2 text-left group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 transition-all">
                   {featured.title}
                 </h3>
 
                 {/* Lead Story Excerpt */}
                 {featured.excerpt && (
-                  <p className="text-xs sm:text-[13px] text-slate-600 font-serif font-normal leading-relaxed mb-3 text-left line-clamp-2">
+                  <p className="text-sm sm:text-[14.5px] text-slate-600 font-serif font-normal leading-relaxed mb-3 text-left line-clamp-2">
                     {featured.excerpt}
                   </p>
                 )}
@@ -98,7 +98,7 @@ export const StartupsEntrepreneurshipSection: React.FC = () => {
             return (
               <article
                 key={item.id}
-                className="group flex-1 flex flex-col justify-center py-4 first:pt-0 last:pb-0"
+                className="group flex-1 flex flex-col justify-center py-3 first:pt-0 last:pb-0"
               >
                 <Link
                   href={itemUrl}
@@ -112,7 +112,7 @@ export const StartupsEntrepreneurshipSection: React.FC = () => {
                         {item.category}
                       </span>
 
-                      <h4 className="text-[14px] sm:text-[15px] lg:text-[16px] font-serif font-bold text-slate-900 leading-snug tracking-tight mb-1.5 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 transition-all line-clamp-2">
+                      <h4 className="text-[15.5px] sm:text-[16.5px] lg:text-[17.5px] xl:text-[18px] font-serif font-bold text-slate-900 leading-snug tracking-tight mb-1.5 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 transition-all line-clamp-2">
                         {item.title}
                       </h4>
                     </div>
@@ -128,7 +128,7 @@ export const StartupsEntrepreneurshipSection: React.FC = () => {
 
                   {/* Right Thumbnail */}
                   {item.imageUrl && (
-                    <figure className="relative w-52 sm:w-60 md:w-64 lg:w-68 xl:w-76 aspect-[16/9.5] flex-shrink-0 overflow-hidden rounded-xs border border-slate-200/90 bg-slate-100">
+                    <figure className="relative w-56 sm:w-64 md:w-72 lg:w-76 xl:w-84 aspect-[16/9.5] flex-shrink-0 overflow-hidden rounded-xs border border-slate-200/90 bg-slate-100">
                       <img
                         src={item.imageUrl}
                         alt={item.title}

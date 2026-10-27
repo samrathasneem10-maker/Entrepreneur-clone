@@ -8,9 +8,9 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
   const { featured, leftItems, rightCards } = TECH_SUPER_INTELLIGENCE_SECTION;
 
   return (
-    <section className="bg-white pt-8 sm:pt-10 pb-8 sm:pb-10 w-full">
+    <section className="bg-white pt-5 sm:pt-6 pb-5 sm:pb-6 w-full">
       {/* Header with Title, Subtitle and See All */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-5 sm:mb-6 gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-3.5 sm:mb-4.5 gap-3">
         <div>
           <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
             Technology &amp; Super Intelligence
@@ -54,7 +54,7 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
                 aria-label={item.title}
               >
                 {/* Large high-clarity thumbnail matching Reference Image 1 */}
-                <figure className="relative w-32 sm:w-36 md:w-40 xl:w-44 aspect-[16/10.5] rounded-xs overflow-hidden flex-shrink-0 border border-slate-200/90 bg-slate-100">
+                <figure className="relative w-36 sm:w-42 md:w-46 xl:w-50 aspect-[16/10.5] rounded-xs overflow-hidden flex-shrink-0 border border-slate-200/90 bg-slate-100">
                   <img
                     src={item.imageUrl}
                     alt={item.title}
@@ -65,7 +65,7 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
                   <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-0.5 block">
                     {item.category}
                   </span>
-                  <h4 className="text-[13px] sm:text-[14px] font-serif font-bold text-slate-900 leading-snug tracking-tight line-clamp-2 mb-1 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2">
+                  <h4 className="text-[14px] sm:text-[14.5px] lg:text-[15px] font-serif font-bold text-slate-900 leading-snug tracking-tight line-clamp-2 mb-1 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2">
                     {item.title}
                   </h4>
                   <div className="text-[10px] font-sans text-slate-500">
@@ -102,12 +102,12 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
                   {featured.category}
                 </span>
 
-                <h3 className="text-xl sm:text-2xl lg:text-[23px] xl:text-[25px] font-serif font-bold text-slate-900 leading-[1.22] tracking-tight mb-2 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 transition-all line-clamp-2">
+                <h3 className="text-2xl sm:text-3xl lg:text-[27px] xl:text-[29px] font-serif font-bold text-slate-900 leading-[1.22] tracking-tight mb-2 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 transition-all line-clamp-2">
                   {featured.title}
                 </h3>
 
                 {featured.excerpt && (
-                  <p className="text-xs sm:text-[13px] text-slate-600 font-serif leading-relaxed mb-2.5 line-clamp-2 sm:line-clamp-3">
+                  <p className="text-xs sm:text-[14px] text-slate-600 font-serif leading-relaxed mb-2.5 line-clamp-2 sm:line-clamp-3">
                     {featured.excerpt}
                   </p>
                 )}
@@ -164,7 +164,7 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
                     {card.category}
                   </span>
 
-                  <h4 className="text-[13.5px] sm:text-[14.5px] font-serif font-bold text-slate-900 leading-snug tracking-tight mb-0.5 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 line-clamp-2">
+                  <h4 className="text-[15px] sm:text-[16px] xl:text-[16.5px] font-serif font-bold text-slate-900 leading-snug tracking-tight mb-0.5 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 line-clamp-2">
                     {card.title}
                   </h4>
 

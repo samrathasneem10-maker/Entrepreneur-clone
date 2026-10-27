@@ -74,7 +74,7 @@ export const HeroNewsSection: React.FC = () => {
   const currentHero = HERO_SLIDES[activeSlide];
 
   return (
-    <section className="bg-white pt-4 pb-6 sm:pb-8 w-full">
+    <section className="bg-white pt-3 sm:pt-4 pb-5 sm:pb-6 w-full">
       <div className="w-full">
         {/* Main 3-Column Layout: Left (26%), Center (46%), Right (28%) */}
         <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1.6fr_1.25fr] gap-4 sm:gap-5 xl:gap-6 items-stretch">
@@ -114,7 +114,7 @@ export const HeroNewsSection: React.FC = () => {
                     <span className="text-[10px] font-bold text-[#1642D0] uppercase tracking-wider block font-sans mb-1">
                       {art.category}
                     </span>
-                    <h3 className="font-serif font-bold text-[12.5px] sm:text-[13px] leading-snug text-[#020618] group-hover:underline line-clamp-3 my-0">
+                    <h3 className="font-serif font-bold text-[13.5px] sm:text-[14.5px] lg:text-[15px] leading-snug text-[#020618] group-hover:underline line-clamp-3 my-0">
                       <Link href={`/article/${art.slug || art.id}`}>
                         {art.title}
                       </Link>
@@ -126,7 +126,7 @@ export const HeroNewsSection: React.FC = () => {
 
                   <Link
                     href={`/article/${art.slug || art.id}`}
-                    className="w-[116px] h-[82px] sm:w-[126px] sm:h-[88px] md:w-[136px] md:h-[94px] shrink-0 rounded-xs overflow-hidden bg-slate-100 block cursor-pointer"
+                    className="w-[132px] h-[92px] sm:w-[144px] sm:h-[100px] md:w-[154px] md:h-[108px] shrink-0 rounded-xs overflow-hidden bg-slate-100 block cursor-pointer"
                   >
                     <img
                       src={art.imageUrl}
@@ -248,7 +248,7 @@ export const HeroNewsSection: React.FC = () => {
             <article className="rounded-xs overflow-hidden bg-[#070b19] text-white group cursor-pointer flex flex-col shadow-xs flex-shrink-0 mb-3.5">
               <Link
                 href={`/article/${UBER_DRIVER_BONUSES_ARTICLE.slug}`}
-                className="w-full aspect-[16/8.8] overflow-hidden bg-slate-900 block"
+                className="w-full aspect-[16/9] overflow-hidden bg-slate-900 block"
               >
                 <img
                   src={UBER_DRIVER_BONUSES_ARTICLE.imageUrl}
@@ -260,7 +260,7 @@ export const HeroNewsSection: React.FC = () => {
                 <span className="inline-block bg-[#1642D0] text-white text-[9.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-xs w-fit font-sans">
                   {UBER_DRIVER_BONUSES_ARTICLE.category}
                 </span>
-                <h3 className="font-serif font-bold text-base sm:text-[17px] leading-snug text-white group-hover:underline mt-1.5 my-0">
+                <h3 className="font-serif font-bold text-[17px] sm:text-[18px] lg:text-[19px] leading-snug text-white group-hover:underline mt-1.5 my-0">
                   <Link href={`/article/${UBER_DRIVER_BONUSES_ARTICLE.slug}`}>
                     {UBER_DRIVER_BONUSES_ARTICLE.title}
                   </Link>
@@ -282,7 +282,7 @@ export const HeroNewsSection: React.FC = () => {
                     <span className="text-[10px] font-bold text-[#1642D0] uppercase tracking-wider block font-sans mb-0.5">
                       {art.category}
                     </span>
-                    <h4 className="font-serif font-bold text-[12.5px] sm:text-[13px] leading-snug text-[#020618] group-hover:underline line-clamp-3 my-0">
+                    <h4 className="font-serif font-bold text-[13.5px] sm:text-[14.5px] lg:text-[15px] leading-snug text-[#020618] group-hover:underline line-clamp-3 my-0">
                       <Link href={`/article/${art.slug || art.id}`}>
                         {art.title}
                       </Link>
@@ -294,7 +294,7 @@ export const HeroNewsSection: React.FC = () => {
 
                   <Link
                     href={`/article/${art.slug || art.id}`}
-                    className="w-[136px] h-[84px] sm:w-[148px] sm:h-[92px] md:w-[158px] md:h-[98px] shrink-0 rounded-xs overflow-hidden bg-slate-100 block cursor-pointer"
+                    className="w-[146px] h-[96px] sm:w-[160px] sm:h-[105px] md:w-[172px] md:h-[112px] shrink-0 rounded-xs overflow-hidden bg-slate-100 block cursor-pointer"
                   >
                     <img
                       src={art.imageUrl}

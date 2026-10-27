@@ -6,9 +6,9 @@ import { MARKETING_BRANDING_SECTION, getArticleUrl } from '@/data/newsData';
 
 export const MarketingBrandingSection: React.FC = () => {
   return (
-    <section className="bg-white pt-8 sm:pt-10 pb-8 sm:pb-10 w-full">
+    <section className="bg-white pt-5 sm:pt-6 pb-5 sm:pb-6 w-full">
       {/* Section Header */}
-      <div className="flex items-center justify-between mb-5 sm:mb-6">
+      <div className="flex items-center justify-between mb-3.5 sm:mb-4.5">
         <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
           Marketing &amp; Branding
         </h2>
