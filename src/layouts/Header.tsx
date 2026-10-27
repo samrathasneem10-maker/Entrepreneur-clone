@@ -14,12 +14,14 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
   const { user, openLogin, logout } = useAuth();
+  const [mounted, setMounted] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [readingProgress, setReadingProgress] = useState(0);
 
   useEffect(() => {
+    setMounted(true);
     const handleScroll = () => {
       if (window.scrollY > 0) {
         setIsScrolled(true);
@@ -145,7 +147,7 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
               </Link>
 
               {/* Sign In / User Profile */}
-              {user ? (
+              {mounted && user ? (
                 <div className="flex items-center gap-2">
                   <Link
                     href={user.role ? `/dashboard/${user.role}` : '/dashboard'}

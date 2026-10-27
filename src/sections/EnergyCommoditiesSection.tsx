@@ -36,8 +36,8 @@ export const EnergyCommoditiesSection: React.FC = () => {
         </Link>
       </div>
 
-      {/* 3-Column Composite Grid matching Reference Image 1: Left Lead (38%), Middle 2 Cards (35%), Right 4 Stories (27%) */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1.38fr_1.26fr_1fr] gap-6 lg:gap-7 xl:gap-8 items-stretch w-full">
+      {/* 3-Column Composite Grid matching Reference Image 1: Left Lead (37%), Middle 2 Cards (36%), Right 4 Stories (27%) */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1.25fr_1.35fr_1.05fr] gap-4 sm:gap-5 xl:gap-6 items-stretch w-full">
         
         {/* Left Column: Big Lead Story with Oil Pumpjack & Refinery Image */}
         <div className="flex flex-col justify-between h-full">
