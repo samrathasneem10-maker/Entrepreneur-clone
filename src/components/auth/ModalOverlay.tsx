@@ -40,7 +40,7 @@ export const ModalOverlay: React.FC<ModalOverlayProps> = ({
       onClick={onClose}
     >
       <div
-        className="relative bg-white w-full max-w-[440px] max-h-[92vh] flex flex-col rounded-lg sm:rounded-xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+        className="relative bg-white w-full max-w-[440px] max-h-[92vh] flex flex-col rounded-none shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Header Bar with Entrepreneur Logo centered and Close button with no vertical divider line */}
@@ -50,9 +50,7 @@ export const ModalOverlay: React.FC<ModalOverlayProps> = ({
             <span className="font-logo font-black text-2xl sm:text-[26px] tracking-[-0.04em] text-[#000000] leading-none">
               Entrepreneur
             </span>
-            <span className="text-[#000000] text-[9px] font-sans font-bold ml-[1px] leading-none align-baseline">
-              ®
-            </span>
+            
           </div>
 
           {/* Close Button on Right (no vertical divider line) */}

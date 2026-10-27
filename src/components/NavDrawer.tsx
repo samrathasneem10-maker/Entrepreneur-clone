@@ -76,80 +76,40 @@ export const NavDrawer: React.FC<NavDrawerProps> = ({ isOpen, onClose }) => {
       {/* Drawer Container: pinned to full viewport height, non-scrolling shell */}
       <div className="relative bg-white w-full max-w-sm sm:max-w-md h-full max-h-screen flex flex-col shadow-2xl border-r border-slate-200 z-10 animate-in slide-in-from-left duration-300">
         
-        {/* Header inside Drawer: Centered Entrepreneur Logo, User & Close controls (Search icon removed per user marking) */}
-        <div className="relative p-4 sm:p-5 border-b border-slate-200 flex items-center justify-between shrink-0 bg-white h-16">
-          {/* Left placeholder to balance right buttons */}
-          <div className="w-16 shrink-0" />
-
-          {/* Centered Entrepreneur Logo (middle of the top) */}
-          <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center select-none pointer-events-none">
-            <span className="font-serif font-black text-2xl tracking-tighter text-slate-950 whitespace-nowrap">
-              Entrepreneur<span className="text-red-700 font-sans text-xs align-super ml-0.5">®</span>
+        {/* Header inside Drawer: Centered Entrepreneur Logo, exactly centered, increased size, no 'W' symbol or extra marks */}
+        <div className="relative px-4 py-3.5 border-b border-slate-200 flex items-center justify-center shrink-0 bg-white h-16">
+          {/* Centered Entrepreneur Logo - perfectly centered */}
+          <Link
+            href="/"
+            onClick={onClose}
+            className="flex items-center justify-center select-none hover:opacity-85 transition-opacity"
+            aria-label="Entrepreneur Home"
+          >
+            <span className="font-serif font-black text-[27px] sm:text-[29px] tracking-tight text-[#000000] whitespace-nowrap">
+              Entrepreneur
             </span>
-          </div>
+          </Link>
 
-          {/* Right: User/Profile + Close Icon */}
-          <div className="flex items-center gap-1 sm:gap-2 z-10 shrink-0">
-            {/* Login / User Profile Icon */}
-            {user ? (
-              <div className="flex items-center gap-1">
-                <Link
-                  href={user.role ? `/dashboard/${user.role}` : '/dashboard'}
-                  onClick={onClose}
-                  className="flex items-center gap-1.5 p-1.5 hover:bg-slate-100 rounded-full transition-colors"
-                  title={`Go to ${user.role} dashboard`}
-                >
-                  <div className="w-7 h-7 rounded-full bg-[#1642D0] text-white flex items-center justify-center text-[11px] font-extrabold uppercase">
-                    {user.name.charAt(0)}
-                  </div>
-                </Link>
-                <button
-                  onClick={() => {
-                    logout();
-                    onClose();
-                  }}
-                  className="p-1.5 text-slate-500 hover:text-rose-600 transition-colors cursor-pointer"
-                  title="Sign Out"
-                  aria-label="Sign Out"
-                >
-                  <LogOut className="w-4 h-4" />
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={() => {
-                  onClose();
-                  openLogin();
-                }}
-                className="p-2 text-slate-700 hover:text-[#1642D0] hover:bg-slate-100 rounded-full transition-colors cursor-pointer"
-                aria-label="Sign In"
-                title="Sign In"
-              >
-                <User className="w-5 h-5" />
-              </button>
-            )}
-
-            {/* Close Icon */}
-            <button
-              onClick={onClose}
-              className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-colors cursor-pointer ml-1"
-              aria-label="Close menu"
-            >
-              <X className="w-6 h-6" />
-            </button>
-          </div>
+          {/* Close Icon pinned to the far right */}
+          <button
+            onClick={onClose}
+            className="absolute right-3.5 top-1/2 -translate-y-1/2 p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-colors cursor-pointer"
+            aria-label="Close menu"
+          >
+            <X className="w-6 h-6 stroke-[2]" />
+          </button>
         </div>
 
-        {/* Quick Filter Box (Stats indicator row removed as marked in user image) */}
-        <div className="px-5 py-3 border-b border-slate-100 bg-slate-50 shrink-0">
-          <div className="relative">
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+        {/* Quick Filter Box: Increased height and larger search icon matching request 4 */}
+        <div className="px-4 sm:px-5 py-3.5 sm:py-4 border-b border-slate-200/80 bg-slate-50/90 shrink-0">
+          <div className="relative flex items-center">
+            <Search className="w-5 h-5 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 stroke-[2.2] pointer-events-none" />
             <input
               type="text"
               value={filterQuery}
               onChange={(e) => setFilterQuery(e.target.value)}
               placeholder="Filter topics & subcategories..."
-              className="w-full pl-8 pr-3 py-1.5 bg-white border border-slate-200 rounded-md text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#1642D0]"
+              className="w-full pl-11 pr-3.5 py-2.5 sm:py-3 bg-white border border-slate-300 rounded-md text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#1642D0] focus:ring-1 focus:ring-[#1642D0] transition-all shadow-2xs"
             />
           </div>
         </div>
@@ -177,9 +137,6 @@ export const NavDrawer: React.FC<NavDrawerProps> = ({ isOpen, onClose }) => {
                         className="flex items-center gap-1.5 px-2 py-1.5 text-xs text-slate-500 hover:text-[#1642D0] hover:bg-slate-100 rounded transition-colors cursor-pointer"
                         title={isExpanded ? 'Collapse subcategories' : 'Expand subcategories'}
                       >
-                        <span className="text-[10px] font-extrabold px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
-                          {main.subcategories.length}
-                        </span>
                         <ChevronDown
                           className={`w-3.5 h-3.5 transition-transform duration-200 ${
                             isExpanded ? 'rotate-180 text-[#1642D0]' : ''
@@ -211,6 +168,46 @@ export const NavDrawer: React.FC<NavDrawerProps> = ({ isOpen, onClose }) => {
           </nav>
         </div>
 
+        {/* Drawer Footer: User Profile / Auth Status */}
+        {user ? (
+          <div className="p-3.5 sm:p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between shrink-0">
+            <Link
+              href={user.role ? `/dashboard/${user.role}` : '/dashboard'}
+              onClick={onClose}
+              className="flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-800 hover:text-[#1642D0] transition-colors"
+            >
+              <div className="w-7 h-7 rounded-full bg-[#1642D0] text-white flex items-center justify-center text-[11px] font-extrabold uppercase">
+                {user.name.charAt(0)}
+              </div>
+              <span className="truncate max-w-[170px]">{user.name}</span>
+            </Link>
+            <button
+              onClick={() => {
+                logout();
+                onClose();
+              }}
+              className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-rose-600 transition-colors cursor-pointer px-2 py-1 rounded hover:bg-slate-200/50"
+              title="Sign Out"
+              aria-label="Sign Out"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Sign Out</span>
+            </button>
+          </div>
+        ) : (
+          <div className="p-3.5 sm:p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between shrink-0">
+            <button
+              onClick={() => {
+                onClose();
+                openLogin();
+              }}
+              className="flex items-center gap-2 text-xs sm:text-sm font-bold text-[#1642D0] hover:underline cursor-pointer"
+            >
+              <User className="w-4 h-4" />
+              <span>Sign In to Entrepreneur</span>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

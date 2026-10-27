@@ -120,7 +120,7 @@ export const LoginForm: React.FC = () => {
 
       {/* Auth Error Banner */}
       {authError && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-left animate-in fade-in duration-200">
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-none text-left animate-in fade-in duration-200">
           <p className="text-xs font-sans text-red-700 font-medium my-0 leading-snug">
             {authError}
           </p>
@@ -129,7 +129,7 @@ export const LoginForm: React.FC = () => {
 
       {/* Forgot Password Success Banner */}
       {forgotSent && (
-        <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-left animate-in fade-in duration-200">
+        <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 rounded-none text-left animate-in fade-in duration-200">
           <p className="text-xs font-sans text-emerald-800 font-medium my-0 leading-snug">
             Password reset instructions have been dispatched to {email}.
           </p>
@@ -141,7 +141,7 @@ export const LoginForm: React.FC = () => {
         <button
           type="button"
           onClick={handleGoogleSignIn}
-          className="w-full py-2.5 px-4 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-[13px] font-sans font-medium text-slate-700 transition-colors flex items-center justify-center gap-2.5 cursor-pointer shadow-xs"
+          className="w-full py-2.5 px-4 bg-white hover:bg-slate-50 border border-slate-200 rounded-none text-xs sm:text-[13px] font-sans font-medium text-slate-700 transition-colors flex items-center justify-center gap-2.5 cursor-pointer shadow-xs"
         >
           {/* Multi-colored Google Icon */}
           <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24">
@@ -192,7 +192,7 @@ export const LoginForm: React.FC = () => {
               setAuthError('');
             }}
             placeholder=""
-            className="w-full px-3.5 py-2.5 bg-[#f8fafc] border border-slate-300 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus:border-[#1642D0] focus:ring-1 focus:ring-[#1642D0] transition-colors"
+            className="w-full px-3.5 py-2.5 bg-[#f8fafc] border border-slate-300 rounded-none text-sm text-slate-900 focus:bg-white focus:outline-none focus:border-[#1642D0] focus:ring-1 focus:ring-[#1642D0] transition-colors"
           />
           {emailError && (
             <span className="text-[11px] text-red-600 mt-1 font-medium">{emailError}</span>
@@ -219,7 +219,7 @@ export const LoginForm: React.FC = () => {
                 setAuthError('');
               }}
               placeholder=""
-              className="w-full px-3.5 py-2.5 pr-10 bg-[#f8fafc] border border-slate-300 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus:border-[#1642D0] focus:ring-1 focus:ring-[#1642D0] transition-colors"
+              className="w-full px-3.5 py-2.5 pr-10 bg-[#f8fafc] border border-slate-300 rounded-none text-sm text-slate-900 focus:bg-white focus:outline-none focus:border-[#1642D0] focus:ring-1 focus:ring-[#1642D0] transition-colors"
             />
             <button
               type="button"
@@ -254,7 +254,7 @@ export const LoginForm: React.FC = () => {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full py-3 px-4 bg-[#fde047] hover:bg-[#facc15] active:bg-[#eab308] disabled:opacity-60 text-slate-950 font-bold text-sm sm:text-base rounded-xl transition-all cursor-pointer shadow-sm mt-3 flex items-center justify-center gap-2"
+          className="w-full py-3 px-4 bg-[#fde047] hover:bg-[#facc15] active:bg-[#eab308] disabled:opacity-60 text-slate-950 font-bold text-sm sm:text-base rounded-none transition-all cursor-pointer shadow-sm mt-3 flex items-center justify-center gap-2"
         >
           {isLoading ? (
             <>

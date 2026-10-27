@@ -97,7 +97,7 @@ export const SignupForm: React.FC = () => {
         <button
           type="button"
           onClick={handleGoogleSignUp}
-          className="w-full py-2.5 px-4 bg-[#F8FAFC] hover:bg-slate-100 border border-slate-300/90 rounded-xl text-xs sm:text-sm font-sans font-bold text-slate-700 transition-colors flex items-center justify-center gap-3 cursor-pointer shadow-2xs"
+          className="w-full py-2.5 px-4 bg-[#F8FAFC] hover:bg-slate-100 border border-slate-300/90 rounded-none text-xs sm:text-sm font-sans font-bold text-slate-700 transition-colors flex items-center justify-center gap-3 cursor-pointer shadow-2xs"
         >
           {/* Multi-colored Google Icon */}
           <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24">
@@ -168,7 +168,7 @@ export const SignupForm: React.FC = () => {
 
         {/* Live Password Strength Panel (Smoothly fades in when user starts typing) */}
         {password.length > 0 && (
-          <div className="space-y-2 bg-slate-50 p-3.5 rounded-xl border border-slate-200/90 text-[11px] font-sans animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="space-y-2 bg-slate-50 p-3.5 rounded-none border border-slate-200/90 text-[11px] font-sans animate-in fade-in slide-in-from-top-2 duration-300">
             {/* Progress Bar & Label */}
             <div className="flex items-center justify-between gap-2">
               <span className="font-bold text-slate-600 uppercase text-[10px] tracking-wider">
@@ -272,7 +272,7 @@ export const SignupForm: React.FC = () => {
         <button
           type="submit"
           disabled={!isFormValid}
-          className={`w-full py-3 px-4 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all duration-200 mt-2 ${
+          className={`w-full py-3 px-4 text-white font-bold text-xs uppercase tracking-wider rounded-none transition-all duration-200 mt-2 ${
             isFormValid
               ? 'bg-[#1642D0] hover:bg-blue-800 cursor-pointer shadow-2xs'
               : 'bg-[#1642D0] opacity-50 cursor-not-allowed'

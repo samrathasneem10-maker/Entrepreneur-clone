@@ -40,7 +40,7 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
           onChange={onChange}
           placeholder={placeholder}
           required={required}
-          className={`w-full pl-4 pr-11 py-2.5 bg-slate-50/80 border rounded-xl text-xs sm:text-sm font-sans text-slate-900 placeholder-slate-400 focus:outline-none transition-all ${
+          className={`w-full pl-4 pr-11 py-2.5 bg-slate-50/80 border rounded-none text-xs sm:text-sm font-sans text-slate-900 placeholder-slate-400 focus:outline-none transition-all ${
             error
               ? 'border-rose-500 focus:border-rose-600 focus:ring-1 focus:ring-rose-500'
               : 'border-slate-200/90 focus:border-[#1642D0] focus:ring-1 focus:ring-[#1642D0] focus:bg-white'
