@@ -106,6 +106,7 @@ export async function POST(request: Request) {
       maxAge: 60 * 60 * 24 * 7,
     });
 
+    response.cookies.delete('logged_out');
     return response;
   } catch (error: any) {
     console.error('Login error:', error);

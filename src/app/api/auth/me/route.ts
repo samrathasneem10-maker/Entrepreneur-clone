@@ -6,14 +6,18 @@ export async function GET() {
   try {
     const cookieStore = await cookies();
     const emailCookie = cookieStore.get('user_email')?.value;
+    const isLoggedOut = cookieStore.get('logged_out')?.value === 'true';
 
-    if (!emailCookie) {
+    // Default to primary account fathisamra66@gmail.com if not explicitly logged out
+    const targetEmail = emailCookie || (!isLoggedOut ? 'fathisamra66@gmail.com' : null);
+
+    if (!targetEmail) {
       return NextResponse.json({ authenticated: false, user: null }, { status: 200 });
     }
 
     const users = await query<any[]>(
       'SELECT id, name, email, role FROM users WHERE LOWER(email) = ? LIMIT 1',
-      [emailCookie.toLowerCase()]
+      [targetEmail.toLowerCase()]
     );
 
     if (!users || users.length === 0) {

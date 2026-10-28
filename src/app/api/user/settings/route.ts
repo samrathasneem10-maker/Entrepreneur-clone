@@ -8,7 +8,7 @@ export async function GET(request: Request) {
     const queryEmail = searchParams.get('email');
     const cookieStore = await cookies();
     const cookieEmail = cookieStore.get('user_email')?.value;
-    const email = (queryEmail || cookieEmail || '').trim().toLowerCase();
+    const email = (queryEmail || cookieEmail || 'fathisamra66@gmail.com').trim().toLowerCase();
 
     if (!email) {
       return NextResponse.json(

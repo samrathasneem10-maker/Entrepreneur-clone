@@ -159,6 +159,12 @@ function DashboardContent() {
             setLastName(fallbackData.profile.lastName || '');
             setEmail(fallbackData.profile.email || '');
             setBio(fallbackData.profile.bio || '');
+            loginUser({
+              id: fallbackData.profile.id,
+              name: fallbackData.profile.fullName,
+              email: fallbackData.profile.email,
+              role: fallbackData.profile.role,
+            });
           }
         }
       }
