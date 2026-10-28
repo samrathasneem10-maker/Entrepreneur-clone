@@ -77,6 +77,7 @@ export async function PUT(request: Request) {
       lastName,
       newEmail,
       bio,
+      phone,
       currentPassword,
       newPassword,
       facebookConnected,
@@ -168,11 +169,13 @@ export async function PUT(request: Request) {
       await query(
         `UPDATE user_settings 
          SET bio = COALESCE(?, bio),
+             phone = COALESCE(?, phone),
              facebook_connected = COALESCE(?, facebook_connected),
              google_connected = COALESCE(?, google_connected)
          WHERE LOWER(user_email) = ?`,
         [
           bio !== undefined ? bio : null,
+          phone !== undefined ? phone : null,
           facebookConnected !== undefined ? (facebookConnected ? 1 : 0) : null,
           googleConnected !== undefined ? (googleConnected ? 1 : 0) : null,
           targetEmail,
@@ -180,11 +183,12 @@ export async function PUT(request: Request) {
       );
     } else {
       await query(
-        `INSERT INTO user_settings (user_email, bio, facebook_connected, google_connected, plan_name, plan_status)
-         VALUES (?, ?, ?, ?, 'Entrepreneur Digital All-Access', 'active')`,
+        `INSERT INTO user_settings (user_email, bio, phone, facebook_connected, google_connected, plan_name, plan_status)
+         VALUES (?, ?, ?, ?, ?, 'Entrepreneur Digital All-Access', 'active')`,
         [
           targetEmail,
           bio || '',
+          phone || null,
           facebookConnected ? 1 : 0,
           googleConnected !== undefined ? (googleConnected ? 1 : 0) : 1,
         ]
