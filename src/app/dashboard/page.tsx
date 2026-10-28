@@ -77,8 +77,12 @@ function DashboardContent() {
   // Active Tab state: 'profile' | 'saved' | 'subscriptions' | 'settings' | 'help'
   const [activeTab, setActiveTab] = useState<TabType>('profile');
 
-  // Loading states
+  const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const [savingField, setSavingField] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
@@ -510,6 +514,14 @@ function DashboardContent() {
     await logout();
     router.push('/');
   };
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
+        <div className="w-8 h-8 border-3 border-[#1642D0] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] font-sans text-slate-800 antialiased selection:bg-[#1642D0] selection:text-white flex flex-col">
