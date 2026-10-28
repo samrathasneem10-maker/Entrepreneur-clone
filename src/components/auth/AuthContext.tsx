@@ -20,6 +20,7 @@ interface AuthContextType {
   closeAuth: () => void;
   setMode: (mode: AuthMode) => void;
   loginUser: (user: UserProfile) => void;
+  updateUser: (profile: Partial<UserProfile>) => void;
   logout: () => Promise<void>;
 }
 
@@ -81,6 +82,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const updateUser = (profile: Partial<UserProfile>) => {
+    setUser((prev) => {
+      if (!prev) return prev;
+      const updated = { ...prev, ...profile };
+      try {
+        localStorage.setItem('entrepreneur_user', JSON.stringify(updated));
+      } catch {
+        // ignore
+      }
+      return updated;
+    });
+  };
+
   const logout = async () => {
     setUser(null);
     try {
@@ -102,6 +116,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         closeAuth,
         setMode,
         loginUser,
+        updateUser,
         logout,
       }}
     >

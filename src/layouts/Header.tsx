@@ -150,7 +150,7 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
               {mounted && user ? (
                 <div className="flex items-center gap-2">
                   <Link
-                    href={user.role ? `/dashboard/${user.role}` : '/dashboard'}
+                    href="/dashboard"
                     className="flex items-center gap-1.5 p-1.5 text-[#020618] hover:text-[#1642D0] text-xs sm:text-[13px] font-bold group transition-colors cursor-pointer"
                     title={`Go to ${user.role} dashboard`}
                   >

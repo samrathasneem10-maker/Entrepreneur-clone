@@ -67,7 +67,7 @@ export async function POST(request: Request) {
 
     // Determine dashboard redirect based on role
     const normalizedRole = (user.role || 'reader').toLowerCase();
-    let redirectUrl = '/dashboard/reader';
+    let redirectUrl = '/dashboard';
 
     if (normalizedRole === 'writer' || normalizedRole === 'writter') {
       redirectUrl = '/dashboard/writer';

@@ -172,7 +172,7 @@ export const NavDrawer: React.FC<NavDrawerProps> = ({ isOpen, onClose }) => {
         {user ? (
           <div className="p-3.5 sm:p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between shrink-0">
             <Link
-              href={user.role ? `/dashboard/${user.role}` : '/dashboard'}
+              href="/dashboard"
               onClick={onClose}
               className="flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-800 hover:text-[#1642D0] transition-colors"
             >
