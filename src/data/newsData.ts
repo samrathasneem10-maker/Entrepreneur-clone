@@ -1370,6 +1370,45 @@ export const PRIMARY_NAV_ITEMS: NavItem[] = [
     ],
   },
   {
+    label: 'Business',
+    href: '/topic/business',
+    subcategories: [
+      { label: 'US Business', href: '/topic/breaking-headlines' },
+      { label: 'World Business', href: '/topic/global-economy' },
+      { label: 'Economy & Trade', href: '/topic/international-trade' },
+      { label: 'Corporate News', href: '/topic/corporate-news' },
+      { label: 'Startups & Ventures', href: '/topic/startup-news' },
+    ],
+  },
+  {
+    label: 'Politics',
+    href: '/topic/politics',
+    subcategories: [
+      { label: 'US Politics', href: '/topic/us-politics' },
+      { label: 'Policy & Legislation', href: '/topic/policy-legislation' },
+      { label: 'Elections & Campaigns', href: '/topic/elections-campaigns' },
+      { label: 'National Security', href: '/topic/national-security' },
+    ],
+  },
+  {
+    label: 'Opinion',
+    href: '/topic/interviews-opinions',
+    subcategories: [
+      { label: 'Editorials', href: '/topic/interviews-opinions' },
+      { label: 'Commentary', href: '/topic/interviews-opinions' },
+      { label: 'Executive Columns', href: '/topic/interviews-opinions' },
+    ],
+  },
+  {
+    label: 'Sports',
+    href: '/topic/sports',
+    subcategories: [
+      { label: 'NFL & Football', href: '/topic/nfl-football' },
+      { label: 'NBA & Basketball', href: '/topic/nba-basketball' },
+      { label: 'Sports Business', href: '/topic/sports-business-deals' },
+    ],
+  },
+  {
     label: 'Markets and Investing',
     href: '/topic/markets-investing',
     subcategories: [

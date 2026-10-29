@@ -25,6 +25,8 @@ import {
   Image as ImageIcon,
   Settings,
   ChevronDown,
+  ChevronRight,
+  ChevronLeft,
   X,
   Check,
   AlertCircle,
@@ -43,7 +45,11 @@ import {
 } from 'lucide-react';
 
 const WEBSITE_CATEGORIES = [
+  'Business',
   'Breaking Business News',
+  'Politics and Policy',
+  'Opinion and Analysis',
+  'Sports Business',
   'Markets and Investing',
   'Startups and Entrepreneurship',
   'Technology and AI',
@@ -55,6 +61,27 @@ const WEBSITE_CATEGORIES = [
 ];
 
 const CATEGORY_SUBCATEGORIES_MAP: Record<string, string[]> = {
+  'Business': [
+    'US',
+    'World',
+    'Politics',
+    'Economy & Trade',
+    'Crypto',
+    'Technology',
+    'Travel',
+    'Opinion',
+    'CEO Spotlight',
+    'Sports',
+    'Entertainment',
+    'Security',
+    'Culture',
+    'Markets',
+    'Leadership',
+    'Startups',
+    'Energy',
+    'Real Estate',
+    'Legal',
+  ],
   'Breaking Business News': ['US', 'World', 'Politics', 'Economy & Trade', 'Policy', 'Corporate', 'Mergers', 'Regulations'],
   'Markets and Investing': ['Stocks', 'Crypto', 'Commodities', 'Bonds', 'Real Estate', 'Venture Capital', 'Private Equity', 'ETFs'],
   'Startups and Entrepreneurship': ['Founders', 'Venture Funding', 'Bootstrapping', 'Growth', 'Pivots', 'Pitch Decks', 'Incubators', 'Scaleups'],
@@ -85,7 +112,7 @@ function WriterEditorMain() {
   // Article Core Fields
   const [title, setTitle] = useState('');
   const [subtitle, setSubtitle] = useState('');
-  const [mainCategory, setMainCategory] = useState('Startups and Entrepreneurship');
+  const [mainCategory, setMainCategory] = useState('Business');
   const [selectedSubCategories, setSelectedSubCategories] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
@@ -154,6 +181,9 @@ function WriterEditorMain() {
       loadArticleById(idParam);
     }
 
+    if (searchParams.get('sidebar') === 'collapsed') {
+      setSidebarCollapsed(true);
+    }
     if (searchParams.get('tab') === 'seo') {
       setActiveSidebarTab('seo');
     }
@@ -824,28 +854,30 @@ function WriterEditorMain() {
 
       {/* 2. MAIN 2-COLUMN ARTICLE EDITOR AREA (Clean White Canvas) */}
       <main className="w-full max-w-[1680px] mx-auto px-3 sm:px-4 lg:px-6 py-5 sm:py-7 flex-1">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-5 items-start relative">
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-5 items-start justify-center relative">
 
-          {/* Left Column: White Article Editor Canvas (8 cols or 12 cols when collapsed) */}
-          <div
-            className={`transition-all duration-300 flex flex-col gap-5 ${
-              sidebarCollapsed ? 'lg:col-span-12' : 'lg:col-span-8 xl:col-span-8'
-            }`}
-          >
-            <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xs flex flex-col gap-5 min-h-[720px] relative text-slate-800">
+          {/* Left Column: First Box (Article Editor Canvas) - FIXED SIZE AND POSITION (Never resizes on toggle) */}
+          <div className="w-full lg:w-[860px] xl:w-[940px] 2xl:w-[980px] shrink-0 flex flex-col gap-5 relative">
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xs flex flex-col gap-5 min-h-[920px] lg:min-h-[960px] relative text-slate-800">
               
-              {/* Expand Sidebar pill when collapsed */}
-              {sidebarCollapsed && (
-                <button
-                  type="button"
-                  onClick={() => setSidebarCollapsed(false)}
-                  className="self-end -mt-2 -mb-2 flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg border border-slate-200 cursor-pointer transition-colors shadow-2xs"
-                  title="Expand Article Settings"
-                >
-                  <PanelRightOpen className="w-4 h-4 text-[#EA580C]" />
-                  <span>Open Article Settings</span>
-                </button>
-              )}
+              {/* Arrow Icon: Show and Hide Only the Second Box (Updates direction on toggle) */}
+              <button
+                type="button"
+                onClick={() => setSidebarCollapsed((prev) => !prev)}
+                aria-expanded={!sidebarCollapsed}
+                aria-controls="article-settings-sidebar"
+                className={`absolute top-5 w-7 h-7 bg-white border border-slate-300 hover:border-slate-400 rounded-full shadow-xs flex items-center justify-center text-slate-600 hover:text-slate-900 transition-all cursor-pointer z-30 ${
+                  sidebarCollapsed ? 'right-4' : '-right-3.5'
+                }`}
+                title={sidebarCollapsed ? 'Show Article Settings' : 'Hide Article Settings'}
+                aria-label={sidebarCollapsed ? 'Show Article Settings' : 'Hide Article Settings'}
+              >
+                {sidebarCollapsed ? (
+                  <ChevronLeft className="w-4 h-4 text-slate-700 stroke-[2.5]" />
+                ) : (
+                  <ChevronRight className="w-4 h-4 text-slate-700 stroke-[2.5]" />
+                )}
+              </button>
 
               {/* HORIZONTAL RICH TEXT TOOLBAR matching Reference Image 1 */}
               <div className="flex flex-wrap items-center gap-1 sm:gap-1.5 p-2 bg-slate-50 border border-slate-200/80 rounded-xl text-slate-600 shadow-2xs">
@@ -1145,30 +1177,22 @@ function WriterEditorMain() {
                   onInput={handleEditorInput}
                   onKeyUp={saveSelectionRange}
                   onMouseUp={saveSelectionRange}
-                  className="w-full flex-1 min-h-[480px] text-base text-slate-800 border-none outline-none focus:ring-0 px-0 py-2 leading-relaxed font-sans bg-transparent prose prose-slate max-w-none focus:outline-none"
-                  style={{ minHeight: '480px' }}
+                  className="w-full flex-1 min-h-[640px] text-base text-slate-800 border-none outline-none focus:ring-0 px-0 py-2 leading-relaxed font-sans bg-transparent prose prose-slate max-w-none focus:outline-none"
+                  style={{ minHeight: '640px' }}
                 />
               </div>
 
             </div>
           </div>
 
-          {/* Right Column: ARTICLE SETTINGS Sidebar (Collapsible with matching toggle button) */}
+          {/* Right Column: Second Box (Article Settings Sidebar) - NARROWER WIDTH & INCREASED HEIGHT */}
           {!sidebarCollapsed && (
-            <aside className="lg:col-span-4 xl:col-span-4 relative bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs flex flex-col gap-6 sticky top-20 transition-all duration-300 text-slate-800">
-              
-              {/* Circular Sidebar Collapse Toggle Button positioned on top-left edge matching Reference Image 1 & 5 */}
-              <button
-                type="button"
-                onClick={() => setSidebarCollapsed(true)}
-                className="absolute -left-3.5 top-5 w-7 h-7 bg-white border border-slate-300 hover:border-slate-400 rounded-full shadow-xs flex items-center justify-center text-slate-500 hover:text-slate-800 transition-all cursor-pointer z-10"
-                title="Collapse Article Settings"
-              >
-                <PanelRightClose className="w-4 h-4" />
-              </button>
-
+            <aside
+              id="article-settings-sidebar"
+              className="w-full lg:w-[320px] xl:w-[335px] shrink-0 relative bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs flex flex-col gap-4 sticky top-20 transition-all duration-300 text-slate-800 min-h-[920px] lg:min-h-[960px] self-start animate-in fade-in zoom-in-95 duration-200"
+            >
               {/* Sidebar Header: ⚙️ ARTICLE SETTINGS */}
-              <div className="flex items-center gap-2 text-slate-900 border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2 text-slate-900 border-b border-slate-100 pb-2.5">
                 <Settings className="w-4 h-4 text-slate-600" />
                 <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800">
                   Article Settings
@@ -1236,7 +1260,7 @@ function WriterEditorMain() {
                     </label>
                     
                     {/* 2-Column Checkbox Grid */}
-                    <div className="grid grid-cols-2 gap-2.5 p-3 bg-slate-50 border border-slate-200 rounded-xl max-h-48 overflow-y-auto no-scrollbar">
+                    <div className="grid grid-cols-2 gap-2 p-2.5 bg-slate-50 border border-slate-200 rounded-xl max-h-56 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300">
                       {currentSubcategories.map((sub) => {
                         const isChecked = selectedSubCategories.includes(sub);
                         return (

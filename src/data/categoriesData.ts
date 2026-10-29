@@ -19,7 +19,7 @@ export const MAIN_CATEGORIES: MainCategory[] = [
     name: 'Breaking News',
     slug: 'breaking-news',
     description: 'Real-time breaking business headlines, financial alerts, market disruptions, and urgent corporate announcements.',
-    aliases: ['breaking-business-news'],
+    aliases: ['breaking-business-news', 'business'],
     subcategories: [
       { name: 'Breaking Headlines', slug: 'breaking-headlines', description: 'Urgent business alerts and top market breaking stories.' },
       { name: 'Business Alerts', slug: 'business-alerts', description: 'High-priority real-time commercial and market alerts.' },
@@ -336,6 +336,34 @@ export const MAIN_CATEGORIES: MainCategory[] = [
       { name: 'Employment Law', slug: 'employment-law', description: 'Non-compete clauses, workplace discrimination, wage regulations, and whistleblower protections.' },
       { name: 'Data Privacy', slug: 'data-privacy', description: 'GDPR compliance, CCPA enforcement, cross-border data transfer pacts, and biometrics law.' },
       { name: 'International Business Law', slug: 'international-business-law', description: 'Sovereign sanctions, cross-border jurisdiction, international commercial arbitration, and FCPA.' },
+    ],
+  },
+  {
+    id: 21,
+    name: 'Politics',
+    slug: 'politics',
+    description: 'Federal policy, congressional legislation, government regulations, campaigns, and political economy analysis.',
+    aliases: ['politics-policy', 'policy', 'government'],
+    subcategories: [
+      { name: 'US Politics', slug: 'us-politics', description: 'White House, Congress, and domestic political shifts.' },
+      { name: 'Policy & Legislation', slug: 'policy-legislation', description: 'Federal laws, regulatory bills, and executive orders.' },
+      { name: 'Elections & Campaigns', slug: 'elections-campaigns', description: 'National and state election trends, polls, and candidates.' },
+      { name: 'Foreign Policy', slug: 'foreign-policy', description: 'Diplomacy, international relations, and global defense alliances.' },
+      { name: 'National Security', slug: 'national-security', description: 'Defense, intelligence, cyber warfare, and border policy.' },
+    ],
+  },
+  {
+    id: 22,
+    name: 'Sports',
+    slug: 'sports',
+    description: 'Major league athletics, franchise valuations, collegiate sports, sports media deals, and athletic leadership.',
+    aliases: ['sports-business', 'athletics'],
+    subcategories: [
+      { name: 'NFL & Football', slug: 'nfl-football', description: 'Professional football news, franchise operations, and scores.' },
+      { name: 'NBA & Basketball', slug: 'nba-basketball', description: 'Professional basketball updates, player contracts, and analysis.' },
+      { name: 'MLB & Baseball', slug: 'mlb-baseball', description: 'Baseball leagues, analytics, and season coverage.' },
+      { name: 'Sports Business', slug: 'sports-business-deals', description: 'Sponsorships, broadcasting rights, stadium financing, and team sales.' },
+      { name: 'Global Sports', slug: 'global-sports', description: 'Soccer, Formula 1, tennis, Olympics, and international competitions.' },
     ],
   },
 ];
