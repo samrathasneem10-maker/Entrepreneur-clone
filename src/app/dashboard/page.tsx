@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, Suspense } from 'react';
+import React, { useEffect, useState, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/components/auth/AuthContext';
@@ -22,6 +22,7 @@ import {
   ArrowRight,
   LogOut,
   User,
+  Camera,
   Sparkles,
   RefreshCw,
   Eye,
@@ -42,6 +43,7 @@ interface UserProfileData {
   fullName: string;
   email: string;
   role: string;
+  avatar?: string;
   bio: string;
   phone: string;
   facebookConnected: boolean;
@@ -153,6 +155,7 @@ function DashboardContent() {
             name: data.profile.fullName || `${data.profile.firstName} ${data.profile.lastName}`,
             email: data.profile.email,
             role: data.profile.role,
+            avatar: data.profile.avatar,
           });
         }
       }
@@ -204,6 +207,67 @@ function DashboardContent() {
     setTimeout(() => {
       setStatusMessage(null);
     }, 4000);
+  };
+
+  const photoInputRef = useRef<HTMLInputElement>(null);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+
+  // Handle Profile Photo Upload
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setUploadingPhoto(true);
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const uploadRes = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const uploadData = await uploadRes.json();
+
+      if (!uploadData?.success || !uploadData?.url) {
+        throw new Error(uploadData?.error || 'Failed to upload photo.');
+      }
+
+      const newAvatarUrl = uploadData.url;
+      const userEmail = profile?.email || user?.email || 'samrathasneem10@gmail.com';
+
+      const saveRes = await fetch('/api/user/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          currentEmail: userEmail,
+          avatar: newAvatarUrl,
+        }),
+      });
+
+      const saveData = await saveRes.json();
+      if (!saveData?.success) {
+        throw new Error(saveData?.error || 'Failed to update profile photo.');
+      }
+
+      updateUser({ avatar: newAvatarUrl });
+      if (user) {
+        const updated = { ...user, avatar: newAvatarUrl };
+        loginUser(updated);
+        try {
+          localStorage.setItem('entrepreneur_user', JSON.stringify(updated));
+        } catch {}
+      }
+
+      setProfile((prev) => (prev ? { ...prev, avatar: newAvatarUrl } : null));
+      showToast('Profile photo updated successfully!');
+      fetchProfile(userEmail);
+    } catch (err: any) {
+      console.error('Error changing photo:', err);
+      showToast(err?.message || 'Error updating profile photo.', 'error');
+    } finally {
+      setUploadingPhoto(false);
+      if (e.target) e.target.value = '';
+    }
   };
 
   // Handle Save Name
@@ -573,15 +637,9 @@ function DashboardContent() {
 
           {/* Right User Avatar */}
           <div className="flex items-center gap-3">
-            <Link
-              href="/"
-              className="text-xs sm:text-sm font-semibold text-slate-600 hover:text-[#1642D0] hidden sm:inline transition-colors"
-            >
-              Back to Entrepreneur.com
-            </Link>
             <div className="flex items-center gap-2.5">
               <img
-                src={user?.avatar || '/images/user-avatar-butterfly.png'}
+                src={user?.avatar || profile?.avatar || '/images/user-avatar-butterfly.png'}
                 alt={user?.name || 'User'}
                 className="w-8 h-8 rounded-full object-cover border border-slate-200 shadow-2xs"
               />
@@ -676,20 +734,48 @@ function DashboardContent() {
                   <hr className="border-slate-200 mt-4 mb-7" />
                 </div>
 
-                {/* Profile Picture Header (Simple suitable placeholder matching requirements) */}
+                {/* Profile Picture Header with working Change Photo option */}
                 <div className="flex items-center gap-4 pb-5 border-b border-slate-100">
-                  <img
-                    src={user?.avatar || '/images/user-avatar-butterfly.png'}
-                    alt="Profile Avatar"
-                    className="w-16 h-16 rounded-full object-cover border border-slate-200 shadow-2xs"
-                  />
+                  <div className="relative group shrink-0">
+                    <img
+                      src={user?.avatar || profile?.avatar || '/images/user-avatar-butterfly.png'}
+                      alt="Profile Avatar"
+                      className="w-16 h-16 rounded-full object-cover border border-slate-200 shadow-2xs"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => photoInputRef.current?.click()}
+                      className="absolute inset-0 bg-black/40 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-bold cursor-pointer"
+                      title="Upload new profile picture"
+                    >
+                      Change
+                    </button>
+                  </div>
                   <div>
-                    <h3 className="text-base sm:text-lg font-bold text-slate-900 my-0">
-                      {user?.name || profile?.fullName || 'Samra Tasneem'}
-                    </h3>
-                    <p className="text-xs sm:text-sm text-slate-500 my-0">
+                    <div className="flex items-center gap-3">
+                      <h3 className="text-base sm:text-lg font-bold text-slate-900 my-0">
+                        {user?.name || profile?.fullName || 'Samra Tasneem'}
+                      </h3>
+                      <button
+                        type="button"
+                        onClick={() => photoInputRef.current?.click()}
+                        disabled={uploadingPhoto}
+                        className="text-xs sm:text-[13px] font-semibold text-[#1642D0] hover:text-[#0f32a8] hover:underline cursor-pointer flex items-center gap-1 transition-colors disabled:opacity-50"
+                      >
+                        <Camera className="w-3.5 h-3.5" />
+                        <span>{uploadingPhoto ? 'Uploading...' : 'Change photo'}</span>
+                      </button>
+                    </div>
+                    <p className="text-xs sm:text-sm text-slate-500 my-0 mt-0.5">
                       {user?.email || profile?.email || 'samrathasneem10@gmail.com'}
                     </p>
+                    <input
+                      type="file"
+                      ref={photoInputRef}
+                      onChange={handlePhotoUpload}
+                      accept="image/*"
+                      className="hidden"
+                    />
                   </div>
                 </div>
 

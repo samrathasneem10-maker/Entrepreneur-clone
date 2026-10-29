@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { Search, User, Mail, LogOut, ChevronDown, Bookmark, CreditCard, Settings as SettingsIcon } from 'lucide-react';
+import { Search, User, Mail, LogOut } from 'lucide-react';
 import { SearchBar } from '@/components/SearchBar';
 import { NavDrawer } from '@/components/NavDrawer';
 import { NAVIGATION_STRUCTURE } from '@/data/newsData';
@@ -161,34 +161,26 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
                 <div className="relative" ref={accountDropdownRef}>
                   <button
                     onClick={() => setShowAccountDropdown((prev) => !prev)}
-                    className="flex items-center gap-2.5 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-all cursor-pointer select-none group"
+                    className="w-8 h-8 rounded-full overflow-hidden bg-slate-200 border border-slate-300 hover:ring-2 hover:ring-[#1642D0]/40 transition-all cursor-pointer select-none flex items-center justify-center shrink-0"
                     aria-label="User Account Menu"
+                    title={user.name || 'User Account'}
                   >
-                    {/* Circular Profile Avatar (User's real photo or professional neutral avatar) */}
-                    <div className="w-6 h-6 rounded-full overflow-hidden bg-slate-200 border border-slate-300 flex items-center justify-center shrink-0">
-                      {user.avatar ? (
-                        <img
-                          src={user.avatar}
-                          alt={user.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            // Professional neutral avatar fallback
-                            (e.currentTarget as HTMLElement).style.display = 'none';
-                          }}
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-[#1642D0] text-white text-[10px] font-bold flex items-center justify-center uppercase">
-                          {user.name ? user.name.charAt(0) : 'U'}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* User Name */}
-                    <span className="text-xs font-bold text-slate-900 group-hover:text-[#1642D0] transition-colors truncate max-w-[120px]">
-                      {user.name}
-                    </span>
-
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-500 group-hover:text-slate-800 transition-colors" />
+                    {/* Circular Profile Avatar */}
+                    {user.avatar ? (
+                      <img
+                        src={user.avatar}
+                        alt={user.name || 'User'}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          // Professional neutral avatar fallback
+                          (e.currentTarget as HTMLElement).style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-[#1642D0] text-white text-[11px] sm:text-xs font-bold flex items-center justify-center uppercase">
+                        {user.name ? user.name.charAt(0) : 'U'}
+                      </div>
+                    )}
                   </button>
 
                   {/* Dropdown Menu */}
@@ -212,28 +204,12 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
                           <span>Profile &amp; Dashboard</span>
                         </Link>
                         <Link
-                          href="/dashboard?tab=saved"
+                          href="/start-llc"
                           onClick={() => setShowAccountDropdown(false)}
                           className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
                         >
-                          <Bookmark className="w-3.5 h-3.5 text-slate-400" />
-                          <span>Saved Articles</span>
-                        </Link>
-                        <Link
-                          href="/dashboard?tab=subscriptions"
-                          onClick={() => setShowAccountDropdown(false)}
-                          className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
-                        >
-                          <CreditCard className="w-3.5 h-3.5 text-slate-400" />
-                          <span>Subscriptions</span>
-                        </Link>
-                        <Link
-                          href="/dashboard?tab=account"
-                          onClick={() => setShowAccountDropdown(false)}
-                          className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
-                        >
-                          <SettingsIcon className="w-3.5 h-3.5 text-slate-400" />
-                          <span>Account Settings</span>
+                          <span className="w-3.5 text-center text-slate-400 font-serif font-bold text-xs">§</span>
+                          <span>Start Your LLC</span>
                         </Link>
                       </div>
 

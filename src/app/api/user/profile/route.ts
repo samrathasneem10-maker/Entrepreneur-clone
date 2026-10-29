@@ -17,7 +17,7 @@ export async function GET(request: Request) {
 
     // Query user in MySQL
     const users = await query<any[]>(
-      'SELECT id, name, email, role, created_at FROM users WHERE LOWER(email) = ? LIMIT 1',
+      'SELECT id, name, email, role, avatar, created_at FROM users WHERE LOWER(email) = ? LIMIT 1',
       [email]
     );
 
@@ -50,6 +50,7 @@ export async function GET(request: Request) {
         fullName: u.name,
         email: u.email,
         role: u.role,
+        avatar: u.avatar || '/images/user-avatar-butterfly.png',
         bio: s.bio || '',
         phone: s.phone || '',
         facebookConnected: Boolean(s.facebook_connected),
@@ -75,6 +76,7 @@ export async function PUT(request: Request) {
       currentEmail,
       firstName,
       lastName,
+      avatar,
       newEmail,
       bio,
       phone,
@@ -94,7 +96,7 @@ export async function PUT(request: Request) {
 
     // Verify user exists in MySQL
     const users = await query<any[]>(
-      'SELECT id, name, email, password_hash, role FROM users WHERE LOWER(email) = ? LIMIT 1',
+      'SELECT id, name, email, password_hash, role, avatar FROM users WHERE LOWER(email) = ? LIMIT 1',
       [emailToFind]
     );
 
@@ -136,6 +138,13 @@ export async function PUT(request: Request) {
       const lName = lastName !== undefined ? String(lastName).trim() : user.name.split(' ').slice(1).join(' ') || '';
       updatedFullName = `${fName} ${lName}`.trim();
       await query('UPDATE users SET name = ? WHERE id = ?', [updatedFullName, user.id]);
+    }
+
+    // Handle Avatar update
+    let updatedAvatar = user.avatar;
+    if (avatar !== undefined) {
+      updatedAvatar = String(avatar).trim();
+      await query('UPDATE users SET avatar = ? WHERE id = ?', [updatedAvatar, user.id]);
     }
 
     // Handle Email update
@@ -202,6 +211,7 @@ export async function PUT(request: Request) {
         id: user.id,
         fullName: updatedFullName,
         email: targetEmail,
+        avatar: updatedAvatar,
         bio: bio !== undefined ? bio : '',
       },
     });
