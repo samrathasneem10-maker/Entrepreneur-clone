@@ -587,49 +587,50 @@ function DashboardContent() {
       </header>
 
       {/* MAIN CONTAINER */}
-      <main className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
 
-        {/* SETTINGS TITLE ROW with Help & EN-US (Matching Image 2) */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        {/* SETTINGS TITLE ROW with Help (Matching Image 3) */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
           <div>
             <h1 className="text-3xl sm:text-4xl md:text-[42px] font-serif font-bold text-slate-900 tracking-tight my-0">
               Settings
             </h1>
           </div>
 
-          {/* Right Help Links & Locale */}
-          <div className="flex flex-col sm:items-end gap-2 text-sm text-slate-600">
-            <div className="flex items-center gap-3 font-medium">
-              <button
-                type="button"
-                onClick={() => setShowNewsletterModal(true)}
-                className="text-[#1642D0] hover:underline cursor-pointer inline-flex items-center gap-1.5 font-semibold"
-              >
-                <ExternalLink className="w-4 h-4" />
-                <span>Manage Newsletter Subscription</span>
-              </button>
-              <span className="text-slate-300">|</span>
-              <button
-                type="button"
-                onClick={() => setActiveTab('help')}
-                className="text-slate-700 hover:text-[#1642D0] hover:underline cursor-pointer inline-flex items-center gap-1.5 font-medium"
-              >
-                <HelpCircle className="w-4 h-4 text-slate-500" />
-                <span>Help</span>
-              </button>
-            </div>
-
-            <div className="flex items-center gap-1.5 text-slate-500 font-medium text-xs sm:text-sm">
-              <Globe className="w-4 h-4 text-slate-500" />
-              <span className="cursor-pointer hover:text-slate-800">EN-US</span>
-            </div>
+          {/* Right Help Links */}
+          <div className="flex items-center gap-3 text-sm sm:text-base font-semibold">
+            <button
+              type="button"
+              onClick={() => setShowNewsletterModal(true)}
+              className="text-[#1642D0] hover:text-blue-800 hover:underline cursor-pointer inline-flex items-center gap-1.5 font-semibold"
+            >
+              <ExternalLink className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+              <span>Manage Newsletter Subscription</span>
+            </button>
+            <span className="text-slate-300 font-normal">|</span>
+            <button
+              type="button"
+              onClick={() => setActiveTab('help')}
+              className="text-slate-700 hover:text-[#1642D0] hover:underline cursor-pointer inline-flex items-center gap-1.5 font-medium"
+            >
+              <HelpCircle className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-slate-500" />
+              <span>Help</span>
+            </button>
           </div>
         </div>
 
-        {/* WHITE CARD CONTAINER FOR SETTINGS (Matching Image 2 & 3) */}
-        <div className="bg-white border border-slate-200/90 rounded-xl shadow-xs overflow-hidden">
+        {/* Outside Language Selector - positioned outside the main box, beside the box top right */}
+        <div className="flex justify-end mb-2.5">
+          <div className="flex items-center gap-1.5 text-slate-600 hover:text-slate-900 font-semibold text-xs sm:text-sm cursor-pointer select-none">
+            <Globe className="w-4 h-4 text-slate-500" />
+            <span>EN-US</span>
+          </div>
+        </div>
 
-          {/* NAVIGATION TABS WITH SUITABLE ICONS (Instruction 5) */}
+        {/* WHITE CARD CONTAINER FOR SETTINGS (Matching Reference Images 3 & 4) */}
+        <div className="w-full bg-white border border-slate-200/90 rounded-xl shadow-xs overflow-hidden">
+
+          {/* NAVIGATION TABS WITH SUITABLE ICONS (4 tabs only: Profile, Saved Articles, Subscriptions, Account Settings) */}
           <div className="border-b border-slate-200 bg-slate-50/70">
             <nav className="flex items-stretch divide-x divide-slate-200 overflow-x-auto scrollbar-none" aria-label="Tabs">
               
@@ -637,7 +638,7 @@ function DashboardContent() {
               <button
                 type="button"
                 onClick={() => setActiveTab('profile')}
-                className={`py-4 px-5 sm:px-7 inline-flex items-center gap-2.5 text-sm sm:text-base font-bold transition-all cursor-pointer whitespace-nowrap ${
+                className={`py-4 px-6 sm:px-8 inline-flex items-center gap-2.5 text-sm sm:text-base font-bold transition-all cursor-pointer whitespace-nowrap ${
                   activeTab === 'profile'
                     ? 'bg-white text-slate-950 border-t-2 border-t-slate-950 border-b-2 border-b-[#1642D0] shadow-2xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/60'
@@ -651,7 +652,7 @@ function DashboardContent() {
               <button
                 type="button"
                 onClick={() => setActiveTab('saved')}
-                className={`py-4 px-5 sm:px-7 inline-flex items-center gap-2.5 text-sm sm:text-base font-bold transition-all cursor-pointer whitespace-nowrap ${
+                className={`py-4 px-6 sm:px-8 inline-flex items-center gap-2.5 text-sm sm:text-base font-bold transition-all cursor-pointer whitespace-nowrap ${
                   activeTab === 'saved'
                     ? 'bg-white text-slate-950 border-t-2 border-t-slate-950 border-b-2 border-b-[#1642D0] shadow-2xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/60'
@@ -670,7 +671,7 @@ function DashboardContent() {
               <button
                 type="button"
                 onClick={() => setActiveTab('subscriptions')}
-                className={`py-4 px-5 sm:px-7 inline-flex items-center gap-2.5 text-sm sm:text-base font-bold transition-all cursor-pointer whitespace-nowrap ${
+                className={`py-4 px-6 sm:px-8 inline-flex items-center gap-2.5 text-sm sm:text-base font-bold transition-all cursor-pointer whitespace-nowrap ${
                   activeTab === 'subscriptions'
                     ? 'bg-white text-slate-950 border-t-2 border-t-slate-950 border-b-2 border-b-[#1642D0] shadow-2xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/60'
@@ -684,7 +685,7 @@ function DashboardContent() {
               <button
                 type="button"
                 onClick={() => setActiveTab('settings')}
-                className={`py-4 px-5 sm:px-7 inline-flex items-center gap-2.5 text-sm sm:text-base font-bold transition-all cursor-pointer whitespace-nowrap ${
+                className={`py-4 px-6 sm:px-8 inline-flex items-center gap-2.5 text-sm sm:text-base font-bold transition-all cursor-pointer whitespace-nowrap ${
                   activeTab === 'settings'
                     ? 'bg-white text-slate-950 border-t-2 border-t-slate-950 border-b-2 border-b-[#1642D0] shadow-2xs'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/60'
@@ -693,29 +694,15 @@ function DashboardContent() {
                 <Sliders className="w-4 h-4 text-slate-700" />
                 <span>Account Settings</span>
               </button>
-
-              {/* 5. Help Tab */}
-              <button
-                type="button"
-                onClick={() => setActiveTab('help')}
-                className={`py-4 px-5 sm:px-7 inline-flex items-center gap-2.5 text-sm sm:text-base font-bold transition-all cursor-pointer whitespace-nowrap ${
-                  activeTab === 'help'
-                    ? 'bg-white text-slate-950 border-t-2 border-t-slate-950 border-b-2 border-b-[#1642D0] shadow-2xs'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/60'
-                }`}
-              >
-                <HelpCircle className="w-4 h-4 text-slate-700" />
-                <span>Help</span>
-              </button>
             </nav>
           </div>
 
           {/* TAB CONTENT INNER PADDING */}
           <div className="p-6 sm:p-10 lg:p-12">
 
-            {/* TAB 1: PROFILE CONTENT (Exact Recreation from Reference Images 2 & 3) */}
+            {/* TAB 1: PROFILE CONTENT (Exact Recreation from Reference Images 3 & 4) */}
             {activeTab === 'profile' && (
-              <div className="space-y-8 max-w-3xl">
+              <div className="space-y-8 w-full">
 
                 {/* Subheading: Profile */}
                 <div>
@@ -819,58 +806,13 @@ function DashboardContent() {
 
                 <hr className="border-slate-200 my-8" />
 
-                {/* 3. PHONE NUMBER SECTION (Instruction 2) */}
-                <section>
-                  <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-3 my-0">
-                    Phone number
-                  </h3>
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-                      Phone
-                    </label>
-                    <div className="flex items-center gap-3">
-                      <div className="h-11 sm:h-12 px-3.5 bg-slate-100 border border-slate-300 rounded-md text-sm font-medium text-slate-700 flex items-center justify-center shrink-0">
-                        🇺🇸 +1
-                      </div>
-                      <input
-                        type="tel"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        placeholder="(555) 000-0000"
-                        className="w-full h-11 sm:h-12 px-4 text-base text-slate-900 border border-slate-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#1642D0] focus:border-[#1642D0] transition-colors bg-white shadow-2xs"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Save & Cancel buttons */}
-                  <div className="flex items-center mt-5">
-                    <button
-                      type="button"
-                      onClick={handleSavePhone}
-                      disabled={savingField === 'phone'}
-                      className="px-7 py-2.5 text-sm sm:text-base font-bold rounded-md bg-[#fde047] hover:bg-[#facc15] text-slate-950 transition-colors shadow-xs cursor-pointer disabled:opacity-50"
-                    >
-                      {savingField === 'phone' ? 'Saving...' : 'Save'}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleCancelPhone}
-                      className="px-7 py-2.5 text-sm sm:text-base font-semibold rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer ml-3"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </section>
-
-                <hr className="border-slate-200 my-8" />
-
-                {/* 4. ADD A PASSWORD SECTION (Image 2 & 3) */}
+                {/* 3. ADD A PASSWORD SECTION (Clean text link without extra underline or default text boxes) */}
                 <section>
                   <div>
                     <button
                       type="button"
                       onClick={() => setShowPasswordSection(!showPasswordSection)}
-                      className="text-[#1642D0] text-base sm:text-lg font-semibold hover:underline cursor-pointer inline-flex items-center gap-1.5"
+                      className="text-[#2563EB] hover:text-[#1D4ED8] text-base sm:text-lg font-semibold hover:underline cursor-pointer inline-flex items-center gap-1.5 no-underline transition-colors"
                     >
                       <span>Add a password</span>
                     </button>
@@ -952,26 +894,14 @@ function DashboardContent() {
 
                 <hr className="border-slate-200 my-8" />
 
-                {/* 5. PROFILE INFORMATION SECTION (Image 3) */}
+                {/* 4. PROFILE INFORMATION SECTION (Only Save & Cancel buttons directly below heading, no textarea) */}
                 <section>
-                  <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-2 my-0">
+                  <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-4 my-0">
                     Profile information
                   </h3>
-                  <p className="text-sm text-slate-500 mb-4 my-0">
-                    Tell us a bit about yourself or your business ventures.
-                  </p>
-                  <div>
-                    <textarea
-                      rows={4}
-                      value={bio}
-                      onChange={(e) => setBio(e.target.value)}
-                      placeholder="Founder, reader, investor, or entrepreneur..."
-                      className="w-full p-4 text-base text-slate-900 border border-slate-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#1642D0] focus:border-[#1642D0] transition-colors bg-white shadow-2xs"
-                    />
-                  </div>
 
-                  {/* Save & Cancel buttons */}
-                  <div className="flex items-center mt-5">
+                  {/* Save & Cancel buttons directly below section heading */}
+                  <div className="flex items-center">
                     <button
                       type="button"
                       onClick={handleSaveBio}
@@ -992,25 +922,27 @@ function DashboardContent() {
 
                 <hr className="border-slate-200 my-8" />
 
-                {/* 6. SOCIAL ACCOUNTS SECTION (Exact Image 3 Layout) */}
+                {/* 5. SOCIAL ACCOUNTS SECTION (Horizontal row, side by side, increased spacing) */}
                 <section>
                   <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-5 my-0">
                     Social accounts
                   </h3>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-14 items-center">
                     
-                    {/* Facebook Item with Yellow Button (Image 3) */}
-                    <div className="flex items-center gap-4">
-                      <div className="w-8 h-8 rounded-full bg-[#1877F2] text-white flex items-center justify-center font-bold text-base shadow-xs shrink-0">
-                        f
+                    {/* Facebook Item with Yellow Button */}
+                    <div className="flex items-center justify-between sm:justify-start gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-[#1877F2] text-white flex items-center justify-center font-bold text-base shadow-xs shrink-0">
+                          f
+                        </div>
+                        <span className="text-base font-bold text-slate-900">Facebook</span>
                       </div>
-                      <span className="text-base font-bold text-slate-900">Facebook</span>
 
                       <button
                         type="button"
                         onClick={handleToggleFacebook}
-                        className={`ml-auto sm:ml-4 px-6 py-2.5 text-sm font-bold rounded-md transition-colors cursor-pointer shadow-xs ${
+                        className={`ml-auto px-6 py-2.5 text-sm font-bold rounded-md transition-colors cursor-pointer shadow-xs ${
                           profile?.facebookConnected
                             ? 'bg-slate-100 hover:bg-slate-200 text-slate-800'
                             : 'bg-[#fde047] hover:bg-[#facc15] text-slate-950'
@@ -1020,31 +952,33 @@ function DashboardContent() {
                       </button>
                     </div>
 
-                    {/* Google Item with Blue Checkmark (Image 3) */}
-                    <div className="flex items-center gap-4">
-                      <div className="w-8 h-8 rounded-full border border-slate-200 bg-white flex items-center justify-center shadow-xs shrink-0">
-                        <svg className="w-4 h-4" viewBox="0 0 24 24">
-                          <path
-                            fill="#4285F4"
-                            d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.66v3.05h3.87c2.26-2.09 3.67-5.17 3.67-9.15z"
-                          />
-                          <path
-                            fill="#34A853"
-                            d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.87-3.05c-1.08.72-2.45 1.16-4.06 1.16-3.13 0-5.78-2.11-6.73-4.96H1.27v3.15C3.25 21.31 7.35 24 12 24z"
-                          />
-                          <path
-                            fill="#FBBC05"
-                            d="M5.27 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.61H1.27C.46 8.23 0 10.06 0 12s.46 3.77 1.27 5.39l4-3.15z"
-                          />
-                          <path
-                            fill="#EA4335"
-                            d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.35 0 3.25 2.69 1.27 6.61l4 3.15c.95-2.85 3.6-4.96 6.73-4.96z"
-                          />
-                        </svg>
+                    {/* Google Item with Blue Checkmark */}
+                    <div className="flex items-center justify-between sm:justify-start gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full border border-slate-200 bg-white flex items-center justify-center shadow-xs shrink-0">
+                          <svg className="w-4 h-4" viewBox="0 0 24 24">
+                            <path
+                              fill="#4285F4"
+                              d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.66v3.05h3.87c2.26-2.09 3.67-5.17 3.67-9.15z"
+                            />
+                            <path
+                              fill="#34A853"
+                              d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.87-3.05c-1.08.72-2.45 1.16-4.06 1.16-3.13 0-5.78-2.11-6.73-4.96H1.27v3.15C3.25 21.31 7.35 24 12 24z"
+                            />
+                            <path
+                              fill="#FBBC05"
+                              d="M5.27 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.61H1.27C.46 8.23 0 10.06 0 12s.46 3.77 1.27 5.39l4-3.15z"
+                            />
+                            <path
+                              fill="#EA4335"
+                              d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.35 0 3.25 2.69 1.27 6.61l4 3.15c.95-2.85 3.6-4.96 6.73-4.96z"
+                            />
+                          </svg>
+                        </div>
+                        <span className="text-base font-bold text-slate-900">Google</span>
                       </div>
-                      <span className="text-base font-bold text-slate-900">Google</span>
 
-                      <div className="ml-auto sm:ml-4 flex items-center gap-1.5 text-[#2563EB] font-semibold text-base">
+                      <div className="ml-auto flex items-center gap-1.5 text-[#2563EB] font-bold text-base">
                         <CheckCircle2 className="w-5 h-5 text-[#2563EB]" />
                         <span>Connected</span>
                       </div>
@@ -1053,25 +987,25 @@ function DashboardContent() {
                   </div>
                 </section>
 
-                {/* 7. MANAGE NEWSLETTERS BANNER (Exact Image 3 Recreation with Restored Colors) */}
+                {/* 6. MANAGE NEWSLETTERS BANNER (Full width matching card, blue text, font size increased) */}
                 <section className="pt-6">
                   <h3 className="text-xl sm:text-2xl font-serif font-bold text-slate-900 tracking-tight my-0 uppercase mb-4">
                     MANAGE NEWSLETTERS
                   </h3>
 
-                  <div className="bg-[#EFF6FF] border-l-4 border-l-[#2563EB] p-5 sm:p-6 rounded-r-lg">
-                    <div className="flex items-start gap-3">
+                  <div className="w-full bg-[#EFF6FF] border-l-4 border-l-[#2563EB] p-5 sm:p-7 rounded-r-lg">
+                    <div className="flex items-start gap-3.5">
                       <div className="w-5 h-5 rounded-full bg-[#2563EB] text-white flex items-center justify-center shrink-0 mt-0.5">
                         <Info className="w-3.5 h-3.5" />
                       </div>
                       <div>
-                        <p className="text-sm sm:text-base text-slate-700 my-0 leading-relaxed font-normal">
+                        <p className="text-base sm:text-[17px] text-[#1642D0] my-0 leading-relaxed font-medium">
                           To manage your newsletter subscription click the button below to access.
                         </p>
                         <button
                           type="button"
                           onClick={() => setShowNewsletterModal(true)}
-                          className="text-[#1642D0] hover:text-blue-800 font-bold text-sm sm:text-base hover:underline cursor-pointer block mt-3"
+                          className="text-[#1642D0] hover:text-blue-800 font-bold text-base sm:text-[17px] underline cursor-pointer block mt-3"
                         >
                           Manage Newsletters
                         </button>
@@ -1080,12 +1014,12 @@ function DashboardContent() {
                   </div>
                 </section>
 
-                {/* 8. SIGN OUT BUTTON (Exact Warm Yellow Button from Image 3) */}
+                {/* 7. SIGN OUT BUTTON (Increased font size & visual appearance) */}
                 <div className="pt-4">
                   <button
                     type="button"
                     onClick={handleSignOut}
-                    className="px-8 py-3 text-sm sm:text-base font-bold rounded-md bg-[#fde047] hover:bg-[#facc15] text-slate-950 transition-colors shadow-xs cursor-pointer inline-flex items-center gap-2"
+                    className="px-9 py-3.5 text-base sm:text-lg font-bold rounded-md bg-[#fde047] hover:bg-[#facc15] text-slate-950 transition-colors shadow-xs cursor-pointer inline-flex items-center gap-2"
                   >
                     <span>Sign out</span>
                   </button>
@@ -1687,16 +1621,16 @@ function DashboardContent() {
         </div>
       )}
 
-      {/* FOOTER */}
-      <footer className="w-full border-t border-slate-200/90 py-8 bg-white mt-auto">
-        <div className="max-w-6xl mx-auto px-6 sm:px-8 flex flex-col sm:flex-row items-center justify-between text-xs sm:text-sm text-slate-500 gap-3">
-          <p className="my-0">
+      {/* DARK FOOTER WITH TERMS OF USE & PRIVACY POLICY (Matching Reference Design) */}
+      <footer className="w-full bg-[#0a0a0a] border-t border-neutral-800 text-slate-400 py-8 sm:py-9 mt-auto">
+        <div className="max-w-6xl mx-auto px-6 sm:px-8 flex flex-col sm:flex-row items-center justify-between text-xs sm:text-sm gap-4">
+          <p className="my-0 text-slate-400 font-normal">
             © 2026 Entrepreneur Media, LLC. All rights reserved.
           </p>
-          <div className="flex items-center gap-5 font-medium">
-            <Link href="/" className="hover:text-slate-800 transition-colors">Privacy Policy</Link>
-            <Link href="/" className="hover:text-slate-800 transition-colors">Terms of Use</Link>
-            <Link href="/" className="hover:text-slate-800 transition-colors">Cookies</Link>
+          <div className="flex items-center gap-6 sm:gap-8 font-medium text-slate-400">
+            <Link href="/" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <Link href="/" className="hover:text-white transition-colors">Terms of Use</Link>
+            <Link href="/" className="hover:text-white transition-colors">Cookies</Link>
           </div>
         </div>
       </footer>

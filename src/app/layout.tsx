@@ -26,8 +26,12 @@ export default function RootLayout({
     <html
       lang="en-US"
       className="h-full antialiased"
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col bg-white text-slate-900 font-sans tracking-normal leading-normal">
+      <body
+        className="min-h-full flex flex-col bg-white text-slate-900 font-sans tracking-normal leading-normal"
+        suppressHydrationWarning
+      >
         <ClientProviders>{children}</ClientProviders>
       </body>
     </html>
