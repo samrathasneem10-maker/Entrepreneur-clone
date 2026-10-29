@@ -545,7 +545,7 @@ function DashboardContent() {
 
       {/* TOP HEADER - Exact authentic Entrepreneur header matching Reference Image 2 */}
       <header className="w-full bg-white border-b border-slate-200/90 sticky top-0 z-40">
-        <div className="max-w-6xl mx-auto px-6 sm:px-8 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           
           {/* Authentic Entrepreneur Wordmark Logo */}
           <Link href="/" className="flex items-center group py-0.5 select-none" aria-label="Entrepreneur">
@@ -579,52 +579,28 @@ function DashboardContent() {
             >
               Back to Entrepreneur.com
             </Link>
-            <div className="w-9 h-9 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-sm uppercase shadow-xs">
-              {profile?.firstName ? profile.firstName.charAt(0).toUpperCase() : (user?.name?.charAt(0) || 'F')}
+            <div className="flex items-center gap-2.5">
+              <img
+                src={user?.avatar || '/images/user-avatar-butterfly.png'}
+                alt={user?.name || 'User'}
+                className="w-8 h-8 rounded-full object-cover border border-slate-200 shadow-2xs"
+              />
+              <span className="font-bold text-xs sm:text-sm text-slate-900 hidden sm:inline">
+                {user?.name || profile?.fullName || 'Samra Tasneem'}
+              </span>
             </div>
           </div>
         </div>
       </header>
 
       {/* MAIN CONTAINER */}
-      <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
 
-        {/* SETTINGS TITLE ROW with Help (Matching Image 3) */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-          <div>
-            <h1 className="text-3xl sm:text-4xl md:text-[42px] font-serif font-bold text-slate-900 tracking-tight my-0">
-              Settings
-            </h1>
-          </div>
-
-          {/* Right Help Links */}
-          <div className="flex items-center gap-3 text-sm sm:text-base font-semibold">
-            <button
-              type="button"
-              onClick={() => setShowNewsletterModal(true)}
-              className="text-[#1642D0] hover:text-blue-800 hover:underline cursor-pointer inline-flex items-center gap-1.5 font-semibold"
-            >
-              <ExternalLink className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
-              <span>Manage Newsletter Subscription</span>
-            </button>
-            <span className="text-slate-300 font-normal">|</span>
-            <button
-              type="button"
-              onClick={() => setActiveTab('help')}
-              className="text-slate-700 hover:text-[#1642D0] hover:underline cursor-pointer inline-flex items-center gap-1.5 font-medium"
-            >
-              <HelpCircle className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-slate-500" />
-              <span>Help</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Outside Language Selector - positioned outside the main box, beside the box top right */}
-        <div className="flex justify-end mb-2.5">
-          <div className="flex items-center gap-1.5 text-slate-600 hover:text-slate-900 font-semibold text-xs sm:text-sm cursor-pointer select-none">
-            <Globe className="w-4 h-4 text-slate-500" />
-            <span>EN-US</span>
-          </div>
+        {/* READER DASHBOARD TITLE ROW */}
+        <div className="mb-6">
+          <h1 className="text-3xl sm:text-4xl md:text-[42px] font-serif font-bold text-slate-900 tracking-tight my-0">
+            Reader Dashboard
+          </h1>
         </div>
 
         {/* WHITE CARD CONTAINER FOR SETTINGS (Matching Reference Images 3 & 4) */}
@@ -681,19 +657,7 @@ function DashboardContent() {
                 <span>Subscriptions</span>
               </button>
 
-              {/* 4. Account Settings Tab */}
-              <button
-                type="button"
-                onClick={() => setActiveTab('settings')}
-                className={`py-4 px-6 sm:px-8 inline-flex items-center gap-2.5 text-sm sm:text-base font-bold transition-all cursor-pointer whitespace-nowrap ${
-                  activeTab === 'settings'
-                    ? 'bg-white text-slate-950 border-t-2 border-t-slate-950 border-b-2 border-b-[#1642D0] shadow-2xs'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/60'
-                }`}
-              >
-                <Sliders className="w-4 h-4 text-slate-700" />
-                <span>Account Settings</span>
-              </button>
+
             </nav>
           </div>
 
@@ -710,6 +674,23 @@ function DashboardContent() {
                     Profile
                   </h2>
                   <hr className="border-slate-200 mt-4 mb-7" />
+                </div>
+
+                {/* Profile Picture Header (Simple suitable placeholder matching requirements) */}
+                <div className="flex items-center gap-4 pb-5 border-b border-slate-100">
+                  <img
+                    src={user?.avatar || '/images/user-avatar-butterfly.png'}
+                    alt="Profile Avatar"
+                    className="w-16 h-16 rounded-full object-cover border border-slate-200 shadow-2xs"
+                  />
+                  <div>
+                    <h3 className="text-base sm:text-lg font-bold text-slate-900 my-0">
+                      {user?.name || profile?.fullName || 'Samra Tasneem'}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-500 my-0">
+                      {user?.email || profile?.email || 'samrathasneem10@gmail.com'}
+                    </p>
+                  </div>
                 </div>
 
                 {/* 1. NAME SECTION (Image 2) */}

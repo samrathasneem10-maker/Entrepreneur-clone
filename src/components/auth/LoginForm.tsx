@@ -20,13 +20,17 @@ export const LoginForm: React.FC = () => {
   const [forgotSent, setForgotSent] = useState(false);
 
   const handleGoogleSignIn = () => {
-    loginUser({
-      name: 'Google User',
-      email: 'user@gmail.com',
-      role: 'reader',
-    });
+    const selectedUser = {
+      name: 'Samra Tasneem',
+      email: 'samrathasneem10@gmail.com',
+      role: 'reader' as const,
+      avatar: '/images/user-avatar-butterfly.png',
+    };
+    loginUser(selectedUser);
+    document.cookie = `user_email=${selectedUser.email}; path=/; max-age=604800`;
+    document.cookie = `user_role=${selectedUser.role}; path=/; max-age=604800`;
     closeAuth();
-    router.push('/dashboard/reader');
+    router.push('/dashboard');
   };
 
   const handleForgotPassword = () => {
@@ -86,7 +90,7 @@ export const LoginForm: React.FC = () => {
       closeAuth();
 
       // Redirect immediately to the user's specific dashboard
-      const targetUrl = data.redirectUrl || '/dashboard/reader';
+      const targetUrl = data.redirectUrl || '/dashboard';
       router.push(targetUrl);
     } catch (err: any) {
       setAuthError('Network or server error. Please ensure database is connected.');

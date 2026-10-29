@@ -7,6 +7,7 @@ export interface UserProfile {
   name: string;
   email: string;
   role: 'reader' | 'writer' | 'admin' | string;
+  avatar?: string;
 }
 
 export type AuthMode = 'login' | 'signup';

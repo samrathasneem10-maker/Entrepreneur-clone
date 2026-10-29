@@ -148,31 +148,20 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
 
               {/* Sign In / User Profile */}
               {mounted && user ? (
-                <div className="flex items-center gap-2">
-                  <Link
-                    href="/dashboard"
-                    className="flex items-center gap-1.5 p-1.5 text-[#020618] hover:text-[#1642D0] text-xs sm:text-[13px] font-bold group transition-colors cursor-pointer"
-                    title={`Go to ${user.role} dashboard`}
-                  >
-                    <div className="w-6 h-6 rounded-full bg-[#1642D0] text-white flex items-center justify-center text-[10px] font-extrabold uppercase group-hover:bg-[#1132a8] transition-colors">
-                      {user.name.charAt(0)}
-                    </div>
-                    <span className="hidden sm:inline truncate max-w-[100px]">
-                      {user.name}
-                    </span>
-                    <span className="hidden md:inline text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
-                      {user.role}
-                    </span>
-                  </Link>
-                  <button
-                    onClick={logout}
-                    className="p-1 text-slate-500 hover:text-rose-600 transition-colors cursor-pointer"
-                    title="Sign Out"
-                    aria-label="Sign Out"
-                  >
-                    <LogOut className="w-4 h-4" />
-                  </button>
-                </div>
+                <Link
+                  href={user.role === 'writer' ? '/dashboard/writer' : '/dashboard'}
+                  className="flex items-center gap-2.5 p-1 text-[#020618] hover:text-[#1642D0] group transition-colors cursor-pointer select-none"
+                  title="Profile and Dashboard"
+                >
+                  <img
+                    src={user.avatar || '/images/user-avatar-butterfly.png'}
+                    alt={user.name}
+                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover border border-slate-200 shadow-2xs group-hover:ring-2 group-hover:ring-[#1642D0]/30 transition-all"
+                  />
+                  <span className="font-bold text-xs sm:text-[13px] tracking-normal text-slate-900 group-hover:text-[#1642D0] transition-colors whitespace-nowrap">
+                    {user.name}
+                  </span>
+                </Link>
               ) : (
                 <button
                   onClick={openLogin}

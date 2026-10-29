@@ -35,7 +35,7 @@ export async function POST(request: Request) {
 
     // Query MySQL database for user by email
     const users = await query<any[]>(
-      'SELECT id, name, email, password_hash, role FROM users WHERE LOWER(email) = ? LIMIT 1',
+      'SELECT id, name, email, password_hash, role, avatar FROM users WHERE LOWER(email) = ? LIMIT 1',
       [cleanEmail]
     );
 
@@ -80,6 +80,7 @@ export async function POST(request: Request) {
       name: user.name,
       email: user.email,
       role: normalizedRole,
+      avatar: user.avatar || '/images/user-avatar-butterfly.png',
     };
 
     const response = NextResponse.json({

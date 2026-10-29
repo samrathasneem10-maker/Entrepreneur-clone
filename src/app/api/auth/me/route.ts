@@ -8,15 +8,15 @@ export async function GET() {
     const emailCookie = cookieStore.get('user_email')?.value;
     const isLoggedOut = cookieStore.get('logged_out')?.value === 'true';
 
-    // Default to primary account fathisamra66@gmail.com if not explicitly logged out
-    const targetEmail = emailCookie || (!isLoggedOut ? 'fathisamra66@gmail.com' : null);
+    // Prioritize active session email from cookie; fallback to samrathasneem10@gmail.com if not logged out
+    const targetEmail = emailCookie || (!isLoggedOut ? 'samrathasneem10@gmail.com' : null);
 
     if (!targetEmail) {
       return NextResponse.json({ authenticated: false, user: null }, { status: 200 });
     }
 
     const users = await query<any[]>(
-      'SELECT id, name, email, role FROM users WHERE LOWER(email) = ? LIMIT 1',
+      'SELECT id, name, email, role, avatar FROM users WHERE LOWER(email) = ? LIMIT 1',
       [targetEmail.toLowerCase()]
     );
 
@@ -29,9 +29,10 @@ export async function GET() {
       authenticated: true,
       user: {
         id: u.id,
-        name: u.name,
+        name: u.name || 'Samra Tasneem',
         email: u.email,
-        role: u.role,
+        role: u.role || 'reader',
+        avatar: u.avatar || '/images/user-avatar-butterfly.png',
       },
     });
   } catch (error: any) {
