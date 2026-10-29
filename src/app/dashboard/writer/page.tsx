@@ -573,14 +573,7 @@ export default function WriterDashboardPage() {
           <div>
             <button
               type="button"
-              onClick={() => {
-                setFormTitle('');
-                setFormExcerpt('');
-                setFormContent('');
-                setFormCategory('Building a Business');
-                setFormImageUrl('/images/topic-hero-leaders.jpg');
-                setShowCreateModal(true);
-              }}
+              onClick={() => router.push('/writer')}
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1642D0] hover:bg-blue-800 text-white font-bold text-xs sm:text-sm uppercase tracking-wider rounded-lg shadow-sm transition-colors cursor-pointer"
             >
               <Plus className="w-4 h-4 stroke-[2.5]" />
@@ -724,7 +717,7 @@ export default function WriterDashboardPage() {
                 {activeTab !== 'trash' && (
                   <button
                     type="button"
-                    onClick={() => setShowCreateModal(true)}
+                    onClick={() => router.push('/writer')}
                     className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#1642D0] text-white text-xs font-bold rounded-lg hover:bg-blue-800 transition-colors cursor-pointer"
                   >
                     <Plus className="w-4 h-4" />

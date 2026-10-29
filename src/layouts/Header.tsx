@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { Search, User, Mail, LogOut } from 'lucide-react';
+import { Search, User, Mail, LogOut, ChevronDown } from 'lucide-react';
 import { SearchBar } from '@/components/SearchBar';
 import { NavDrawer } from '@/components/NavDrawer';
 import { NAVIGATION_STRUCTURE } from '@/data/newsData';
@@ -19,6 +19,8 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [readingProgress, setReadingProgress] = useState(0);
+  const [showAccountDropdown, setShowAccountDropdown] = useState(false);
+  const accountDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -29,8 +31,17 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
         setIsScrolled(false);
       }
     };
+    const handleClickOutside = (event: MouseEvent) => {
+      if (accountDropdownRef.current && !accountDropdownRef.current.contains(event.target as Node)) {
+        setShowAccountDropdown(false);
+      }
+    };
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   // Reading progress calculation for article pages
@@ -81,8 +92,7 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
       {/* Sticky Main Navigation Container */}
       <header className={`sticky top-0 z-40 bg-white border-b border-slate-200 transition-shadow relative ${isScrolled ? 'shadow-md' : 'shadow-xs'}`}>
 
-        
-        {/* Upper Header Bar: Menu Dots + Logo (Left) and Controls (Right) */}
+        {/* Upper Header Bar: Menu Dots + Logo (Left) and Top CTA Buttons (Right) */}
         <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 py-3 sm:py-3.5">
           <div className="w-full flex items-center justify-between">
             
@@ -132,108 +142,184 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
               </Link>
             </div>
 
-            {/* Right: Search Icon + Sign In Controls */}
-            <div className="flex items-center gap-4 sm:gap-6 font-sans text-[#020618]">
-              
-              {/* Search Toggle Link */}
+            {/* Right: Press Releases and Save 33% on All Access buttons matching Screenshot 3 */}
+            <div className="flex items-center gap-2.5 sm:gap-3.5 font-sans">
               <Link
-                href="/search"
-                className="flex items-center gap-2 p-1.5 text-[#020618] hover:text-[#1642D0] transition-colors cursor-pointer"
-                aria-label="Search"
-                title="Search"
+                href="/topic/press-releases"
+                className="px-3 sm:px-4 py-1.5 border border-slate-700 hover:border-black text-slate-900 text-xs sm:text-[13px] font-bold rounded-sm transition-colors whitespace-nowrap bg-white hover:bg-slate-50"
               >
-                <Search className="w-5 h-5 stroke-[2.2]" />
-                <span className="hidden sm:inline font-bold uppercase tracking-wider text-xs sm:text-[13px]">Search</span>
+                Press Releases
               </Link>
-
-              {/* Sign In / User Profile */}
-              {mounted && user ? (
-                <Link
-                  href={user.role === 'writer' ? '/dashboard/writer' : '/dashboard'}
-                  className="flex items-center gap-2.5 p-1 text-[#020618] hover:text-[#1642D0] group transition-colors cursor-pointer select-none"
-                  title="Profile and Dashboard"
-                >
-                  <img
-                    src={user.avatar || '/images/user-avatar-butterfly.png'}
-                    alt={user.name}
-                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover border border-slate-200 shadow-2xs group-hover:ring-2 group-hover:ring-[#1642D0]/30 transition-all"
-                  />
-                  <span className="font-bold text-xs sm:text-[13px] tracking-normal text-slate-900 group-hover:text-[#1642D0] transition-colors whitespace-nowrap">
-                    {user.name}
-                  </span>
-                </Link>
-              ) : (
-                <button
-                  onClick={openLogin}
-                  className="flex items-center gap-2 p-1.5 text-[#020618] hover:text-[#1642D0] transition-colors cursor-pointer"
-                  aria-label="Sign In"
-                >
-                  <User className="w-5 h-5 stroke-[2.2]" />
-                  <span className="hidden sm:inline font-bold uppercase tracking-wider text-xs sm:text-[13px]">Sign In</span>
-                </button>
-              )}
-
-              {/* Newsletters */}
               <Link
-                href="/newsletters"
-                className="flex items-center gap-2 p-1.5 text-[#020618] hover:text-[#1642D0] transition-colors cursor-pointer"
-                aria-label="Newsletters"
-                title="Newsletters"
+                href="/subscribe"
+                className="px-3 sm:px-4 py-1.5 bg-[#1642D0] hover:bg-[#0E2C8F] text-white text-xs sm:text-[13px] font-bold rounded-sm transition-colors whitespace-nowrap shadow-xs"
               >
-                <Mail className="w-5 h-5 stroke-[2.2]" />
-                <span className="hidden sm:inline font-bold uppercase tracking-wider text-xs sm:text-[13px]">Newsletters</span>
+                Save 33% on All Access
               </Link>
-
             </div>
 
           </div>
         </div>
 
-        {/* Lower Header Bar: 8 Primary Navigation Categories matching reference screenshot */}
+        {/* Lower Header Bar: Navigation Categories (Left) and Controls/Dropdown (Right) matching Screenshot 3 */}
         <div className="border-t border-slate-100 bg-white">
           <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
-            <nav className="py-2 sm:py-2.5 overflow-x-auto no-scrollbar font-sans">
-              <ul className="flex items-center lg:justify-between gap-4 sm:gap-5 lg:gap-3 xl:gap-4 whitespace-nowrap min-w-max lg:min-w-0">
-                {NAVIGATION_STRUCTURE.primary.map((item) => (
-                  <li key={item.label} className="relative group py-1 shrink-0">
-                    <Link
-                      href={item.href}
-                      className="text-[11px] sm:text-[11.5px] lg:text-[11px] xl:text-[12px] font-bold uppercase tracking-wider text-[#020618] hover:text-[#1642D0] transition-colors flex items-center gap-1 whitespace-nowrap"
-                    >
-                      {item.label}
-                    </Link>
+            <div className="flex items-center justify-between py-2 sm:py-2.5">
+              
+              {/* Left: Primary Navigation Categories */}
+              <nav className="overflow-x-auto no-scrollbar font-sans flex-1 mr-4">
+                <ul className="flex items-center gap-4 sm:gap-5 lg:gap-6 whitespace-nowrap min-w-max">
+                  {NAVIGATION_STRUCTURE.primary.map((item) => (
+                    <li key={item.label} className="relative group py-1 shrink-0">
+                      <Link
+                        href={item.href}
+                        className="text-[11px] sm:text-[11.5px] lg:text-[12px] font-bold uppercase tracking-wider text-[#020618] hover:text-[#1642D0] transition-colors flex items-center gap-1 whitespace-nowrap"
+                      >
+                        {item.label}
+                      </Link>
 
-                    {/* Dropdown Hover Menu (Desktop & Laptops) */}
-                    {item.subcategories && (
-                      <div className="absolute top-full left-0 min-w-[270px] max-w-[340px] max-h-[460px] overflow-y-auto bg-white shadow-xl rounded-b-xl border border-slate-200 py-2 hidden group-hover:block animate-in fade-in duration-150 z-50">
-                        <div className="px-3.5 py-1.5 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                            {item.subcategories.length} Subcategories
-                          </span>
-                          <Link
-                            href={item.href}
-                            className="text-[10px] font-bold text-[#1642D0] hover:underline"
-                          >
-                            View All &rarr;
-                          </Link>
-                        </div>
-                        <div className="py-1">
-                          {item.subcategories.map((sub) => (
+                      {/* Dropdown Hover Menu */}
+                      {item.subcategories && (
+                        <div className="absolute top-full left-0 min-w-[270px] max-w-[340px] max-h-[460px] overflow-y-auto bg-white shadow-xl rounded-b-xl border border-slate-200 py-2 hidden group-hover:block animate-in fade-in duration-150 z-50">
+                          <div className="px-3.5 py-1.5 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                              {item.subcategories.length} Subcategories
+                            </span>
                             <Link
-                              key={sub.label}
-                              href={sub.href}
-                              className="block px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
+                              href={item.href}
+                              className="text-[10px] font-bold text-[#1642D0] hover:underline"
                             >
-                              {sub.label}
+                              View All &rarr;
                             </Link>
-                          ))}
+                          </div>
+                          <div className="py-1">
+                            {item.subcategories.map((sub) => (
+                              <Link
+                                key={sub.label}
+                                href={sub.href}
+                                className="block px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
+                              >
+                                {sub.label}
+                              </Link>
+                            ))}
+                          </div>
                         </div>
-                      </div>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+
+              {/* Right: Search + Profile Dropdown + Newsletters matching Screenshot 3 */}
+              <div className="flex items-center gap-3 sm:gap-4 shrink-0 font-sans border-l border-slate-200 pl-3 sm:pl-4">
+                
+                {/* Search Toggle Icon */}
+                <button
+                  onClick={() => setIsSearchOpen(true)}
+                  className="p-1 text-slate-800 hover:text-[#1642D0] transition-colors cursor-pointer"
+                  aria-label="Search"
+                  title="Search"
+                >
+                  <Search className="w-5 h-5 stroke-[2.2]" />
+                </button>
+
+                {/* Profile Icon with Blue Border and Dropdown matching Screenshot 3 */}
+                <div className="relative" ref={accountDropdownRef}>
+                  <button
+                    onClick={() => {
+                      if (!mounted) return;
+                      setShowAccountDropdown((prev) => !prev);
+                    }}
+                    className="w-8 h-8 rounded border-2 border-[#1642D0] text-[#1642D0] hover:bg-blue-50 transition-colors flex items-center justify-center cursor-pointer select-none"
+                    aria-label="User Account Menu"
+                    title={mounted && user ? user.name : "Sign In or Account"}
+                  >
+                    {mounted && user?.avatar ? (
+                      <img src={user.avatar} alt={user.name} className="w-full h-full object-cover rounded-xs" />
+                    ) : (
+                      <User className="w-4 h-4 stroke-[2.4]" />
                     )}
-                  </li>
-                ))}
-              </ul>
-            </nav>
+                  </button>
+
+                  {/* Dropdown Menu matching Screenshot 3: My Account, Start Your LLC, Sign Out */}
+                  {showAccountDropdown && (
+                    <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded shadow-xl border border-slate-200 py-1.5 z-50 text-left animate-in fade-in duration-100">
+                      {mounted && user ? (
+                        <>
+                          <div className="px-4 py-2 border-b border-slate-100 bg-slate-50/60">
+                            <p className="text-xs font-bold text-slate-900 truncate">{user.name}</p>
+                            <p className="text-[10px] text-slate-500 capitalize">{user.role || 'Member'}</p>
+                          </div>
+                          <Link
+                            href={user.role === 'writer' ? '/dashboard/writer' : '/dashboard'}
+                            onClick={() => setShowAccountDropdown(false)}
+                            className="block px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-100 hover:text-[#1642D0] transition-colors"
+                          >
+                            My Account
+                          </Link>
+                          <Link
+                            href="/start-llc"
+                            onClick={() => setShowAccountDropdown(false)}
+                            className="block px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-100 hover:text-[#1642D0] transition-colors"
+                          >
+                            Start Your LLC
+                          </Link>
+                          <button
+                            onClick={() => {
+                              setShowAccountDropdown(false);
+                              logout();
+                            }}
+                            className="w-full text-left px-4 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors cursor-pointer border-t border-slate-100 flex items-center justify-between"
+                          >
+                            <span>Sign Out</span>
+                            <LogOut className="w-3.5 h-3.5" />
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => {
+                              setShowAccountDropdown(false);
+                              openLogin();
+                            }}
+                            className="w-full text-left px-4 py-2 text-xs font-bold text-[#1642D0] hover:bg-blue-50 transition-colors cursor-pointer"
+                          >
+                            Sign In
+                          </button>
+                          <Link
+                            href="/dashboard"
+                            onClick={() => setShowAccountDropdown(false)}
+                            className="block px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-100 hover:text-[#1642D0] transition-colors"
+                          >
+                            My Account
+                          </Link>
+                          <Link
+                            href="/start-llc"
+                            onClick={() => setShowAccountDropdown(false)}
+                            className="block px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-100 hover:text-[#1642D0] transition-colors"
+                          >
+                            Start Your LLC
+                          </Link>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Newsletters Link */}
+                <Link
+                  href="/newsletters"
+                  className="hidden sm:flex items-center gap-1.5 p-1 text-slate-800 hover:text-[#1642D0] transition-colors text-xs font-bold whitespace-nowrap"
+                  aria-label="Newsletters"
+                  title="Newsletters"
+                >
+                  <Mail className="w-4 h-4 stroke-[2.2]" />
+                  <span>Newsletters</span>
+                </Link>
+
+              </div>
+
+            </div>
           </div>
         </div>
 
@@ -248,6 +334,15 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
         )}
       </header>
 
+      {/* Promotional Discount Banner matching Screenshot 3 */}
+      <div className="w-full bg-[#1642D0] py-2 px-4 text-center select-none shadow-xs">
+        <Link
+          href="/subscribe"
+          className="text-white text-xs sm:text-[13px] md:text-sm font-bold tracking-wide underline hover:text-blue-100 transition-colors inline-block"
+        >
+          33% Off the Playbooks Trusted by 10,000+ Entrepreneurs
+        </Link>
+      </div>
 
       {/* Search Modal Overlay */}
       <SearchBar isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />

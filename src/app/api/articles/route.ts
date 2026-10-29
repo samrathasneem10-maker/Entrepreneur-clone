@@ -51,7 +51,7 @@ export async function GET(request: Request) {
         a.is_featured as isFeatured,
         COALESCE(a.status, 'published') as status,
         au.avatar as authorAvatar,
-        au.title as authorTitle,
+        au.role as authorTitle,
         au.bio as authorBio
       FROM articles a
       LEFT JOIN authors au ON a.author_id = au.id
@@ -145,7 +145,8 @@ export async function POST(request: Request) {
       content = '',
       imageUrl = '/images/default-article.jpg',
       status = 'published',
-      authorName = 'Reader User',
+      authorName = 'Staff Writer',
+      readTime = '5 min read',
     } = body;
 
     if (!title || !title.trim()) {
@@ -163,8 +164,8 @@ export async function POST(request: Request) {
     const insertResult: any = await query(
       `INSERT INTO articles 
         (slug, title, category_name, author_name, date, read_time, excerpt, content, image_url, status, views)
-       VALUES (?, ?, ?, ?, ?, '5 min read', ?, ?, ?, ?, '1')`,
-      [slug, title.trim(), category, authorName, formattedDate, excerpt, content, imageUrl, status.toLowerCase()]
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '1')`,
+      [slug, title.trim(), category, authorName, formattedDate, readTime || '5 min read', excerpt, content, imageUrl, status.toLowerCase()]
     );
 
     return NextResponse.json({

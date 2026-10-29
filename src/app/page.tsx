@@ -24,13 +24,6 @@ export default function Home() {
       {/* Sticky Top Header Navigation */}
       <Header />
 
-      {/* Top Announcement Bar */}
-      <div className="w-full bg-[#1642D0] py-2 px-4 text-center text-white text-xs sm:text-sm font-bold tracking-wide">
-        <a href="#" className="hover:underline transition-colors">
-          Turn Your Inbox Into a Growth Tool
-        </a>
-      </div>
-
       {/* Main Page Body: wide screen layout matching Reference Image 3 with clean side margins */}
       <main className="flex-1 w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
         {/* 1. Hero News Section */}
