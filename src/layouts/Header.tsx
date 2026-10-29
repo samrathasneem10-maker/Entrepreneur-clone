@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { Search, User, Mail, LogOut, ChevronDown } from 'lucide-react';
+import { Search, User, Mail, LogOut, ChevronDown, Bookmark, CreditCard, Settings as SettingsIcon } from 'lucide-react';
 import { SearchBar } from '@/components/SearchBar';
 import { NavDrawer } from '@/components/NavDrawer';
 import { NAVIGATION_STRUCTURE } from '@/data/newsData';
@@ -89,10 +89,10 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
 
   return (
     <>
-      {/* Sticky Main Navigation Container */}
+      {/* Sticky Main Navigation Container matching Reference Image 1 & 2 */}
       <header className={`sticky top-0 z-40 bg-white border-b border-slate-200 transition-shadow relative ${isScrolled ? 'shadow-md' : 'shadow-xs'}`}>
 
-        {/* Upper Header Bar: Menu Dots + Logo (Left) and Top CTA Buttons (Right) */}
+        {/* Upper Header Bar: Logo (Left) and SEARCH, PROFILE/SIGN IN, NEWSLETTERS (Right) */}
         <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 py-3 sm:py-3.5">
           <div className="w-full flex items-center justify-between">
             
@@ -103,7 +103,7 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
                 className="p-1 text-[#020618] hover:bg-slate-100/80 rounded-md transition-colors cursor-pointer group flex items-center justify-center mr-0.5"
                 aria-label="Open main menu"
               >
-                {/* Enriched Dots Grid matching reference screenshot */}
+                {/* 9-Dots Grid */}
                 <svg className="w-7 h-7 sm:w-8 sm:h-8 fill-[#020618] group-hover:scale-105 transition-transform" viewBox="0 0 24 24">
                   <circle cx="4" cy="4" r="2.7" />
                   <circle cx="12" cy="4" r="2.7" />
@@ -117,7 +117,7 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
                 </svg>
               </button>
 
-              {/* Logo - Exact authentic Entrepreneur brand vector wordmark */}
+              {/* Logo - Authentic Entrepreneur brand vector wordmark */}
               <Link href="/" className="flex items-center group py-0.5 select-none" aria-label="Entrepreneur">
                 <svg
                   className="h-7 sm:h-8 md:h-9 lg:h-10 xl:h-10.5 w-auto fill-current text-[#000000] group-hover:text-[#1642D0] transition-colors"
@@ -142,184 +142,186 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
               </Link>
             </div>
 
-            {/* Right: Press Releases and Save 33% on All Access buttons matching Screenshot 3 */}
-            <div className="flex items-center gap-2.5 sm:gap-3.5 font-sans">
-              <Link
-                href="/topic/press-releases"
-                className="px-3 sm:px-4 py-1.5 border border-slate-700 hover:border-black text-slate-900 text-xs sm:text-[13px] font-bold rounded-sm transition-colors whitespace-nowrap bg-white hover:bg-slate-50"
+            {/* Right: SEARCH, SIGN IN / USER PROFILE CARD, NEWSLETTERS matching Reference Images 1 & 2 */}
+            <div className="flex items-center gap-4 sm:gap-6 font-sans">
+              
+              {/* 1. SEARCH Icon & Label */}
+              <button
+                onClick={() => setIsSearchOpen(true)}
+                className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-900 hover:text-[#1642D0] transition-colors cursor-pointer py-1"
+                aria-label="Search"
               >
-                Press Releases
-              </Link>
+                <Search className="w-4 h-4 stroke-[2.2]" />
+                <span className="hidden sm:inline">Search</span>
+              </button>
+
+              {/* 2. USER PROFILE CARD (when signed in) OR SIGN IN (when guest) matching Reference Image 2 */}
+              {mounted && user ? (
+                /* Authenticated User Profile Card */
+                <div className="relative" ref={accountDropdownRef}>
+                  <button
+                    onClick={() => setShowAccountDropdown((prev) => !prev)}
+                    className="flex items-center gap-2.5 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-all cursor-pointer select-none group"
+                    aria-label="User Account Menu"
+                  >
+                    {/* Circular Profile Avatar (User's real photo or professional neutral avatar) */}
+                    <div className="w-6 h-6 rounded-full overflow-hidden bg-slate-200 border border-slate-300 flex items-center justify-center shrink-0">
+                      {user.avatar ? (
+                        <img
+                          src={user.avatar}
+                          alt={user.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            // Professional neutral avatar fallback
+                            (e.currentTarget as HTMLElement).style.display = 'none';
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-[#1642D0] text-white text-[10px] font-bold flex items-center justify-center uppercase">
+                          {user.name ? user.name.charAt(0) : 'U'}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* User Name */}
+                    <span className="text-xs font-bold text-slate-900 group-hover:text-[#1642D0] transition-colors truncate max-w-[120px]">
+                      {user.name}
+                    </span>
+
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-500 group-hover:text-slate-800 transition-colors" />
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {showAccountDropdown && (
+                    <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-2xl border border-slate-200 py-2 z-50 text-left animate-in fade-in zoom-in-95 duration-100">
+                      <div className="px-4 py-2.5 border-b border-slate-100 bg-slate-50/80">
+                        <p className="text-xs font-bold text-slate-900 truncate">{user.name}</p>
+                        <p className="text-[11px] text-slate-500 truncate">{user.email || 'user@entrepreneur.com'}</p>
+                        <span className="inline-block mt-1 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-50 text-[#1642D0] border border-blue-100">
+                          {user.role === 'writer' ? 'Editorial Contributor' : 'Reader Member'}
+                        </span>
+                      </div>
+
+                      <div className="py-1">
+                        <Link
+                          href={user.role === 'writer' ? '/dashboard/writer' : '/dashboard'}
+                          onClick={() => setShowAccountDropdown(false)}
+                          className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
+                        >
+                          <User className="w-3.5 h-3.5 text-slate-400" />
+                          <span>Profile &amp; Dashboard</span>
+                        </Link>
+                        <Link
+                          href="/dashboard?tab=saved"
+                          onClick={() => setShowAccountDropdown(false)}
+                          className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
+                        >
+                          <Bookmark className="w-3.5 h-3.5 text-slate-400" />
+                          <span>Saved Articles</span>
+                        </Link>
+                        <Link
+                          href="/dashboard?tab=subscriptions"
+                          onClick={() => setShowAccountDropdown(false)}
+                          className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
+                        >
+                          <CreditCard className="w-3.5 h-3.5 text-slate-400" />
+                          <span>Subscriptions</span>
+                        </Link>
+                        <Link
+                          href="/dashboard?tab=account"
+                          onClick={() => setShowAccountDropdown(false)}
+                          className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
+                        >
+                          <SettingsIcon className="w-3.5 h-3.5 text-slate-400" />
+                          <span>Account Settings</span>
+                        </Link>
+                      </div>
+
+                      <div className="border-t border-slate-100 pt-1">
+                        <button
+                          onClick={() => {
+                            setShowAccountDropdown(false);
+                            logout();
+                          }}
+                          className="w-full text-left px-4 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors cursor-pointer flex items-center justify-between"
+                        >
+                          <span>Sign Out</span>
+                          <LogOut className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* Guest Sign In Button matching Reference Image 1 */
+                <button
+                  onClick={openLogin}
+                  className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-900 hover:text-[#1642D0] transition-colors cursor-pointer py-1"
+                >
+                  <User className="w-4 h-4 stroke-[2.2]" />
+                  <span>Sign In</span>
+                </button>
+              )}
+
+              {/* 3. NEWSLETTERS Link matching Reference Image 1 */}
               <Link
-                href="/subscribe"
-                className="px-3 sm:px-4 py-1.5 bg-[#1642D0] hover:bg-[#0E2C8F] text-white text-xs sm:text-[13px] font-bold rounded-sm transition-colors whitespace-nowrap shadow-xs"
+                href="/newsletters"
+                className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-900 hover:text-[#1642D0] transition-colors whitespace-nowrap py-1"
               >
-                Save 33% on All Access
+                <Mail className="w-4 h-4 stroke-[2.2]" />
+                <span className="hidden sm:inline">Newsletters</span>
               </Link>
+
             </div>
 
           </div>
         </div>
 
-        {/* Lower Header Bar: Navigation Categories (Left) and Controls/Dropdown (Right) matching Screenshot 3 */}
-        <div className="border-t border-slate-100 bg-white">
+        {/* Lower Header Bar: Category Navigation matching Reference Image 1 */}
+        <div className="border-t border-slate-200 bg-white">
           <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
-            <div className="flex items-center justify-between py-2 sm:py-2.5">
-              
-              {/* Left: Primary Navigation Categories */}
-              <nav className="overflow-x-auto no-scrollbar font-sans flex-1 mr-4">
-                <ul className="flex items-center gap-4 sm:gap-5 lg:gap-6 whitespace-nowrap min-w-max">
-                  {NAVIGATION_STRUCTURE.primary.map((item) => (
-                    <li key={item.label} className="relative group py-1 shrink-0">
-                      <Link
-                        href={item.href}
-                        className="text-[11px] sm:text-[11.5px] lg:text-[12px] font-bold uppercase tracking-wider text-[#020618] hover:text-[#1642D0] transition-colors flex items-center gap-1 whitespace-nowrap"
-                      >
-                        {item.label}
-                      </Link>
+            <nav className="overflow-x-auto no-scrollbar font-sans py-2.5">
+              <ul className="flex items-center justify-between gap-4 sm:gap-6 whitespace-nowrap min-w-max">
+                {NAVIGATION_STRUCTURE.primary.map((item) => (
+                  <li key={item.label} className="relative group py-0.5 shrink-0">
+                    <Link
+                      href={item.href}
+                      className="text-[11px] sm:text-[11.5px] lg:text-[12px] font-bold uppercase tracking-wider text-[#020618] hover:text-[#1642D0] transition-colors flex items-center gap-1 whitespace-nowrap"
+                    >
+                      {item.label}
+                    </Link>
 
-                      {/* Dropdown Hover Menu */}
-                      {item.subcategories && (
-                        <div className="absolute top-full left-0 min-w-[270px] max-w-[340px] max-h-[460px] overflow-y-auto bg-white shadow-xl rounded-b-xl border border-slate-200 py-2 hidden group-hover:block animate-in fade-in duration-150 z-50">
-                          <div className="px-3.5 py-1.5 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                              {item.subcategories.length} Subcategories
-                            </span>
-                            <Link
-                              href={item.href}
-                              className="text-[10px] font-bold text-[#1642D0] hover:underline"
-                            >
-                              View All &rarr;
-                            </Link>
-                          </div>
-                          <div className="py-1">
-                            {item.subcategories.map((sub) => (
-                              <Link
-                                key={sub.label}
-                                href={sub.href}
-                                className="block px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
-                              >
-                                {sub.label}
-                              </Link>
-                            ))}
-                          </div>
+                    {/* Dropdown Hover Menu */}
+                    {item.subcategories && (
+                      <div className="absolute top-full left-0 min-w-[270px] max-w-[340px] max-h-[460px] overflow-y-auto bg-white shadow-xl rounded-b-xl border border-slate-200 py-2 hidden group-hover:block animate-in fade-in duration-150 z-50">
+                        <div className="px-3.5 py-1.5 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                            {item.subcategories.length} Subcategories
+                          </span>
+                          <Link
+                            href={item.href}
+                            className="text-[10px] font-bold text-[#1642D0] hover:underline"
+                          >
+                            View All &rarr;
+                          </Link>
                         </div>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </nav>
-
-              {/* Right: Search + Profile Dropdown + Newsletters matching Screenshot 3 */}
-              <div className="flex items-center gap-3 sm:gap-4 shrink-0 font-sans border-l border-slate-200 pl-3 sm:pl-4">
-                
-                {/* Search Toggle Icon */}
-                <button
-                  onClick={() => setIsSearchOpen(true)}
-                  className="p-1 text-slate-800 hover:text-[#1642D0] transition-colors cursor-pointer"
-                  aria-label="Search"
-                  title="Search"
-                >
-                  <Search className="w-5 h-5 stroke-[2.2]" />
-                </button>
-
-                {/* Profile Icon with Blue Border and Dropdown matching Screenshot 3 */}
-                <div className="relative" ref={accountDropdownRef}>
-                  <button
-                    onClick={() => {
-                      if (!mounted) return;
-                      setShowAccountDropdown((prev) => !prev);
-                    }}
-                    className="w-8 h-8 rounded border-2 border-[#1642D0] text-[#1642D0] hover:bg-blue-50 transition-colors flex items-center justify-center cursor-pointer select-none"
-                    aria-label="User Account Menu"
-                    title={mounted && user ? user.name : "Sign In or Account"}
-                  >
-                    {mounted && user?.avatar ? (
-                      <img src={user.avatar} alt={user.name} className="w-full h-full object-cover rounded-xs" />
-                    ) : (
-                      <User className="w-4 h-4 stroke-[2.4]" />
+                        <div className="py-1">
+                          {item.subcategories.map((sub) => (
+                            <Link
+                              key={sub.label}
+                              href={sub.href}
+                              className="block px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
+                            >
+                              {sub.label}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
                     )}
-                  </button>
-
-                  {/* Dropdown Menu matching Screenshot 3: My Account, Start Your LLC, Sign Out */}
-                  {showAccountDropdown && (
-                    <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded shadow-xl border border-slate-200 py-1.5 z-50 text-left animate-in fade-in duration-100">
-                      {mounted && user ? (
-                        <>
-                          <div className="px-4 py-2 border-b border-slate-100 bg-slate-50/60">
-                            <p className="text-xs font-bold text-slate-900 truncate">{user.name}</p>
-                            <p className="text-[10px] text-slate-500 capitalize">{user.role || 'Member'}</p>
-                          </div>
-                          <Link
-                            href={user.role === 'writer' ? '/dashboard/writer' : '/dashboard'}
-                            onClick={() => setShowAccountDropdown(false)}
-                            className="block px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-100 hover:text-[#1642D0] transition-colors"
-                          >
-                            My Account
-                          </Link>
-                          <Link
-                            href="/start-llc"
-                            onClick={() => setShowAccountDropdown(false)}
-                            className="block px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-100 hover:text-[#1642D0] transition-colors"
-                          >
-                            Start Your LLC
-                          </Link>
-                          <button
-                            onClick={() => {
-                              setShowAccountDropdown(false);
-                              logout();
-                            }}
-                            className="w-full text-left px-4 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors cursor-pointer border-t border-slate-100 flex items-center justify-between"
-                          >
-                            <span>Sign Out</span>
-                            <LogOut className="w-3.5 h-3.5" />
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <button
-                            onClick={() => {
-                              setShowAccountDropdown(false);
-                              openLogin();
-                            }}
-                            className="w-full text-left px-4 py-2 text-xs font-bold text-[#1642D0] hover:bg-blue-50 transition-colors cursor-pointer"
-                          >
-                            Sign In
-                          </button>
-                          <Link
-                            href="/dashboard"
-                            onClick={() => setShowAccountDropdown(false)}
-                            className="block px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-100 hover:text-[#1642D0] transition-colors"
-                          >
-                            My Account
-                          </Link>
-                          <Link
-                            href="/start-llc"
-                            onClick={() => setShowAccountDropdown(false)}
-                            className="block px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-100 hover:text-[#1642D0] transition-colors"
-                          >
-                            Start Your LLC
-                          </Link>
-                        </>
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                {/* Newsletters Link */}
-                <Link
-                  href="/newsletters"
-                  className="hidden sm:flex items-center gap-1.5 p-1 text-slate-800 hover:text-[#1642D0] transition-colors text-xs font-bold whitespace-nowrap"
-                  aria-label="Newsletters"
-                  title="Newsletters"
-                >
-                  <Mail className="w-4 h-4 stroke-[2.2]" />
-                  <span>Newsletters</span>
-                </Link>
-
-              </div>
-
-            </div>
+                  </li>
+                ))}
+              </ul>
+            </nav>
           </div>
         </div>
 
@@ -334,25 +336,21 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
         )}
       </header>
 
-      {/* Promotional Discount Banner matching Screenshot 3 */}
+      {/* Promotional Announcement Banner: "Turn Your Inbox Into a Growth Tool" matching Reference Image 1 */}
       <div className="w-full bg-[#1642D0] py-2 px-4 text-center select-none shadow-xs">
         <Link
-          href="/subscribe"
-          className="text-white text-xs sm:text-[13px] md:text-sm font-bold tracking-wide underline hover:text-blue-100 transition-colors inline-block"
+          href="/newsletters"
+          className="text-white text-xs sm:text-[13px] font-bold tracking-wide hover:underline cursor-pointer transition-all inline-block"
         >
-          33% Off the Playbooks Trusted by 10,000+ Entrepreneurs
+          Turn Your Inbox Into a Growth Tool
         </Link>
       </div>
 
-      {/* Search Modal Overlay */}
-      <SearchBar isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
-
       {/* Slide-out Navigation Drawer */}
-      <NavDrawer
-        isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-        onOpenSearch={() => setIsSearchOpen(true)}
-      />
+      <NavDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
+
+      {/* Search Overlay */}
+      <SearchBar isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </>
   );
 };
