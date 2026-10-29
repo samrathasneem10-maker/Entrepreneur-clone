@@ -197,7 +197,7 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
-    const { id, dbId, status, title, category, excerpt, content } = body;
+    const { id, dbId, status, title, category, excerpt, content, imageUrl } = body;
 
     if (!id && !dbId) {
       return NextResponse.json({ success: false, error: 'Article identifier is required.' }, { status: 400 });
@@ -225,6 +225,10 @@ export async function PUT(request: Request) {
     if (content !== undefined) {
       updates.push('content = ?');
       params.push(content);
+    }
+    if (imageUrl !== undefined) {
+      updates.push('image_url = ?');
+      params.push(imageUrl);
     }
 
     if (updates.length === 0) {
