@@ -51,6 +51,17 @@ const PRESET_ARTICLE_IMAGES = [
 
 const FALLBACK_WRITER_ARTICLES: ArticleItem[] = [
   {
+    id: 10,
+    dbId: 10,
+    title: 'Autonomous Enterprise AI: How Small Teams Build Billion-Dollar Products',
+    category: 'Business',
+    date: 'OCT 29, 2026',
+    readTime: '5 min read',
+    excerpt: 'A comprehensive breakdown of how automated workflows and intelligence multiply revenue per employee in modern startups.',
+    imageUrl: '/images/coding-agents.jpg',
+    status: 'published',
+  },
+  {
     id: 1,
     dbId: 1,
     title: 'How Great Leaders Build Teams That Thrive',
@@ -84,17 +95,6 @@ const FALLBACK_WRITER_ARTICLES: ArticleItem[] = [
     status: 'draft',
   },
   {
-    id: 4,
-    dbId: 4,
-    title: 'The Solopreneur Playbook for Scaling Without Burning Out',
-    category: 'Building a Business',
-    date: 'OCT 14, 2026',
-    readTime: '6 min read',
-    excerpt: 'Frameworks and leverage points to double revenue without doubling working hours.',
-    imageUrl: '/images/hero-mentor.jpg',
-    status: 'published',
-  },
-  {
     id: 5,
     dbId: 5,
     title: 'How Strategic Content Automation Multiplies B2B Pipeline Growth',
@@ -103,7 +103,7 @@ const FALLBACK_WRITER_ARTICLES: ArticleItem[] = [
     readTime: '7 min read',
     excerpt: 'How modern B2B founders turn targeted content into predictable revenue pipelines.',
     imageUrl: '/images/innovation-leadership.jpg',
-    status: 'published',
+    status: 'draft',
   },
   {
     id: 6,
@@ -114,7 +114,7 @@ const FALLBACK_WRITER_ARTICLES: ArticleItem[] = [
     readTime: '5 min read',
     excerpt: 'Science-backed daily routines to manage cognitive load and maintain executive clarity.',
     imageUrl: '/images/related-jumping-cliff.png',
-    status: 'published',
+    status: 'draft',
   },
   {
     id: 7,
@@ -229,12 +229,24 @@ export default function WriterDashboardPage() {
     }
   };
 
-  const fetchArticles = async (status: WriterTab) => {
-    setLoadingArticles(true);
+  // Pagination States supporting 100+ articles
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalArticles, setTotalArticles] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const pageSize = 15;
+
+  const fetchArticles = async (status: WriterTab, pageNum = 1, append = false) => {
+    if (append) {
+      setLoadingMore(true);
+    } else {
+      setLoadingArticles(true);
+    }
     try {
-      const res = await fetch(`/api/articles?status=${status}&limit=100`);
+      const res = await fetch(`/api/articles?status=${status}&page=${pageNum}&limit=${pageSize}`);
       const data = await res.json();
-      if (data?.success && Array.isArray(data.data) && data.data.length > 0) {
+      if (data?.success && Array.isArray(data.data)) {
         const withImgs: ArticleItem[] = data.data.map((item: any, idx: number) => ({
           ...item,
           imageUrl:
@@ -242,21 +254,50 @@ export default function WriterDashboardPage() {
               ? item.imageUrl
               : PRESET_ARTICLE_IMAGES[idx % PRESET_ARTICLE_IMAGES.length].url,
         }));
-        setArticles(withImgs);
+        if (append) {
+          setArticles((prev) => [...prev, ...withImgs]);
+        } else {
+          setArticles(withImgs);
+        }
+        setCurrentPage(data.page || pageNum);
+        setTotalPages(data.totalPages || 1);
+        setTotalArticles(data.total !== undefined ? data.total : withImgs.length);
+        setHasMore(Boolean(data.hasMore));
       } else {
-        setArticles(FALLBACK_WRITER_ARTICLES.filter((a) => a.status === status));
+        const fallback = FALLBACK_WRITER_ARTICLES.filter((a) => a.status === status);
+        setArticles(fallback);
+        setTotalArticles(fallback.length);
+        setTotalPages(1);
+        setHasMore(false);
       }
     } catch {
-      setArticles(FALLBACK_WRITER_ARTICLES.filter((a) => a.status === status));
+      const fallback = FALLBACK_WRITER_ARTICLES.filter((a) => a.status === status);
+      setArticles(fallback);
+      setTotalArticles(fallback.length);
+      setTotalPages(1);
+      setHasMore(false);
     } finally {
       setLoadingArticles(false);
+      setLoadingMore(false);
     }
+  };
+
+  const handleLoadMore = () => {
+    if (!hasMore || loadingMore) return;
+    fetchArticles(activeTab, currentPage + 1, true);
+  };
+
+  const handlePageChange = (pageNum: number) => {
+    if (pageNum < 1 || pageNum > totalPages) return;
+    fetchArticles(activeTab, pageNum, false);
+    window.scrollTo({ top: 350, behavior: 'smooth' });
   };
 
   const handleTabChange = (tab: WriterTab) => {
     setActiveTab(tab);
     setSearchQuery('');
-    fetchArticles(tab);
+    setCurrentPage(1);
+    fetchArticles(tab, 1, false);
   };
 
   // Inline Card Image Upload handler
@@ -876,6 +917,75 @@ export default function WriterDashboardPage() {
                     </div>
                   </article>
                 ))}
+              </div>
+            )}
+
+            {/* Pagination & Load More Controls for 100+ Articles */}
+            {filteredArticles.length > 0 && (
+              <div className="mt-8 pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="text-xs text-slate-500 font-sans">
+                  Showing <span className="font-bold text-slate-900">{articles.length}</span> of{' '}
+                  <span className="font-bold text-slate-900">{totalArticles}</span> {activeTab.replace('_', ' ')} articles {totalPages > 1 && `(Page ${currentPage} of ${totalPages})`}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  {hasMore && (
+                    <button
+                      type="button"
+                      onClick={handleLoadMore}
+                      disabled={loadingMore}
+                      className="px-4 py-2 bg-[#1642D0] hover:bg-blue-800 text-white text-xs font-bold rounded-lg transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-1.5 shadow-2xs"
+                    >
+                      {loadingMore && <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />}
+                      <span>{loadingMore ? 'Loading...' : 'Load More Articles'}</span>
+                    </button>
+                  )}
+
+                  {totalPages > 1 && (
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage <= 1}
+                        className="px-3 py-1.5 border border-slate-200 rounded text-xs font-semibold hover:bg-slate-50 disabled:opacity-40 cursor-pointer"
+                      >
+                        Previous
+                      </button>
+                      
+                      {Array.from({ length: totalPages }).map((_, i) => {
+                        const pageNum = i + 1;
+                        if (pageNum === 1 || pageNum === totalPages || Math.abs(pageNum - currentPage) <= 1) {
+                          return (
+                            <button
+                              key={pageNum}
+                              type="button"
+                              onClick={() => handlePageChange(pageNum)}
+                              className={`w-7 h-7 rounded text-xs font-bold cursor-pointer transition-colors ${pageNum === currentPage ? 'bg-[#1642D0] text-white' : 'border border-slate-200 text-slate-700 hover:bg-slate-50'}`}
+                            >
+                              {pageNum}
+                            </button>
+                          );
+                        }
+                        if (pageNum === 2 && currentPage > 3) {
+                          return <span key="dots-1" className="text-slate-400 text-xs px-1">...</span>;
+                        }
+                        if (pageNum === totalPages - 1 && currentPage < totalPages - 2) {
+                          return <span key="dots-2" className="text-slate-400 text-xs px-1">...</span>;
+                        }
+                        return null;
+                      })}
+
+                      <button
+                        type="button"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage >= totalPages}
+                        className="px-3 py-1.5 border border-slate-200 rounded text-xs font-semibold hover:bg-slate-50 disabled:opacity-40 cursor-pointer"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>

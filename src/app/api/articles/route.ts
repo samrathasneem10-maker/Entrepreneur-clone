@@ -7,11 +7,14 @@ export async function GET(request: Request) {
   const category = searchParams.get('category');
   const author = searchParams.get('author');
   const status = searchParams.get('status');
+  const slug = searchParams.get('slug');
   const getCounts = searchParams.get('counts') === 'true';
-  const limit = Math.min(Number(searchParams.get('limit')) || 50, 200);
+  const page = Math.max(1, Number(searchParams.get('page')) || 1);
+  const limit = Math.min(Number(searchParams.get('limit')) || 20, 200);
+  const offset = (page - 1) * limit;
 
   try {
-    // If counts requested, return status counts for Reader Dashboard tabs
+    // If counts requested, return status counts for Reader / Writer Dashboard tabs
     if (getCounts) {
       const countsRows = await query<any[]>(
         'SELECT COALESCE(status, "published") as status, COUNT(*) as count FROM articles GROUP BY COALESCE(status, "published")'
@@ -32,7 +35,34 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: true, counts });
     }
 
-    let sql = `
+    // Base WHERE clause
+    let whereClause = 'WHERE 1=1';
+    const params: any[] = [];
+
+    if (category) {
+      whereClause += ' AND a.category_name = ?';
+      params.push(category);
+    }
+    if (author) {
+      whereClause += ' AND a.author_name = ?';
+      params.push(author);
+    }
+    if (status) {
+      whereClause += ' AND LOWER(COALESCE(a.status, "published")) = ?';
+      params.push(status.toLowerCase());
+    }
+    if (slug) {
+      whereClause += ' AND (a.slug = ? OR a.id = ?)';
+      params.push(slug, slug);
+    }
+
+    // 1. Fetch total count for pagination
+    const countSql = `SELECT COUNT(*) as total FROM articles a ${whereClause}`;
+    const countRows = await query<any[]>(countSql, params);
+    const total = Number(countRows[0]?.total) || 0;
+
+    // 2. Fetch paginated rows (ordered by newest first)
+    const sql = `
       SELECT 
         a.id,
         a.slug,
@@ -55,47 +85,33 @@ export async function GET(request: Request) {
         au.bio as authorBio
       FROM articles a
       LEFT JOIN authors au ON a.author_id = au.id
-      WHERE 1=1
+      ${whereClause}
+      ORDER BY a.id DESC
+      LIMIT ? OFFSET ?
     `;
-    const params: any[] = [];
 
-    if (category) {
-      sql += ' AND a.category_name = ?';
-      params.push(category);
-    }
-    if (author) {
-      sql += ' AND a.author_name = ?';
-      params.push(author);
-    }
-    if (status) {
-      sql += ' AND LOWER(COALESCE(a.status, "published")) = ?';
-      params.push(status.toLowerCase());
-    }
-
-    sql += ' ORDER BY a.id DESC LIMIT ?';
-    params.push(limit);
-
-    const rows = await query(sql, params);
+    const queryParams = [...params, limit, offset];
+    const rows = await query(sql, queryParams);
 
     const formatted = (rows as any[]).map((r) => ({
       id: r.slug || String(r.id),
       dbId: r.id,
       slug: r.slug,
       title: r.title,
-      category: r.category || 'United States',
+      category: r.category || 'Business',
       editor: r.editor,
-      date: r.date || 'Oct 23, 2026',
+      date: r.date || 'Oct 29, 2026',
       readTime: r.readTime || '5 min read',
       excerpt: r.excerpt || '',
       content: r.content || '',
-      imageUrl: r.imageUrl || '/images/default-article.jpg',
+      imageUrl: r.imageUrl || '/images/coding-agents.jpg',
       imageAspect: r.imageAspect,
-      views: r.views || '0',
+      views: r.views || '1',
       status: (r.status || 'published').toLowerCase(),
       author: {
-        name: r.authorName || 'Staff Writer',
+        name: r.authorName || 'Staff Contributor',
         avatar: r.authorAvatar || '/images/author-sherin.png',
-        title: r.authorTitle || 'Entrepreneur Staff',
+        title: r.authorTitle || 'Executive Contributor',
         bio: r.authorBio,
       },
     }));
@@ -104,26 +120,54 @@ export async function GET(request: Request) {
       success: true,
       source: 'database',
       count: formatted.length,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit) || 1,
+      hasMore: offset + formatted.length < total,
       data: formatted,
     });
   } catch (error: any) {
     console.warn('MySQL articles query failed, falling back to static data:', error?.message);
-    const fallbackList = ALL_ARTICLES.map((a, i) => ({
+
+    // Filter out the 4 old articles from fallback
+    const excludedSlugs = [
+      '53-side-hustle-ideas-to-make-extra-money-in-2026',
+      'youve-been-overlooking-your-best-idea-people-ai-is-about-to-fix-that',
+      'not-every-boss-deserves-a-thank-you-card',
+      'how-to-biohack-your-brain-for-peak-performance',
+    ];
+
+    const fallbackList = ALL_ARTICLES.filter((a) => !excludedSlugs.includes(a.slug || a.id)).map((a, i) => ({
       ...a,
       dbId: i + 1,
       status: i < 3 ? 'draft' : i === 3 ? 'pending_review' : i === 4 ? 'trash' : 'published',
     }));
 
     let filtered = fallbackList;
-    if (status) {
-      filtered = fallbackList.filter((a) => a.status === status.toLowerCase());
+    if (category) {
+      filtered = filtered.filter((a) => a.category?.toLowerCase() === category.toLowerCase());
     }
+    if (status) {
+      filtered = filtered.filter((a) => a.status === status.toLowerCase());
+    }
+    if (slug) {
+      filtered = filtered.filter((a) => a.slug === slug || a.id === slug);
+    }
+
+    const total = filtered.length;
+    const paginated = filtered.slice(offset, offset + limit);
 
     return NextResponse.json({
       success: true,
       source: 'fallback',
-      count: filtered.length,
-      data: filtered.slice(0, limit),
+      count: paginated.length,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit) || 1,
+      hasMore: offset + paginated.length < total,
+      data: paginated,
       counts: {
         published: fallbackList.filter((a) => a.status === 'published').length,
         draft: fallbackList.filter((a) => a.status === 'draft').length,
@@ -140,12 +184,12 @@ export async function POST(request: Request) {
     const body = await request.json();
     const {
       title,
-      category = 'United States',
+      category = 'Business',
       excerpt = '',
       content = '',
-      imageUrl = '/images/default-article.jpg',
+      imageUrl = '/images/coding-agents.jpg',
       status = 'published',
-      authorName = 'Staff Writer',
+      authorName = 'Staff Contributor',
       readTime = '5 min read',
     } = body;
 
@@ -179,7 +223,7 @@ export async function POST(request: Request) {
         category,
         authorName,
         date: formattedDate,
-        readTime: '5 min read',
+        readTime: readTime || '5 min read',
         excerpt,
         content,
         imageUrl,
@@ -261,31 +305,42 @@ export async function PUT(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get('id');
+  const dbId = searchParams.get('dbId');
+  const permanent = searchParams.get('permanent') === 'true';
+
+  if (!id && !dbId) {
+    return NextResponse.json({ success: false, error: 'Article identifier is required.' }, { status: 400 });
+  }
+
   try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
-    const dbId = searchParams.get('dbId');
-    const permanent = searchParams.get('permanent') === 'true';
-
-    if (!id && !dbId) {
-      return NextResponse.json({ success: false, error: 'Article identifier is required.' }, { status: 400 });
-    }
-
     if (permanent) {
+      // Hard delete
+      let whereClause = '';
+      const params: any[] = [];
       if (dbId) {
-        await query('DELETE FROM articles WHERE id = ?', [dbId]);
+        whereClause = 'WHERE id = ?';
+        params.push(dbId);
       } else {
-        await query('DELETE FROM articles WHERE slug = ? OR id = ?', [id, id]);
+        whereClause = 'WHERE slug = ? OR id = ?';
+        params.push(id, id);
       }
-      return NextResponse.json({ success: true, message: 'Article permanently deleted.' });
+      await query(`DELETE FROM articles ${whereClause}`, params);
+      return NextResponse.json({ success: true, message: 'Article permanently deleted' });
     } else {
-      // Soft-delete to trash
+      // Soft delete: move to trash
+      let whereClause = '';
+      const params: any[] = ['trash'];
       if (dbId) {
-        await query('UPDATE articles SET status = "trash" WHERE id = ?', [dbId]);
+        whereClause = 'WHERE id = ?';
+        params.push(dbId);
       } else {
-        await query('UPDATE articles SET status = "trash" WHERE slug = ? OR id = ?', [id, id]);
+        whereClause = 'WHERE slug = ? OR id = ?';
+        params.push(id, id);
       }
-      return NextResponse.json({ success: true, message: 'Article moved to trash.' });
+      await query(`UPDATE articles SET status = ? ${whereClause}`, params);
+      return NextResponse.json({ success: true, message: 'Article moved to trash' });
     }
   } catch (error: any) {
     console.error('Error deleting article:', error);

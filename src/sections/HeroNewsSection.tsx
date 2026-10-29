@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import {
@@ -62,6 +62,36 @@ const HERO_SLIDES: Article[] = [
 
 export const HeroNewsSection: React.FC = () => {
   const [activeSlide, setActiveSlide] = useState(0);
+  const [latestArticles, setLatestArticles] = useState<Article[]>(HOMEPAGE_LATEST_STREAM);
+
+  useEffect(() => {
+    fetch('/api/articles?status=published&limit=10')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success && Array.isArray(data.data) && data.data.length > 0) {
+          const dbArticles: Article[] = data.data.map((a: any) => ({
+            id: a.slug || String(a.dbId),
+            slug: a.slug,
+            title: a.title,
+            category: a.category || 'BUILDING A BUSINESS',
+            author: a.author || { name: a.authorName || 'Staff Contributor', avatar: '/images/author-sherin.png' },
+            date: a.date || 'Just now',
+            readTime: a.readTime || '5 min read',
+            excerpt: a.excerpt,
+            imageUrl: a.imageUrl || '/images/home-hero/latest-1-cofounder.png',
+          }));
+
+          const combined = [...dbArticles];
+          HOMEPAGE_LATEST_STREAM.forEach((item) => {
+            if (!combined.some((c) => c.slug === item.slug || c.title.toLowerCase() === item.title.toLowerCase())) {
+              combined.push(item);
+            }
+          });
+          setLatestArticles(combined.slice(0, 5));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const prevSlide = () => {
     setActiveSlide((prev) => (prev === 0 ? HERO_SLIDES.length - 1 : prev - 1));
@@ -105,7 +135,7 @@ export const HeroNewsSection: React.FC = () => {
 
             {/* List of 5 Articles */}
             <div className="divide-y divide-slate-100 flex-1 flex flex-col justify-between pt-1">
-              {HOMEPAGE_LATEST_STREAM.map((art, index) => (
+              {latestArticles.map((art, index) => (
                 <article
                   key={art.id}
                   className={`py-3 first:pt-2 last:pb-0 flex items-start justify-between gap-3 group`}

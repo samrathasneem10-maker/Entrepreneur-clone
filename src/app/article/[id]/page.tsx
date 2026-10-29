@@ -86,10 +86,10 @@ const RELATED_CONTENT_ITEMS = [
   {
     id: 'rel-2',
     category: 'BUILDING A BUSINESS',
-    title: "Not Every Boss Deserves a Thank-You Card. Here’s What to Do When Your Boss Is a Bully.",
-    author: 'MITA MALLICK',
-    imageUrl: '/images/related-boss-bully.png',
-    slug: '/article/not-every-boss-deserves-a-thank-you-card',
+    title: 'Autonomous Enterprise AI: How Small Teams Build Billion-Dollar Products',
+    author: 'STAFF CONTRIBUTOR',
+    imageUrl: '/images/coding-agents.jpg',
+    slug: '/article/autonomous-enterprise-ai-how-small-teams-build-billion-dollar-products-8786',
   },
   {
     id: 'rel-3',
@@ -133,8 +133,21 @@ function formatTime(seconds: number): string {
 
 export default function ArticleDetailPage() {
   const params = useParams();
-  const articleId = typeof params?.id === 'string' ? params.id : '53-side-hustle-ideas-to-make-extra-money-in-2026';
+  const articleId = typeof params?.id === 'string' ? params.id : 'autonomous-enterprise-ai-how-small-teams-build-billion-dollar-products-8786';
   const rawArticle = getArticleById(articleId);
+  const [dbArticle, setDbArticle] = useState<any>(null);
+
+  useEffect(() => {
+    if (!articleId) return;
+    fetch(`/api/articles?slug=${encodeURIComponent(articleId)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success && data.data && data.data.length > 0) {
+          setDbArticle(data.data[0]);
+        }
+      })
+      .catch(() => {});
+  }, [articleId]);
 
   const isBossArticle =
     articleId === 'not-every-boss-deserves-a-thank-you-card' ||
@@ -160,8 +173,9 @@ export default function ArticleDetailPage() {
     articleId.includes('smart-home') ||
     (rawArticle?.slug || '').includes('smart-home');
 
+  const activeBase = dbArticle || rawArticle;
   const article = {
-    ...rawArticle,
+    ...activeBase,
     category: isBossArticle
       ? 'Building a Business'
       : is53SideHustle
