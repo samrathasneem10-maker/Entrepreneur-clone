@@ -4,7 +4,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/auth/AuthContext';
-import { Footer } from '@/layouts/Footer';
 import {
   Search,
   Plus,
@@ -170,11 +169,11 @@ export default function WriterDashboardPage() {
     rejected: number;
     trash: number;
   }>({
-    published: 4,
-    draft: 3,
-    pending_review: 1,
+    published: 0,
+    draft: 0,
+    pending_review: 0,
     rejected: 0,
-    trash: 1,
+    trash: 0,
   });
 
   // Modal states
@@ -524,7 +523,15 @@ export default function WriterDashboardPage() {
     return matchesSearch;
   });
 
-  const currentDisplayName = user?.name || 'Samra Tasneem';
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
+        <div className="w-8 h-8 border-3 border-[#1642D0] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  const currentDisplayName = user?.name || 'Writer Account';
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] font-sans text-slate-800 antialiased selection:bg-[#1642D0] selection:text-white flex flex-col">
@@ -1338,8 +1345,10 @@ export default function WriterDashboardPage() {
         </div>
       )}
 
-      {/* FOOTER */}
-      <Footer />
+      {/* Minimal Editorial Footer */}
+      <footer className="w-full border-t border-slate-200 bg-white py-4 px-6 text-center text-xs text-slate-500 font-sans mt-auto">
+        <span>Entrepreneur Editorial Workstation &bull; All Rights Reserved</span>
+      </footer>
     </div>
   );
 }
