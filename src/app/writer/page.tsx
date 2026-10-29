@@ -114,14 +114,14 @@ function WriterEditorMain() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [activeSidebarTab, setActiveSidebarTab] = useState<'details' | 'seo'>('details');
 
-  // SEO Fields (Reference Images 4 & 5)
+  // SEO Fields
   const [cardSummary, setCardSummary] = useState('');
   const [focusKeyword, setFocusKeyword] = useState('');
   const [metaDescription, setMetaDescription] = useState('');
   const [metaTitle, setMetaTitle] = useState('');
   const [isGeneratingSeo, setIsGeneratingSeo] = useState(false);
 
-  // Insert/Edit Image Modal State (Reference Images 2 & 3)
+  // Insert/Edit Image Modal State
   const [showImageModal, setShowImageModal] = useState(false);
   const [modalImageUrl, setModalImageUrl] = useState('');
   const [uploadedFileName, setUploadedFileName] = useState('');
@@ -167,7 +167,6 @@ function WriterEditorMain() {
       setShowPreviewModal(true);
     }
 
-    // Hydrate local draft if available
     try {
       const localDraft = localStorage.getItem('entrepreneur_writer_draft');
       if (localDraft && !idParam) {
@@ -196,7 +195,6 @@ function WriterEditorMain() {
     }
   }, [searchParams]);
 
-  // Load existing article from database
   const loadArticleById = async (idOrSlug: string) => {
     try {
       const res = await fetch(`/api/articles?slug=${encodeURIComponent(idOrSlug)}`);
@@ -225,7 +223,6 @@ function WriterEditorMain() {
     }
   };
 
-  // Sync contentEditable input with state
   const handleEditorInput = () => {
     if (!editorRef.current) return;
     const content = editorRef.current.innerHTML;
@@ -233,14 +230,12 @@ function WriterEditorMain() {
     setHtmlContent(content);
     setIsEditorEmpty(!text && !content.includes('<img'));
 
-    // Auto-update read duration
     const fullText = (title + ' ' + subtitle + ' ' + text).trim();
     const wordCount = fullText.split(/\s+/).filter(Boolean).length;
     const minutes = Math.max(1, Math.ceil(wordCount / 180));
     setReadDuration(`${minutes} min read`);
   };
 
-  // Save selection range for toolbar commands
   const saveSelectionRange = () => {
     const sel = window.getSelection();
     if (sel && sel.rangeCount > 0 && editorRef.current?.contains(sel.anchorNode)) {
@@ -248,7 +243,6 @@ function WriterEditorMain() {
     }
   };
 
-  // Execute rich text formatting commands
   const executeFormatting = (command: string, value: string | undefined = undefined) => {
     if (editorRef.current) {
       editorRef.current.focus();
@@ -264,7 +258,6 @@ function WriterEditorMain() {
     }
   };
 
-  // Insert Link helper
   const handleInsertLink = () => {
     const url = window.prompt('Enter link URL:', 'https://');
     if (url && url.trim() && url !== 'https://') {
@@ -272,13 +265,12 @@ function WriterEditorMain() {
     }
   };
 
-  // Detect click on image inside editor to show floating toolbar (Reference Image 4)
+  // Image selection inside editor (Reference Image 4)
   const handleEditorClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
     const figure = target.closest('figure.article-image-figure') as HTMLElement | null;
 
     if (figure && editorRef.current?.contains(figure)) {
-      // Image was clicked!
       setSelectedImageFigure(figure);
       const img = figure.querySelector('img');
       const figcaption = figure.querySelector('figcaption');
@@ -295,7 +287,6 @@ function WriterEditorMain() {
         alignment: align,
       });
 
-      // Position floating toolbar directly above image
       const figRect = figure.getBoundingClientRect();
       const editorRect = editorRef.current.getBoundingClientRect();
       setToolbarPosition({
@@ -303,14 +294,12 @@ function WriterEditorMain() {
         left: Math.max(10, figRect.left - editorRect.left + figRect.width / 2 - 180),
       });
     } else {
-      // Clicked outside image -> hide floating toolbar
       setSelectedImageFigure(null);
       setToolbarPosition(null);
       setSelectedImageProps(null);
     }
   };
 
-  // Update image size from floating toolbar (S, M, FULL)
   const handleUpdateImageSize = (size: 'small' | 'medium' | 'full') => {
     if (!selectedImageFigure) return;
     selectedImageFigure.dataset.size = size;
@@ -328,7 +317,6 @@ function WriterEditorMain() {
     showToast(`Image size updated to ${size.toUpperCase()}`);
   };
 
-  // Update image alignment from floating toolbar (Left, Center, Right)
   const handleUpdateImageAlignment = (alignment: 'left' | 'center' | 'no_wrap' | 'right') => {
     if (!selectedImageFigure) return;
     selectedImageFigure.dataset.align = alignment;
@@ -361,7 +349,6 @@ function WriterEditorMain() {
     showToast(`Image alignment updated to ${alignment}`);
   };
 
-  // Move image up or down relative to sibling elements
   const handleMoveImage = (direction: 'up' | 'down') => {
     if (!selectedImageFigure) return;
     if (direction === 'up') {
@@ -379,7 +366,6 @@ function WriterEditorMain() {
     }
   };
 
-  // Delete selected image
   const handleDeleteSelectedImage = () => {
     if (!selectedImageFigure) return;
     selectedImageFigure.remove();
@@ -390,7 +376,6 @@ function WriterEditorMain() {
     showToast('Image removed from article.');
   };
 
-  // Open modal in edit mode for selected image
   const handleEditSelectedImage = () => {
     if (!selectedImageProps) return;
     setModalImageUrl(selectedImageProps.src);
@@ -400,7 +385,6 @@ function WriterEditorMain() {
     setShowImageModal(true);
   };
 
-  // Subcategory toggle (max 5)
   const currentSubcategories = CATEGORY_SUBCATEGORIES_MAP[mainCategory] || CATEGORY_SUBCATEGORIES_MAP['Startups and Entrepreneurship'];
 
   const handleToggleSubCategory = (sub: string) => {
@@ -415,7 +399,6 @@ function WriterEditorMain() {
     }
   };
 
-  // Tag management
   const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' || e.key === ',') {
       e.preventDefault();
@@ -435,7 +418,6 @@ function WriterEditorMain() {
     setTags((prev) => prev.filter((t) => t !== tagToRemove));
   };
 
-  // Image Modal Keyword Tagging
   const handleImageKeywordKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' || e.key === ',') {
       e.preventDefault();
@@ -455,7 +437,6 @@ function WriterEditorMain() {
     setImageKeywords((prev) => prev.filter((k) => k !== kwToRemove));
   };
 
-  // File upload from computer in Modal
   const handleModalFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -480,7 +461,6 @@ function WriterEditorMain() {
     reader.readAsDataURL(file);
   };
 
-  // Insert or update configured image into editor body
   const handleInsertImageIntoEditor = () => {
     const finalUrl = modalImageUrl.trim();
     if (!finalUrl) {
@@ -488,7 +468,6 @@ function WriterEditorMain() {
       return;
     }
 
-    // Determine sizing container
     let sizeClass = 'max-w-[450px] w-full';
     if (imageSize === 'small') {
       sizeClass = 'max-w-[250px] w-full';
@@ -496,7 +475,6 @@ function WriterEditorMain() {
       sizeClass = 'w-full max-w-none';
     }
 
-    // Determine alignment & text wrapping
     let alignClass = 'my-6 block clear-both mx-auto text-center';
     if (imageAlignment === 'left') {
       alignClass = 'float-left mr-6 mb-4 my-2 text-left';
@@ -511,10 +489,9 @@ function WriterEditorMain() {
     const altSafe = (captionSafe || imageKeywords.join(', ') || title.trim() || 'Article Image').replace(/"/g, '&quot;');
 
     const captionMarkup = (captionSafe || creditSafe)
-      ? `<figcaption class="text-xs text-slate-400 mt-2 italic font-sans ${imageAlignment === 'center' ? 'text-center' : ''}">${captionSafe}${creditSafe ? ` <span class="text-slate-500">(${creditSafe})</span>` : ''}</figcaption>`
+      ? `<figcaption class="text-xs text-slate-500 mt-2 italic font-sans ${imageAlignment === 'center' ? 'text-center' : ''}">${captionSafe}${creditSafe ? ` <span class="text-slate-400">(${creditSafe})</span>` : ''}</figcaption>`
       : '';
 
-    // If editing currently selected image, update it in place
     if (selectedImageFigure) {
       selectedImageFigure.dataset.size = imageSize;
       selectedImageFigure.dataset.align = imageAlignment;
@@ -526,7 +503,7 @@ function WriterEditorMain() {
       }
       const figcaption = selectedImageFigure.querySelector('figcaption');
       if (figcaption) {
-        figcaption.innerHTML = `${captionSafe}${creditSafe ? ` <span class="text-slate-500">(${creditSafe})</span>` : ''}`;
+        figcaption.innerHTML = `${captionSafe}${creditSafe ? ` <span class="text-slate-400">(${creditSafe})</span>` : ''}`;
       } else if (captionMarkup) {
         selectedImageFigure.insertAdjacentHTML('beforeend', captionMarkup);
       }
@@ -536,10 +513,9 @@ function WriterEditorMain() {
       return;
     }
 
-    // Insert new figure
     const figureMarkup = `
       <figure class="article-image-figure group relative cursor-pointer ${alignClass} ${sizeClass} select-none" data-size="${imageSize}" data-align="${imageAlignment}" contenteditable="false">
-        <img src="${finalUrl}" alt="${altSafe}" class="rounded-xl w-full h-auto object-cover shadow-md border border-slate-700/80 pointer-events-none" />
+        <img src="${finalUrl}" alt="${altSafe}" class="rounded-xl w-full h-auto object-cover shadow-sm border border-slate-200 pointer-events-none" />
         ${captionMarkup}
       </figure>
       <p><br></p>
@@ -575,7 +551,6 @@ function WriterEditorMain() {
     showToast('Image inserted into article body!', 'success');
   };
 
-  // Auto Generate SEO (Reference Images 4 & 5)
   const handleAutoGenerateSEO = () => {
     if (!title.trim()) {
       showToast('Please enter an article title first before generating SEO.', 'error');
@@ -588,7 +563,6 @@ function WriterEditorMain() {
     tempDiv.innerHTML = htmlContent || '';
     const plainText = tempDiv.innerText || tempDiv.textContent || subtitle || '';
 
-    // 1. Focus Keyword extraction
     const cleanTitle = title.replace(/[^\w\s]/gi, ' ').trim();
     const titleWords = cleanTitle.split(/\s+/).filter((w) => w.length > 3);
     let bestKeyword = titleWords.length >= 2 ? `${titleWords[0]} ${titleWords[1]}` : (titleWords[0] || 'Business Strategy');
@@ -598,7 +572,6 @@ function WriterEditorMain() {
       .join(' ');
     setFocusKeyword(bestKeyword);
 
-    // 2. Card Summary (SEO Lead)
     let summary = '';
     if (plainText.trim()) {
       const sentences = plainText.split(/(?<=[.?!])\s+/).filter(Boolean);
@@ -616,14 +589,12 @@ function WriterEditorMain() {
     }
     setCardSummary(summary);
 
-    // 3. Meta Description (Target under 160 chars)
     let metaDesc = `Discover why ${title.trim()} matters. In-depth analysis, expert perspectives, and key developments on ${bestKeyword}.`;
     if (metaDesc.length > 158) {
       metaDesc = metaDesc.substring(0, 155).trim() + '...';
     }
     setMetaDescription(metaDesc);
 
-    // 4. Meta Title
     setMetaTitle(`${title.trim()} | Entrepreneur`);
 
     setTimeout(() => {
@@ -632,7 +603,6 @@ function WriterEditorMain() {
     }, 450);
   };
 
-  // Save Draft (Local + Database)
   const handleSaveDraft = async () => {
     if (!title.trim()) {
       showToast('Please enter an article headline/title to save draft.', 'error');
@@ -705,7 +675,6 @@ function WriterEditorMain() {
     }
   };
 
-  // Submit for Review
   const handleSubmitForReview = async () => {
     if (!title.trim()) {
       showToast('Please enter an article headline/title.', 'error');
@@ -769,7 +738,7 @@ function WriterEditorMain() {
     .replace(/(^-|-$)/g, '');
 
   return (
-    <div className="min-h-screen bg-[#070C1E] flex flex-col font-sans text-slate-100 antialiased selection:bg-[#EA580C] selection:text-white">
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans text-slate-800 antialiased selection:bg-[#EA580C] selection:text-white">
       
       {/* Toast Notification */}
       {toastMessage && (
@@ -793,7 +762,7 @@ function WriterEditorMain() {
         </div>
       )}
 
-      {/* 1. TOP STICKY DARK NAV BAR matching Reference Image 1 & 5 */}
+      {/* 1. TOP STICKY DARK NAV BAR matching Reference Image 1 */}
       <header className="sticky top-0 z-40 bg-[#0B132B] text-white px-3 sm:px-5 lg:px-6 py-3.5 shadow-md border-b border-slate-800">
         <div className="w-full max-w-[1680px] mx-auto flex items-center justify-between gap-4">
           
@@ -853,24 +822,24 @@ function WriterEditorMain() {
         </div>
       </header>
 
-      {/* 2. MAIN 2-COLUMN ARTICLE EDITOR AREA (Proportional Width matching Reference Image 5) */}
+      {/* 2. MAIN 2-COLUMN ARTICLE EDITOR AREA (Clean White Canvas) */}
       <main className="w-full max-w-[1680px] mx-auto px-3 sm:px-4 lg:px-6 py-5 sm:py-7 flex-1">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-5 items-start relative">
 
-          {/* Left Column: Black Article Editor Canvas (8 cols or 12 cols when collapsed) */}
+          {/* Left Column: White Article Editor Canvas (8 cols or 12 cols when collapsed) */}
           <div
             className={`transition-all duration-300 flex flex-col gap-5 ${
               sidebarCollapsed ? 'lg:col-span-12' : 'lg:col-span-8 xl:col-span-8'
             }`}
           >
-            <div className="bg-[#0F172A] rounded-2xl border border-slate-800 p-6 sm:p-8 shadow-xl flex flex-col gap-5 min-h-[720px] relative text-slate-100">
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xs flex flex-col gap-5 min-h-[720px] relative text-slate-800">
               
               {/* Expand Sidebar pill when collapsed */}
               {sidebarCollapsed && (
                 <button
                   type="button"
                   onClick={() => setSidebarCollapsed(false)}
-                  className="self-end -mt-2 -mb-2 flex items-center gap-1.5 text-xs font-bold text-slate-300 hover:text-white bg-slate-800/90 hover:bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-700 cursor-pointer transition-colors shadow-2xs"
+                  className="self-end -mt-2 -mb-2 flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg border border-slate-200 cursor-pointer transition-colors shadow-2xs"
                   title="Expand Article Settings"
                 >
                   <PanelRightOpen className="w-4 h-4 text-[#EA580C]" />
@@ -878,15 +847,15 @@ function WriterEditorMain() {
                 </button>
               )}
 
-              {/* HORIZONTAL RICH TEXT TOOLBAR matching Reference Image 1 & 3 */}
-              <div className="flex flex-wrap items-center gap-1 sm:gap-1.5 p-2 bg-[#1E293B]/90 border border-slate-700/80 rounded-xl text-slate-300 shadow-2xs">
+              {/* HORIZONTAL RICH TEXT TOOLBAR matching Reference Image 1 */}
+              <div className="flex flex-wrap items-center gap-1 sm:gap-1.5 p-2 bg-slate-50 border border-slate-200/80 rounded-xl text-slate-600 shadow-2xs">
                 
                 {/* Group 1: Undo & Redo */}
                 <button
                   type="button"
                   onClick={() => executeFormatting('undo')}
                   title="Undo"
-                  className="p-1.5 hover:bg-slate-700 hover:text-white rounded-md transition-colors cursor-pointer"
+                  className="p-1.5 hover:bg-white hover:text-slate-900 rounded-md transition-colors cursor-pointer"
                 >
                   <Undo2 className="w-4 h-4" />
                 </button>
@@ -894,20 +863,20 @@ function WriterEditorMain() {
                   type="button"
                   onClick={() => executeFormatting('redo')}
                   title="Redo"
-                  className="p-1.5 hover:bg-slate-700 hover:text-white rounded-md transition-colors cursor-pointer"
+                  className="p-1.5 hover:bg-white hover:text-slate-900 rounded-md transition-colors cursor-pointer"
                 >
                   <Redo2 className="w-4 h-4" />
                 </button>
 
                 {/* Divider */}
-                <span className="w-[1px] h-4 bg-slate-700 mx-1 select-none" />
+                <span className="w-[1px] h-4 bg-slate-300 mx-1 select-none" />
 
                 {/* Group 2: B, I, U, Strikethrough, Subscript, Superscript */}
                 <button
                   type="button"
                   onClick={() => executeFormatting('bold')}
                   title="Bold"
-                  className="p-1.5 hover:bg-slate-700 hover:text-white rounded-md transition-colors font-bold cursor-pointer"
+                  className="p-1.5 hover:bg-white hover:text-slate-900 rounded-md transition-colors font-bold cursor-pointer"
                 >
                   <Bold className="w-4 h-4" />
                 </button>
@@ -915,7 +884,7 @@ function WriterEditorMain() {
                   type="button"
                   onClick={() => executeFormatting('italic')}
                   title="Italic"
-                  className="p-1.5 hover:bg-slate-700 hover:text-white rounded-md transition-colors italic cursor-pointer"
+                  className="p-1.5 hover:bg-white hover:text-slate-900 rounded-md transition-colors italic cursor-pointer"
                 >
                   <Italic className="w-4 h-4" />
                 </button>
@@ -923,7 +892,7 @@ function WriterEditorMain() {
                   type="button"
                   onClick={() => executeFormatting('underline')}
                   title="Underline"
-                  className="p-1.5 hover:bg-slate-700 hover:text-white rounded-md transition-colors cursor-pointer"
+                  className="p-1.5 hover:bg-white hover:text-slate-900 rounded-md transition-colors cursor-pointer"
                 >
                   <UnderlineIcon className="w-4 h-4" />
                 </button>
@@ -931,7 +900,7 @@ function WriterEditorMain() {
                   type="button"
                   onClick={() => executeFormatting('strikeThrough')}
                   title="Strikethrough"
-                  className="p-1.5 hover:bg-slate-700 hover:text-white rounded-md transition-colors cursor-pointer"
+                  className="p-1.5 hover:bg-white hover:text-slate-900 rounded-md transition-colors cursor-pointer"
                 >
                   <Strikethrough className="w-4 h-4" />
                 </button>
@@ -939,7 +908,7 @@ function WriterEditorMain() {
                   type="button"
                   onClick={() => executeFormatting('subscript')}
                   title="Subscript"
-                  className="p-1.5 hover:bg-slate-700 hover:text-white rounded-md transition-colors cursor-pointer"
+                  className="p-1.5 hover:bg-white hover:text-slate-900 rounded-md transition-colors cursor-pointer"
                 >
                   <Subscript className="w-3.5 h-3.5" />
                 </button>
@@ -947,20 +916,20 @@ function WriterEditorMain() {
                   type="button"
                   onClick={() => executeFormatting('superscript')}
                   title="Superscript"
-                  className="p-1.5 hover:bg-slate-700 hover:text-white rounded-md transition-colors cursor-pointer"
+                  className="p-1.5 hover:bg-white hover:text-slate-900 rounded-md transition-colors cursor-pointer"
                 >
                   <Superscript className="w-3.5 h-3.5" />
                 </button>
 
                 {/* Divider */}
-                <span className="w-[1px] h-4 bg-slate-700 mx-1 select-none" />
+                <span className="w-[1px] h-4 bg-slate-300 mx-1 select-none" />
 
                 {/* Group 3: Link & Lists */}
                 <button
                   type="button"
                   onClick={handleInsertLink}
                   title="Insert Link"
-                  className="p-1.5 hover:bg-slate-700 hover:text-white rounded-md transition-colors cursor-pointer"
+                  className="p-1.5 hover:bg-white hover:text-slate-900 rounded-md transition-colors cursor-pointer"
                 >
                   <Link2 className="w-4 h-4" />
                 </button>
@@ -968,7 +937,7 @@ function WriterEditorMain() {
                   type="button"
                   onClick={() => executeFormatting('insertUnorderedList')}
                   title="Bulleted List"
-                  className="p-1.5 hover:bg-slate-700 hover:text-white rounded-md transition-colors cursor-pointer"
+                  className="p-1.5 hover:bg-white hover:text-slate-900 rounded-md transition-colors cursor-pointer"
                 >
                   <ListIcon className="w-4 h-4" />
                 </button>
@@ -976,20 +945,20 @@ function WriterEditorMain() {
                   type="button"
                   onClick={() => executeFormatting('insertOrderedList')}
                   title="Numbered List"
-                  className="p-1.5 hover:bg-slate-700 hover:text-white rounded-md transition-colors cursor-pointer"
+                  className="p-1.5 hover:bg-white hover:text-slate-900 rounded-md transition-colors cursor-pointer"
                 >
                   <ListOrdered className="w-4 h-4" />
                 </button>
 
                 {/* Divider */}
-                <span className="w-[1px] h-4 bg-slate-700 mx-1 select-none" />
+                <span className="w-[1px] h-4 bg-slate-300 mx-1 select-none" />
 
                 {/* Group 4: Blockquote & Code */}
                 <button
                   type="button"
                   onClick={() => executeFormatting('formatBlock', 'blockquote')}
                   title="Blockquote"
-                  className="p-1.5 hover:bg-slate-700 hover:text-white rounded-md transition-colors cursor-pointer"
+                  className="p-1.5 hover:bg-white hover:text-slate-900 rounded-md transition-colors cursor-pointer"
                 >
                   <Quote className="w-4 h-4" />
                 </button>
@@ -997,13 +966,13 @@ function WriterEditorMain() {
                   type="button"
                   onClick={() => executeFormatting('formatBlock', 'pre')}
                   title="Code Block"
-                  className="p-1.5 hover:bg-slate-700 hover:text-white rounded-md transition-colors cursor-pointer"
+                  className="p-1.5 hover:bg-white hover:text-slate-900 rounded-md transition-colors cursor-pointer"
                 >
                   <Code className="w-4 h-4" />
                 </button>
 
                 {/* Divider */}
-                <span className="w-[1px] h-4 bg-slate-700 mx-1 select-none" />
+                <span className="w-[1px] h-4 bg-slate-300 mx-1 select-none" />
 
                 {/* Group 5: INSERT IMAGE (Cream/Orange Accent Button matching Reference Image 1) */}
                 <button
@@ -1016,9 +985,9 @@ function WriterEditorMain() {
                     setImageCredit('');
                     setShowImageModal(true);
                   }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#EA580C]/20 border border-[#EA580C]/60 hover:bg-[#EA580C]/30 text-[#FB923C] text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer shadow-2xs"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FFF7ED] border border-[#FFEDD5] hover:bg-[#FFEDD5] text-[#EA580C] text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer shadow-2xs"
                 >
-                  <ImageIcon className="w-4 h-4 text-[#FB923C]" />
+                  <ImageIcon className="w-4 h-4 text-[#EA580C]" />
                   <span>Insert Image</span>
                 </button>
 
@@ -1031,7 +1000,7 @@ function WriterEditorMain() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Add Title..."
-                  className="w-full text-3xl sm:text-4xl font-serif font-bold text-white placeholder:text-slate-600 border-none outline-none focus:ring-0 px-0 py-1 bg-transparent"
+                  className="w-full text-3xl sm:text-4xl font-serif font-bold text-slate-900 placeholder:text-slate-300 border-none outline-none focus:ring-0 px-0 py-1 bg-transparent"
                 />
               </div>
 
@@ -1042,11 +1011,11 @@ function WriterEditorMain() {
                   value={subtitle}
                   onChange={(e) => setSubtitle(e.target.value)}
                   placeholder="Add Subheading / Deck..."
-                  className="w-full text-lg sm:text-xl font-serif italic text-slate-300 placeholder:text-slate-600 border-none outline-none focus:ring-0 px-0 py-1 bg-transparent"
+                  className="w-full text-lg sm:text-xl font-serif italic text-slate-700 placeholder:text-slate-300 border-none outline-none focus:ring-0 px-0 py-1 bg-transparent"
                 />
               </div>
 
-              {/* Rich Body Content Area: Dark canvas with floating image toolbar on image click */}
+              {/* Rich Body Content Area: White canvas with floating image toolbar on image click */}
               <div className="relative flex-1 min-h-[480px] flex flex-col" onClick={handleEditorClick}>
                 
                 {/* Floating Image Toolbar matching Reference Image 4 */}
@@ -1164,7 +1133,7 @@ function WriterEditorMain() {
                 )}
 
                 {isEditorEmpty && (
-                  <div className="absolute top-2 left-0 text-base text-slate-600 pointer-events-none select-none font-sans">
+                  <div className="absolute top-2 left-0 text-base text-slate-300 pointer-events-none select-none font-sans">
                     Start writing or type / for plugins
                   </div>
                 )}
@@ -1176,7 +1145,7 @@ function WriterEditorMain() {
                   onInput={handleEditorInput}
                   onKeyUp={saveSelectionRange}
                   onMouseUp={saveSelectionRange}
-                  className="w-full flex-1 min-h-[480px] text-base text-slate-200 border-none outline-none focus:ring-0 px-0 py-2 leading-relaxed font-sans bg-transparent prose prose-invert max-w-none focus:outline-none"
+                  className="w-full flex-1 min-h-[480px] text-base text-slate-800 border-none outline-none focus:ring-0 px-0 py-2 leading-relaxed font-sans bg-transparent prose prose-slate max-w-none focus:outline-none"
                   style={{ minHeight: '480px' }}
                 />
               </div>
@@ -1186,35 +1155,35 @@ function WriterEditorMain() {
 
           {/* Right Column: ARTICLE SETTINGS Sidebar (Collapsible with matching toggle button) */}
           {!sidebarCollapsed && (
-            <aside className="lg:col-span-4 xl:col-span-4 relative bg-[#0F172A] rounded-2xl border border-slate-800 p-5 sm:p-6 shadow-xl flex flex-col gap-6 sticky top-20 transition-all duration-300 text-slate-200">
+            <aside className="lg:col-span-4 xl:col-span-4 relative bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs flex flex-col gap-6 sticky top-20 transition-all duration-300 text-slate-800">
               
               {/* Circular Sidebar Collapse Toggle Button positioned on top-left edge matching Reference Image 1 & 5 */}
               <button
                 type="button"
                 onClick={() => setSidebarCollapsed(true)}
-                className="absolute -left-3.5 top-5 w-7 h-7 bg-[#1E293B] border border-slate-700 hover:border-slate-500 rounded-full shadow-md flex items-center justify-center text-slate-300 hover:text-white transition-all cursor-pointer z-10"
+                className="absolute -left-3.5 top-5 w-7 h-7 bg-white border border-slate-300 hover:border-slate-400 rounded-full shadow-xs flex items-center justify-center text-slate-500 hover:text-slate-800 transition-all cursor-pointer z-10"
                 title="Collapse Article Settings"
               >
-                <PanelRightClose className="w-4 h-4 text-[#EA580C]" />
+                <PanelRightClose className="w-4 h-4" />
               </button>
 
               {/* Sidebar Header: ⚙️ ARTICLE SETTINGS */}
-              <div className="flex items-center gap-2 text-white border-b border-slate-800 pb-3">
-                <Settings className="w-4 h-4 text-slate-400" />
-                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-200">
+              <div className="flex items-center gap-2 text-slate-900 border-b border-slate-100 pb-3">
+                <Settings className="w-4 h-4 text-slate-600" />
+                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800">
                   Article Settings
                 </h2>
               </div>
 
               {/* DETAILS / SEO Tabs */}
-              <div className="flex items-center p-1 bg-[#1E293B] rounded-xl text-xs font-bold border border-slate-700/60">
+              <div className="flex items-center p-1 bg-slate-100 rounded-xl text-xs font-bold">
                 <button
                   type="button"
                   onClick={() => setActiveSidebarTab('details')}
                   className={`flex-1 py-1.5 text-center rounded-lg transition-all cursor-pointer uppercase tracking-wider ${
                     activeSidebarTab === 'details'
-                      ? 'bg-[#334155] text-white shadow-xs'
-                      : 'text-slate-400 hover:text-slate-200'
+                      ? 'bg-white text-slate-900 shadow-xs'
+                      : 'text-slate-500 hover:text-slate-800'
                   }`}
                 >
                   Details
@@ -1224,21 +1193,21 @@ function WriterEditorMain() {
                   onClick={() => setActiveSidebarTab('seo')}
                   className={`flex-1 py-1.5 text-center rounded-lg transition-all cursor-pointer uppercase tracking-wider ${
                     activeSidebarTab === 'seo'
-                      ? 'bg-[#334155] text-white shadow-xs'
-                      : 'text-slate-400 hover:text-slate-200'
+                      ? 'bg-white text-slate-900 shadow-xs'
+                      : 'text-slate-500 hover:text-slate-800'
                   }`}
                 >
                   SEO
                 </button>
               </div>
 
-              {/* DETAILS TAB CONTENT (Reference Image 5) */}
+              {/* DETAILS TAB CONTENT */}
               {activeSidebarTab === 'details' && (
                 <div className="flex flex-col gap-5">
                   
                   {/* 1. SELECT CATEGORY (MAIN) */}
                   <div className="flex flex-col gap-2">
-                    <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
                       Select Category (Main)
                     </label>
                     <div className="relative">
@@ -1248,38 +1217,38 @@ function WriterEditorMain() {
                           setMainCategory(e.target.value);
                           setSelectedSubCategories([]);
                         }}
-                        className="w-full appearance-none px-3.5 py-2.5 bg-[#1E293B] border border-slate-700 rounded-xl text-xs font-semibold text-white focus:outline-hidden focus:border-[#EA580C] cursor-pointer"
+                        className="w-full appearance-none px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-hidden focus:border-[#1642D0] cursor-pointer"
                       >
                         {WEBSITE_CATEGORIES.map((cat) => (
-                          <option key={cat} value={cat} className="bg-[#1E293B] text-white">
+                          <option key={cat} value={cat}>
                             {cat}
                           </option>
                         ))}
                       </select>
-                      <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-3 pointer-events-none" />
+                      <ChevronDown className="w-4 h-4 text-slate-500 absolute right-3 top-3 pointer-events-none" />
                     </div>
                   </div>
 
                   {/* 2. SELECT SUB-CATEGORIES (OPTIONAL, MAX 5) */}
                   <div className="flex flex-col gap-2">
-                    <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
                       Select Sub-Categories (Optional, Max 5)
                     </label>
                     
                     {/* 2-Column Checkbox Grid */}
-                    <div className="grid grid-cols-2 gap-2.5 p-3 bg-[#1E293B] border border-slate-700 rounded-xl max-h-48 overflow-y-auto no-scrollbar">
+                    <div className="grid grid-cols-2 gap-2.5 p-3 bg-slate-50 border border-slate-200 rounded-xl max-h-48 overflow-y-auto no-scrollbar">
                       {currentSubcategories.map((sub) => {
                         const isChecked = selectedSubCategories.includes(sub);
                         return (
                           <label
                             key={sub}
-                            className="flex items-center gap-2 text-xs font-medium text-slate-300 cursor-pointer select-none hover:text-white"
+                            className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer select-none hover:text-slate-900"
                           >
                             <input
                               type="checkbox"
                               checked={isChecked}
                               onChange={() => handleToggleSubCategory(sub)}
-                              className="w-4 h-4 rounded border-slate-600 bg-slate-800 text-[#EA580C] focus:ring-[#EA580C]/30 cursor-pointer"
+                              className="w-4 h-4 rounded border-slate-300 text-[#1642D0] focus:ring-[#1642D0]/30 cursor-pointer"
                             />
                             <span className="truncate">{sub}</span>
                           </label>
@@ -1295,7 +1264,7 @@ function WriterEditorMain() {
 
                   {/* 3. TAGS */}
                   <div className="flex flex-col gap-2">
-                    <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
                       Tags
                     </label>
                     <input
@@ -1304,7 +1273,7 @@ function WriterEditorMain() {
                       onChange={(e) => setTagInput(e.target.value)}
                       onKeyDown={handleTagKeyDown}
                       placeholder="e.g. BreakingNews, Football, WorldCup20"
-                      className="w-full px-3.5 py-2.5 bg-[#1E293B] border border-slate-700 rounded-xl text-xs text-white placeholder:text-slate-500 focus:outline-hidden focus:border-[#EA580C]"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#1642D0]"
                     />
 
                     {/* Tag chips */}
@@ -1314,7 +1283,7 @@ function WriterEditorMain() {
                           <span
                             key={t}
                             onClick={() => handleRemoveTag(t)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#EA580C]/20 border border-[#EA580C]/40 text-[#FB923C] rounded-md text-xs font-semibold cursor-pointer hover:bg-[#EA580C]/30 transition-colors"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-[#1642D0] rounded-md text-xs font-semibold cursor-pointer hover:bg-blue-100 transition-colors"
                             title="Click to remove"
                           >
                             <span>#{t}</span>
@@ -1332,7 +1301,7 @@ function WriterEditorMain() {
 
                   {/* 4. READ DURATION */}
                   <div className="flex flex-col gap-2">
-                    <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
                       Read Duration
                     </label>
                     <div className="relative">
@@ -1341,7 +1310,7 @@ function WriterEditorMain() {
                         value={readDuration}
                         onChange={(e) => setReadDuration(e.target.value)}
                         placeholder="5 min read"
-                        className="w-full pl-9 pr-3.5 py-2.5 bg-[#1E293B] border border-slate-700 rounded-xl text-xs font-semibold text-white focus:outline-hidden focus:border-[#EA580C]"
+                        className="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-hidden focus:border-[#1642D0]"
                       />
                       <Clock className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
                     </div>
@@ -1350,11 +1319,11 @@ function WriterEditorMain() {
                 </div>
               )}
 
-              {/* SEO TAB CONTENT (Reference Images 4 & 5) */}
+              {/* SEO TAB CONTENT */}
               {activeSidebarTab === 'seo' && (
                 <div className="flex flex-col gap-5">
                   
-                  {/* AUTO-GENERATE SEO Button (Orange matching Reference Images 4 & 5) */}
+                  {/* AUTO-GENERATE SEO Button */}
                   <button
                     type="button"
                     onClick={handleAutoGenerateSEO}
@@ -1365,8 +1334,7 @@ function WriterEditorMain() {
                     <span>{isGeneratingSeo ? 'Generating SEO...' : 'Auto-Generate SEO'}</span>
                   </button>
 
-                  {/* Helper Text */}
-                  <p className="text-[11px] text-slate-400 leading-normal -mt-2">
+                  <p className="text-[11px] text-slate-500 leading-normal -mt-2">
                     Keyword &amp; meta description fill in automatically from your title and content. Edit any field to override.
                   </p>
 
@@ -1380,7 +1348,7 @@ function WriterEditorMain() {
                       value={cardSummary}
                       onChange={(e) => setCardSummary(e.target.value)}
                       placeholder="Concise 1-2 sentence preview details."
-                      className="w-full px-3.5 py-2.5 bg-[#1E293B] border border-slate-700 rounded-xl text-xs text-white placeholder:text-slate-500 focus:outline-hidden focus:border-[#EA580C] resize-y"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#1642D0] resize-y"
                     />
                   </div>
 
@@ -1394,7 +1362,7 @@ function WriterEditorMain() {
                       value={focusKeyword}
                       onChange={(e) => setFocusKeyword(e.target.value)}
                       placeholder="e.g. Vexillum Minerals"
-                      className="w-full px-3.5 py-2.5 bg-[#1E293B] border border-slate-700 rounded-xl text-xs text-white placeholder:text-slate-500 focus:outline-hidden focus:border-[#EA580C]"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#1642D0]"
                     />
                   </div>
 
@@ -1406,7 +1374,7 @@ function WriterEditorMain() {
                       </label>
                       <span
                         className={`text-[10px] font-bold uppercase tracking-wider ${
-                          metaDescription.length > 160 ? 'text-red-400' : 'text-slate-400'
+                          metaDescription.length > 160 ? 'text-red-500' : 'text-slate-400'
                         }`}
                       >
                         {metaDescription.length} / 160
@@ -1417,19 +1385,18 @@ function WriterEditorMain() {
                       value={metaDescription}
                       onChange={(e) => setMetaDescription(e.target.value)}
                       placeholder="Discover why... — the sentence shown under the title in Google."
-                      className="w-full px-3.5 py-2.5 bg-[#1E293B] border border-slate-700 rounded-xl text-xs text-white placeholder:text-slate-500 focus:outline-hidden focus:border-[#EA580C] resize-y"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#1642D0] resize-y"
                     />
                   </div>
 
                   {/* 4. PREVIEW IN SEARCH RESULTS (Google Snippet Card) */}
-                  <div className="flex flex-col gap-2 pt-2 border-t border-slate-800">
+                  <div className="flex flex-col gap-2 pt-2 border-t border-slate-100">
                     <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">
                       <Search className="w-3.5 h-3.5" />
                       <span>Preview in Search Results</span>
                     </div>
 
-                    {/* Google Search Card matching Reference Image 4 & 5 */}
-                    <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-md flex flex-col gap-2 text-slate-900">
+                    <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex flex-col gap-2">
                       <div className="flex items-center gap-2">
                         <div className="w-6 h-6 rounded-full bg-[#0B132B] text-white text-[9px] font-bold flex items-center justify-center shrink-0">
                           WT
@@ -1444,12 +1411,10 @@ function WriterEditorMain() {
                         </div>
                       </div>
 
-                      {/* Clickable blue title link */}
                       <div className="text-sm font-semibold text-[#1a0dab] hover:underline cursor-pointer leading-tight truncate">
                         {metaTitle || (title.trim() ? `${title.trim()} | Washington Times` : 'Your Article Title | Washington Times')}
                       </div>
 
-                      {/* Snippet text */}
                       <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
                         {metaDescription ||
                           cardSummary ||
@@ -1457,7 +1422,6 @@ function WriterEditorMain() {
                       </p>
                     </div>
 
-                    {/* Explanatory footnote */}
                     <p className="text-[11px] text-slate-400 leading-normal">
                       This is how the article can appear on Google. Meta description drives the snippet under the link.
                     </p>
@@ -1472,23 +1436,23 @@ function WriterEditorMain() {
         </div>
       </main>
 
-      {/* 3. INSERT / EDIT ARTICLE IMAGE POPUP MODAL matching Reference Images 2 & 3 */}
+      {/* 3. INSERT / EDIT ARTICLE IMAGE POPUP MODAL */}
       {showImageModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-[#0F172A] rounded-2xl max-w-xl w-full p-6 sm:p-7 shadow-2xl border border-slate-700 flex flex-col gap-5 my-8 animate-in fade-in zoom-in-95 duration-150 text-slate-200">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-xl w-full p-6 sm:p-7 shadow-2xl border border-slate-200 flex flex-col gap-5 my-8 animate-in fade-in zoom-in-95 duration-150 text-slate-800">
             
-            {/* Modal Header: 🖼 Insert Article Image + Close */}
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
                 <ImageIcon className="w-5 h-5 text-[#EA580C]" />
-                <h3 className="text-base font-serif font-bold text-white">
+                <h3 className="text-base font-serif font-bold text-slate-900">
                   {selectedImageFigure ? 'Edit Article Image' : 'Insert Article Image'}
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setShowImageModal(false)}
-                className="text-slate-400 hover:text-white p-1 cursor-pointer transition-colors"
+                className="text-slate-400 hover:text-slate-700 p-1 cursor-pointer transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1496,7 +1460,7 @@ function WriterEditorMain() {
 
             {/* PASTE IMAGE URL */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
                 Paste Image URL
               </label>
               <input
@@ -1504,21 +1468,21 @@ function WriterEditorMain() {
                 value={modalImageUrl}
                 onChange={(e) => setModalImageUrl(e.target.value)}
                 placeholder="https://images.unsplash.com/photo-..."
-                className="w-full px-3.5 py-2.5 bg-[#1E293B] border border-slate-700 rounded-xl text-xs text-white placeholder:text-slate-500 focus:outline-hidden focus:border-[#EA580C]"
+                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#1642D0]"
               />
             </div>
 
             {/* Divider: OR UPLOAD FILE */}
             <div className="relative flex items-center justify-center my-1">
-              <div className="border-t border-slate-800 w-full" />
-              <span className="bg-[#0F172A] px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500 absolute">
+              <div className="border-t border-slate-200 w-full" />
+              <span className="bg-white px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 absolute">
                 Or Upload File
               </span>
             </div>
 
             {/* CHOOSE COMPUTER FILE */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
                 Choose Computer File
               </label>
               <input
@@ -1530,13 +1494,13 @@ function WriterEditorMain() {
               />
               <div
                 onClick={() => modalFileInputRef.current?.click()}
-                className="w-full py-2.5 px-3.5 border border-dashed border-slate-700 rounded-xl bg-[#1E293B]/70 hover:bg-[#1E293B] hover:border-[#EA580C] cursor-pointer flex items-center justify-between text-xs text-slate-300 transition-colors"
+                className="w-full py-2.5 px-3.5 border border-dashed border-slate-300 rounded-xl bg-slate-50/50 hover:bg-slate-50 hover:border-[#1642D0] cursor-pointer flex items-center justify-between text-xs text-slate-600 transition-colors"
               >
                 <div className="flex items-center gap-2 truncate">
-                  <span className="font-semibold text-white bg-slate-800 px-2.5 py-1 rounded border border-slate-700 shadow-2xs shrink-0">
+                  <span className="font-semibold text-slate-700 bg-white px-2.5 py-1 rounded border border-slate-200 shadow-2xs shrink-0">
                     Choose file
                   </span>
-                  <span className="text-slate-400 truncate text-xs">
+                  <span className="text-slate-500 truncate text-xs">
                     {uploadedFileName || 'No file chosen'}
                   </span>
                 </div>
@@ -1545,7 +1509,7 @@ function WriterEditorMain() {
 
               {/* Quick Picks */}
               <div className="flex items-center gap-2 pt-1 overflow-x-auto no-scrollbar">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 shrink-0">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 shrink-0">
                   Quick Picks:
                 </span>
                 {PRESET_EDITORIAL_IMAGES.map((preset) => (
@@ -1556,7 +1520,7 @@ function WriterEditorMain() {
                       setModalImageUrl(preset.url);
                       setUploadedFileName(preset.name);
                     }}
-                    className="text-[11px] font-medium text-slate-300 hover:text-[#EA580C] bg-[#1E293B] hover:bg-[#1E293B]/80 px-2 py-0.5 rounded border border-slate-700 shrink-0 cursor-pointer transition-colors"
+                    className="text-[11px] font-medium text-slate-600 hover:text-[#EA580C] bg-slate-100 hover:bg-orange-50 px-2 py-0.5 rounded border border-slate-200 shrink-0 cursor-pointer transition-colors"
                   >
                     {preset.name}
                   </button>
@@ -1564,14 +1528,14 @@ function WriterEditorMain() {
               </div>
             </div>
 
-            {/* IMAGE SEO KEYWORDS HIGHLIGHTED CARD matching Reference Images 2 & 3 */}
-            <div className="bg-[#1C1917] border border-[#78350F]/70 rounded-xl p-3.5 flex flex-col gap-2 shadow-2xs">
+            {/* IMAGE SEO KEYWORDS HIGHLIGHTED CARD */}
+            <div className="bg-[#FFFDF7] border border-[#FED7AA] rounded-xl p-3.5 flex flex-col gap-2 shadow-2xs">
               <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1.5 text-xs font-bold text-amber-400">
+                <span className="flex items-center gap-1.5 text-xs font-bold text-amber-900">
                   <Sparkles className="w-3.5 h-3.5 text-[#EA580C]" />
                   <span>Image SEO Keywords (Max 4 Keywords)</span>
                 </span>
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-orange-950/80 text-[#FB923C] border border-[#EA580C]/40">
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-orange-100 text-[#EA580C]">
                   {imageKeywords.length} / 4 Keywords
                 </span>
               </div>
@@ -1582,17 +1546,16 @@ function WriterEditorMain() {
                 onChange={(e) => setImageKeywordInput(e.target.value)}
                 onKeyDown={handleImageKeywordKeyDown}
                 placeholder="e.g. Donald Trump, White House, Election 2026"
-                className="w-full px-3 py-2 bg-[#0F172A] border border-amber-900/60 rounded-lg text-xs text-white placeholder:text-slate-500 focus:outline-hidden focus:border-[#EA580C]"
+                className="w-full px-3 py-2 bg-white border border-amber-200 rounded-lg text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#EA580C]"
               />
 
-              {/* Keyword chips */}
               {imageKeywords.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 pt-1">
                   {imageKeywords.map((kw) => (
                     <span
                       key={kw}
                       onClick={() => handleRemoveImageKeyword(kw)}
-                      className="inline-flex items-center gap-1 px-2 py-0.5 bg-orange-950 text-[#FB923C] border border-orange-800 rounded-md text-xs font-medium cursor-pointer hover:bg-orange-900 transition-colors"
+                      className="inline-flex items-center gap-1 px-2 py-0.5 bg-orange-100 text-[#EA580C] rounded-md text-xs font-medium cursor-pointer hover:bg-orange-200 transition-colors"
                       title="Click to remove keyword"
                     >
                       <span>#{kw}</span>
@@ -1602,8 +1565,7 @@ function WriterEditorMain() {
                 </div>
               )}
 
-              {/* Instruction subtext */}
-              <div className="text-[11px] text-amber-400/80 font-medium flex items-center gap-1.5">
+              <div className="text-[11px] text-amber-800/80 font-medium flex items-center gap-1.5">
                 <span>💡</span>
                 <span>Type keyword and press Enter or comma (,) to add. Maximum 4 keywords per image.</span>
               </div>
@@ -1611,7 +1573,7 @@ function WriterEditorMain() {
 
             {/* Image Caption */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-slate-300">
+              <label className="text-xs font-bold text-slate-700">
                 Image Caption (Visible under picture to readers)
               </label>
               <input
@@ -1619,13 +1581,13 @@ function WriterEditorMain() {
                 value={imageCaption}
                 onChange={(e) => setImageCaption(e.target.value)}
                 placeholder="Brief description (e.g. President speaking with reporters outside Capitol)"
-                className="w-full px-3.5 py-2.5 bg-[#1E293B] border border-slate-700 rounded-xl text-xs text-white placeholder:text-slate-500 focus:outline-hidden focus:border-[#EA580C]"
+                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#1642D0]"
               />
             </div>
 
             {/* Image Credit / Source (Optional) */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-slate-300">
+              <label className="text-xs font-bold text-slate-700">
                 Image Credit / Source (Optional)
               </label>
               <input
@@ -1633,11 +1595,11 @@ function WriterEditorMain() {
                 value={imageCredit}
                 onChange={(e) => setImageCredit(e.target.value)}
                 placeholder="e.g. Reuters, AP Photo, Getty Images"
-                className="w-full px-3.5 py-2.5 bg-[#1E293B] border border-slate-700 rounded-xl text-xs text-white placeholder:text-slate-500 focus:outline-hidden focus:border-[#EA580C]"
+                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#1642D0]"
               />
             </div>
 
-            {/* TWO-COLUMN ROW: IMAGE SIZE & POSITION ALIGNMENT matching Reference Image 3 */}
+            {/* TWO-COLUMN ROW: IMAGE SIZE & POSITION ALIGNMENT */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               
               {/* IMAGE SIZE DROPDOWN */}
@@ -1651,18 +1613,18 @@ function WriterEditorMain() {
                     setSizeDropdownOpen(!sizeDropdownOpen);
                     setAlignDropdownOpen(false);
                   }}
-                  className="w-full px-3.5 py-2.5 bg-[#1E293B] border border-[#EA580C] rounded-xl text-xs font-semibold text-white flex items-center justify-between cursor-pointer focus:outline-hidden"
+                  className="w-full px-3.5 py-2.5 bg-white border border-[#EA580C] rounded-xl text-xs font-semibold text-slate-800 flex items-center justify-between cursor-pointer focus:outline-hidden"
                 >
                   <span>
                     {imageSize === 'small' && 'Small (Width: 250px)'}
                     {imageSize === 'medium' && 'Medium (Width: 450px)'}
                     {imageSize === 'full' && 'Full-Width (100%)'}
                   </span>
-                  <ChevronDown className="w-4 h-4 text-slate-400" />
+                  <ChevronDown className="w-4 h-4 text-slate-500" />
                 </button>
 
                 {sizeDropdownOpen && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-[#1E293B] border border-slate-700 rounded-xl shadow-2xl z-20 overflow-hidden text-xs">
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-20 overflow-hidden text-xs">
                     <button
                       type="button"
                       onClick={() => {
@@ -1670,7 +1632,7 @@ function WriterEditorMain() {
                         setSizeDropdownOpen(false);
                       }}
                       className={`w-full text-left px-3.5 py-2 transition-colors cursor-pointer ${
-                        imageSize === 'small' ? 'bg-[#EA580C] text-white font-semibold' : 'text-slate-300 hover:bg-slate-700'
+                        imageSize === 'small' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
                       }`}
                     >
                       Small (Width: 250px)
@@ -1682,7 +1644,7 @@ function WriterEditorMain() {
                         setSizeDropdownOpen(false);
                       }}
                       className={`w-full text-left px-3.5 py-2 transition-colors cursor-pointer ${
-                        imageSize === 'medium' ? 'bg-[#EA580C] text-white font-semibold' : 'text-slate-300 hover:bg-slate-700'
+                        imageSize === 'medium' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
                       }`}
                     >
                       Medium (Width: 450px)
@@ -1694,7 +1656,7 @@ function WriterEditorMain() {
                         setSizeDropdownOpen(false);
                       }}
                       className={`w-full text-left px-3.5 py-2 transition-colors cursor-pointer ${
-                        imageSize === 'full' ? 'bg-[#EA580C] text-white font-semibold' : 'text-slate-300 hover:bg-slate-700'
+                        imageSize === 'full' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
                       }`}
                     >
                       Full-Width (100%)
@@ -1714,7 +1676,7 @@ function WriterEditorMain() {
                     setAlignDropdownOpen(!alignDropdownOpen);
                     setSizeDropdownOpen(false);
                   }}
-                  className="w-full px-3.5 py-2.5 bg-[#1E293B] border border-slate-700 hover:border-slate-600 rounded-xl text-xs font-semibold text-white flex items-center justify-between cursor-pointer focus:outline-hidden"
+                  className="w-full px-3.5 py-2.5 bg-white border border-slate-200 hover:border-slate-300 rounded-xl text-xs font-semibold text-slate-800 flex items-center justify-between cursor-pointer focus:outline-hidden"
                 >
                   <span className="truncate">
                     {imageAlignment === 'center' && 'Center (No Wrap)'}
@@ -1722,11 +1684,11 @@ function WriterEditorMain() {
                     {imageAlignment === 'right' && 'Right — Wrap Text Left'}
                     {imageAlignment === 'no_wrap' && 'No Wrap'}
                   </span>
-                  <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
+                  <ChevronDown className="w-4 h-4 text-slate-500 shrink-0" />
                 </button>
 
                 {alignDropdownOpen && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-[#1E293B] border border-slate-700 rounded-xl shadow-2xl z-20 overflow-hidden text-xs">
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-20 overflow-hidden text-xs">
                     <button
                       type="button"
                       onClick={() => {
@@ -1734,7 +1696,7 @@ function WriterEditorMain() {
                         setAlignDropdownOpen(false);
                       }}
                       className={`w-full text-left px-3.5 py-2 transition-colors cursor-pointer flex items-center gap-2 ${
-                        imageAlignment === 'center' ? 'bg-[#EA580C] text-white font-semibold' : 'text-slate-300 hover:bg-slate-700'
+                        imageAlignment === 'center' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
                       }`}
                     >
                       <AlignCenter className="w-3.5 h-3.5" />
@@ -1747,7 +1709,7 @@ function WriterEditorMain() {
                         setAlignDropdownOpen(false);
                       }}
                       className={`w-full text-left px-3.5 py-2 transition-colors cursor-pointer flex items-center gap-2 ${
-                        imageAlignment === 'left' ? 'bg-[#EA580C] text-white font-semibold' : 'text-slate-300 hover:bg-slate-700'
+                        imageAlignment === 'left' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
                       }`}
                     >
                       <AlignLeft className="w-3.5 h-3.5" />
@@ -1760,7 +1722,7 @@ function WriterEditorMain() {
                         setAlignDropdownOpen(false);
                       }}
                       className={`w-full text-left px-3.5 py-2 transition-colors cursor-pointer flex items-center gap-2 ${
-                        imageAlignment === 'right' ? 'bg-[#EA580C] text-white font-semibold' : 'text-slate-300 hover:bg-slate-700'
+                        imageAlignment === 'right' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
                       }`}
                     >
                       <AlignRight className="w-3.5 h-3.5" />
@@ -1773,7 +1735,7 @@ function WriterEditorMain() {
                         setAlignDropdownOpen(false);
                       }}
                       className={`w-full text-left px-3.5 py-2 transition-colors cursor-pointer flex items-center gap-2 ${
-                        imageAlignment === 'no_wrap' ? 'bg-[#EA580C] text-white font-semibold' : 'text-slate-300 hover:bg-slate-700'
+                        imageAlignment === 'no_wrap' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
                       }`}
                     >
                       <span>No Wrap</span>
@@ -1785,11 +1747,11 @@ function WriterEditorMain() {
             </div>
 
             {/* MODAL FOOTER BUTTONS: CANCEL and + INSERT IMAGE */}
-            <div className="flex items-center justify-between pt-3 border-t border-slate-800 gap-3">
+            <div className="flex items-center justify-between pt-3 border-t border-slate-100 gap-3">
               <button
                 type="button"
                 onClick={() => setShowImageModal(false)}
-                className="px-6 py-2.5 rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                className="px-6 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
               >
                 Cancel
               </button>
@@ -1810,19 +1772,19 @@ function WriterEditorMain() {
 
       {/* 4. LIVE ARTICLE PREVIEW MODAL */}
       {showPreviewModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-[#0F172A] rounded-2xl max-w-4xl w-full max-h-[92vh] overflow-y-auto p-6 sm:p-10 shadow-2xl border border-slate-700 flex flex-col gap-6 my-8 animate-in fade-in zoom-in-95 duration-150 text-slate-100">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[92vh] overflow-y-auto p-6 sm:p-10 shadow-2xl flex flex-col gap-6 my-8 animate-in fade-in zoom-in-95 duration-150 text-slate-800">
             
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div className="flex items-center gap-2">
                 <Eye className="w-4 h-4 text-[#EA580C]" />
-                <span className="text-xs font-bold uppercase tracking-wider text-white">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-900">
                   Live Article Preview
                 </span>
               </div>
               <button
                 onClick={() => setShowPreviewModal(false)}
-                className="text-slate-400 hover:text-white p-1 cursor-pointer transition-colors"
+                className="text-slate-400 hover:text-slate-700 p-1 cursor-pointer transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1837,18 +1799,18 @@ function WriterEditorMain() {
                 )}
               </div>
 
-              <h1 className="text-3xl sm:text-5xl font-serif font-bold text-white leading-tight">
+              <h1 className="text-3xl sm:text-5xl font-serif font-bold text-slate-900 leading-tight">
                 {title.trim() || 'Untitled Article Headline'}
               </h1>
 
               {subtitle.trim() && (
-                <p className="text-lg sm:text-xl text-slate-300 font-serif italic leading-relaxed">
+                <p className="text-lg sm:text-xl text-slate-600 font-serif italic leading-relaxed">
                   {subtitle}
                 </p>
               )}
               
-              <div className="flex items-center gap-3 text-xs text-slate-400 pt-3 border-t border-slate-800">
-                <span className="font-semibold text-slate-200">{user?.name || 'Staff Contributor'}</span>
+              <div className="flex items-center gap-3 text-xs text-slate-500 pt-3 border-t border-slate-100">
+                <span className="font-semibold text-slate-800">{user?.name || 'Staff Contributor'}</span>
                 <span>&bull;</span>
                 <span>{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                 <span>&bull;</span>
@@ -1858,27 +1820,27 @@ function WriterEditorMain() {
 
             {/* Featured Image if assigned */}
             {featuredImageUrl && (
-              <div className="rounded-2xl overflow-hidden border border-slate-700">
+              <div className="rounded-2xl overflow-hidden border border-slate-200">
                 <img src={featuredImageUrl} alt={title} className="w-full h-80 sm:h-96 object-cover" />
               </div>
             )}
 
-            {/* Rendered HTML Content with custom styles */}
+            {/* Rendered HTML Content */}
             <div
-              className="prose prose-invert max-w-none text-slate-200 text-base leading-relaxed break-words"
+              className="prose prose-slate max-w-none text-slate-800 text-base leading-relaxed break-words"
               dangerouslySetInnerHTML={{
                 __html:
                   editorRef.current?.innerHTML ||
                   htmlContent ||
-                  '<p class="text-slate-500 italic">No article body written yet.</p>',
+                  '<p class="text-slate-400 italic">No article body written yet.</p>',
               }}
             />
 
             {/* Tag pills */}
             {tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-800">
+              <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-100">
                 {tags.map((t) => (
-                  <span key={t} className="px-3 py-1 bg-slate-800 text-slate-300 border border-slate-700 rounded-lg text-xs font-semibold">
+                  <span key={t} className="px-3 py-1 bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold">
                     #{t}
                   </span>
                 ))}
@@ -1886,11 +1848,11 @@ function WriterEditorMain() {
             )}
 
             {/* Modal Actions */}
-            <div className="pt-4 border-t border-slate-800 flex items-center justify-between">
+            <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
               <button
                 type="button"
                 onClick={() => setShowPreviewModal(false)}
-                className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold uppercase tracking-wider cursor-pointer transition-colors border border-slate-700"
+                className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold uppercase tracking-wider cursor-pointer transition-colors"
               >
                 Close Preview
               </button>
@@ -1918,8 +1880,8 @@ export default function WriterEditorPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#070C1E] flex items-center justify-center">
-          <div className="w-8 h-8 border-3 border-[#EA580C] border-t-transparent rounded-full animate-spin" />
+        <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
+          <div className="w-8 h-8 border-3 border-[#1642D0] border-t-transparent rounded-full animate-spin" />
         </div>
       }
     >
