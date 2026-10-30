@@ -8,6 +8,9 @@ export interface UserProfile {
   email: string;
   role: 'reader' | 'writer' | 'admin' | string;
   avatar?: string;
+  bio?: string;
+  writerName?: string;
+  linkedinUrl?: string;
 }
 
 export type AuthMode = 'login' | 'signup';

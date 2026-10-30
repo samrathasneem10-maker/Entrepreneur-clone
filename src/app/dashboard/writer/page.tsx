@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/components/auth/AuthContext';
+import WriterHeader from '@/components/writer/WriterHeader';
 import {
   Search,
   Plus,
@@ -20,7 +21,7 @@ import {
   Camera,
 } from 'lucide-react';
 
-type WriterTab = 'published' | 'draft' | 'pending_review' | 'rejected' | 'trash';
+type WriterTab = 'modified' | 'published' | 'draft' | 'pending_review' | 'rejected' | 'trash';
 
 interface ArticleItem {
   id: string | number;
@@ -34,7 +35,16 @@ interface ArticleItem {
   content?: string;
   imageUrl: string;
   views?: string;
-  status: 'published' | 'draft' | 'pending_review' | 'rejected' | 'trash';
+  status: 'modified' | 'published' | 'draft' | 'pending_review' | 'rejected' | 'trash';
+  rejectionReason?: string;
+  reviewerNotes?: string;
+  cardSummary?: string;
+  focusKeyword?: string;
+  metaDescription?: string;
+  tags?: string[] | string;
+  subCategories?: string[] | string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 const PRESET_ARTICLE_IMAGES = [
@@ -148,27 +158,62 @@ const FALLBACK_WRITER_ARTICLES: ArticleItem[] = [
     imageUrl: '/images/related-founders-warehouse.png',
     status: 'trash',
   },
+  {
+    id: 11,
+    dbId: 11,
+    slug: 'venture-debt-vs-equity-financing-2026',
+    title: 'Venture Debt vs. Equity Financing: Strategic Capital Allocation in 2026',
+    category: 'Markets and Investing',
+    date: 'OCT 28, 2026',
+    readTime: '6 min read',
+    excerpt: 'An updated comparison of non-dilutive venture debt instruments versus Series A equity rounds.',
+    imageUrl: '/images/innovation-leadership.jpg',
+    status: 'modified',
+  },
+  {
+    id: 12,
+    dbId: 12,
+    slug: 'ai-powered-micro-saas-growth-scale-1m-arr',
+    title: 'AI-Powered Micro-SaaS: Growth Strategies That Scaled to $1M ARR in 90 Days',
+    category: 'Technology and AI',
+    date: 'OCT 27, 2026',
+    readTime: '5 min read',
+    excerpt: 'A deep dive into hyper-leveraged software startups and how automated distribution unlocked $1M ARR.',
+    imageUrl: '/images/coding-agents.jpg',
+    status: 'rejected',
+    rejectionReason: 'Needs primary sources, revenue verification, and compliance disclosure.',
+    reviewerNotes: 'The claims regarding 90-day ARR require auditable third-party screenshots or Stripe verification. Please revise sections 2 and 4 to include verified metrics and cite original founder interviews before resubmitting.',
+  },
 ];
 
-export default function WriterDashboardPage() {
+function WriterDashboardMain() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user } = useAuth();
   const [mounted, setMounted] = useState(false);
 
-  // Active status tab: 'published' | 'draft' | 'pending_review' | 'rejected' | 'trash'
-  const [activeTab, setActiveTab] = useState<WriterTab>('published');
+  const tabParam = searchParams.get('tab') as WriterTab;
+  const initialTab: WriterTab = tabParam && ['modified', 'published', 'draft', 'pending_review', 'rejected', 'trash'].includes(tabParam)
+    ? tabParam
+    : 'published';
+
+  // Active status tab: 'modified' | 'published' | 'draft' | 'pending_review' | 'rejected' | 'trash'
+  const [activeTab, setActiveTab] = useState<WriterTab>(initialTab);
+  const [showRejectedFilter, setShowRejectedFilter] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
   // Articles & counts state
   const [articles, setArticles] = useState<ArticleItem[]>(FALLBACK_WRITER_ARTICLES);
   const [loadingArticles, setLoadingArticles] = useState(false);
   const [statusCounts, setStatusCounts] = useState<{
+    modified: number;
     published: number;
     draft: number;
     pending_review: number;
     rejected: number;
     trash: number;
   }>({
+    modified: 0,
     published: 0,
     draft: 0,
     pending_review: 0,
@@ -207,8 +252,13 @@ export default function WriterDashboardPage() {
   useEffect(() => {
     setMounted(true);
     fetchCounts();
-    fetchArticles('published');
-  }, []);
+    const currentTab = (searchParams.get('tab') as WriterTab) || 'published';
+    const tabToLoad: WriterTab = ['modified', 'published', 'draft', 'pending_review', 'rejected', 'trash'].includes(currentTab)
+      ? currentTab
+      : 'published';
+    setActiveTab(tabToLoad);
+    fetchArticles(tabToLoad);
+  }, [searchParams]);
 
   const fetchCounts = async () => {
     try {
@@ -216,6 +266,7 @@ export default function WriterDashboardPage() {
       const data = await res.json();
       if (data?.success && data?.counts) {
         setStatusCounts({
+          modified: data.counts.modified || 0,
           published: data.counts.published || 0,
           draft: data.counts.draft || 0,
           pending_review: data.counts.pending_review || 0,
@@ -562,67 +613,25 @@ export default function WriterDashboardPage() {
         </div>
       )}
 
-      {/* TOP HEADER - Clean, with Entrepreneur logo and user profile (Back link removed per requirement) */}
-      <header className="w-full bg-white border-b border-slate-200/90 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          
-          {/* Authentic Entrepreneur Wordmark Logo */}
-          <Link href="/" className="flex items-center group py-0.5 select-none" aria-label="Entrepreneur">
-            <svg
-              className="h-7 sm:h-8 md:h-9 w-auto fill-current text-[#000000] group-hover:text-[#1642D0] transition-colors"
-              viewBox="0 0 545.8 107.1"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden="true"
-            >
-              <path d="M0.8,72.7l6.9-1.1V7.9L0,6.9L0.4,0h48.2l-1.2,19.3l-9.6-0.3L37.2,6.9H22.3v28.7h6.5l1.5-6.6l6.7,0.2V49h-6.7 l-1.6-6.8h-6.5v30.4h15l1.4-13.2l10.1,0.3l0.8,20.1H0.5L0.8,72.7z" />
-              <path d="M54,79.9l0.3-5.9l5.4-1.1V32.7l-6.3-0.6v-6l15.8-2.3l1.2,3.4v2.3c3.8-4,8.4-6.4,14.3-6.4 c8.6,0,15,5.2,15,15.5v34.2l5.7,1.1l-0.3,5.9H86.3V41.6c0-5.5-2-8.6-7-8.6c-1.7,0-2.9,0.3-4.2,0.8c-0.8,0.7-1.6,1.7-2.3,2.6v36.6 l5.7,1.1l-0.4,5.9H54z" />
-              <path d="M356.1,79.9l0.2-5.9l5.4-1.1V32.7l-6.3-0.6v-6l15.8-2.3l1.2,3.4v2.3c3.8-4,8.4-6.4,14.3-6.4 c8.6,0,15,5.2,15,15.5v34.2l5.7,1.1l-0.3,5.9h-18.7V41.6c0-5.5-2-8.6-7-8.6c-1.7,0-2.9,0.3-4.2,0.8c-0.8,0.7-1.6,1.7-2.3,2.6v36.6 l5.7,1.1l-0.4,5.9H356.1z" />
-              <path d="M135.2,78.8c-2.2,0.9-6.1,1.9-11.2,1.9c-6.7,0-12.9-3-12.9-12.8V32.7l-6.4-1l0.3-7l7.2-0.3l3.1-10.7l9.2-0.4 v11.5h9.9l-0.7,7l-9.1,1v35.2c0,2.9,1.6,4.8,4.6,4.8h5.4L135.2,78.8z" />
-              <path d="M509.5,79.9l0.2-5.8l5.1-1.2V32.7l-6-0.6v-6l16.4-2.3l1.1,3.9V29c4.3-3.2,10.1-5.3,17.1-5.3l2.4,2.1L544.1,41 l-9-0.3l-0.9-8.1c-2.1,0.3-4.1,0.9-5.8,2.1V73l5.7,1.2l-0.4,5.8H509.5z" />
-              <path d="M274,79.9l0.3-5.8l5.1-1.2V32.7l-6-0.6v-6l16.4-2.3l1.1,3.9V29c4.3-3.2,10.1-5.3,17.1-5.3l2.4,2.1L308.5,41 l-9-0.3l-0.9-8.1c-2.1,0.3-4.1,0.9-5.8,2.1V73l5.7,1.2l-0.4,5.8H274z" />
-              <path d="M139.2,79.9l0.3-5.8l5.1-1.2V32.7l-6-0.6v-6l16.4-2.3l1.1,3.9V29c4.3-3.2,10.1-5.3,17-5.3l2.4,2.1L173.8,41 l-9-0.3l-0.9-8.1c-2.1,0.3-4.1,0.9-5.8,2.1V73l5.7,1.2l-0.4,5.8H139.2z" />
-              <path d="M191,55.4c0,9.6,4.2,17,12.5,17c4.3,0,7.7-0.9,11.7-2.8l2.3,5.3c-4.1,3.3-10.1,5.8-17.6,5.8 c-14.6,0-23-12.6-23-28.8c0-13.8,6.1-28.9,22.8-28.9c14.6,0,20.1,13.5,20.1,28.5l-1.4,3.6L191,55.4z M190.8,49l16.8-0.8 c-0.3-6.7-1.7-17.3-8.3-17.3c-1.6,0-2.7,0.3-4.7,1.3C191.9,36.8,190.8,45.1,190.8,49z" />
-              <path d="M423.4,55.4c0,9.6,4.2,17,12.5,17c4.3,0,7.7-0.9,11.7-2.8l2.3,5.3c-4.1,3.3-10.1,5.8-17.6,5.8 c-14.6,0-23-12.6-23-28.8c0-13.8,6.1-28.9,22.8-28.9c14.6,0,20.1,13.5,20.1,28.5l-1.4,3.6L423.4,55.4z M423.2,49l16.8-0.8 c-0.3-6.7-1.7-17.3-8.3-17.3c-1.6,0-2.7,0.3-4.7,1.3C424.3,36.8,423.2,45.1,423.2,49z" />
-              <path d="M325.8,55.4c0,9.6,4.2,17,12.5,17c4.3,0,7.7-0.9,11.7-2.8l2.3,5.3c-4.1,3.3-10.1,5.8-17.6,5.8 c-14.6,0-23-12.6-23-28.8c0-13.8,6.1-28.9,22.8-28.9c14.6,0,20.1,13.5,20.1,28.5l-1.4,3.6L325.8,55.4z M325.6,49l16.8-0.8 c-0.3-6.7-1.7-17.3-8.3-17.3c-1.6,0-2.7,0.3-4.7,1.3C326.7,36.8,325.5,45.1,325.6,49z" />
-              <path d="M490,79.9l-1.4-4.8c-3.7,3.5-7.3,5.6-12.9,5.6c-8.6,0-16.3-4.3-16.3-16.2V31.3l-6.3-0.6v-5.3l18.2-2.1 l1.4,4.8v34.8c0,6.1,2.5,9.3,7.4,9.3c1.4,0,3.2-0.2,4.8-0.8c0.9-0.9,1.8-2,2.5-3.1v-37l-6.5-0.6v-5.3l18.4-2.1l1.4,4.8v44.8 l5.7,1.1l-0.7,5.9H490z" />
-              <path d="M247.1,72.7c-2.9,0-5.2-0.5-7-1.5V35.9c0.8-1.2,1.7-2.3,2.6-3.3c1.7-0.6,3.2-0.8,5-0.8c7.5,0,8.8,7.6,8.8,21.2 c0,13.1-2,16.7-2.5,18.2C251.9,72.2,249.7,72.7,247.1,72.7z M269.5,50.6c0-16.9-5-27.5-17.5-27.5c-8.3,0-12.2,4.8-13.8,6.8V28 l-1.4-4.8l-16.3,2.3v5.8l6.3,0.8v68.2l-5.4,1.1l-0.3,5.7h24.1l0.4-5.7l-5.7-1.1V78.7c2.3,1.3,5.5,2.1,9,2.1 C269.3,80.8,269.5,60.1,269.5,50.6z" />
-            </svg>
-            <span className="text-[#000000] text-xs font-sans font-bold ml-1 self-start mt-0.5">®</span>
-          </Link>
-
-          {/* Right: User Profile Avatar & Actual Name (Back link removed) */}
-          <div className="flex items-center gap-2.5">
-            <img
-              src={user?.avatar || '/images/user-avatar-butterfly.png'}
-              alt={currentDisplayName}
-              className="w-8 h-8 rounded-full object-cover border border-slate-200 shadow-2xs"
-            />
-            <span className="font-bold text-xs sm:text-sm text-slate-900">
-              {currentDisplayName}
-            </span>
-          </div>
-        </div>
-      </header>
+      {/* 1. TOP HEADER with Washington Global Times branding, WRITER PORTAL, User Pill & Profile Dropdown matching Reference Image 1 */}
+      <WriterHeader backHref="/" />
 
       {/* MAIN WRITER WORKSPACE CONTAINER */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-7 sm:py-9">
         
-        {/* TOP TITLE ROW: WRITER DASHBOARD + CREATE NEW POST BUTTON */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        {/* TOP TITLE ROW: POSTS matching Reference Image 1 + CREATE NEW POST BUTTON */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 sm:mb-6">
           <div>
-            <h1 className="text-3xl sm:text-4xl md:text-[38px] font-serif font-bold text-slate-900 tracking-tight my-0">
-              Writer Dashboard
+            <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight my-0">
+              Posts
             </h1>
-            <p className="text-xs sm:text-sm text-slate-500 font-sans mt-1 mb-0">
-              Welcome back, <span className="font-semibold text-slate-800">{currentDisplayName}</span>!
-            </p>
           </div>
 
           <div>
             <button
               type="button"
               onClick={() => router.push('/writer')}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1642D0] hover:bg-blue-800 text-white font-bold text-xs sm:text-sm uppercase tracking-wider rounded-lg shadow-sm transition-colors cursor-pointer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#003B64] hover:bg-[#002a48] text-white font-bold text-xs sm:text-sm uppercase tracking-wider rounded-lg shadow-sm transition-colors cursor-pointer"
             >
               <Plus className="w-4 h-4 stroke-[2.5]" />
               <span>Create New Post</span>
@@ -630,98 +639,117 @@ export default function WriterDashboardPage() {
           </div>
         </div>
 
-        {/* HORIZONTAL ARTICLE STATUS NAVIGATION (Strictly 5 Options: Published, Drafts, Pending Review, Rejected, Trash) */}
+        {/* HORIZONTAL ARTICLE STATUS NAVIGATION (5 Tabs: Published, Draft, Pending Review, Rejected, Trash) */}
         <div className="w-full bg-white border border-slate-200/90 rounded-xl shadow-xs overflow-hidden">
           
-          <div className="border-b border-slate-200 bg-slate-50/70 overflow-x-auto scrollbar-none">
-            <nav className="flex items-stretch divide-x divide-slate-200 min-w-max" aria-label="Article Status Navigation">
-              
-              {/* 1. Published Tab */}
-              <button
-                type="button"
-                onClick={() => handleTabChange('published')}
-                className={`py-3.5 px-6 sm:px-8 inline-flex items-center gap-2.5 text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
-                  activeTab === 'published'
-                    ? 'bg-white text-slate-950 border-t-2 border-t-slate-950 border-b-2 border-b-[#1642D0] shadow-2xs'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/60'
-                }`}
-              >
-                <span>Published</span>
-                <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
-                  activeTab === 'published' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-700 border border-slate-200'
-                }`}>
-                  {statusCounts.published}
-                </span>
-              </button>
+          <div className="flex items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6">
+            <div className="overflow-x-auto scrollbar-none flex-1 py-1">
+              <nav className="flex items-center gap-6 sm:gap-7 min-w-max" aria-label="Article Status Navigation">
+                
+                {/* 1. Published Tab */}
+                <button
+                  type="button"
+                  onClick={() => handleTabChange('published')}
+                  className={`py-3.5 inline-flex items-center gap-2 text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap relative ${
+                    activeTab === 'published'
+                      ? 'text-[#2563EB] font-bold'
+                      : 'text-slate-600 font-medium hover:text-slate-900'
+                  }`}
+                >
+                  <span>Published</span>
+                  {statusCounts.published > 0 && (
+                    <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-700">
+                      {statusCounts.published}
+                    </span>
+                  )}
+                  {activeTab === 'published' && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#2563EB]" />
+                  )}
+                </button>
 
-              {/* 2. Drafts Tab */}
-              <button
-                type="button"
-                onClick={() => handleTabChange('draft')}
-                className={`py-3.5 px-6 sm:px-8 inline-flex items-center gap-2.5 text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
-                  activeTab === 'draft'
-                    ? 'bg-white text-slate-950 border-t-2 border-t-slate-950 border-b-2 border-b-[#1642D0] shadow-2xs'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/60'
-                }`}
-              >
-                <span>Drafts</span>
-                <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
-                  activeTab === 'draft' ? 'bg-blue-100 text-[#1642D0]' : 'bg-slate-100 text-slate-700 border border-slate-200'
-                }`}>
-                  {statusCounts.draft}
-                </span>
-              </button>
+                {/* 2. Draft Tab */}
+                <button
+                  type="button"
+                  onClick={() => handleTabChange('draft')}
+                  className={`py-3.5 inline-flex items-center gap-2 text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap relative ${
+                    activeTab === 'draft'
+                      ? 'text-[#2563EB] font-bold'
+                      : 'text-slate-600 font-medium hover:text-slate-900'
+                  }`}
+                >
+                  <span>Draft</span>
+                  <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-700">
+                    {statusCounts.draft}
+                  </span>
+                  {activeTab === 'draft' && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#2563EB]" />
+                  )}
+                </button>
 
-              {/* 3. Pending Review Tab */}
-              <button
-                type="button"
-                onClick={() => handleTabChange('pending_review')}
-                className={`py-3.5 px-6 sm:px-8 inline-flex items-center gap-2.5 text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
-                  activeTab === 'pending_review'
-                    ? 'bg-white text-slate-950 border-t-2 border-t-slate-950 border-b-2 border-b-[#1642D0] shadow-2xs'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/60'
-                }`}
-              >
-                <span>Pending Review</span>
-                <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
-                  activeTab === 'pending_review' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700 border border-slate-200'
-                }`}>
-                  {statusCounts.pending_review}
-                </span>
-              </button>
+                {/* 3. Pending Review Tab */}
+                <button
+                  type="button"
+                  onClick={() => handleTabChange('pending_review')}
+                  className={`py-3.5 inline-flex items-center gap-2 text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap relative ${
+                    activeTab === 'pending_review'
+                      ? 'text-[#2563EB] font-bold'
+                      : 'text-slate-600 font-medium hover:text-slate-900'
+                  }`}
+                >
+                  <span>Pending Review</span>
+                  {statusCounts.pending_review > 0 && (
+                    <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-700">
+                      {statusCounts.pending_review}
+                    </span>
+                  )}
+                  {activeTab === 'pending_review' && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#2563EB]" />
+                  )}
+                </button>
 
-              {/* 4. Rejected Tab */}
-              <button
-                type="button"
-                onClick={() => handleTabChange('rejected')}
-                className={`py-3.5 px-6 sm:px-8 inline-flex items-center gap-2.5 text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
-                  activeTab === 'rejected'
-                    ? 'bg-white text-slate-950 border-t-2 border-t-slate-950 border-b-2 border-b-[#1642D0] shadow-2xs'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/60'
-                }`}
-              >
-                <span>Rejected</span>
-                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
-                  {statusCounts.rejected}
-                </span>
-              </button>
+                {/* 4. Rejected Tab */}
+                <button
+                  type="button"
+                  onClick={() => handleTabChange('rejected')}
+                  className={`py-3.5 inline-flex items-center gap-2 text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap relative ${
+                    activeTab === 'rejected'
+                      ? 'text-[#2563EB] font-bold'
+                      : 'text-slate-600 font-medium hover:text-slate-900'
+                  }`}
+                >
+                  <span>Rejected</span>
+                  {statusCounts.rejected > 0 && (
+                    <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-rose-100 text-rose-700">
+                      {statusCounts.rejected}
+                    </span>
+                  )}
+                  {activeTab === 'rejected' && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#2563EB]" />
+                  )}
+                </button>
 
-              {/* 5. Trash Tab */}
-              <button
-                type="button"
-                onClick={() => handleTabChange('trash')}
-                className={`py-3.5 px-6 sm:px-8 inline-flex items-center gap-2.5 text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
-                  activeTab === 'trash'
-                    ? 'bg-white text-slate-950 border-t-2 border-t-slate-950 border-b-2 border-b-[#1642D0] shadow-2xs'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/60'
-                }`}
-              >
-                <span>Trash</span>
-                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
-                  {statusCounts.trash}
-                </span>
-              </button>
-            </nav>
+                {/* 5. Trash Tab */}
+                <button
+                  type="button"
+                  onClick={() => handleTabChange('trash')}
+                  className={`py-3.5 inline-flex items-center gap-2 text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap relative ${
+                    activeTab === 'trash'
+                      ? 'text-[#2563EB] font-bold'
+                      : 'text-slate-600 font-medium hover:text-slate-900'
+                  }`}
+                >
+                  <span>Trash</span>
+                  {statusCounts.trash > 0 && (
+                    <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-700">
+                      {statusCounts.trash}
+                    </span>
+                  )}
+                  {activeTab === 'trash' && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#2563EB]" />
+                  )}
+                </button>
+              </nav>
+            </div>
           </div>
 
           {/* TAB CONTENT: SEARCH & ARTICLE CARDS / TABLE */}
@@ -735,8 +763,8 @@ export default function WriterDashboardPage() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={`Search ${activeTab.replace('_', ' ')} articles...`}
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#1642D0] focus:border-[#1642D0] transition-colors"
+                  placeholder="Search..."
+                  className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 transition-colors"
                 />
               </div>
 
@@ -744,6 +772,23 @@ export default function WriterDashboardPage() {
                 Showing <span className="font-bold text-slate-800">{filteredArticles.length}</span> {activeTab.replace('_', ' ')} articles
               </div>
             </div>
+
+            {/* REJECTED QUEUE BANNER */}
+            {activeTab === 'rejected' && (
+              <div className="mb-6 p-4 sm:p-5 bg-rose-50 border border-rose-200 rounded-xl flex items-start gap-3.5 shadow-2xs">
+                <div className="p-2 rounded-lg bg-rose-100 text-rose-700 shrink-0 mt-0.5">
+                  <AlertTriangle className="w-5 h-5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-sm font-bold text-rose-900 tracking-tight">
+                    Rejected Articles Review Queue
+                  </h4>
+                  <p className="text-xs text-rose-700 mt-1 leading-relaxed">
+                    The articles below require revisions before they can be published. Read the specific reviewer feedback and editorial rationale below each article, then click <strong>Edit and Resubmit</strong> to update your draft and submit it for a fresh review.
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* ARTICLE CARDS / ROWS */}
             {loadingArticles ? (
@@ -778,150 +823,245 @@ export default function WriterDashboardPage() {
                 {filteredArticles.map((art) => (
                   <article
                     key={art.id}
-                    className="bg-white border border-slate-200/90 hover:border-slate-300 rounded-xl p-4 sm:p-5 shadow-2xs hover:shadow-xs transition-all duration-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-5 group"
+                    className="bg-white border border-slate-200/90 hover:border-slate-300 rounded-xl p-4 sm:p-5 shadow-2xs hover:shadow-xs transition-all duration-200 flex flex-col gap-4 group"
                   >
-                    {/* Left: Featured Image + Article Information */}
-                    <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-4.5 flex-1 min-w-0 w-full">
-                      
-                      {/* Featured Image Thumbnail with Quick Change Overlay */}
-                      <div className="relative w-full sm:w-36 md:w-40 h-32 sm:h-24 md:h-26 shrink-0 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 group/img">
-                        <img
-                          src={art.imageUrl || '/images/topic-hero-leaders.jpg'}
-                          alt={art.title}
-                          onError={(e) => {
-                            // Ensure image is never broken; fall back smoothly to dependable topic image
-                            (e.target as HTMLImageElement).src = '/images/topic-hero-leaders.jpg';
-                          }}
-                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        />
-                        {/* Inline Image Change Trigger */}
-                        <button
-                          type="button"
-                          onClick={() => handleTriggerInlineUpload(art.id)}
-                          className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover/img:opacity-100 transition-opacity flex flex-col items-center justify-center text-white text-[11px] font-bold gap-1 cursor-pointer"
-                          title="Change or upload article image"
-                        >
-                          <Camera className="w-4 h-4" />
-                          <span>Change image</span>
-                        </button>
+                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-5 w-full">
+                      {/* Left: Featured Image + Article Information */}
+                      <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-4.5 flex-1 min-w-0 w-full">
+                        
+                        {/* Featured Image Thumbnail with Quick Change Overlay */}
+                        <div className="relative w-full sm:w-36 md:w-40 h-32 sm:h-24 md:h-26 shrink-0 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 group/img">
+                          <img
+                            src={art.imageUrl || '/images/topic-hero-leaders.jpg'}
+                            alt={art.title}
+                            onError={(e) => {
+                              // Ensure image is never broken; fall back smoothly to dependable topic image
+                              (e.target as HTMLImageElement).src = '/images/topic-hero-leaders.jpg';
+                            }}
+                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          />
+                          {/* Inline Image Change Trigger */}
+                          <button
+                            type="button"
+                            onClick={() => handleTriggerInlineUpload(art.id)}
+                            className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover/img:opacity-100 transition-opacity flex flex-col items-center justify-center text-white text-[11px] font-bold gap-1 cursor-pointer"
+                            title="Change or upload article image"
+                          >
+                            <Camera className="w-4 h-4" />
+                            <span>Change image</span>
+                          </button>
+                        </div>
+
+                        {/* Article Details */}
+                        <div className="flex-1 min-w-0 w-full">
+                          <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                            <span className="text-[11px] font-bold uppercase tracking-wider text-[#1642D0] bg-blue-50 border border-blue-200/60 px-2.5 py-0.5 rounded-md">
+                              {art.category || 'General'}
+                            </span>
+                            <span className="text-slate-300">•</span>
+                            <span className="text-xs text-slate-500 font-medium flex items-center gap-1">
+                              <Clock className="w-3.5 h-3.5 text-slate-400" />
+                              {art.date || 'Recent'}
+                            </span>
+                            {art.readTime && (
+                              <>
+                                <span className="text-slate-300">•</span>
+                                <span className="text-xs text-slate-500 font-medium">
+                                  {art.readTime}
+                                </span>
+                              </>
+                            )}
+                          </div>
+
+                          <h3
+                            onClick={() => router.push(`/writer?id=${art.dbId || art.slug || art.id}`)}
+                            className="text-base sm:text-[17px] font-bold text-slate-900 hover:text-[#1642D0] cursor-pointer transition-colors my-0 line-clamp-2 leading-snug"
+                          >
+                            {art.title}
+                          </h3>
+
+                          {(art.cardSummary || art.excerpt) && (
+                            <p className="text-xs sm:text-[13px] text-slate-500 font-sans mt-1.5 mb-0 line-clamp-2 leading-relaxed">
+                              {art.cardSummary || art.excerpt}
+                            </p>
+                          )}
+
+                          {art.tags && (
+                            <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                              {(Array.isArray(art.tags)
+                                ? art.tags
+                                : typeof art.tags === 'string'
+                                ? (() => {
+                                    try {
+                                      const p = JSON.parse(art.tags);
+                                      return Array.isArray(p) ? p : [art.tags];
+                                    } catch {
+                                      return art.tags.split(',').map((s) => s.trim());
+                                    }
+                                  })()
+                                : []
+                              )
+                                .filter(Boolean)
+                                .slice(0, 4)
+                                .map((t: string) => (
+                                  <span
+                                    key={t}
+                                    className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded uppercase tracking-wide"
+                                  >
+                                    #{t.replace(/^#/, '')}
+                                  </span>
+                                ))}
+                            </div>
+                          )}
+                        </div>
                       </div>
 
-                      {/* Article Details */}
-                      <div className="flex-1 min-w-0 w-full">
-                        <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                          <span className="text-[11px] font-bold uppercase tracking-wider text-[#1642D0] bg-blue-50 border border-blue-200/60 px-2.5 py-0.5 rounded-md">
-                            {art.category || 'General'}
-                          </span>
-                          <span className="text-slate-300">•</span>
-                          <span className="text-xs text-slate-500 font-medium flex items-center gap-1">
-                            <Clock className="w-3.5 h-3.5 text-slate-400" />
-                            {art.date || 'Recent'}
-                          </span>
-                          {art.readTime && (
-                            <>
-                              <span className="text-slate-300">•</span>
-                              <span className="text-xs text-slate-500 font-medium">
-                                {art.readTime}
-                              </span>
-                            </>
+                      {/* Right: Status Pill & Action Buttons */}
+                      <div className="flex items-center justify-between md:justify-end gap-3 sm:gap-4 shrink-0 w-full md:w-auto pt-3 md:pt-0 border-t md:border-t-0 border-slate-100">
+                        
+                        {/* Status Badge */}
+                        <div>
+                          {art.status === 'modified' && (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase bg-sky-50 text-sky-700 border border-sky-200">
+                              <span className="w-1.5 h-1.5 rounded-full bg-sky-500" />
+                              MODIFIED
+                            </span>
+                          )}
+                          {art.status === 'published' && (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+                              PUBLISHED
+                            </span>
+                          )}
+                          {art.status === 'draft' && (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase bg-slate-100 text-slate-700 border border-slate-200">
+                              <span className="w-1.5 h-1.5 rounded-full bg-slate-500" />
+                              DRAFT
+                            </span>
+                          )}
+                          {art.status === 'pending_review' && (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase bg-amber-50 text-amber-700 border border-amber-200">
+                              <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                              PENDING REVIEW
+                            </span>
+                          )}
+                          {art.status === 'rejected' && (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase bg-rose-50 text-rose-700 border border-rose-200">
+                              <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                              REJECTED
+                            </span>
+                          )}
+                          {art.status === 'trash' && (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase bg-zinc-100 text-zinc-600 border border-zinc-200">
+                              <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
+                              TRASH
+                            </span>
                           )}
                         </div>
 
-                        <h3 className="text-base sm:text-[17px] font-bold text-slate-900 group-hover:text-[#1642D0] transition-colors my-0 line-clamp-2 leading-snug">
-                          {art.title}
-                        </h3>
-
-                        {art.excerpt && (
-                          <p className="text-xs sm:text-[13px] text-slate-500 font-sans mt-1.5 mb-0 line-clamp-2 leading-relaxed">
-                            {art.excerpt}
-                          </p>
-                        )}
+                        {/* Action Buttons */}
+                        <div className="flex items-center gap-2">
+                          {art.status === 'trash' ? (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => handleRestore(art)}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors cursor-pointer"
+                                title="Restore to Drafts"
+                              >
+                                <RotateCcw className="w-3.5 h-3.5" />
+                                <span>Restore</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handlePermanentDelete(art)}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors cursor-pointer"
+                                title="Delete Permanently"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                                <span>Delete</span>
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              {art.status === 'rejected' ? (
+                                <button
+                                  type="button"
+                                  onClick={() => router.push(`/writer?id=${art.slug || art.id}&resubmit=true`)}
+                                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-white bg-[#EA580C] hover:bg-[#C2410C] rounded-lg shadow-2xs transition-colors cursor-pointer"
+                                >
+                                  <Edit3 className="w-3.5 h-3.5" />
+                                  <span>Edit &amp; Resubmit</span>
+                                </button>
+                              ) : art.status === 'draft' ? (
+                                <button
+                                  type="button"
+                                  onClick={() => router.push(`/writer?id=${art.dbId || art.slug || art.id}`)}
+                                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-white bg-[#1642D0] hover:bg-blue-800 rounded-lg shadow-2xs transition-colors cursor-pointer"
+                                >
+                                  <Edit3 className="w-3.5 h-3.5" />
+                                  <span>Continue Editing</span>
+                                </button>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => router.push(`/writer?id=${art.dbId || art.slug || art.id}`)}
+                                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-[#1642D0] hover:text-blue-800 bg-blue-50/80 hover:bg-blue-100/80 border border-blue-200 rounded-lg transition-colors cursor-pointer"
+                                >
+                                  <Edit3 className="w-3.5 h-3.5" />
+                                  <span>Edit Post</span>
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => handleMoveToTrash(art)}
+                                className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                                title="Move to Trash"
+                                aria-label="Move to Trash"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </>
+                          )}
+                        </div>
                       </div>
                     </div>
 
-                    {/* Right: Status Pill & Action Buttons */}
-                    <div className="flex items-center justify-between md:justify-end gap-3 sm:gap-4 shrink-0 w-full md:w-auto pt-3 md:pt-0 border-t md:border-t-0 border-slate-100">
-                      
-                      {/* Status Badge (Matching Reference Images 4 & 5) */}
-                      <div>
-                        {art.status === 'published' && (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
-                            PUBLISHED
+                    {/* Editorial Rejection Notice with Reviewer Feedback & Resubmit CTA */}
+                    {(art.status === 'rejected' || activeTab === 'rejected') && (
+                      <div className="w-full mt-1 p-4 bg-rose-50/90 border border-rose-200 rounded-xl text-xs flex flex-col gap-2.5 animate-in fade-in duration-150">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 text-rose-800 font-bold uppercase tracking-wider text-[11px]">
+                            <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+                            <span>Editorial Rejection Notice</span>
+                          </div>
+                          <span className="text-[10px] uppercase font-bold tracking-wider text-rose-600 bg-rose-100 px-2 py-0.5 rounded">
+                            Action Required
                           </span>
-                        )}
-                        {art.status === 'draft' && (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase bg-slate-100 text-slate-700 border border-slate-200">
-                            <span className="w-1.5 h-1.5 rounded-full bg-slate-500" />
-                            DRAFT
+                        </div>
+                        <div className="text-slate-800 font-medium">
+                          <span className="font-bold text-rose-900">Rejection Reason: </span>
+                          {art.rejectionReason || 'Needs primary sources, revenue verification, and compliance disclosure.'}
+                        </div>
+                        <div className="text-slate-700 bg-white/95 p-3 rounded-lg border border-rose-200/60 shadow-2xs">
+                          <span className="font-bold text-slate-900">Reviewer Feedback: </span>
+                          {art.reviewerNotes || 'The claims regarding 90-day ARR require auditable third-party screenshots or Stripe verification. Please revise sections 2 and 4 to include verified metrics and cite original founder interviews before resubmitting.'}
+                        </div>
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-rose-200/80">
+                          <span className="text-[11px] text-slate-500 italic">
+                            Authorized to edit content and resubmit for editorial approval.
                           </span>
-                        )}
-                        {art.status === 'pending_review' && (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase bg-amber-50 text-amber-700 border border-amber-200">
-                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                            PENDING REVIEW
-                          </span>
-                        )}
-                        {art.status === 'rejected' && (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase bg-rose-50 text-rose-700 border border-rose-200">
-                            <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-                            REJECTED
-                          </span>
-                        )}
-                        {art.status === 'trash' && (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase bg-zinc-100 text-zinc-600 border border-zinc-200">
-                            <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
-                            TRASH
-                          </span>
-                        )}
+                          <button
+                            type="button"
+                            onClick={() => router.push(`/writer?id=${art.slug || art.id}&resubmit=true`)}
+                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#EA580C] hover:bg-[#C2410C] text-white text-xs font-bold uppercase tracking-wider rounded-lg shadow-2xs transition-colors cursor-pointer shrink-0"
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                            <span>Edit and Resubmit</span>
+                          </button>
+                        </div>
                       </div>
-
-                      {/* Action Buttons */}
-                      <div className="flex items-center gap-2">
-                        {art.status === 'trash' ? (
-                          <>
-                            <button
-                              type="button"
-                              onClick={() => handleRestore(art)}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors cursor-pointer"
-                              title="Restore to Drafts"
-                            >
-                              <RotateCcw className="w-3.5 h-3.5" />
-                              <span>Restore</span>
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handlePermanentDelete(art)}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors cursor-pointer"
-                              title="Delete Permanently"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                              <span>Delete</span>
-                            </button>
-                          </>
-                        ) : (
-                          <>
-                            <button
-                              type="button"
-                              onClick={() => handleOpenEdit(art)}
-                              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-[#1642D0] hover:text-blue-800 bg-blue-50/80 hover:bg-blue-100/80 border border-blue-200 rounded-lg transition-colors cursor-pointer"
-                            >
-                              <Edit3 className="w-3.5 h-3.5" />
-                              <span>Edit Post</span>
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleMoveToTrash(art)}
-                              className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
-                              title="Move to Trash"
-                              aria-label="Move to Trash"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </div>
+                    )}
                   </article>
                 ))}
               </div>
@@ -1350,5 +1490,19 @@ export default function WriterDashboardPage() {
         <span>Entrepreneur Editorial Workstation &bull; All Rights Reserved</span>
       </footer>
     </div>
+  );
+}
+
+export default function WriterDashboardPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
+          <div className="w-8 h-8 border-3 border-[#1642D0] border-t-transparent rounded-full animate-spin" />
+        </div>
+      }
+    >
+      <WriterDashboardMain />
+    </Suspense>
   );
 }

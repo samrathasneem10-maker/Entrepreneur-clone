@@ -9,7 +9,14 @@ export async function GET(request: Request) {
     const queryEmail = searchParams.get('email');
     const cookieStore = await cookies();
     const cookieEmail = cookieStore.get('user_email')?.value;
-    const email = (queryEmail || cookieEmail || 'fathisamra66@gmail.com').trim().toLowerCase();
+    const cookieRole = cookieStore.get('user_role')?.value;
+
+    let fallbackEmail = 'fathisamra66@gmail.com';
+    if (cookieRole === 'writer' || cookieRole === 'writter') {
+      fallbackEmail = 'mishalzuhrie@gmail.com';
+    }
+
+    const email = (queryEmail || cookieEmail || fallbackEmail).trim().toLowerCase();
 
     if (!email) {
       return NextResponse.json({ success: false, error: 'No user email provided.' }, { status: 400 });
@@ -17,7 +24,7 @@ export async function GET(request: Request) {
 
     // Query user in MySQL
     const users = await query<any[]>(
-      'SELECT id, name, email, role, avatar, created_at FROM users WHERE LOWER(email) = ? LIMIT 1',
+      'SELECT id, name, email, role, avatar, bio, writer_name, linkedin_url, created_at FROM users WHERE LOWER(email) = ? LIMIT 1',
       [email]
     );
 
@@ -35,7 +42,7 @@ export async function GET(request: Request) {
 
     // Fetch user settings/profile extras
     const settings = await query<any[]>(
-      'SELECT bio, phone, facebook_connected, google_connected, plan_name, plan_status, plan_renewal FROM user_settings WHERE LOWER(user_email) = ? LIMIT 1',
+      'SELECT bio, writer_name, linkedin_url, avatar, phone, facebook_connected, google_connected, plan_name, plan_status, plan_renewal FROM user_settings WHERE LOWER(user_email) = ? LIMIT 1',
       [email]
     );
 
@@ -47,11 +54,14 @@ export async function GET(request: Request) {
         id: u.id,
         firstName,
         lastName,
-        fullName: u.name,
+        fullName: u.name || 'mishal',
+        name: u.name || 'mishal',
         email: u.email,
-        role: u.role,
-        avatar: u.avatar || '/images/user-avatar-butterfly.png',
-        bio: s.bio || '',
+        role: u.role || 'writer',
+        avatar: s.avatar || u.avatar || '/images/user-avatar-butterfly.png',
+        bio: s.bio || u.bio || '',
+        writerName: s.writer_name || u.writer_name || u.name || 'mishal',
+        linkedinUrl: s.linkedin_url || u.linkedin_url || '',
         phone: s.phone || '',
         facebookConnected: Boolean(s.facebook_connected),
         googleConnected: s.google_connected !== undefined ? Boolean(s.google_connected) : true,
@@ -74,11 +84,15 @@ export async function PUT(request: Request) {
     const body = await request.json();
     const {
       currentEmail,
+      fullName,
       firstName,
       lastName,
       avatar,
       newEmail,
+      email: directEmail,
       bio,
+      writerName,
+      linkedinUrl,
       phone,
       currentPassword,
       newPassword,
@@ -86,7 +100,7 @@ export async function PUT(request: Request) {
       googleConnected,
     } = body;
 
-    const emailToFind = (currentEmail || '').trim().toLowerCase();
+    const emailToFind = (currentEmail || directEmail || '').trim().toLowerCase();
     if (!emailToFind) {
       return NextResponse.json(
         { success: false, error: 'Current user email is required.' },
@@ -96,7 +110,7 @@ export async function PUT(request: Request) {
 
     // Verify user exists in MySQL
     const users = await query<any[]>(
-      'SELECT id, name, email, password_hash, role, avatar FROM users WHERE LOWER(email) = ? LIMIT 1',
+      'SELECT id, name, email, password_hash, role, avatar, bio, writer_name, linkedin_url FROM users WHERE LOWER(email) = ? LIMIT 1',
       [emailToFind]
     );
 
@@ -131,9 +145,12 @@ export async function PUT(request: Request) {
       await query('UPDATE users SET password_hash = ? WHERE id = ?', [newHash, user.id]);
     }
 
-    // Handle Name update
+    // Handle Name update (accept either fullName or firstName/lastName)
     let updatedFullName = user.name;
-    if (firstName !== undefined || lastName !== undefined) {
+    if (fullName !== undefined) {
+      updatedFullName = String(fullName).trim();
+      await query('UPDATE users SET name = ? WHERE id = ?', [updatedFullName, user.id]);
+    } else if (firstName !== undefined || lastName !== undefined) {
       const fName = firstName !== undefined ? String(firstName).trim() : user.name.split(' ')[0] || '';
       const lName = lastName !== undefined ? String(lastName).trim() : user.name.split(' ').slice(1).join(' ') || '';
       updatedFullName = `${fName} ${lName}`.trim();
@@ -147,14 +164,35 @@ export async function PUT(request: Request) {
       await query('UPDATE users SET avatar = ? WHERE id = ?', [updatedAvatar, user.id]);
     }
 
-    // Handle Email update
+    // Handle Writer Name update
+    let updatedWriterName = user.writer_name || updatedFullName;
+    if (writerName !== undefined) {
+      updatedWriterName = String(writerName).trim();
+      await query('UPDATE users SET writer_name = ? WHERE id = ?', [updatedWriterName, user.id]);
+    }
+
+    // Handle Bio update
+    let updatedBio = user.bio || '';
+    if (bio !== undefined) {
+      updatedBio = String(bio).trim();
+      await query('UPDATE users SET bio = ? WHERE id = ?', [updatedBio, user.id]);
+    }
+
+    // Handle LinkedIn URL update
+    let updatedLinkedinUrl = user.linkedin_url || '';
+    if (linkedinUrl !== undefined) {
+      updatedLinkedinUrl = String(linkedinUrl).trim();
+      await query('UPDATE users SET linkedin_url = ? WHERE id = ?', [updatedLinkedinUrl, user.id]);
+    }
+
+    // Handle Email update (from newEmail or directEmail)
+    const proposedEmail = (newEmail || (directEmail && directEmail !== emailToFind ? directEmail : '')).trim().toLowerCase();
     let targetEmail = user.email;
-    if (newEmail && String(newEmail).trim().toLowerCase() !== emailToFind) {
-      const cleanNewEmail = String(newEmail).trim().toLowerCase();
+    if (proposedEmail && proposedEmail !== emailToFind) {
       // Check if new email is already in use
       const existing = await query<any[]>(
         'SELECT id FROM users WHERE LOWER(email) = ? AND id != ? LIMIT 1',
-        [cleanNewEmail, user.id]
+        [proposedEmail, user.id]
       );
       if (existing && existing.length > 0) {
         return NextResponse.json(
@@ -162,13 +200,13 @@ export async function PUT(request: Request) {
           { status: 409 }
         );
       }
-      await query('UPDATE users SET email = ? WHERE id = ?', [cleanNewEmail, user.id]);
-      await query('UPDATE user_settings SET user_email = ? WHERE LOWER(user_email) = ?', [cleanNewEmail, emailToFind]);
-      await query('UPDATE user_saved_articles SET user_email = ? WHERE LOWER(user_email) = ?', [cleanNewEmail, emailToFind]);
-      targetEmail = cleanNewEmail;
+      await query('UPDATE users SET email = ? WHERE id = ?', [proposedEmail, user.id]);
+      await query('UPDATE user_settings SET user_email = ? WHERE LOWER(user_email) = ?', [proposedEmail, emailToFind]);
+      await query('UPDATE user_saved_articles SET user_email = ? WHERE LOWER(user_email) = ?', [proposedEmail, emailToFind]);
+      targetEmail = proposedEmail;
     }
 
-    // Handle Bio / Social accounts in user_settings
+    // Update user_settings table
     const existingSettings = await query<any[]>(
       'SELECT id FROM user_settings WHERE LOWER(user_email) = ? LIMIT 1',
       [targetEmail]
@@ -178,12 +216,18 @@ export async function PUT(request: Request) {
       await query(
         `UPDATE user_settings 
          SET bio = COALESCE(?, bio),
+             writer_name = COALESCE(?, writer_name),
+             linkedin_url = COALESCE(?, linkedin_url),
+             avatar = COALESCE(?, avatar),
              phone = COALESCE(?, phone),
              facebook_connected = COALESCE(?, facebook_connected),
              google_connected = COALESCE(?, google_connected)
          WHERE LOWER(user_email) = ?`,
         [
-          bio !== undefined ? bio : null,
+          bio !== undefined ? updatedBio : null,
+          writerName !== undefined ? updatedWriterName : null,
+          linkedinUrl !== undefined ? updatedLinkedinUrl : null,
+          avatar !== undefined ? updatedAvatar : null,
           phone !== undefined ? phone : null,
           facebookConnected !== undefined ? (facebookConnected ? 1 : 0) : null,
           googleConnected !== undefined ? (googleConnected ? 1 : 0) : null,
@@ -192,11 +236,14 @@ export async function PUT(request: Request) {
       );
     } else {
       await query(
-        `INSERT INTO user_settings (user_email, bio, phone, facebook_connected, google_connected, plan_name, plan_status)
-         VALUES (?, ?, ?, ?, ?, 'Entrepreneur Digital All-Access', 'active')`,
+        `INSERT INTO user_settings (user_email, bio, writer_name, linkedin_url, avatar, phone, facebook_connected, google_connected, plan_name, plan_status)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Entrepreneur Digital All-Access', 'active')`,
         [
           targetEmail,
-          bio || '',
+          updatedBio,
+          updatedWriterName,
+          updatedLinkedinUrl,
+          updatedAvatar,
           phone || null,
           facebookConnected ? 1 : 0,
           googleConnected !== undefined ? (googleConnected ? 1 : 0) : 1,
@@ -210,13 +257,17 @@ export async function PUT(request: Request) {
       profile: {
         id: user.id,
         fullName: updatedFullName,
+        name: updatedFullName,
         email: targetEmail,
         avatar: updatedAvatar,
-        bio: bio !== undefined ? bio : '',
+        bio: updatedBio,
+        writerName: updatedWriterName,
+        linkedinUrl: updatedLinkedinUrl,
+        role: user.role,
       },
     });
 
-    // Update cookie if email changed
+    // Update session cookies so user remains seamlessly authenticated
     if (targetEmail !== emailToFind) {
       response.cookies.set('user_email', targetEmail, {
         httpOnly: false,

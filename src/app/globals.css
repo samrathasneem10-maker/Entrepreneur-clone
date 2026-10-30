@@ -78,3 +78,129 @@ html, body {
   }
 }
 
+/* Rich Text Editor List Formatting & Numbering */
+.article-editor-content ol,
+ol.editor-ordered-list,
+.article-editor-body ol,
+.prose ol {
+  list-style-type: decimal !important;
+  margin-left: 1.75rem !important;
+  padding-left: 0.25rem !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.article-editor-content ol li,
+ol.editor-ordered-list li,
+.article-editor-body ol li,
+.prose ol li {
+  display: list-item !important;
+  list-style-type: decimal !important;
+  margin-bottom: 0.25rem !important;
+  padding-left: 0.25rem !important;
+}
+
+.article-editor-content ul,
+ul.editor-unordered-list,
+.article-editor-body ul,
+.prose ul {
+  list-style-type: disc !important;
+  margin-left: 1.75rem !important;
+  padding-left: 0.25rem !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.article-editor-content ul li,
+ul.editor-unordered-list li,
+.article-editor-body ul li,
+.prose ul li {
+  display: list-item !important;
+  list-style-type: disc !important;
+  margin-bottom: 0.25rem !important;
+  padding-left: 0.25rem !important;
+}
+
+/* Rich Text Editor Blockquote Section matching Reference Image 3 (Arrow 1) */
+.article-editor-content blockquote,
+blockquote.quote-section,
+.article-editor-body blockquote,
+.prose blockquote {
+  border-left: 3px solid #EA580C !important;
+  background-color: transparent !important;
+  background: transparent !important;
+  padding: 0.375rem 0 0.375rem 1rem !important;
+  margin: 0.75rem 0 !important;
+  font-style: normal !important;
+  color: #1e293b !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  line-height: 1.6 !important;
+}
+
+/* Remove prose quotation marks pseudo-elements */
+.article-editor-content blockquote::before,
+.article-editor-content blockquote::after,
+.article-editor-content blockquote p::before,
+.article-editor-content blockquote p::after,
+blockquote.quote-section::before,
+blockquote.quote-section::after,
+blockquote.quote-section p::before,
+blockquote.quote-section p::after,
+.prose blockquote p:first-of-type::before,
+.prose blockquote p:last-of-type::after {
+  content: "" !important;
+  display: none !important;
+}
+
+/* Rich Text Editor Code Block Section matching Reference Image 3 (Arrow 2) */
+.article-editor-content pre,
+pre.code-section,
+.article-editor-body pre,
+.prose pre {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+  padding: 0.75rem 1rem !important;
+  border-radius: 0.375rem !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+  font-size: 0.875rem !important;
+  line-height: 1.5 !important;
+  margin: 0.75rem 0 !important;
+  overflow-x: auto !important;
+  white-space: pre !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: none !important;
+}
+
+.article-editor-content pre code,
+pre.code-section code,
+.article-editor-body pre code,
+.prose pre code {
+  background-color: transparent !important;
+  color: inherit !important;
+  padding: 0 !important;
+  font-size: inherit !important;
+  font-family: inherit !important;
+  white-space: pre !important;
+}
+
+/* Code section horizontal scrollbar matching Reference Image 3 */
+.article-editor-content pre::-webkit-scrollbar,
+pre.code-section::-webkit-scrollbar {
+  height: 6px !important;
+}
+.article-editor-content pre::-webkit-scrollbar-track,
+pre.code-section::-webkit-scrollbar-track {
+  background: #f1f5f9 !important;
+  border-radius: 3px !important;
+}
+.article-editor-content pre::-webkit-scrollbar-thumb,
+pre.code-section::-webkit-scrollbar-thumb {
+  background: #94a3b8 !important;
+  border-radius: 3px !important;
+}
+.article-editor-content pre::-webkit-scrollbar-thumb:hover,
+pre.code-section::-webkit-scrollbar-thumb:hover {
+  background: #64748b !important;
+}
+

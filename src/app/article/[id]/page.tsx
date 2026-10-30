@@ -16,6 +16,8 @@ import {
   Bookmark,
   MessageSquare,
   ThumbsUp,
+  AlertCircle,
+  CheckCircle2,
 } from 'lucide-react';
 import { Header } from '@/layouts/Header';
 import { Footer } from '@/layouts/Footer';
@@ -220,7 +222,22 @@ export default function ArticleDetailPage() {
       : is53SideHustle
       ? '/images/side-hustle-53.jpg'
       : (rawArticle.imageUrl || '/images/side-hustle-53.jpg'),
+    tags: (activeBase as any)?.tags || (rawArticle as any)?.tags || [],
   };
+
+  const articleTags: string[] = (() => {
+    const rawTags = (article as any)?.tags || activeBase?.tags;
+    if (!rawTags) return [];
+    if (Array.isArray(rawTags)) return rawTags;
+    if (typeof rawTags === 'string') {
+      try {
+        const parsed = JSON.parse(rawTags);
+        if (Array.isArray(parsed)) return parsed;
+      } catch {}
+      return rawTags.split(',').map((t: string) => t.trim()).filter(Boolean);
+    }
+    return [];
+  })();
 
   // Synchronize browser address bar to canonical title slug if accessed via 'latest-1' or older IDs
   useEffect(() => {
@@ -232,6 +249,12 @@ export default function ArticleDetailPage() {
 
   const [copied, setCopied] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
+  const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'info' | 'error' } | null>(null);
+
+  const showToast = (text: string, type: 'success' | 'info' | 'error' = 'success') => {
+    setToastMessage({ text, type });
+    setTimeout(() => setToastMessage(null), 3500);
+  };
 
   // Audio state (Listen to this post)
   const [isPlaying, setIsPlaying] = useState(false);
@@ -246,6 +269,136 @@ export default function ArticleDetailPage() {
   const { user, openLogin } = useAuth();
   const [commentText, setCommentText] = useState('');
   const [commentSuccess, setCommentSuccess] = useState(false);
+
+  // 1. Check if article is already saved for logged-in user
+  useEffect(() => {
+    const checkSaved = async () => {
+      if (!user?.email) {
+        setBookmarked(false);
+        return;
+      }
+      try {
+        const canonicalSlug = getArticleSlug(article);
+        const res = await fetch(`/api/user/saved-articles?email=${encodeURIComponent(user.email)}`);
+        const data = await res.json();
+        if (data?.success && Array.isArray(data.articles)) {
+          const isSaved = data.articles.some(
+            (item: any) =>
+              item.article_id === articleId ||
+              item.article_id === canonicalSlug ||
+              (item.title && item.title.trim().toLowerCase() === article.title.trim().toLowerCase())
+          );
+          setBookmarked(Boolean(isSaved));
+        }
+      } catch (e) {
+        console.error('Error checking saved article status:', e);
+      }
+    };
+    checkSaved();
+  }, [user?.email, articleId, article.title]);
+
+  // 2. Complete pending save article action upon user authentication
+  useEffect(() => {
+    if (user?.email && typeof window !== 'undefined') {
+      const pendingRaw = localStorage.getItem('pending_save_article');
+      if (pendingRaw) {
+        try {
+          const pending = JSON.parse(pendingRaw);
+          const canonicalSlug = getArticleSlug(article);
+          if (
+            pending &&
+            (pending.slug === articleId ||
+              pending.slug === canonicalSlug ||
+              pending.title === article.title)
+          ) {
+            localStorage.removeItem('pending_save_article');
+            fetch('/api/user/saved-articles', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                userEmail: user.email,
+                articleId: canonicalSlug || articleId,
+                title: pending.title || article.title,
+                category: pending.category || article.category,
+                imageUrl: pending.imageUrl || article.imageUrl,
+                excerpt: pending.excerpt || article.excerpt,
+              }),
+            })
+              .then((r) => r.json())
+              .then((d) => {
+                if (d.success) {
+                  setBookmarked(true);
+                  showToast('Article saved to your reading list!', 'success');
+                }
+              })
+              .catch(console.error);
+          }
+        } catch {
+          localStorage.removeItem('pending_save_article');
+        }
+      }
+    }
+  }, [user?.email, articleId, article.title]);
+
+  // 3. Bookmark Click Handler: Guest prompt & Authenticated save/remove
+  const handleBookmarkClick = async () => {
+    const canonicalSlug = getArticleSlug(article);
+    if (!user) {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(
+          'pending_save_article',
+          JSON.stringify({
+            slug: canonicalSlug || articleId,
+            title: article.title,
+            category: article.category,
+            imageUrl: article.imageUrl,
+            excerpt: article.excerpt,
+          })
+        );
+      }
+      showToast('Please sign in to save articles to your bookmarks.', 'info');
+      openLogin();
+      return;
+    }
+
+    try {
+      if (!bookmarked) {
+        const res = await fetch('/api/user/saved-articles', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userEmail: user.email,
+            articleId: canonicalSlug || articleId,
+            title: article.title,
+            category: article.category,
+            imageUrl: article.imageUrl,
+            excerpt: article.excerpt,
+          }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          setBookmarked(true);
+          showToast('Article saved to your reading list!', 'success');
+        } else {
+          showToast(data.error || 'Failed to save article.', 'error');
+        }
+      } else {
+        const res = await fetch(
+          `/api/user/saved-articles?articleId=${encodeURIComponent(canonicalSlug || articleId)}&email=${encodeURIComponent(user.email)}`,
+          { method: 'DELETE' }
+        );
+        const data = await res.json();
+        if (data.success) {
+          setBookmarked(false);
+          showToast('Article removed from bookmarks.', 'info');
+        } else {
+          showToast(data.error || 'Failed to remove article.', 'error');
+        }
+      }
+    } catch {
+      showToast('An error occurred while updating bookmarks.', 'error');
+    }
+  };
   const [commentsList, setCommentsList] = useState([
     {
       id: 'c1',
@@ -530,7 +683,7 @@ export default function ArticleDetailPage() {
               </span>
               <button
                 type="button"
-                onClick={() => setBookmarked(!bookmarked)}
+                onClick={handleBookmarkClick}
                 className="text-slate-700 hover:text-[#1642D0] transition-colors cursor-pointer p-0.5 ml-1 flex items-center"
                 title={bookmarked ? 'Saved to bookmarks' : 'Bookmark article'}
                 aria-label="Bookmark article"
@@ -937,6 +1090,23 @@ export default function ArticleDetailPage() {
                 </p>
               </div>
 
+              {/* Article Tags matching Screenshot 1 */}
+              {articleTags.length > 0 && (
+                <div className="flex flex-wrap items-center gap-2 pt-6 pb-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400 select-none mr-1">
+                    Tags:
+                  </span>
+                  {articleTags.map((t) => (
+                    <span
+                      key={t}
+                      className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors uppercase tracking-wide select-none"
+                    >
+                      #{t.replace(/^#/, '')}
+                    </span>
+                  ))}
+                </div>
+              )}
+
               {/* Divider line before Author Bio */}
               <div className="border-b border-slate-200 mt-8 mb-8" />
 
@@ -1241,6 +1411,26 @@ export default function ArticleDetailPage() {
         </section>
 
       </main>
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div
+          className={`fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-5 py-3 rounded-xl shadow-xl text-xs sm:text-sm font-semibold transition-all duration-300 animate-slide-up ${
+            toastMessage.type === 'success'
+              ? 'bg-slate-900 text-white border-l-4 border-emerald-400'
+              : toastMessage.type === 'info'
+              ? 'bg-[#1642D0] text-white border-l-4 border-blue-300'
+              : 'bg-rose-700 text-white border-l-4 border-rose-300'
+          }`}
+        >
+          {toastMessage.type === 'success' ? (
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          ) : (
+            <AlertCircle className="w-4 h-4 text-blue-200 shrink-0" />
+          )}
+          <span>{toastMessage.text}</span>
+        </div>
+      )}
 
       {/* 2. Footer */}
       <Footer />

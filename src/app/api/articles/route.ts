@@ -20,6 +20,7 @@ export async function GET(request: Request) {
         'SELECT COALESCE(status, "published") as status, COUNT(*) as count FROM articles GROUP BY COALESCE(status, "published")'
       );
       const counts: Record<string, number> = {
+        modified: 0,
         published: 0,
         draft: 0,
         pending_review: 0,
@@ -32,6 +33,14 @@ export async function GET(request: Request) {
           counts[s] = Number(r.count) || 0;
         });
       }
+      try {
+        const modRows = await query<any[]>(
+          'SELECT COUNT(*) as c FROM articles WHERE LOWER(status) = "modified" OR (updated_at > created_at AND LOWER(status) != "trash")'
+        );
+        if (modRows && modRows[0] && Number(modRows[0].c) > 0) {
+          counts.modified = Number(modRows[0].c);
+        }
+      } catch {}
       return NextResponse.json({ success: true, counts });
     }
 
@@ -48,8 +57,12 @@ export async function GET(request: Request) {
       params.push(author);
     }
     if (status) {
-      whereClause += ' AND LOWER(COALESCE(a.status, "published")) = ?';
-      params.push(status.toLowerCase());
+      if (status.toLowerCase() === 'modified') {
+        whereClause += ' AND (LOWER(COALESCE(a.status, "published")) = "modified" OR (a.updated_at > a.created_at AND LOWER(COALESCE(a.status, "published")) != "trash"))';
+      } else {
+        whereClause += ' AND LOWER(COALESCE(a.status, "published")) = ?';
+        params.push(status.toLowerCase());
+      }
     }
     if (slug) {
       whereClause += ' AND (a.slug = ? OR a.id = ?)';
@@ -80,6 +93,15 @@ export async function GET(request: Request) {
         a.is_hero as isHero,
         a.is_featured as isFeatured,
         COALESCE(a.status, 'published') as status,
+        a.rejection_reason as rejectionReason,
+        a.reviewer_notes as reviewerNotes,
+        a.tags,
+        a.card_summary as cardSummary,
+        a.focus_keyword as focusKeyword,
+        a.meta_description as metaDescription,
+        a.sub_categories as subCategories,
+        a.created_at as createdAt,
+        a.updated_at as updatedAt,
         au.avatar as authorAvatar,
         au.role as authorTitle,
         au.bio as authorBio
@@ -108,6 +130,15 @@ export async function GET(request: Request) {
       imageAspect: r.imageAspect,
       views: r.views || '1',
       status: (r.status || 'published').toLowerCase(),
+      rejectionReason: r.rejectionReason || null,
+      reviewerNotes: r.reviewerNotes || null,
+      tags: r.tags ? (typeof r.tags === 'string' && (r.tags.startsWith('[') || r.tags.startsWith('{')) ? JSON.parse(r.tags) : r.tags.split(',').map((t: string) => t.trim())) : [],
+      cardSummary: r.cardSummary || r.excerpt || '',
+      focusKeyword: r.focusKeyword || '',
+      metaDescription: r.metaDescription || '',
+      subCategories: r.subCategories ? (typeof r.subCategories === 'string' && (r.subCategories.startsWith('[') || r.subCategories.startsWith('{')) ? JSON.parse(r.subCategories) : r.subCategories.split(',').map((s: string) => s.trim())) : [],
+      createdAt: r.createdAt || null,
+      updatedAt: r.updatedAt || null,
       author: {
         name: r.authorName || 'Staff Contributor',
         avatar: r.authorAvatar || '/images/author-sherin.png',
@@ -191,6 +222,11 @@ export async function POST(request: Request) {
       status = 'published',
       authorName = 'Staff Contributor',
       readTime = '5 min read',
+      tags = [],
+      cardSummary = '',
+      focusKeyword = '',
+      metaDescription = '',
+      subCategories = [],
     } = body;
 
     if (!title || !title.trim()) {
@@ -205,11 +241,30 @@ export async function POST(request: Request) {
     const now = new Date();
     const formattedDate = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
+    const formattedTags = Array.isArray(tags) ? JSON.stringify(tags) : (tags || '');
+    const formattedSubCategories = Array.isArray(subCategories) ? JSON.stringify(subCategories) : (subCategories || '');
+
     const insertResult: any = await query(
       `INSERT INTO articles 
-        (slug, title, category_name, author_name, date, read_time, excerpt, content, image_url, status, views)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '1')`,
-      [slug, title.trim(), category, authorName, formattedDate, readTime || '5 min read', excerpt, content, imageUrl, status.toLowerCase()]
+        (slug, title, category_name, author_name, date, read_time, excerpt, content, image_url, status, views, tags, card_summary, focus_keyword, meta_description, sub_categories)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '1', ?, ?, ?, ?, ?)`,
+      [
+        slug,
+        title.trim(),
+        category,
+        authorName,
+        formattedDate,
+        readTime || '5 min read',
+        excerpt,
+        content,
+        imageUrl,
+        status.toLowerCase(),
+        formattedTags,
+        cardSummary || excerpt,
+        focusKeyword || '',
+        metaDescription || '',
+        formattedSubCategories,
+      ]
     );
 
     return NextResponse.json({
@@ -228,6 +283,11 @@ export async function POST(request: Request) {
         content,
         imageUrl,
         status: status.toLowerCase(),
+        tags: Array.isArray(tags) ? tags : [],
+        cardSummary: cardSummary || excerpt,
+        focusKeyword: focusKeyword || '',
+        metaDescription: metaDescription || '',
+        subCategories: Array.isArray(subCategories) ? subCategories : [],
       },
     });
   } catch (error: any) {
@@ -242,7 +302,29 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
-    const { id, dbId, status, title, category, excerpt, content, imageUrl } = body;
+    const {
+      id,
+      dbId,
+      status,
+      title,
+      category,
+      excerpt,
+      content,
+      imageUrl,
+      rejectionReason,
+      reviewerNotes,
+      authorName,
+      readTime,
+      tags,
+      cardSummary,
+      card_summary,
+      focusKeyword,
+      focus_keyword,
+      metaDescription,
+      meta_description,
+      subCategories,
+      sub_categories,
+    } = body;
 
     if (!id && !dbId) {
       return NextResponse.json({ success: false, error: 'Article identifier is required.' }, { status: 400 });
@@ -263,6 +345,14 @@ export async function PUT(request: Request) {
       updates.push('category_name = ?');
       params.push(category);
     }
+    if (authorName !== undefined) {
+      updates.push('author_name = ?');
+      params.push(authorName);
+    }
+    if (readTime !== undefined) {
+      updates.push('read_time = ?');
+      params.push(readTime);
+    }
     if (excerpt !== undefined) {
       updates.push('excerpt = ?');
       params.push(excerpt);
@@ -275,6 +365,40 @@ export async function PUT(request: Request) {
       updates.push('image_url = ?');
       params.push(imageUrl);
     }
+    if (rejectionReason !== undefined) {
+      updates.push('rejection_reason = ?');
+      params.push(rejectionReason);
+    }
+    if (reviewerNotes !== undefined) {
+      updates.push('reviewer_notes = ?');
+      params.push(reviewerNotes);
+    }
+    if (tags !== undefined) {
+      updates.push('tags = ?');
+      params.push(Array.isArray(tags) ? JSON.stringify(tags) : tags);
+    }
+    const finalCardSummary = cardSummary !== undefined ? cardSummary : card_summary;
+    if (finalCardSummary !== undefined) {
+      updates.push('card_summary = ?');
+      params.push(finalCardSummary);
+    }
+    const finalFocusKeyword = focusKeyword !== undefined ? focusKeyword : focus_keyword;
+    if (finalFocusKeyword !== undefined) {
+      updates.push('focus_keyword = ?');
+      params.push(finalFocusKeyword);
+    }
+    const finalMetaDescription = metaDescription !== undefined ? metaDescription : meta_description;
+    if (finalMetaDescription !== undefined) {
+      updates.push('meta_description = ?');
+      params.push(finalMetaDescription);
+    }
+    const finalSubCats = subCategories !== undefined ? subCategories : sub_categories;
+    if (finalSubCats !== undefined) {
+      updates.push('sub_categories = ?');
+      params.push(Array.isArray(finalSubCats) ? JSON.stringify(finalSubCats) : finalSubCats);
+    }
+
+    updates.push('updated_at = NOW()');
 
     if (updates.length === 0) {
       return NextResponse.json({ success: false, error: 'No fields to update.' }, { status: 400 });

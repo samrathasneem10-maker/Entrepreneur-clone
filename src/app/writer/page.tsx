@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef, Suspense } from 'react';
+import React, { useState, useEffect, useRef, useMemo, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/components/auth/AuthContext';
@@ -42,7 +42,16 @@ import {
   AlignLeft,
   AlignCenter,
   AlignRight,
+  User,
+  LogOut,
+  Bookmark,
+  CheckCircle2,
+  Info,
+  MoreVertical,
+  Copy,
+  RotateCcw,
 } from 'lucide-react';
+import ProfileSettingsModal from '@/components/writer/ProfileSettingsModal';
 
 const WEBSITE_CATEGORIES = [
   'Business',
@@ -102,20 +111,220 @@ const PRESET_EDITORIAL_IMAGES = [
   { name: 'Operations & Scaling', url: '/images/related-founders-warehouse.png' },
 ];
 
+const INITIAL_ALL_CATEGORIES: string[] = Array.from(
+  new Set([
+    'Business',
+    ...(CATEGORY_SUBCATEGORIES_MAP['Business'] || []),
+    ...WEBSITE_CATEGORIES,
+    ...Object.values(CATEGORY_SUBCATEGORIES_MAP).flat(),
+  ])
+);
+
+// Helper: Extract plain text from HTML string
+function extractPlainTextFromHtml(html: string): string {
+  if (!html) return '';
+  return html
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+// Requirement 3: Focus Keyword - Identify 2 relevant, meaningful words representing the main topic
+function generateFocusKeyword(heading: string, description: string): string {
+  const STOP_WORDS = new Set([
+    'the', 'is', 'and', 'of', 'for', 'a', 'an', 'in', 'on', 'at', 'to', 'by', 'with', 'from',
+    'as', 'that', 'this', 'these', 'those', 'it', 'its', 'are', 'was', 'were', 'be', 'been',
+    'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'shall', 'should',
+    'can', 'could', 'may', 'might', 'must', 'or', 'but', 'nor', 'not', 'no', 'so', 'yet',
+    'if', 'then', 'else', 'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each',
+    'few', 'more', 'most', 'other', 'some', 'such', 'than', 'too', 'very', 'just', 'into',
+    'about', 'over', 'after', 'before', 'between', 'under', 'above', 'out', 'up', 'down',
+    'off', 'again', 'further', 'once', 'here', 'there', 'what', 'which', 'who', 'whom',
+    'their', 'theirs', 'them', 'they', 'our', 'ours', 'we', 'us', 'you', 'your', 'yours',
+    'he', 'him', 'his', 'she', 'her', 'hers', 'my', 'mine', 'me', 'new', 'get', 'like',
+    'also', 'across', 'per', 'via', 'well', 'much', 'many', 'own', 'same', 'make', 'made'
+  ]);
+
+  const cleanWords = (text: string) =>
+    (text || '')
+      .replace(/[^\w\s-]/gi, ' ')
+      .split(/\s+/)
+      .map((w) => w.trim().replace(/^[-_]+|[-_]+$/g, ''))
+      .filter((w) => w.length > 2 && !/^\d+$/.test(w));
+
+  const headingWords = cleanWords(heading);
+  const descWords = cleanWords(description);
+
+  // Check for meaningful 2-word consecutive phrases (bigrams) in text
+  const combinedText = `${heading} ${description}`;
+  const rawTokens = combinedText
+    .replace(/[^\w\s]/gi, ' ')
+    .split(/\s+/)
+    .map((w) => w.trim())
+    .filter(Boolean);
+
+  const bigramCounts: Record<string, { phrase: string; score: number; firstPos: number }> = {};
+  for (let i = 0; i < rawTokens.length - 1; i++) {
+    const w1 = rawTokens[i].toLowerCase();
+    const w2 = rawTokens[i + 1].toLowerCase();
+    if (!STOP_WORDS.has(w1) && !STOP_WORDS.has(w2) && w1.length > 2 && w2.length > 2 && !/^\d+$/.test(w1) && !/^\d+$/.test(w2)) {
+      const key = `${w1} ${w2}`;
+      const capitalized = `${rawTokens[i].charAt(0).toUpperCase() + rawTokens[i].slice(1).toLowerCase()} ${rawTokens[i + 1].charAt(0).toUpperCase() + rawTokens[i + 1].slice(1).toLowerCase()}`;
+      if (!bigramCounts[key]) {
+        bigramCounts[key] = { phrase: capitalized, score: i < 15 ? 4 : 2, firstPos: i };
+      } else {
+        bigramCounts[key].score += 2;
+      }
+    }
+  }
+
+  const sortedBigrams = Object.values(bigramCounts).sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    return a.firstPos - b.firstPos;
+  });
+
+  if (sortedBigrams.length > 0) {
+    return sortedBigrams[0].phrase;
+  }
+
+  const headingWordSet = new Set(headingWords.map((w) => w.toLowerCase()));
+  const descWordSet = new Set(descWords.map((w) => w.toLowerCase()));
+
+  const scores: Record<string, { word: string; score: number; order: number }> = {};
+  let orderIndex = 0;
+
+  headingWords.forEach((w) => {
+    const lower = w.toLowerCase();
+    if (STOP_WORDS.has(lower)) return;
+    if (!scores[lower]) {
+      scores[lower] = {
+        word: w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(),
+        score: 0,
+        order: orderIndex++,
+      };
+    }
+    scores[lower].score += 3;
+    if (descWordSet.has(lower)) {
+      scores[lower].score += 5;
+    }
+  });
+
+  descWords.forEach((w) => {
+    const lower = w.toLowerCase();
+    if (STOP_WORDS.has(lower)) return;
+    if (!scores[lower]) {
+      scores[lower] = {
+        word: w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(),
+        score: 0,
+        order: orderIndex++,
+      };
+    }
+    scores[lower].score += 1;
+    if (headingWordSet.has(lower) && scores[lower].score < 8) {
+      scores[lower].score += 5;
+    }
+  });
+
+  const sortedCandidates = Object.values(scores).sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    return a.order - b.order;
+  });
+
+  if (sortedCandidates.length >= 2) {
+    return `${sortedCandidates[0].word} ${sortedCandidates[1].word}`;
+  } else if (sortedCandidates.length === 1) {
+    return sortedCandidates[0].word;
+  }
+  return 'Search Results';
+}
+
+// Suggest two relevant focus keywords based on article heading and content
+function generateFocusKeywordsList(heading: string, description: string): string[] {
+  const primary = generateFocusKeyword(heading, description);
+  const words = (heading + ' ' + description)
+    .replace(/[^\w\s]/gi, ' ')
+    .split(/\s+/)
+    .map((w) => w.trim().replace(/^[-_]+|[-_]+$/g, ''))
+    .filter((w) => w.length > 3 && !/^\d+$/.test(w));
+
+  const uniqueWords: string[] = [];
+  words.forEach((w) => {
+    const formatted = w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+    if (!uniqueWords.includes(formatted) && !primary.toLowerCase().includes(formatted.toLowerCase())) {
+      uniqueWords.push(formatted);
+    }
+  });
+
+  const secondary = uniqueWords.length >= 2 ? `${uniqueWords[0]} ${uniqueWords[1]}` : (uniqueWords[0] || 'Market Insights');
+  return [primary, secondary];
+}
+
+// Requirement 2: Card Summary - Extract short meaningful summary from description, ending in "..." at word boundary
+function generateCardSummary(description: string, fallbackContent: string = ''): string {
+  const text = (description || fallbackContent || '').replace(/\s+/g, ' ').trim();
+  if (!text) return '';
+
+  const maxLen = 140;
+  if (text.length <= maxLen) {
+    return text;
+  }
+
+  let cutIndex = text.lastIndexOf(' ', maxLen);
+  if (cutIndex < 80) {
+    cutIndex = text.indexOf(' ', maxLen);
+    if (cutIndex === -1 || cutIndex > 160) cutIndex = maxLen;
+  }
+
+  let truncated = text.substring(0, cutIndex).trim().replace(/[,;:.!?-]+$/, '');
+  // Strip trailing prepositions/conjunctions/stop words
+  truncated = truncated.replace(/\s+(to|and|or|of|in|for|with|at|by|from|as|that|the|a|an)$/i, '').trim().replace(/[,;:.!?-]+$/, '');
+  return `${truncated}...`;
+}
+
+// Requirement 4: Meta Description - Concise summary within 150-160 characters ending in "..."
+function generateMetaDescription(description: string, fallbackContent: string = ''): string {
+  const text = (description || fallbackContent || '').replace(/\s+/g, ' ').trim();
+  if (!text) return '';
+
+  const maxLen = 140;
+  if (text.length <= maxLen) {
+    return text;
+  }
+
+  let cutIndex = text.lastIndexOf(' ', maxLen);
+  if (cutIndex < 80) {
+    cutIndex = text.indexOf(' ', maxLen);
+    if (cutIndex === -1 || cutIndex > 160) cutIndex = maxLen;
+  }
+
+  const truncated = text.substring(0, cutIndex).trim().replace(/[,;:.!?]+$/, '');
+  return `${truncated}...`;
+}
+
 function WriterEditorMain() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   const [mounted, setMounted] = useState(false);
+  const [showProfileSettingsModal, setShowProfileSettingsModal] = useState(false);
 
   // Article Core Fields
   const [title, setTitle] = useState('');
   const [subtitle, setSubtitle] = useState('');
+  const [authorName, setAuthorName] = useState('');
   const [mainCategory, setMainCategory] = useState('Business');
+  const [allCategories, setAllCategories] = useState<string[]>(INITIAL_ALL_CATEGORIES);
   const [selectedSubCategories, setSelectedSubCategories] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
+  const tagInputRef = useRef<HTMLInputElement>(null);
   const [readDuration, setReadDuration] = useState('5 min read');
   const [featuredImageUrl, setFeaturedImageUrl] = useState<string>('');
 
@@ -140,6 +349,46 @@ function WriterEditorMain() {
   // Sidebar Layout & Tabs State (Reference Image 5)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [activeSidebarTab, setActiveSidebarTab] = useState<'details' | 'seo'>('details');
+  const [isMainCatExpanded, setIsMainCatExpanded] = useState(true);
+  const [isSubCatExpanded, setIsSubCatExpanded] = useState(true);
+
+  // Link Insertion & Editing Modal State
+  const [showLinkModal, setShowLinkModal] = useState(false);
+  const [linkUrl, setLinkUrl] = useState('');
+  const [linkText, setLinkText] = useState('');
+  const [linkOpenNewTab, setLinkOpenNewTab] = useState(true);
+  const [currentLinkElement, setCurrentLinkElement] = useState<HTMLAnchorElement | null>(null);
+
+  // Active Toolbar Formatting Tracking
+  const [activeFormats, setActiveFormats] = useState({
+    bold: false,
+    italic: false,
+    underline: false,
+    strikeThrough: false,
+    subscript: false,
+    superscript: false,
+    insertOrderedList: false,
+    insertUnorderedList: false,
+    link: false,
+    blockquote: false,
+    code: false,
+  });
+
+  // Dedicated Toggle Section States for Quote Card & Code Section
+  const [isQuoteActive, setIsQuoteActive] = useState(false);
+  const [isCodeActive, setIsCodeActive] = useState(false);
+  const quoteContentRef = useRef<string>('');
+  const codeContentRef = useRef<string>('');
+  const lastToggledQuoteElRef = useRef<HTMLElement | null>(null);
+  const lastToggledCodeElRef = useRef<HTMLElement | null>(null);
+
+  // Dynamic Database Categories & Subcategories State
+  const [mainCategoriesList, setMainCategoriesList] = useState<string[]>(WEBSITE_CATEGORIES);
+  const [subCategoriesMap, setSubCategoriesMap] = useState<Record<string, string[]>>(CATEGORY_SUBCATEGORIES_MAP);
+
+  // Image In-Place Edit Tracking Refs
+  const editingImageFigureRef = useRef<HTMLElement | null>(null);
+  const editingImageIdRef = useRef<string | null>(null);
 
   // SEO Fields
   const [cardSummary, setCardSummary] = useState('');
@@ -147,6 +396,49 @@ function WriterEditorMain() {
   const [metaDescription, setMetaDescription] = useState('');
   const [metaTitle, setMetaTitle] = useState('');
   const [isGeneratingSeo, setIsGeneratingSeo] = useState(false);
+
+  // SEO Manual Edit Tracking (Requirement 5: Do not overwrite manually edited SEO fields)
+  const [isCardSummaryEdited, setIsCardSummaryEdited] = useState(false);
+  const [isFocusKeywordEdited, setIsFocusKeywordEdited] = useState(false);
+  const [isMetaDescriptionEdited, setIsMetaDescriptionEdited] = useState(false);
+  const [suggestedKeywords, setSuggestedKeywords] = useState<string[]>([]);
+  const [showPreviewMenu, setShowPreviewMenu] = useState(false);
+
+  // Focus Keyword Analysis Checkers
+  const isTitleKeywordMatch = useMemo(() => {
+    if (!focusKeyword.trim() || !title.trim()) return false;
+    const cleanKw = focusKeyword.trim().toLowerCase();
+    const cleanTitle = title.trim().toLowerCase();
+    return cleanTitle.includes(cleanKw);
+  }, [focusKeyword, title]);
+
+  const isMetaDescKeywordMatch = useMemo(() => {
+    if (!focusKeyword.trim() || !metaDescription.trim()) return false;
+    const cleanKw = focusKeyword.trim().toLowerCase();
+    const cleanDesc = metaDescription.trim().toLowerCase();
+    return cleanDesc.includes(cleanKw);
+  }, [focusKeyword, metaDescription]);
+
+  // Preview Insights & Quality Stats
+  const wordCount = useMemo(() => {
+    const text = (editorRef.current?.innerText || extractPlainTextFromHtml(htmlContent)).trim();
+    if (!text) return 0;
+    return text.split(/\s+/).filter(Boolean).length;
+  }, [htmlContent]);
+
+  const hasHeadings = useMemo(() => {
+    return /<h[1-6][^>]*>/i.test(htmlContent);
+  }, [htmlContent]);
+
+  const contentScore = useMemo(() => {
+    let score = 25;
+    if (title.trim().length >= 15) score += 20;
+    if (focusKeyword.trim()) score += 15;
+    if (isTitleKeywordMatch) score += 15;
+    if (isMetaDescKeywordMatch) score += 15;
+    if (metaDescription.trim().length >= 50 && metaDescription.trim().length <= 160) score += 10;
+    return Math.min(100, score);
+  }, [title, focusKeyword, isTitleKeywordMatch, isMetaDescKeywordMatch, metaDescription]);
 
   // Insert/Edit Image Modal State
   const [showImageModal, setShowImageModal] = useState(false);
@@ -197,33 +489,158 @@ function WriterEditorMain() {
       setShowPreviewModal(true);
     }
 
-    try {
-      const localDraft = localStorage.getItem('entrepreneur_writer_draft');
-      if (localDraft && !idParam) {
-        const parsed = JSON.parse(localDraft);
-        if (parsed.title) setTitle(parsed.title);
-        if (parsed.subtitle) setSubtitle(parsed.subtitle);
-        if (parsed.mainCategory) setMainCategory(parsed.mainCategory);
-        if (parsed.selectedSubCategories) setSelectedSubCategories(parsed.selectedSubCategories);
-        if (parsed.tags) setTags(parsed.tags);
-        if (parsed.cardSummary) setCardSummary(parsed.cardSummary);
-        if (parsed.focusKeyword) setFocusKeyword(parsed.focusKeyword);
-        if (parsed.metaDescription) setMetaDescription(parsed.metaDescription);
-        if (parsed.featuredImageUrl) setFeaturedImageUrl(parsed.featuredImageUrl);
-        if (parsed.htmlContent) {
-          setHtmlContent(parsed.htmlContent);
-          setIsEditorEmpty(false);
-          setTimeout(() => {
-            if (editorRef.current) {
-              editorRef.current.innerHTML = parsed.htmlContent;
+    if (!idParam) {
+      try {
+        const savedDraftStr = localStorage.getItem('entrepreneur_writer_draft');
+        if (savedDraftStr) {
+          const savedDraft = JSON.parse(savedDraftStr);
+          if (
+            savedDraft &&
+            (savedDraft.title ||
+              savedDraft.htmlContent ||
+              (savedDraft.selectedSubCategories && savedDraft.selectedSubCategories.length > 0) ||
+              savedDraft.mainCategory)
+          ) {
+            if (savedDraft.title) setTitle(savedDraft.title);
+            if (savedDraft.subtitle) setSubtitle(savedDraft.subtitle);
+            if (savedDraft.authorName) setAuthorName(savedDraft.authorName);
+            if (savedDraft.mainCategory) setMainCategory(savedDraft.mainCategory);
+            if (savedDraft.selectedSubCategories && Array.isArray(savedDraft.selectedSubCategories)) {
+              setSelectedSubCategories(savedDraft.selectedSubCategories);
             }
-          }, 100);
+            if (savedDraft.tags && Array.isArray(savedDraft.tags)) {
+              setTags(savedDraft.tags);
+            }
+            if (savedDraft.readDuration) setReadDuration(savedDraft.readDuration);
+            if (savedDraft.featuredImageUrl) setFeaturedImageUrl(savedDraft.featuredImageUrl);
+            if (savedDraft.cardSummary) setCardSummary(savedDraft.cardSummary);
+            if (savedDraft.focusKeyword) setFocusKeyword(savedDraft.focusKeyword);
+            if (savedDraft.metaDescription) setMetaDescription(savedDraft.metaDescription);
+            if (savedDraft.htmlContent) {
+              setHtmlContent(savedDraft.htmlContent);
+              setIsEditorEmpty(false);
+              setTimeout(() => {
+                if (editorRef.current) {
+                  editorRef.current.innerHTML = savedDraft.htmlContent;
+                }
+              }, 100);
+            }
+            return;
+          }
         }
+      } catch (err) {
+        console.error('Error reading draft on mount:', err);
       }
-    } catch (err) {
-      console.error('Error reading local draft:', err);
+
+      // Clean slate only on opening fresh editor without draft
+      setTitle('');
+      setSubtitle('');
+      setTags([]);
+      setTagInput('');
+      setHtmlContent('');
+      setIsEditorEmpty(true);
+      setFeaturedImageUrl('');
+      if (editorRef.current) {
+        editorRef.current.innerHTML = '';
+      }
     }
   }, [searchParams]);
+
+  // Hydrate initial author name from logged in user if not set
+  useEffect(() => {
+    if (!authorName && user) {
+      setAuthorName(user.writerName || user.name || '');
+    }
+  }, [user, authorName]);
+
+  // Dynamic Category Loading from Database: Load ALL categories and subcategories
+  useEffect(() => {
+    const fetchDynamicCategories = async () => {
+      try {
+        const res = await fetch('/api/categories');
+        const data = await res.json();
+        if (data?.success) {
+          const catSet = new Set<string>(INITIAL_ALL_CATEGORIES);
+
+          if (Array.isArray(data.categories) && data.categories.length > 0) {
+            data.categories.forEach((cat: any) => {
+              if (cat.name && typeof cat.name === 'string') {
+                catSet.add(cat.name);
+              }
+              if (cat.parent_name && typeof cat.parent_name === 'string') {
+                catSet.add(cat.parent_name);
+              }
+            });
+          }
+
+          if (Array.isArray(data.mainCategories)) {
+            data.mainCategories.forEach((m: any) => {
+              if (m.name) catSet.add(m.name);
+              if (Array.isArray(m.subcategories)) {
+                m.subcategories.forEach((s: any) => {
+                  const sName = typeof s === 'string' ? s : s?.name;
+                  if (sName) catSet.add(sName);
+                });
+              }
+            });
+          }
+
+          if (catSet.size > 0) {
+            setAllCategories(Array.from(catSet));
+          }
+        }
+      } catch (err) {
+        console.error('Error loading dynamic categories:', err);
+      }
+    };
+
+    fetchDynamicCategories();
+  }, []);
+
+  // Requirement 5: Dynamic SEO Updates when heading or description changes (unless manually edited)
+  useEffect(() => {
+    if (!mounted) return;
+    const descriptionSource = subtitle.trim() || extractPlainTextFromHtml(htmlContent);
+
+    if (!isCardSummaryEdited && descriptionSource) {
+      setCardSummary(generateCardSummary(descriptionSource));
+    }
+    if (!isFocusKeywordEdited && (title.trim() || descriptionSource)) {
+      setFocusKeyword(generateFocusKeyword(title, descriptionSource));
+    }
+    if (!isMetaDescriptionEdited && descriptionSource) {
+      setMetaDescription(generateMetaDescription(descriptionSource));
+    }
+    if (title.trim() || descriptionSource) {
+      setSuggestedKeywords(generateFocusKeywordsList(title, descriptionSource));
+    }
+    if (title.trim()) {
+      setMetaTitle(`${title.trim()} | Washington Times`);
+    }
+  }, [title, subtitle, htmlContent, mounted, isCardSummaryEdited, isFocusKeywordEdited, isMetaDescriptionEdited]);
+
+  // Auto-persist category, author, subcategories, tags, and SEO to draft storage on change
+  useEffect(() => {
+    if (!mounted) return;
+    try {
+      const existingStr = localStorage.getItem('entrepreneur_writer_draft');
+      const existing = existingStr ? JSON.parse(existingStr) : {};
+      localStorage.setItem(
+        'entrepreneur_writer_draft',
+        JSON.stringify({
+          ...existing,
+          authorName,
+          mainCategory,
+          selectedSubCategories,
+          tags,
+          cardSummary,
+          focusKeyword,
+          metaDescription,
+          updatedAt: new Date().toISOString(),
+        })
+      );
+    } catch {}
+  }, [mainCategory, selectedSubCategories, authorName, tags, cardSummary, focusKeyword, metaDescription, mounted]);
 
   const loadArticleById = async (idOrSlug: string) => {
     try {
@@ -234,7 +651,44 @@ function WriterEditorMain() {
         setEditingArticleId(art.dbId || art.id);
         setTitle(art.title || '');
         setSubtitle(art.excerpt || '');
-        setMainCategory(art.category || 'Startups and Entrepreneurship');
+        if (art.authorName || art.author?.name) {
+          setAuthorName(art.authorName || art.author?.name);
+        }
+        if (art.category) setMainCategory(art.category);
+        if (art.subCategories) {
+          if (Array.isArray(art.subCategories)) {
+            setSelectedSubCategories(art.subCategories);
+          } else if (typeof art.subCategories === 'string') {
+            try {
+              setSelectedSubCategories(JSON.parse(art.subCategories));
+            } catch {
+              setSelectedSubCategories(art.subCategories.split(',').map((s: string) => s.trim()));
+            }
+          }
+        }
+        if (art.tags) {
+          if (Array.isArray(art.tags)) {
+            setTags(art.tags);
+          } else if (typeof art.tags === 'string') {
+            try {
+              setTags(JSON.parse(art.tags));
+            } catch {
+              setTags(art.tags.split(',').map((t: string) => t.trim()).filter(Boolean));
+            }
+          }
+        }
+        if (art.cardSummary) {
+          setCardSummary(art.cardSummary);
+          setIsCardSummaryEdited(true);
+        }
+        if (art.focusKeyword) {
+          setFocusKeyword(art.focusKeyword);
+          setIsFocusKeywordEdited(true);
+        }
+        if (art.metaDescription) {
+          setMetaDescription(art.metaDescription);
+          setIsMetaDescriptionEdited(true);
+        }
         setFeaturedImageUrl(art.imageUrl || '');
         if (art.readTime) setReadDuration(art.readTime);
         if (art.content) {
@@ -256,9 +710,32 @@ function WriterEditorMain() {
   const handleEditorInput = () => {
     if (!editorRef.current) return;
     const content = editorRef.current.innerHTML;
-    const text = editorRef.current.innerText.trim();
+    const text = (editorRef.current.innerText || '')
+      .replace(/\u00a0/g, ' ')
+      .replace(/\n/g, '')
+      .replace(/\r/g, '')
+      .trim();
+    const hasMediaOrBlock =
+      content.includes('<img') ||
+      content.includes('<blockquote') ||
+      content.includes('<pre') ||
+      content.includes('<ol') ||
+      content.includes('<ul');
+    const isEmpty = text.length === 0 && !hasMediaOrBlock;
     setHtmlContent(content);
-    setIsEditorEmpty(!text && !content.includes('<img'));
+    setIsEditorEmpty(isEmpty);
+
+    const sel = typeof window !== 'undefined' ? window.getSelection() : null;
+    let insideQuote = false;
+    let insideCode = false;
+    if (sel && sel.anchorNode && editorRef.current?.contains(sel.anchorNode)) {
+      let el: Node | null = sel.anchorNode;
+      if (el.nodeType === Node.TEXT_NODE) el = el.parentNode;
+      if ((el as HTMLElement)?.closest?.('blockquote')) insideQuote = true;
+      if ((el as HTMLElement)?.closest?.('pre')) insideCode = true;
+    }
+    setIsQuoteActive(insideQuote);
+    setIsCodeActive(insideCode);
 
     const fullText = (title + ' ' + subtitle + ' ' + text).trim();
     const wordCount = fullText.split(/\s+/).filter(Boolean).length;
@@ -266,14 +743,166 @@ function WriterEditorMain() {
     setReadDuration(`${minutes} min read`);
   };
 
+  const updateActiveFormats = () => {
+    if (typeof window === 'undefined') return;
+    try {
+      const isBold = document.queryCommandState('bold');
+      const isItalic = document.queryCommandState('italic');
+      const isUnderline = document.queryCommandState('underline');
+      const isStrike = document.queryCommandState('strikeThrough');
+      const isSub = document.queryCommandState('subscript');
+      const isSuper = document.queryCommandState('superscript');
+      let isOL = document.queryCommandState('insertOrderedList');
+      let isUL = document.queryCommandState('insertUnorderedList');
+
+      let isLink = false;
+      let insideQuote = false;
+      let insideCode = false;
+
+      const sel = window.getSelection();
+      if (sel && sel.anchorNode && editorRef.current?.contains(sel.anchorNode)) {
+        let el: Node | null = sel.anchorNode;
+        if (el.nodeType === Node.TEXT_NODE) el = el.parentNode;
+        if ((el as HTMLElement)?.closest?.('blockquote')) insideQuote = true;
+        if ((el as HTMLElement)?.closest?.('pre')) insideCode = true;
+        while (el && el !== editorRef.current) {
+          const tag = (el as HTMLElement).tagName?.toLowerCase();
+          if (tag === 'a') isLink = true;
+          if (tag === 'ol') isOL = true;
+          if (tag === 'ul') isUL = true;
+          el = el.parentNode;
+        }
+      }
+
+      setIsQuoteActive(insideQuote);
+      setIsCodeActive(insideCode);
+
+      setActiveFormats({
+        bold: isBold,
+        italic: isItalic,
+        underline: isUnderline,
+        strikeThrough: isStrike,
+        subscript: isSub,
+        superscript: isSuper,
+        insertOrderedList: isOL,
+        insertUnorderedList: isUL,
+        link: isLink,
+        blockquote: insideQuote,
+        code: insideCode,
+      });
+    } catch {}
+  };
+
   const saveSelectionRange = () => {
     const sel = window.getSelection();
     if (sel && sel.rangeCount > 0 && editorRef.current?.contains(sel.anchorNode)) {
       savedRangeRef.current = sel.getRangeAt(0);
     }
+    updateActiveFormats();
+  };
+
+  const ensureEditorSelection = () => {
+    if (!editorRef.current) return null;
+    editorRef.current.focus();
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0 && editorRef.current.contains(sel.anchorNode)) {
+      savedRangeRef.current = sel.getRangeAt(0);
+      return sel;
+    }
+    if (savedRangeRef.current && sel) {
+      sel.removeAllRanges();
+      sel.addRange(savedRangeRef.current);
+      return sel;
+    }
+    return sel;
   };
 
   const executeFormatting = (command: string, value: string | undefined = undefined) => {
+    if (editorRef.current) {
+      ensureEditorSelection();
+      document.execCommand(command, false, value);
+      handleEditorInput();
+      setTimeout(updateActiveFormats, 50);
+    }
+  };
+
+  // Full-featured Link Modal Handlers
+  const openLinkModal = () => {
+    saveSelectionRange();
+    const sel = window.getSelection();
+    let selectedText = '';
+    let existingAnchor: HTMLAnchorElement | null = null;
+
+    if (sel && sel.rangeCount > 0) {
+      selectedText = sel.toString();
+      let node: Node | null = sel.anchorNode;
+      if (node && node.nodeType === Node.TEXT_NODE) {
+        node = node.parentNode;
+      }
+      while (node && node !== editorRef.current) {
+        if ((node as HTMLElement).tagName?.toLowerCase() === 'a') {
+          existingAnchor = node as HTMLAnchorElement;
+          break;
+        }
+        node = node?.parentNode || null;
+      }
+    }
+
+    if (existingAnchor) {
+      setCurrentLinkElement(existingAnchor);
+      setLinkUrl(existingAnchor.getAttribute('href') || '');
+      setLinkText(existingAnchor.textContent || selectedText);
+      setLinkOpenNewTab(existingAnchor.getAttribute('target') === '_blank');
+    } else {
+      setCurrentLinkElement(null);
+      setLinkUrl('');
+      setLinkText(selectedText);
+      setLinkOpenNewTab(true);
+    }
+
+    setShowLinkModal(true);
+  };
+
+  const handleApplyLink = () => {
+    let cleanUrl = linkUrl.trim();
+    if (!cleanUrl) {
+      showToast('Please enter a valid URL.', 'warning');
+      return;
+    }
+    if (cleanUrl.toLowerCase().startsWith('javascript:')) {
+      showToast('JavaScript links are not permitted for security reasons.', 'error');
+      return;
+    }
+    if (
+      !cleanUrl.startsWith('http://') &&
+      !cleanUrl.startsWith('https://') &&
+      !cleanUrl.startsWith('mailto:') &&
+      !cleanUrl.startsWith('#') &&
+      !cleanUrl.startsWith('/')
+    ) {
+      cleanUrl = 'https://' + cleanUrl;
+    }
+
+    if (currentLinkElement) {
+      currentLinkElement.setAttribute('href', cleanUrl);
+      if (linkOpenNewTab) {
+        currentLinkElement.setAttribute('target', '_blank');
+        currentLinkElement.setAttribute('rel', 'noopener noreferrer');
+      } else {
+        currentLinkElement.removeAttribute('target');
+        currentLinkElement.removeAttribute('rel');
+      }
+      if (linkText.trim()) {
+        currentLinkElement.textContent = linkText.trim();
+      }
+      currentLinkElement.className = 'text-blue-600 underline hover:text-blue-800 transition-colors cursor-pointer';
+      handleEditorInput();
+      setShowLinkModal(false);
+      showToast('Link updated successfully.');
+      setTimeout(updateActiveFormats, 50);
+      return;
+    }
+
     if (editorRef.current) {
       editorRef.current.focus();
       if (savedRangeRef.current) {
@@ -283,27 +912,424 @@ function WriterEditorMain() {
           sel.addRange(savedRangeRef.current);
         }
       }
-      document.execCommand(command, false, value);
+
+      const sel = window.getSelection();
+      const hasSelection = sel && !sel.isCollapsed && sel.toString().length > 0;
+
+      if (hasSelection) {
+        document.execCommand('createLink', false, cleanUrl);
+        if (editorRef.current) {
+          const links = editorRef.current.querySelectorAll('a');
+          links.forEach((a) => {
+            if (a.getAttribute('href') === cleanUrl) {
+              a.className = 'text-blue-600 underline hover:text-blue-800 transition-colors cursor-pointer';
+              if (linkOpenNewTab) {
+                a.setAttribute('target', '_blank');
+                a.setAttribute('rel', 'noopener noreferrer');
+              }
+            }
+          });
+        }
+      } else {
+        const textToDisplay = linkText.trim() || cleanUrl;
+        const targetAttr = linkOpenNewTab ? ' target="_blank" rel="noopener noreferrer"' : '';
+        const linkHtml = `<a href="${cleanUrl}" class="text-blue-600 underline hover:text-blue-800 transition-colors cursor-pointer"${targetAttr}>${textToDisplay}</a>&nbsp;`;
+        document.execCommand('insertHTML', false, linkHtml);
+      }
+
       handleEditorInput();
+      setShowLinkModal(false);
+      showToast('Link inserted successfully.');
+      setTimeout(updateActiveFormats, 50);
     }
   };
 
-  const handleInsertLink = () => {
-    const url = window.prompt('Enter link URL:', 'https://');
-    if (url && url.trim() && url !== 'https://') {
-      executeFormatting('createLink', url.trim());
+  const handleRemoveLink = () => {
+    if (currentLinkElement) {
+      const text = currentLinkElement.textContent || '';
+      const textNode = document.createTextNode(text);
+      currentLinkElement.parentNode?.replaceChild(textNode, currentLinkElement);
+      handleEditorInput();
+      setShowLinkModal(false);
+      showToast('Link removed.');
+      setTimeout(updateActiveFormats, 50);
+    } else {
+      executeFormatting('unlink');
+      setShowLinkModal(false);
+      showToast('Link removed.');
+      setTimeout(updateActiveFormats, 50);
     }
   };
 
-  // Image selection inside editor (Reference Image 4)
+  // Requirement: Toggle Quote Card Section at exact cursor position
+  const toggleQuoteSection = () => {
+    if (!editorRef.current) return;
+    editorRef.current.focus();
+
+    const sel = window.getSelection();
+    let range: Range | null = null;
+    if (sel && sel.rangeCount > 0 && editorRef.current.contains(sel.anchorNode)) {
+      range = sel.getRangeAt(0);
+    } else if (savedRangeRef.current && editorRef.current.contains(savedRangeRef.current.commonAncestorContainer)) {
+      range = savedRangeRef.current;
+    }
+
+    // Check if cursor is currently inside an existing quote block
+    let existingQuote: HTMLElement | null = null;
+    if (range) {
+      let node: Node | null = range.startContainer;
+      if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+      existingQuote = (node as HTMLElement)?.closest?.('blockquote') || null;
+    }
+
+    // If not directly inside, check last toggled quote element if it still exists in editor
+    if (!existingQuote && lastToggledQuoteElRef.current && editorRef.current.contains(lastToggledQuoteElRef.current)) {
+      existingQuote = lastToggledQuoteElRef.current;
+    }
+
+    if (existingQuote) {
+      // TOGGLE OFF: remove blockquote and restore original content as paragraph(s)
+      quoteContentRef.current = existingQuote.innerHTML;
+      const text = existingQuote.innerText?.trim() || existingQuote.textContent?.trim() || '';
+      const p = document.createElement('p');
+      p.innerHTML = text ? text.replace(/\n\n+/g, '</p><p>').replace(/\n/g, '<br>') : '<br>';
+
+      existingQuote.parentNode?.replaceChild(p, existingQuote);
+      lastToggledQuoteElRef.current = null;
+      setIsQuoteActive(false);
+
+      // Place cursor in restored paragraph
+      const newRange = document.createRange();
+      newRange.selectNodeContents(p);
+      newRange.collapse(false);
+      sel?.removeAllRanges();
+      sel?.addRange(newRange);
+      savedRangeRef.current = newRange;
+
+      handleEditorInput();
+      showToast('Quote section removed and restored to text.');
+      setTimeout(updateActiveFormats, 50);
+      return;
+    }
+
+    // TOGGLE ON: Format current paragraph or selection as quote block in-place
+    let targetBlock: HTMLElement | null = null;
+    if (range) {
+      let node: Node | null = range.startContainer;
+      if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+      targetBlock = ((node as HTMLElement)?.closest?.('p, div, h1, h2, h3, h4, h5, h6, li') as HTMLElement | null) || null;
+      if (targetBlock && !editorRef.current.contains(targetBlock)) targetBlock = null;
+      if (targetBlock === editorRef.current) targetBlock = null;
+    }
+
+    const quoteEl = document.createElement('blockquote');
+    quoteEl.id = 'writer-quote-section';
+    quoteEl.className = 'quote-section border-l-[3px] border-[#EA580C] pl-4 py-1.5 my-3 text-slate-800 font-serif text-base';
+    quoteEl.setAttribute('contenteditable', 'true');
+
+    if (range && !range.collapsed && range.toString().trim()) {
+      const fragment = range.extractContents();
+      const p = document.createElement('p');
+      p.appendChild(fragment);
+      quoteEl.appendChild(p);
+      range.insertNode(quoteEl);
+    } else if (targetBlock && targetBlock.parentNode) {
+      const content = targetBlock.innerHTML.trim() ? targetBlock.innerHTML : '<br>';
+      quoteEl.innerHTML = `<p>${content}</p>`;
+      targetBlock.parentNode.replaceChild(quoteEl, targetBlock);
+    } else {
+      quoteEl.innerHTML = '<p><br></p>';
+      if (range) {
+        range.insertNode(quoteEl);
+      } else {
+        editorRef.current.appendChild(quoteEl);
+      }
+    }
+
+    lastToggledQuoteElRef.current = quoteEl;
+    setIsQuoteActive(true);
+
+    const pInside = quoteEl.querySelector('p') || quoteEl;
+    const newRange = document.createRange();
+    newRange.selectNodeContents(pInside);
+    newRange.collapse(false);
+    sel?.removeAllRanges();
+    sel?.addRange(newRange);
+    savedRangeRef.current = newRange;
+
+    handleEditorInput();
+    showToast('Quote section formatted.');
+    setTimeout(updateActiveFormats, 50);
+  };
+
+  // Requirement: Toggle Code Block Section at exact cursor position
+  const toggleCodeSection = () => {
+    if (!editorRef.current) return;
+    editorRef.current.focus();
+
+    const sel = window.getSelection();
+    let range: Range | null = null;
+    if (sel && sel.rangeCount > 0 && editorRef.current.contains(sel.anchorNode)) {
+      range = sel.getRangeAt(0);
+    } else if (savedRangeRef.current && editorRef.current.contains(savedRangeRef.current.commonAncestorContainer)) {
+      range = savedRangeRef.current;
+    }
+
+    // Check if cursor is currently inside a code block
+    let existingCode: HTMLElement | null = null;
+    if (range) {
+      let node: Node | null = range.startContainer;
+      if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+      existingCode = (node as HTMLElement)?.closest?.('pre') || null;
+    }
+
+    // If not directly inside, check last toggled code element
+    if (!existingCode && lastToggledCodeElRef.current && editorRef.current.contains(lastToggledCodeElRef.current)) {
+      existingCode = lastToggledCodeElRef.current;
+    }
+
+    if (existingCode) {
+      // TOGGLE OFF: remove pre and restore original content as paragraph
+      codeContentRef.current = existingCode.innerHTML;
+      const text = existingCode.textContent?.trim() || '';
+      const p = document.createElement('p');
+      p.innerHTML = text ? text.replace(/\n\n+/g, '</p><p>').replace(/\n/g, '<br>') : '<br>';
+
+      existingCode.parentNode?.replaceChild(p, existingCode);
+      lastToggledCodeElRef.current = null;
+      setIsCodeActive(false);
+
+      // Place cursor in restored paragraph
+      const newRange = document.createRange();
+      newRange.selectNodeContents(p);
+      newRange.collapse(false);
+      sel?.removeAllRanges();
+      sel?.addRange(newRange);
+      savedRangeRef.current = newRange;
+
+      handleEditorInput();
+      showToast('Code block removed and restored to text.');
+      setTimeout(updateActiveFormats, 50);
+      return;
+    }
+
+    // TOGGLE ON: Format current paragraph or selection as code block in-place
+    let targetBlock: HTMLElement | null = null;
+    if (range) {
+      let node: Node | null = range.startContainer;
+      if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+      targetBlock = ((node as HTMLElement)?.closest?.('p, div, h1, h2, h3, h4, h5, h6, li') as HTMLElement | null) || null;
+      if (targetBlock && !editorRef.current.contains(targetBlock)) targetBlock = null;
+      if (targetBlock === editorRef.current) targetBlock = null;
+    }
+
+    const codeEl = document.createElement('pre');
+    codeEl.id = 'writer-code-section';
+    codeEl.className = 'code-section bg-slate-50 border border-slate-200 text-slate-800 p-2.5 sm:p-3 rounded-md font-mono text-xs sm:text-sm my-3 overflow-x-auto whitespace-pre';
+    codeEl.setAttribute('contenteditable', 'true');
+
+    if (range && !range.collapsed && range.toString().trim()) {
+      const fragment = range.extractContents();
+      const codeTag = document.createElement('code');
+      codeTag.appendChild(fragment);
+      codeEl.appendChild(codeTag);
+      range.insertNode(codeEl);
+    } else if (targetBlock && targetBlock.parentNode) {
+      const content = targetBlock.textContent?.trim() || targetBlock.innerHTML.trim() || '<br>';
+      codeEl.innerHTML = `<code>${content}</code>`;
+      targetBlock.parentNode.replaceChild(codeEl, targetBlock);
+    } else {
+      codeEl.innerHTML = '<code><br></code>';
+      if (range) {
+        range.insertNode(codeEl);
+      } else {
+        editorRef.current.appendChild(codeEl);
+      }
+    }
+
+    lastToggledCodeElRef.current = codeEl;
+    setIsCodeActive(true);
+
+    const codeInside = codeEl.querySelector('code') || codeEl;
+    const newRange = document.createRange();
+    newRange.selectNodeContents(codeInside);
+    newRange.collapse(false);
+    sel?.removeAllRanges();
+    sel?.addRange(newRange);
+    savedRangeRef.current = newRange;
+
+    handleEditorInput();
+    showToast('Code block formatted.');
+    setTimeout(updateActiveFormats, 50);
+  };
+
+  // Requirement 6: Numbered and Bullet List toggle functions & selection handling
+  const applyListFormatting = (listType: 'ol' | 'ul') => {
+    if (!editorRef.current) return;
+    const sel = ensureEditorSelection();
+
+    if (!sel || sel.rangeCount === 0) {
+      const listTag = listType === 'ol' ? 'ol' : 'ul';
+      const fallbackHtml = `<${listTag} class="${listType === 'ol' ? 'editor-ordered-list' : 'editor-unordered-list'}"><li>Numbered item</li></${listTag}><p><br></p>`;
+      document.execCommand('insertHTML', false, fallbackHtml);
+      handleEditorInput();
+      setTimeout(updateActiveFormats, 50);
+      return;
+    }
+
+    const range = sel.getRangeAt(0);
+    let node: Node | null = range.startContainer;
+    if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+    const currentLi = (node as HTMLElement)?.closest?.('li');
+    const currentList = currentLi?.parentElement;
+
+    if (currentList) {
+      const currentTag = currentList.tagName.toLowerCase();
+      if (currentTag === listType) {
+        // Toggle OFF: convert li back to paragraph
+        document.execCommand(listType === 'ol' ? 'insertOrderedList' : 'insertUnorderedList', false);
+        // Fallback if not unwrapped by execCommand
+        if (currentLi && currentLi.parentElement) {
+          const p = document.createElement('p');
+          p.innerHTML = currentLi.innerHTML || '<br>';
+          currentLi.replaceWith(p);
+          if (currentList.children.length === 0) currentList.remove();
+        }
+      } else {
+        // Switch between ol and ul
+        const newList = document.createElement(listType);
+        newList.className = listType === 'ol' ? 'editor-ordered-list' : 'editor-unordered-list';
+        newList.innerHTML = currentList.innerHTML;
+        currentList.replaceWith(newList);
+      }
+      handleEditorInput();
+      setTimeout(updateActiveFormats, 50);
+      return;
+    }
+
+    // Direct conversion of selected word or entire paragraph:
+    let parentBlock = range.commonAncestorContainer as HTMLElement;
+    if (parentBlock.nodeType === Node.TEXT_NODE) parentBlock = parentBlock.parentElement as HTMLElement;
+    while (parentBlock && parentBlock !== editorRef.current && !['P', 'DIV', 'H1', 'H2', 'H3'].includes(parentBlock.tagName)) {
+      parentBlock = parentBlock.parentElement as HTMLElement;
+    }
+
+    const selectedText = range.toString().trim();
+
+    if (parentBlock && parentBlock !== editorRef.current && (parentBlock.tagName === 'P' || parentBlock.tagName === 'DIV')) {
+      const list = document.createElement(listType);
+      list.className = listType === 'ol' ? 'editor-ordered-list' : 'editor-unordered-list';
+      const li = document.createElement('li');
+      li.innerHTML = parentBlock.innerHTML || '<br>';
+      list.appendChild(li);
+      parentBlock.replaceWith(list);
+    } else if (selectedText) {
+      const list = document.createElement(listType);
+      list.className = listType === 'ol' ? 'editor-ordered-list' : 'editor-unordered-list';
+      const li = document.createElement('li');
+      li.textContent = selectedText;
+      list.appendChild(li);
+      range.deleteContents();
+      range.insertNode(list);
+    } else {
+      const command = listType === 'ol' ? 'insertOrderedList' : 'insertUnorderedList';
+      document.execCommand(command, false);
+    }
+
+    handleEditorInput();
+    setTimeout(updateActiveFormats, 50);
+  };
+
+  const toggleOrderedList = () => applyListFormatting('ol');
+  const toggleUnorderedList = () => applyListFormatting('ul');
+
+  // List Enter & Double Enter Handling (Pressing Enter creates next list item, double enter exits list)
+  const handleEditorKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter') {
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0) {
+        const range = sel.getRangeAt(0);
+        let node: Node | null = range.startContainer;
+        if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+        const li = (node as HTMLElement)?.closest?.('li');
+        if (li && (li.textContent === '' || li.textContent === '\n') && li.parentElement) {
+          e.preventDefault();
+          const parentList = li.parentElement;
+          const p = document.createElement('p');
+          p.innerHTML = '<br>';
+          if (parentList.nextSibling) {
+            parentList.parentNode?.insertBefore(p, parentList.nextSibling);
+          } else {
+            parentList.parentNode?.appendChild(p);
+          }
+          li.remove();
+          if (parentList.children.length === 0) {
+            parentList.remove();
+          }
+          const newRange = document.createRange();
+          newRange.setStart(p, 0);
+          newRange.collapse(true);
+          sel.removeAllRanges();
+          sel.addRange(newRange);
+          handleEditorInput();
+          setTimeout(updateActiveFormats, 50);
+          return;
+        }
+      }
+    }
+    setTimeout(updateActiveFormats, 50);
+  };
+
+  // Image & Link selection inside editor
   const handleEditorClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
+
+    // Ignore clicks inside the floating toolbar or open modals
+    if (target.closest('.floating-image-toolbar') || target.closest('[role="dialog"]')) {
+      return;
+    }
+
+    // Requirement 1: Link Redirection when clicking anchor tag
+    const anchor = target.closest('a') as HTMLAnchorElement | null;
+    if (anchor && editorRef.current?.contains(anchor)) {
+      const href = anchor.getAttribute('href');
+      if (href && href !== '#' && !href.startsWith('javascript:')) {
+        const targetAttr = anchor.getAttribute('target') || '_blank';
+        window.open(href, targetAttr, 'noopener,noreferrer');
+        showToast(`Redirecting to ${href}...`, 'success');
+        return;
+      }
+    }
+
     const figure = target.closest('figure.article-image-figure') as HTMLElement | null;
 
     if (figure && editorRef.current?.contains(figure)) {
+      if (!figure.dataset.imageId) {
+        figure.dataset.imageId = 'img_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+      }
       setSelectedImageFigure(figure);
+      editingImageFigureRef.current = figure;
+      editingImageIdRef.current = figure.dataset.imageId;
+
       const img = figure.querySelector('img');
       const figcaption = figure.querySelector('figcaption');
+      const captionSpan = figure.querySelector('.image-caption');
+      const creditSpan = figure.querySelector('.image-credit');
+
+      let parsedCaption = captionSpan ? captionSpan.textContent || '' : '';
+      let parsedCredit = creditSpan ? creditSpan.textContent || '' : '';
+
+      if (!parsedCaption && !parsedCredit && figcaption) {
+        parsedCaption = figcaption.innerText || '';
+      }
+
+      let cleanCredit = parsedCredit.trim();
+      if (cleanCredit.startsWith('(') && cleanCredit.endsWith(')')) {
+        cleanCredit = cleanCredit.slice(1, -1).trim();
+      }
+      if (/^photo:\s*/i.test(cleanCredit)) {
+        cleanCredit = cleanCredit.replace(/^photo:\s*/i, '').trim();
+      }
 
       const size = (figure.dataset.size as 'small' | 'medium' | 'full') || 'medium';
       const align = (figure.dataset.align as 'left' | 'center' | 'no_wrap' | 'right') || 'center';
@@ -311,8 +1337,8 @@ function WriterEditorMain() {
       setSelectedImageProps({
         src: img?.getAttribute('src') || '',
         alt: img?.getAttribute('alt') || '',
-        caption: figcaption?.innerText || '',
-        credit: '',
+        caption: parsedCaption,
+        credit: cleanCredit,
         size,
         alignment: align,
       });
@@ -328,6 +1354,7 @@ function WriterEditorMain() {
       setToolbarPosition(null);
       setSelectedImageProps(null);
     }
+    updateActiveFormats();
   };
 
   const handleUpdateImageSize = (size: 'small' | 'medium' | 'full') => {
@@ -408,14 +1435,23 @@ function WriterEditorMain() {
 
   const handleEditSelectedImage = () => {
     if (!selectedImageProps) return;
+    if (selectedImageFigure) {
+      if (!selectedImageFigure.dataset.imageId) {
+        selectedImageFigure.dataset.imageId = 'img_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+      }
+      editingImageFigureRef.current = selectedImageFigure;
+      editingImageIdRef.current = selectedImageFigure.dataset.imageId;
+    }
     setModalImageUrl(selectedImageProps.src);
     setImageCaption(selectedImageProps.caption);
+    setImageCredit(selectedImageProps.credit);
     setImageSize(selectedImageProps.size);
     setImageAlignment(selectedImageProps.alignment);
     setShowImageModal(true);
   };
 
-  const currentSubcategories = CATEGORY_SUBCATEGORIES_MAP[mainCategory] || CATEGORY_SUBCATEGORIES_MAP['Startups and Entrepreneurship'];
+  const currentSubcategories = (allCategories && allCategories.length > 0 ? allCategories : INITIAL_ALL_CATEGORIES)
+    .filter((cat) => cat.trim().toLowerCase() !== mainCategory.trim().toLowerCase());
 
   const handleToggleSubCategory = (sub: string) => {
     if (selectedSubCategories.includes(sub)) {
@@ -432,7 +1468,8 @@ function WriterEditorMain() {
   const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' || e.key === ',') {
       e.preventDefault();
-      const trimmed = tagInput.trim().replace(/^#/, '');
+      const rawVal = e.currentTarget ? e.currentTarget.value : tagInput;
+      const trimmed = (rawVal || '').trim().replace(/^#/, '');
       if (trimmed && !tags.includes(trimmed)) {
         if (tags.length >= 10) {
           showToast('Maximum 10 tags allowed.', 'warning');
@@ -440,8 +1477,34 @@ function WriterEditorMain() {
         }
         setTags((prev) => [...prev, trimmed]);
         setTagInput('');
+        if (e.currentTarget) e.currentTarget.value = '';
+      }
+    } else if (e.key === 'Backspace' && !tagInput && tags.length > 0) {
+      // Allow backspace to pop last tag back into input for quick editing
+      const lastTag = tags[tags.length - 1];
+      setTags((prev) => prev.slice(0, -1));
+      setTagInput(lastTag);
+    }
+  };
+
+  const handleTagBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const rawVal = e.currentTarget ? e.currentTarget.value : tagInput;
+    const trimmed = (rawVal || '').trim().replace(/^#/, '');
+    if (trimmed && !tags.includes(trimmed)) {
+      if (tags.length < 10) {
+        setTags((prev) => [...prev, trimmed]);
+        setTagInput('');
+        if (e.currentTarget) e.currentTarget.value = '';
       }
     }
+  };
+
+  const handleEditTag = (tagToEdit: string) => {
+    setTags((prev) => prev.filter((t) => t !== tagToEdit));
+    setTagInput(tagToEdit);
+    setTimeout(() => {
+      tagInputRef.current?.focus();
+    }, 50);
   };
 
   const handleRemoveTag = (tagToRemove: string) => {
@@ -515,36 +1578,83 @@ function WriterEditorMain() {
     }
 
     const captionSafe = imageCaption.trim().replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    const creditSafe = imageCredit.trim().replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const rawCredit = imageCredit.trim().replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    // Format credit cleanly: e.g. "122445" -> "(PHOTO: 122445)"
+    let formattedCredit = '';
+    if (rawCredit) {
+      if (rawCredit.startsWith('(') && rawCredit.endsWith(')')) {
+        formattedCredit = rawCredit;
+      } else if (/^photo:\s*/i.test(rawCredit)) {
+        formattedCredit = `(${rawCredit.toUpperCase()})`;
+      } else {
+        formattedCredit = `(PHOTO: ${rawCredit})`;
+      }
+    }
+
     const altSafe = (captionSafe || imageKeywords.join(', ') || title.trim() || 'Article Image').replace(/"/g, '&quot;');
 
-    const captionMarkup = (captionSafe || creditSafe)
-      ? `<figcaption class="text-xs text-slate-500 mt-2 italic font-sans ${imageAlignment === 'center' ? 'text-center' : ''}">${captionSafe}${creditSafe ? ` <span class="text-slate-400">(${creditSafe})</span>` : ''}</figcaption>`
+    const captionMarkup = (captionSafe || formattedCredit)
+      ? `<figcaption class="flex items-center justify-between text-xs text-slate-500 mt-2 px-0.5 w-full font-sans">
+          <span class="image-caption text-left text-slate-600 italic font-normal">${captionSafe}</span>
+          <span class="image-credit text-right text-slate-400 font-medium tracking-wide">${formattedCredit}</span>
+        </figcaption>`
       : '';
 
-    if (selectedImageFigure) {
-      selectedImageFigure.dataset.size = imageSize;
-      selectedImageFigure.dataset.align = imageAlignment;
-      selectedImageFigure.className = `article-image-figure group relative cursor-pointer ${alignClass} ${sizeClass} select-none`;
-      const img = selectedImageFigure.querySelector('img');
+    const targetFigure =
+      editingImageFigureRef.current ||
+      (editingImageIdRef.current && editorRef.current?.querySelector(`figure[data-image-id="${editingImageIdRef.current}"]`) as HTMLElement | null) ||
+      (selectedImageFigure && editorRef.current?.contains(selectedImageFigure) ? selectedImageFigure : null);
+
+    if (targetFigure && editorRef.current?.contains(targetFigure)) {
+      targetFigure.dataset.size = imageSize;
+      targetFigure.dataset.align = imageAlignment;
+      targetFigure.className = `article-image-figure group relative cursor-pointer ${alignClass} ${sizeClass} select-none`;
+      const img = targetFigure.querySelector('img');
       if (img) {
         img.src = finalUrl;
         img.alt = altSafe;
       }
-      const figcaption = selectedImageFigure.querySelector('figcaption');
+      const figcaption = targetFigure.querySelector('figcaption');
       if (figcaption) {
-        figcaption.innerHTML = `${captionSafe}${creditSafe ? ` <span class="text-slate-400">(${creditSafe})</span>` : ''}`;
+        if (captionMarkup) {
+          figcaption.className = 'flex items-center justify-between text-xs text-slate-500 mt-2 px-0.5 w-full font-sans';
+          figcaption.innerHTML = `
+            <span class="image-caption text-left text-slate-600 italic font-normal">${captionSafe}</span>
+            <span class="image-credit text-right text-slate-400 font-medium tracking-wide">${formattedCredit}</span>
+          `;
+        } else {
+          figcaption.remove();
+        }
       } else if (captionMarkup) {
-        selectedImageFigure.insertAdjacentHTML('beforeend', captionMarkup);
+        targetFigure.insertAdjacentHTML('beforeend', captionMarkup);
       }
+
+      if (!featuredImageUrl || (selectedImageProps && featuredImageUrl === selectedImageProps.src)) {
+        setFeaturedImageUrl(finalUrl);
+      }
+
+      editingImageFigureRef.current = null;
+      editingImageIdRef.current = null;
+      setSelectedImageFigure(targetFigure);
+      setSelectedImageProps({
+        src: finalUrl,
+        alt: altSafe,
+        caption: captionSafe,
+        credit: rawCredit,
+        size: imageSize,
+        alignment: imageAlignment,
+      });
+
       handleEditorInput();
       setShowImageModal(false);
-      showToast('Image properties updated!', 'success');
+      showToast('Image updated successfully in place!', 'success');
       return;
     }
 
+    const newImageId = 'img_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
     const figureMarkup = `
-      <figure class="article-image-figure group relative cursor-pointer ${alignClass} ${sizeClass} select-none" data-size="${imageSize}" data-align="${imageAlignment}" contenteditable="false">
+      <figure class="article-image-figure group relative cursor-pointer ${alignClass} ${sizeClass} select-none" data-image-id="${newImageId}" data-size="${imageSize}" data-align="${imageAlignment}" contenteditable="false">
         <img src="${finalUrl}" alt="${altSafe}" class="rounded-xl w-full h-auto object-cover shadow-sm border border-slate-200 pointer-events-none" />
         ${captionMarkup}
       </figure>
@@ -572,6 +1682,8 @@ function WriterEditorMain() {
       setFeaturedImageUrl(finalUrl);
     }
 
+    editingImageFigureRef.current = null;
+    editingImageIdRef.current = null;
     setShowImageModal(false);
     setModalImageUrl('');
     setUploadedFileName('');
@@ -582,55 +1694,36 @@ function WriterEditorMain() {
   };
 
   const handleAutoGenerateSEO = () => {
-    if (!title.trim()) {
-      showToast('Please enter an article title first before generating SEO.', 'error');
+    const descriptionSource =
+      subtitle.trim() ||
+      (editorRef.current ? extractPlainTextFromHtml(editorRef.current.innerHTML) : extractPlainTextFromHtml(htmlContent));
+
+    if (!title.trim() && !descriptionSource) {
+      showToast('Please enter an article title or description first before generating SEO.', 'error');
       return;
     }
 
     setIsGeneratingSeo(true);
 
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = htmlContent || '';
-    const plainText = tempDiv.innerText || tempDiv.textContent || subtitle || '';
+    const generatedKeyword = generateFocusKeyword(title, descriptionSource);
+    const generatedSummary = generateCardSummary(descriptionSource, title);
+    const generatedMetaDesc = generateMetaDescription(descriptionSource, title);
 
-    const cleanTitle = title.replace(/[^\w\s]/gi, ' ').trim();
-    const titleWords = cleanTitle.split(/\s+/).filter((w) => w.length > 3);
-    let bestKeyword = titleWords.length >= 2 ? `${titleWords[0]} ${titleWords[1]}` : (titleWords[0] || 'Business Strategy');
-    bestKeyword = bestKeyword
-      .split(' ')
-      .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-      .join(' ');
-    setFocusKeyword(bestKeyword);
+    setFocusKeyword(generatedKeyword);
+    setCardSummary(generatedSummary);
+    setMetaDescription(generatedMetaDesc);
+    setSuggestedKeywords(generateFocusKeywordsList(title, descriptionSource));
+    setMetaTitle(title.trim() ? `${title.trim()} | Washington Times` : 'Article | Washington Times');
 
-    let summary = '';
-    if (plainText.trim()) {
-      const sentences = plainText.split(/(?<=[.?!])\s+/).filter(Boolean);
-      if (sentences.length >= 2) {
-        summary = `${sentences[0]} ${sentences[1]}`.trim();
-      } else if (sentences.length === 1) {
-        summary = sentences[0].trim();
-      }
-    }
-    if (!summary) {
-      summary = subtitle.trim() || `Comprehensive reporting and editorial insights on ${title.trim()}.`;
-    }
-    if (summary.length > 150) {
-      summary = summary.substring(0, 147).trim() + '...';
-    }
-    setCardSummary(summary);
-
-    let metaDesc = `Discover why ${title.trim()} matters. In-depth analysis, expert perspectives, and key developments on ${bestKeyword}.`;
-    if (metaDesc.length > 158) {
-      metaDesc = metaDesc.substring(0, 155).trim() + '...';
-    }
-    setMetaDescription(metaDesc);
-
-    setMetaTitle(`${title.trim()} | Entrepreneur`);
+    // Reset manual edit tracking so user gets fresh auto-synced values
+    setIsCardSummaryEdited(false);
+    setIsFocusKeywordEdited(false);
+    setIsMetaDescriptionEdited(false);
 
     setTimeout(() => {
       setIsGeneratingSeo(false);
       showToast('SEO fields auto-generated successfully!', 'success');
-    }, 450);
+    }, 400);
   };
 
   const handleSaveDraft = async () => {
@@ -648,6 +1741,7 @@ function WriterEditorMain() {
         JSON.stringify({
           title: title.trim(),
           subtitle: subtitle.trim(),
+          authorName: authorName.trim(),
           mainCategory,
           selectedSubCategories,
           tags,
@@ -672,10 +1766,13 @@ function WriterEditorMain() {
         content: currentHtml || subtitle.trim() || title.trim(),
         imageUrl: featuredImageUrl || '/images/topic-hero-leaders.jpg',
         status: 'draft',
-        authorName: user?.name || 'Staff Contributor',
+        authorName: authorName.trim() || user?.name || 'Staff Contributor',
         readTime: readDuration,
         tags,
         subCategories: selectedSubCategories,
+        cardSummary: cardSummary.trim(),
+        focusKeyword: focusKeyword.trim(),
+        metaDescription: metaDescription.trim(),
       };
 
       if (editingArticleId) {
@@ -693,6 +1790,9 @@ function WriterEditorMain() {
       if (data?.success) {
         if (!editingArticleId && data.article?.dbId) {
           setEditingArticleId(data.article.dbId);
+          if (typeof window !== 'undefined') {
+            window.history.replaceState(null, '', `?id=${data.article.dbId}`);
+          }
         }
         showToast('Draft saved successfully!', 'success');
       } else {
@@ -728,10 +1828,13 @@ function WriterEditorMain() {
         content: currentHtml,
         imageUrl: featuredImageUrl || '/images/topic-hero-leaders.jpg',
         status: 'pending_review',
-        authorName: user?.name || 'Staff Contributor',
+        authorName: authorName.trim() || user?.name || 'Staff Contributor',
         readTime: readDuration,
         tags,
         subCategories: selectedSubCategories,
+        cardSummary: cardSummary.trim(),
+        focusKeyword: focusKeyword.trim(),
+        metaDescription: metaDescription.trim(),
       };
 
       if (editingArticleId) {
@@ -750,7 +1853,7 @@ function WriterEditorMain() {
         showToast('Article submitted for review successfully!', 'success');
         localStorage.removeItem('entrepreneur_writer_draft');
         setTimeout(() => {
-          router.push('/dashboard/writer');
+          router.push('/dashboard/writer?tab=pending_review');
         }, 1500);
       } else {
         showToast(data?.error || 'Failed to submit article.', 'error');
@@ -847,6 +1950,7 @@ function WriterEditorMain() {
               <Send className="w-3.5 h-3.5" />
               <span>{isSubmitting ? 'Submitting...' : 'Submit for Review'}</span>
             </button>
+
           </div>
 
         </div>
@@ -860,31 +1964,32 @@ function WriterEditorMain() {
           <div className="w-full lg:w-[860px] xl:w-[940px] 2xl:w-[980px] shrink-0 flex flex-col gap-5 relative">
             <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xs flex flex-col gap-5 min-h-[920px] lg:min-h-[960px] relative text-slate-800">
               
-              {/* Arrow Icon: Show and Hide Only the Second Box (Updates direction on toggle) */}
+              {/* Toggle Article Settings Button (Exact matching Reference Image 1 marking 1) */}
               <button
                 type="button"
                 onClick={() => setSidebarCollapsed((prev) => !prev)}
                 aria-expanded={!sidebarCollapsed}
                 aria-controls="article-settings-sidebar"
-                className={`absolute top-5 w-7 h-7 bg-white border border-slate-300 hover:border-slate-400 rounded-full shadow-xs flex items-center justify-center text-slate-600 hover:text-slate-900 transition-all cursor-pointer z-30 ${
-                  sidebarCollapsed ? 'right-4' : '-right-3.5'
+                className={`absolute top-5 w-8 h-8 bg-white border border-slate-300 hover:border-slate-400 rounded-lg shadow-xs flex items-center justify-center text-slate-700 hover:text-slate-900 transition-all cursor-pointer z-30 ${
+                  sidebarCollapsed ? 'right-4' : '-right-4'
                 }`}
-                title={sidebarCollapsed ? 'Show Article Settings' : 'Hide Article Settings'}
-                aria-label={sidebarCollapsed ? 'Show Article Settings' : 'Hide Article Settings'}
+                title={sidebarCollapsed ? 'Open Article Settings' : 'Hide Article Settings'}
+                aria-label="Toggle Article Settings"
               >
-                {sidebarCollapsed ? (
-                  <ChevronLeft className="w-4 h-4 text-slate-700 stroke-[2.5]" />
+                {!sidebarCollapsed ? (
+                  <PanelRightClose className="w-4 h-4 text-slate-700" />
                 ) : (
-                  <ChevronRight className="w-4 h-4 text-slate-700 stroke-[2.5]" />
+                  <PanelRightOpen className="w-4 h-4 text-slate-700" />
                 )}
               </button>
 
-              {/* HORIZONTAL RICH TEXT TOOLBAR matching Reference Image 1 */}
-              <div className="flex flex-wrap items-center gap-1 sm:gap-1.5 p-2 bg-slate-50 border border-slate-200/80 rounded-xl text-slate-600 shadow-2xs">
+              {/* HORIZONTAL RICH TEXT TOOLBAR matching Reference Image 1 & 2 */}
+              <div className="sticky top-[58px] z-20 flex flex-wrap items-center gap-1 sm:gap-1.5 p-2 bg-slate-50/98 backdrop-blur-xs border border-slate-200/90 rounded-xl text-slate-600 shadow-xs">
                 
                 {/* Group 1: Undo & Redo */}
                 <button
                   type="button"
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => executeFormatting('undo')}
                   title="Undo"
                   className="p-1.5 hover:bg-white hover:text-slate-900 rounded-md transition-colors cursor-pointer"
@@ -893,6 +1998,7 @@ function WriterEditorMain() {
                 </button>
                 <button
                   type="button"
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => executeFormatting('redo')}
                   title="Redo"
                   className="p-1.5 hover:bg-white hover:text-slate-900 rounded-md transition-colors cursor-pointer"
@@ -903,81 +2009,75 @@ function WriterEditorMain() {
                 {/* Divider */}
                 <span className="w-[1px] h-4 bg-slate-300 mx-1 select-none" />
 
-                {/* Group 2: B, I, U, Strikethrough, Subscript, Superscript */}
+                {/* Group 2: B, I, U (Strikethrough, Subscript, Superscript removed per Requirement 3) */}
                 <button
                   type="button"
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => executeFormatting('bold')}
                   title="Bold"
-                  className="p-1.5 hover:bg-white hover:text-slate-900 rounded-md transition-colors font-bold cursor-pointer"
+                  className={`p-1.5 rounded-md transition-colors font-bold cursor-pointer ${
+                    activeFormats.bold ? 'bg-slate-200 text-[#1642D0] shadow-2xs' : 'hover:bg-white hover:text-slate-900 text-slate-600'
+                  }`}
                 >
                   <Bold className="w-4 h-4" />
                 </button>
                 <button
                   type="button"
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => executeFormatting('italic')}
                   title="Italic"
-                  className="p-1.5 hover:bg-white hover:text-slate-900 rounded-md transition-colors italic cursor-pointer"
+                  className={`p-1.5 rounded-md transition-colors italic cursor-pointer ${
+                    activeFormats.italic ? 'bg-slate-200 text-[#1642D0] shadow-2xs' : 'hover:bg-white hover:text-slate-900 text-slate-600'
+                  }`}
                 >
                   <Italic className="w-4 h-4" />
                 </button>
                 <button
                   type="button"
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => executeFormatting('underline')}
                   title="Underline"
-                  className="p-1.5 hover:bg-white hover:text-slate-900 rounded-md transition-colors cursor-pointer"
+                  className={`p-1.5 rounded-md transition-colors cursor-pointer ${
+                    activeFormats.underline ? 'bg-slate-200 text-[#1642D0] shadow-2xs' : 'hover:bg-white hover:text-slate-900 text-slate-600'
+                  }`}
                 >
                   <UnderlineIcon className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => executeFormatting('strikeThrough')}
-                  title="Strikethrough"
-                  className="p-1.5 hover:bg-white hover:text-slate-900 rounded-md transition-colors cursor-pointer"
-                >
-                  <Strikethrough className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => executeFormatting('subscript')}
-                  title="Subscript"
-                  className="p-1.5 hover:bg-white hover:text-slate-900 rounded-md transition-colors cursor-pointer"
-                >
-                  <Subscript className="w-3.5 h-3.5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => executeFormatting('superscript')}
-                  title="Superscript"
-                  className="p-1.5 hover:bg-white hover:text-slate-900 rounded-md transition-colors cursor-pointer"
-                >
-                  <Superscript className="w-3.5 h-3.5" />
                 </button>
 
                 {/* Divider */}
                 <span className="w-[1px] h-4 bg-slate-300 mx-1 select-none" />
 
-                {/* Group 3: Link & Lists */}
+                {/* Group 3: Link & Lists (Numbered & Bulleted Lists per Requirement 6) */}
                 <button
                   type="button"
-                  onClick={handleInsertLink}
-                  title="Insert Link"
-                  className="p-1.5 hover:bg-white hover:text-slate-900 rounded-md transition-colors cursor-pointer"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={openLinkModal}
+                  title="Insert or Edit Link"
+                  className={`p-1.5 rounded-md transition-colors cursor-pointer ${
+                    activeFormats.link ? 'bg-slate-200 text-[#1642D0] shadow-2xs' : 'hover:bg-white hover:text-slate-900 text-slate-600'
+                  }`}
                 >
                   <Link2 className="w-4 h-4" />
                 </button>
                 <button
                   type="button"
-                  onClick={() => executeFormatting('insertUnorderedList')}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={toggleUnorderedList}
                   title="Bulleted List"
-                  className="p-1.5 hover:bg-white hover:text-slate-900 rounded-md transition-colors cursor-pointer"
+                  className={`p-1.5 rounded-md transition-colors cursor-pointer ${
+                    activeFormats.insertUnorderedList ? 'bg-slate-200 text-[#1642D0] shadow-2xs' : 'hover:bg-white hover:text-slate-900 text-slate-600'
+                  }`}
                 >
                   <ListIcon className="w-4 h-4" />
                 </button>
                 <button
                   type="button"
-                  onClick={() => executeFormatting('insertOrderedList')}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={toggleOrderedList}
                   title="Numbered List"
-                  className="p-1.5 hover:bg-white hover:text-slate-900 rounded-md transition-colors cursor-pointer"
+                  className={`p-1.5 rounded-md transition-colors cursor-pointer ${
+                    activeFormats.insertOrderedList ? 'bg-slate-200 text-[#1642D0] shadow-2xs' : 'hover:bg-white hover:text-slate-900 text-slate-600'
+                  }`}
                 >
                   <ListOrdered className="w-4 h-4" />
                 </button>
@@ -985,20 +2085,28 @@ function WriterEditorMain() {
                 {/* Divider */}
                 <span className="w-[1px] h-4 bg-slate-300 mx-1 select-none" />
 
-                {/* Group 4: Blockquote & Code */}
+                {/* Group 4: Toggle Quote Section (3rd Icon) & Toggle Code Section (4th Icon) */}
                 <button
                   type="button"
-                  onClick={() => executeFormatting('formatBlock', 'blockquote')}
-                  title="Blockquote"
-                  className="p-1.5 hover:bg-white hover:text-slate-900 rounded-md transition-colors cursor-pointer"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={toggleQuoteSection}
+                  title="Toggle Quote Section"
+                  aria-pressed={isQuoteActive}
+                  className={`p-1.5 rounded-md transition-colors cursor-pointer ${
+                    isQuoteActive ? 'bg-slate-200 text-[#1642D0] shadow-2xs font-bold' : 'hover:bg-white hover:text-slate-900 text-slate-600'
+                  }`}
                 >
                   <Quote className="w-4 h-4" />
                 </button>
                 <button
                   type="button"
-                  onClick={() => executeFormatting('formatBlock', 'pre')}
-                  title="Code Block"
-                  className="p-1.5 hover:bg-white hover:text-slate-900 rounded-md transition-colors cursor-pointer"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={toggleCodeSection}
+                  title="Toggle Code Section"
+                  aria-pressed={isCodeActive}
+                  className={`p-1.5 rounded-md transition-colors cursor-pointer ${
+                    isCodeActive ? 'bg-slate-200 text-[#1642D0] shadow-2xs font-bold' : 'hover:bg-white hover:text-slate-900 text-slate-600'
+                  }`}
                 >
                   <Code className="w-4 h-4" />
                 </button>
@@ -1009,12 +2117,14 @@ function WriterEditorMain() {
                 {/* Group 5: INSERT IMAGE (Cream/Orange Accent Button matching Reference Image 1) */}
                 <button
                   type="button"
+                  data-testid="toolbar-insert-image-btn"
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => {
                     saveSelectionRange();
                     setSelectedImageFigure(null);
-                    setModalImageUrl('');
-                    setImageCaption('');
-                    setImageCredit('');
+                    setModalImageUrl('/images/writer-reference-book.png');
+                    setImageCaption('apple');
+                    setImageCredit('122445');
                     setShowImageModal(true);
                   }}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FFF7ED] border border-[#FFEDD5] hover:bg-[#FFEDD5] text-[#EA580C] text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer shadow-2xs"
@@ -1053,12 +2163,14 @@ function WriterEditorMain() {
                 {/* Floating Image Toolbar matching Reference Image 4 */}
                 {selectedImageFigure && toolbarPosition && (
                   <div
+                    onClick={(e) => e.stopPropagation()}
                     style={{ top: `${toolbarPosition.top}px`, left: `${toolbarPosition.left}px` }}
-                    className="absolute z-30 bg-[#0B132B] text-white px-3 py-1.5 rounded-xl shadow-2xl border border-slate-700 flex items-center gap-2.5 text-xs animate-in fade-in duration-150"
+                    className="floating-image-toolbar absolute z-30 bg-[#0B132B] text-white px-3 py-1.5 rounded-xl shadow-2xl border border-slate-700 flex items-center gap-2.5 text-xs animate-in fade-in duration-150"
                   >
                     {/* Edit Image Button */}
                     <button
                       type="button"
+                      data-testid="floating-edit-image-btn"
                       onClick={handleEditSelectedImage}
                       className="bg-[#EA580C] hover:bg-[#C2410C] text-white px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors shadow-2xs"
                     >
@@ -1175,12 +2287,43 @@ function WriterEditorMain() {
                   contentEditable
                   suppressContentEditableWarning
                   onInput={handleEditorInput}
-                  onKeyUp={saveSelectionRange}
-                  onMouseUp={saveSelectionRange}
-                  className="w-full flex-1 min-h-[640px] text-base text-slate-800 border-none outline-none focus:ring-0 px-0 py-2 leading-relaxed font-sans bg-transparent prose prose-slate max-w-none focus:outline-none"
+                  onSelect={() => {
+                    saveSelectionRange();
+                    updateActiveFormats();
+                  }}
+                  onKeyUp={() => {
+                    saveSelectionRange();
+                    updateActiveFormats();
+                  }}
+                  onMouseUp={() => {
+                    saveSelectionRange();
+                    updateActiveFormats();
+                  }}
+                  onKeyDown={handleEditorKeyDown}
+                  className="article-editor-canvas article-editor-content w-full flex-1 min-h-[640px] text-base text-slate-800 border-none outline-none focus:ring-0 px-0 py-2 leading-relaxed font-sans bg-transparent prose prose-slate max-w-none focus:outline-none"
                   style={{ minHeight: '640px' }}
                 />
               </div>
+
+              {/* Bottom Tags Bar matching Screenshot 1 */}
+              {tags.length > 0 && (
+                <div
+                  data-testid="editor-bottom-tags-bar"
+                  className="px-6 sm:px-8 py-3.5 border-t border-slate-100 flex items-center flex-wrap gap-2.5 bg-slate-50/60 rounded-b-2xl"
+                >
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400 select-none mr-0.5">
+                    TAGS:
+                  </span>
+                  {tags.map((t) => (
+                    <span
+                      key={t}
+                      className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors uppercase tracking-wide select-none"
+                    >
+                      #{t.replace(/^#/, '')}
+                    </span>
+                  ))}
+                </div>
+              )}
 
             </div>
           </div>
@@ -1227,117 +2370,197 @@ function WriterEditorMain() {
 
               {/* DETAILS TAB CONTENT */}
               {activeSidebarTab === 'details' && (
-                <div className="flex flex-col gap-5">
+                <div className="flex flex-col gap-4">
                   
-                  {/* 1. SELECT CATEGORY (MAIN) */}
-                  <div className="flex flex-col gap-2">
-                    <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                      Select Category (Main)
-                    </label>
-                    <div className="relative">
-                      <select
-                        value={mainCategory}
-                        onChange={(e) => {
-                          setMainCategory(e.target.value);
-                          setSelectedSubCategories([]);
-                        }}
-                        className="w-full appearance-none px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-hidden focus:border-[#1642D0] cursor-pointer"
-                      >
-                        {WEBSITE_CATEGORIES.map((cat) => (
-                          <option key={cat} value={cat}>
-                            {cat}
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDown className="w-4 h-4 text-slate-500 absolute right-3 top-3 pointer-events-none" />
-                    </div>
-                  </div>
-
-                  {/* 2. SELECT SUB-CATEGORIES (OPTIONAL, MAX 5) */}
-                  <div className="flex flex-col gap-2">
-                    <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                      Select Sub-Categories (Optional, Max 5)
-                    </label>
-                    
-                    {/* 2-Column Checkbox Grid */}
-                    <div className="grid grid-cols-2 gap-2 p-2.5 bg-slate-50 border border-slate-200 rounded-xl max-h-56 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300">
-                      {currentSubcategories.map((sub) => {
-                        const isChecked = selectedSubCategories.includes(sub);
-                        return (
-                          <label
-                            key={sub}
-                            className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer select-none hover:text-slate-900"
+                  {/* 1. SELECT CATEGORY (MAIN) - Collapsible Section */}
+                  <div className="border border-slate-200/90 rounded-xl overflow-hidden bg-white shadow-2xs">
+                    <button
+                      type="button"
+                      onClick={() => setIsMainCatExpanded((prev) => !prev)}
+                      aria-expanded={isMainCatExpanded}
+                      className="w-full flex items-center justify-between p-3 bg-slate-50 hover:bg-slate-100/80 transition-colors text-left cursor-pointer"
+                    >
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-slate-700">
+                        Select Category (Main)
+                      </span>
+                      {isMainCatExpanded ? (
+                        <ChevronUp className="w-4 h-4 text-slate-500" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4 text-slate-500" />
+                      )}
+                    </button>
+                    {isMainCatExpanded && (
+                      <div className="p-3 pt-2 border-t border-slate-100 bg-white">
+                        <div className="relative">
+                          <select
+                            value={mainCategory}
+                            onChange={(e) => {
+                              const newCat = e.target.value;
+                              setMainCategory(newCat);
+                              setSelectedSubCategories((prev) =>
+                                prev.filter((s) => s.trim().toLowerCase() !== newCat.trim().toLowerCase())
+                              );
+                            }}
+                            className="w-full appearance-none px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-hidden focus:border-[#1642D0] cursor-pointer"
                           >
-                            <input
-                              type="checkbox"
-                              checked={isChecked}
-                              onChange={() => handleToggleSubCategory(sub)}
-                              className="w-4 h-4 rounded border-slate-300 text-[#1642D0] focus:ring-[#1642D0]/30 cursor-pointer"
-                            />
-                            <span className="truncate">{sub}</span>
-                          </label>
-                        );
-                      })}
-                    </div>
-
-                    {/* Counter: SELECTED: X / 5 */}
-                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                      Selected: {selectedSubCategories.length} / 5
-                    </div>
-                  </div>
-
-                  {/* 3. TAGS */}
-                  <div className="flex flex-col gap-2">
-                    <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                      Tags
-                    </label>
-                    <input
-                      type="text"
-                      value={tagInput}
-                      onChange={(e) => setTagInput(e.target.value)}
-                      onKeyDown={handleTagKeyDown}
-                      placeholder="e.g. BreakingNews, Football, WorldCup20"
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#1642D0]"
-                    />
-
-                    {/* Tag chips */}
-                    {tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5 mt-1">
-                        {tags.map((t) => (
-                          <span
-                            key={t}
-                            onClick={() => handleRemoveTag(t)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-[#1642D0] rounded-md text-xs font-semibold cursor-pointer hover:bg-blue-100 transition-colors"
-                            title="Click to remove"
-                          >
-                            <span>#{t}</span>
-                            <X className="w-3 h-3" />
-                          </span>
-                        ))}
+                            {(allCategories && allCategories.length > 0 ? allCategories : INITIAL_ALL_CATEGORIES).map((cat) => (
+                              <option key={cat} value={cat}>
+                                {cat}
+                              </option>
+                            ))}
+                          </select>
+                          <ChevronDown className="w-4 h-4 text-slate-500 absolute right-3 top-3 pointer-events-none" />
+                        </div>
                       </div>
                     )}
-
-                    {/* Helper Text */}
-                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                      Press Enter or Comma to Add • Click Tag to Remove • {tags.length} Tags
-                    </div>
                   </div>
 
-                  {/* 4. READ DURATION */}
-                  <div className="flex flex-col gap-2">
-                    <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                      Read Duration
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={readDuration}
-                        onChange={(e) => setReadDuration(e.target.value)}
-                        placeholder="5 min read"
-                        className="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-hidden focus:border-[#1642D0]"
-                      />
-                      <Clock className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
-                    </div>
+                  {/* 2. SELECT SUB-CATEGORIES (OPTIONAL) & METADATA - Collapsible Section */}
+                  <div className="border border-slate-200/90 rounded-xl overflow-hidden bg-white shadow-2xs">
+                    <button
+                      type="button"
+                      onClick={() => setIsSubCatExpanded((prev) => !prev)}
+                      aria-expanded={isSubCatExpanded}
+                      className="w-full flex items-center justify-between p-3 bg-slate-50 hover:bg-slate-100/80 transition-colors text-left cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-700">
+                          Select Sub-Categories (Optional)
+                        </span>
+                        {selectedSubCategories.length > 0 && (
+                          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-[#1642D0]">
+                            {selectedSubCategories.length}/5
+                          </span>
+                        )}
+                      </div>
+                      {isSubCatExpanded ? (
+                        <ChevronUp className="w-4 h-4 text-slate-500" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4 text-slate-500" />
+                      )}
+                    </button>
+                    {isSubCatExpanded && (
+                      <div className="p-3.5 pt-2 border-t border-slate-100 bg-white flex flex-col gap-4">
+                        {/* 2-Column Checkbox Grid */}
+                        <div className="grid grid-cols-2 gap-2 p-2.5 bg-slate-50 border border-slate-200 rounded-xl max-h-56 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300">
+                          {currentSubcategories.map((sub) => {
+                            const isChecked = selectedSubCategories.includes(sub);
+                            return (
+                              <label
+                                key={sub}
+                                className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer select-none hover:text-slate-900"
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={isChecked}
+                                  onChange={() => handleToggleSubCategory(sub)}
+                                  className="w-4 h-4 rounded border-slate-300 text-[#1642D0] focus:ring-[#1642D0]/30 cursor-pointer"
+                                />
+                                <span className="truncate">{sub}</span>
+                              </label>
+                            );
+                          })}
+                        </div>
+
+                        {/* Counter: SELECTED: X / 5 */}
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                          Selected: {selectedSubCategories.length} / 5
+                        </div>
+
+                        {/* 3. TAGS matching Screenshot 1 */}
+                        <div className="flex flex-col gap-1.5 pt-2 border-t border-slate-100">
+                          <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                            Tags
+                          </label>
+
+                          {/* Bordered Tags Container Box with dark navy pills & inline input */}
+                          <div
+                            onClick={() => tagInputRef.current?.focus()}
+                            className="w-full min-h-[50px] p-2 bg-white border border-slate-200 rounded-xl flex flex-wrap items-center gap-1.5 focus-within:border-[#1642D0] focus-within:ring-2 focus-within:ring-[#1642D0]/10 transition-all cursor-text"
+                          >
+                            {tags.map((t) => (
+                              <span
+                                key={t}
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#0F172A] text-white rounded-md text-xs font-bold uppercase tracking-wide group select-none shadow-xs"
+                              >
+                                <span
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleEditTag(t);
+                                  }}
+                                  className="cursor-pointer hover:underline"
+                                  title="Click to edit tag"
+                                >
+                                  #{t.replace(/^#/, '')}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleRemoveTag(t);
+                                  }}
+                                  className="text-slate-300 hover:text-white hover:bg-slate-700 rounded-full p-0.5 transition-colors cursor-pointer"
+                                  title="Remove tag"
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </span>
+                            ))}
+
+                            <input
+                              ref={tagInputRef}
+                              type="text"
+                              value={tagInput}
+                              onChange={(e) => setTagInput(e.target.value)}
+                              onKeyDown={handleTagKeyDown}
+                              onBlur={handleTagBlur}
+                              placeholder="Add more tags..."
+                              className="flex-1 min-w-[120px] bg-transparent text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none py-1 px-1 border-none"
+                            />
+                          </div>
+
+                          {/* Helper Text matching Screenshot 1 */}
+                          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                            Press Enter or Comma to Add • Click Tag to Remove • {tags.length} Tags
+                          </div>
+                        </div>
+
+                        {/* 4. READ DURATION */}
+                        <div className="flex flex-col gap-2 pt-2 border-t border-slate-100">
+                          <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                            Read Duration
+                          </label>
+                          <div className="relative">
+                            <input
+                              type="text"
+                              value={readDuration}
+                              onChange={(e) => setReadDuration(e.target.value)}
+                              placeholder="5 min read"
+                              className="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-hidden focus:border-[#1642D0]"
+                            />
+                            <Clock className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
+                          </div>
+                        </div>
+
+                        {/* 5. AUTHOR / WRITER */}
+                        <div className="flex flex-col gap-2 pt-2 border-t border-slate-100">
+                          <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                            Author / Writer
+                          </label>
+                          <div className="relative">
+                            <input
+                              type="text"
+                              value={authorName}
+                              onChange={(e) => setAuthorName(e.target.value)}
+                              placeholder="Writer Account"
+                                suppressHydrationWarning
+                              className="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-hidden focus:border-[#1642D0]"
+                            />
+                            <User className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                 </div>
@@ -1370,7 +2593,10 @@ function WriterEditorMain() {
                     <textarea
                       rows={3}
                       value={cardSummary}
-                      onChange={(e) => setCardSummary(e.target.value)}
+                      onChange={(e) => {
+                        setCardSummary(e.target.value);
+                        setIsCardSummaryEdited(true);
+                      }}
                       placeholder="Concise 1-2 sentence preview details."
                       className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#1642D0] resize-y"
                     />
@@ -1384,10 +2610,46 @@ function WriterEditorMain() {
                     <input
                       type="text"
                       value={focusKeyword}
-                      onChange={(e) => setFocusKeyword(e.target.value)}
-                      placeholder="e.g. Vexillum Minerals"
+                      onChange={(e) => {
+                        setFocusKeyword(e.target.value);
+                        setIsFocusKeywordEdited(true);
+                      }}
+                      placeholder="e.g. Search Results"
                       className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#1642D0]"
                     />
+
+                    {/* Status Indicators matching Reference Screenshot 2 */}
+                    <div className="flex flex-col gap-1.5 mt-1">
+                      {/* 1. Title includes focus keyword */}
+                      <div className="flex items-start gap-1.5 text-[11px] leading-tight">
+                        {focusKeyword.trim() && isTitleKeywordMatch ? (
+                          <>
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                            <span className="text-emerald-600 font-medium">The title includes the focus keyword.</span>
+                          </>
+                        ) : (
+                          <>
+                            <Info className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
+                            <span className="text-slate-500 font-medium">The title does not include the focus keyword.</span>
+                          </>
+                        )}
+                      </div>
+
+                      {/* 2. Meta description includes focus keyword */}
+                      <div className="flex items-start gap-1.5 text-[11px] leading-tight">
+                        {focusKeyword.trim() && isMetaDescKeywordMatch ? (
+                          <>
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                            <span className="text-emerald-600 font-medium">The meta description includes the focus keyword.</span>
+                          </>
+                        ) : (
+                          <>
+                            <Info className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
+                            <span className="text-slate-500 font-medium">The meta description does not include the focus keyword.</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
                   </div>
 
                   {/* 3. META DESCRIPTION (with 0/160 character counter) */}
@@ -1397,27 +2659,85 @@ function WriterEditorMain() {
                         Meta Description
                       </label>
                       <span
-                        className={`text-[10px] font-bold uppercase tracking-wider ${
+                        className={`text-[10px] font-bold tracking-wider ${
                           metaDescription.length > 160 ? 'text-red-500' : 'text-slate-400'
                         }`}
                       >
-                        {metaDescription.length} / 160
+                        {metaDescription.length}/160
                       </span>
                     </div>
                     <textarea
                       rows={3}
                       value={metaDescription}
-                      onChange={(e) => setMetaDescription(e.target.value)}
-                      placeholder="Discover why... — the sentence shown under the title in Google."
+                      onChange={(e) => {
+                        setMetaDescription(e.target.value);
+                        setIsMetaDescriptionEdited(true);
+                      }}
+                      placeholder="Concise 1-2 sentence preview details."
                       className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#1642D0] resize-y"
                     />
                   </div>
 
                   {/* 4. PREVIEW IN SEARCH RESULTS (Google Snippet Card) */}
                   <div className="flex flex-col gap-2 pt-2 border-t border-slate-100">
-                    <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                      <Search className="w-3.5 h-3.5" />
-                      <span>Preview in Search Results</span>
+                    <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      <div className="flex items-center gap-1.5">
+                        <Search className="w-3.5 h-3.5" />
+                        <span>Preview in Search Results</span>
+                      </div>
+
+                      {/* Three-dot menu button with functional actions */}
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={() => setShowPreviewMenu(!showPreviewMenu)}
+                          className="p-1 text-slate-400 hover:text-slate-700 rounded-md hover:bg-slate-100 transition-colors cursor-pointer"
+                          title="Preview options"
+                        >
+                          <MoreVertical className="w-3.5 h-3.5" />
+                        </button>
+                        {showPreviewMenu && (
+                          <div className="absolute right-0 top-full mt-1 w-44 bg-white border border-slate-200 rounded-xl shadow-lg z-20 py-1 text-xs animate-in fade-in zoom-in-95 duration-100">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                navigator.clipboard.writeText(`${metaTitle || title.trim() || 'Your Article Title'} | Washington Times\nhttps://washington-times.com/article/${currentSlug}`);
+                                showToast('Search snippet copied to clipboard!', 'success');
+                                setShowPreviewMenu(false);
+                              }}
+                              className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 flex items-center gap-2 cursor-pointer"
+                            >
+                              <Copy className="w-3.5 h-3.5 text-slate-400" />
+                              <span>Copy Snippet</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                handleAutoGenerateSEO();
+                                setShowPreviewMenu(false);
+                              }}
+                              className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 flex items-center gap-2 cursor-pointer"
+                            >
+                              <Sparkles className="w-3.5 h-3.5 text-[#EA580C]" />
+                              <span>Regenerate SEO</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setIsCardSummaryEdited(false);
+                                setIsFocusKeywordEdited(false);
+                                setIsMetaDescriptionEdited(false);
+                                showToast('Manual SEO overrides reset.', 'success');
+                                setShowPreviewMenu(false);
+                              }}
+                              className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 flex items-center gap-2 cursor-pointer"
+                            >
+                              <RotateCcw className="w-3.5 h-3.5 text-slate-400" />
+                              <span>Reset Overrides</span>
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex flex-col gap-2">
@@ -1430,13 +2750,13 @@ function WriterEditorMain() {
                             Washington Times
                           </span>
                           <span className="text-[10px] text-slate-500 truncate leading-none mt-1">
-                            washington-times.com &rsaquo; article &rsaquo; {currentSlug}
+                            washington-times.com &rsaquo; arti..
                           </span>
                         </div>
                       </div>
 
                       <div className="text-sm font-semibold text-[#1a0dab] hover:underline cursor-pointer leading-tight truncate">
-                        {metaTitle || (title.trim() ? `${title.trim()} | Washington Times` : 'Your Article Title | Washington Times')}
+                        {metaTitle || (title.trim() ? `${title.trim()} | Washington Times` : 'Your Article Title |...')}
                       </div>
 
                       <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
@@ -1445,10 +2765,6 @@ function WriterEditorMain() {
                           'Add a meta description to control the snippet shown in search results.'}
                       </p>
                     </div>
-
-                    <p className="text-[11px] text-slate-400 leading-normal">
-                      This is how the article can appear on Google. Meta description drives the snippet under the link.
-                    </p>
                   </div>
 
                 </div>
@@ -1470,12 +2786,16 @@ function WriterEditorMain() {
               <div className="flex items-center gap-2">
                 <ImageIcon className="w-5 h-5 text-[#EA580C]" />
                 <h3 className="text-base font-serif font-bold text-slate-900">
-                  {selectedImageFigure ? 'Edit Article Image' : 'Insert Article Image'}
+                  {selectedImageFigure || editingImageFigureRef.current ? 'Edit Article Image' : 'Insert Article Image'}
                 </h3>
               </div>
               <button
                 type="button"
-                onClick={() => setShowImageModal(false)}
+                onClick={() => {
+                  editingImageFigureRef.current = null;
+                  editingImageIdRef.current = null;
+                  setShowImageModal(false);
+                }}
                 className="text-slate-400 hover:text-slate-700 p-1 cursor-pointer transition-colors"
               >
                 <X className="w-5 h-5" />
@@ -1604,7 +2924,7 @@ function WriterEditorMain() {
                 type="text"
                 value={imageCaption}
                 onChange={(e) => setImageCaption(e.target.value)}
-                placeholder="Brief description (e.g. President speaking with reporters outside Capitol)"
+                placeholder="e.g. apple"
                 className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#1642D0]"
               />
             </div>
@@ -1612,13 +2932,13 @@ function WriterEditorMain() {
             {/* Image Credit / Source (Optional) */}
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-bold text-slate-700">
-                Image Credit / Source (Optional)
+                Image Credit / Source (e.g. 122445 or Reuters)
               </label>
               <input
                 type="text"
                 value={imageCredit}
                 onChange={(e) => setImageCredit(e.target.value)}
-                placeholder="e.g. Reuters, AP Photo, Getty Images"
+                placeholder="e.g. 122445"
                 className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#1642D0]"
               />
             </div>
@@ -1774,7 +3094,11 @@ function WriterEditorMain() {
             <div className="flex items-center justify-between pt-3 border-t border-slate-100 gap-3">
               <button
                 type="button"
-                onClick={() => setShowImageModal(false)}
+                onClick={() => {
+                  editingImageFigureRef.current = null;
+                  editingImageIdRef.current = null;
+                  setShowImageModal(false);
+                }}
                 className="px-6 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
               >
                 Cancel
@@ -1782,11 +3106,12 @@ function WriterEditorMain() {
 
               <button
                 type="button"
+                data-testid="modal-submit-image-btn"
                 onClick={handleInsertImageIntoEditor}
                 className="px-6 py-2.5 rounded-xl bg-[#EA580C] hover:bg-[#C2410C] text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-md cursor-pointer flex items-center gap-1.5"
               >
                 <span>+</span>
-                <span>{selectedImageFigure ? 'Update Image' : 'Insert Image'}</span>
+                <span>{selectedImageFigure || editingImageFigureRef.current ? 'Update Image' : 'Insert Image'}</span>
               </button>
             </div>
 
@@ -1816,29 +3141,85 @@ function WriterEditorMain() {
 
             {/* Article Headline Header */}
             <div className="flex flex-col gap-3">
-              <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#EA580C]">
+              <div className="flex items-center gap-2 text-xs sm:text-[13px] font-sans font-bold uppercase tracking-wider text-[#1642D0]">
                 <span>{mainCategory}</span>
                 {selectedSubCategories.length > 0 && (
-                  <span className="text-slate-400">&bull; {selectedSubCategories.join(', ')}</span>
+                  <span className="text-slate-400 font-normal">&bull; {selectedSubCategories.join(', ')}</span>
                 )}
               </div>
 
-              <h1 className="text-3xl sm:text-5xl font-serif font-bold text-slate-900 leading-tight">
+              <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-serif font-bold text-[#1642D0] leading-[1.14] tracking-tight">
                 {title.trim() || 'Untitled Article Headline'}
               </h1>
 
               {subtitle.trim() && (
-                <p className="text-lg sm:text-xl text-slate-600 font-serif italic leading-relaxed">
+                <p className="text-[#0f2b82] text-base sm:text-lg lg:text-[18.5px] font-serif font-bold leading-relaxed pt-1">
                   {subtitle}
                 </p>
               )}
-              
-              <div className="flex items-center gap-3 text-xs text-slate-500 pt-3 border-t border-slate-100">
-                <span className="font-semibold text-slate-800">{user?.name || 'Staff Contributor'}</span>
-                <span>&bull;</span>
-                <span>{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                <span>&bull;</span>
-                <span>{readDuration}</span>
+
+              {/* Horizontal Line Above Byline */}
+              <div className="border-t border-slate-200 mt-2 mb-1" />
+
+              {/* Byline with Author Name, Avatar, Date, Read Duration, and Bookmark */}
+              <div className="flex items-center justify-between py-1">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-slate-100 border border-slate-300 flex items-center justify-center font-bold text-slate-700 text-sm overflow-hidden shrink-0">
+                    {(authorName.trim() || user?.name) ? (
+                      <span className="uppercase text-[#1642D0]">
+                        {(authorName.trim() || user?.name || 'W').charAt(0)}
+                      </span>
+                    ) : (
+                      <User className="w-5 h-5 text-slate-400" />
+                    )}
+                  </div>
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-2 text-xs sm:text-[13px] font-sans font-bold uppercase tracking-wider text-slate-800">
+                      <span className="text-slate-600 font-bold">BY</span>
+                      <span className="text-[#1642D0] font-bold">
+                        {authorName.trim() || user?.name || 'Sherin Shibu'}
+                      </span>
+                      <span className="text-slate-300 font-normal">|</span>
+                      <span className="text-slate-500 font-normal">
+                        {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </span>
+                      <span className="text-slate-300 font-normal">&bull;</span>
+                      <span className="text-slate-500 font-normal">{readDuration}</span>
+                    </div>
+                    <span className="text-[11px] text-slate-400 font-sans">
+                      Staff Contributor &bull; Verified Author
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-2 rounded-lg bg-slate-50 text-slate-600 border border-slate-200">
+                  <Bookmark className="w-4 h-4 text-slate-700" />
+                </div>
+              </div>
+
+              {/* Action Bar (Listen to this post, SHARE, COMMENT) */}
+              <div className="flex items-center justify-between pt-2 pb-2 border-y border-slate-100 mb-1">
+                <div className="flex items-center gap-4">
+                  <div className="inline-flex items-center gap-2 border border-slate-200 rounded-full bg-white px-3.5 py-1.5 shadow-xs">
+                    <div className="w-5 h-5 rounded-full bg-[#10182b] flex items-center justify-center text-white text-[9px] shrink-0">
+                      ▶
+                    </div>
+                    <span className="font-sans font-semibold text-xs text-[#10182b]">
+                      Listen to this post
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700 tracking-wider font-sans uppercase py-1.5 px-2.5 rounded-md hover:bg-slate-100 cursor-pointer">
+                    <span>SHARE</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1.5 text-xs font-bold text-slate-600 tracking-wider font-sans uppercase">
+                  <svg className="w-3.5 h-3.5 fill-slate-600 shrink-0" viewBox="0 0 24 24">
+                    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+                  </svg>
+                  <span>COMMENT</span>
+                </div>
               </div>
             </div>
 
@@ -1860,12 +3241,18 @@ function WriterEditorMain() {
               }}
             />
 
-            {/* Tag pills */}
+            {/* Tag pills matching Screenshot 1 */}
             {tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-100">
+              <div className="flex flex-wrap items-center gap-2 pt-4 border-t border-slate-100">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400 select-none mr-1">
+                  Tags:
+                </span>
                 {tags.map((t) => (
-                  <span key={t} className="px-3 py-1 bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold">
-                    #{t}
+                  <span
+                    key={t}
+                    className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold text-slate-700 bg-slate-100 uppercase tracking-wide"
+                  >
+                    #{t.replace(/^#/, '')}
                   </span>
                 ))}
               </div>
@@ -1895,6 +3282,147 @@ function WriterEditorMain() {
           </div>
         </div>
       )}
+
+      {/* LINK INSERTION & EDITING MODAL */}
+      {showLinkModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md p-6 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+              <div className="flex items-center gap-2">
+                <Link2 className="w-5 h-5 text-[#1642D0]" />
+                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900">
+                  {currentLinkElement ? 'Edit Hyperlink' : 'Insert Hyperlink'}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowLinkModal(false)}
+                className="text-slate-400 hover:text-slate-600 p-1 rounded-md cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-4">
+              {/* Display Text */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-slate-600">
+                  Text to Display
+                </label>
+                <input
+                  type="text"
+                  value={linkText}
+                  onChange={(e) => setLinkText(e.target.value)}
+                  placeholder="Clickable link text"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-hidden focus:border-[#1642D0]"
+                />
+              </div>
+
+              {/* Destination URL */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-slate-600">
+                  Link URL <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={linkUrl}
+                  onChange={(e) => setLinkUrl(e.target.value)}
+                  placeholder="https://example.com"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-hidden focus:border-[#1642D0]"
+                />
+                <span className="text-[10px] text-slate-400">
+                  Valid protocols: https://, http://, mailto: (https:// prepended by default)
+                </span>
+              </div>
+
+              {/* Open in new tab toggle */}
+              <label className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={linkOpenNewTab}
+                  onChange={(e) => setLinkOpenNewTab(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#1642D0] focus:ring-[#1642D0]/30 cursor-pointer"
+                />
+                <span>Open link in new browser tab</span>
+              </label>
+
+              {/* Action buttons */}
+              <div className="flex items-center justify-between pt-3 border-t border-slate-100 mt-2">
+                {currentLinkElement ? (
+                  <button
+                    type="button"
+                    onClick={handleRemoveLink}
+                    className="px-3 py-2 text-xs font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                  >
+                    Remove Link
+                  </button>
+                ) : (
+                  <span />
+                )}
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowLinkModal(false)}
+                    className="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleApplyLink}
+                    className="px-4 py-2 bg-[#1642D0] hover:bg-blue-800 text-white text-xs font-bold uppercase tracking-wider rounded-lg shadow-xs transition-colors cursor-pointer"
+                  >
+                    {currentLinkElement ? 'Update Link' : 'Insert Link'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Global list & link styling for editor and preview */}
+      <style jsx global>{`
+        .article-editor-canvas ol,
+        .prose ol {
+          list-style-type: decimal !important;
+          margin: 0.75rem 0 !important;
+          padding-left: 1.75rem !important;
+        }
+        .article-editor-canvas ol li,
+        .prose ol li {
+          list-style-type: decimal !important;
+          display: list-item !important;
+          margin-bottom: 0.35rem !important;
+          padding-left: 0.25rem !important;
+        }
+        .article-editor-canvas ul,
+        .prose ul {
+          list-style-type: disc !important;
+          margin: 0.75rem 0 !important;
+          padding-left: 1.75rem !important;
+        }
+        .article-editor-canvas ul li,
+        .prose ul li {
+          list-style-type: disc !important;
+          display: list-item !important;
+          margin-bottom: 0.35rem !important;
+          padding-left: 0.25rem !important;
+        }
+        .article-editor-canvas a,
+        .prose a {
+          color: #2563eb !important;
+          text-decoration: underline !important;
+          cursor: pointer !important;
+        }
+      `}</style>
+
+      {/* Profile Settings Modal */}
+      <ProfileSettingsModal
+        isOpen={showProfileSettingsModal}
+        onClose={() => setShowProfileSettingsModal(false)}
+      />
 
     </div>
   );
