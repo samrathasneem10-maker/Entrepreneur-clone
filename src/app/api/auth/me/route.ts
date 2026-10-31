@@ -13,7 +13,7 @@ export async function GET() {
     // Prioritize active session email from cookie; fallback based on role or default user
     let fallbackEmail = 'samrathasneem20@gmail.com';
     if (roleCookie === 'writer' || roleCookie === 'writter') {
-      fallbackEmail = 'mishalzuhrie@gmail.com';
+      fallbackEmail = 'writter@gmail.com';
     }
     const targetEmail = emailCookie || (!isLoggedOut ? fallbackEmail : null);
 

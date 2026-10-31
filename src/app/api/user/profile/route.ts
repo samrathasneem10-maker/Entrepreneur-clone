@@ -7,30 +7,39 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const queryEmail = searchParams.get('email');
+    const querySlug = searchParams.get('slug');
+    const queryId = searchParams.get('id');
     const cookieStore = await cookies();
     const cookieEmail = cookieStore.get('user_email')?.value;
     const cookieRole = cookieStore.get('user_role')?.value;
 
-    let fallbackEmail = 'samrathasneem20@gmail.com';
-    if (cookieRole === 'writer' || cookieRole === 'writter') {
-      fallbackEmail = 'mishalzuhrie@gmail.com';
+    let users: any[] = [];
+    if (queryId) {
+      users = await query<any[]>(
+        'SELECT id, name, email, role, avatar, bio, writer_name, linkedin_url, created_at FROM users WHERE id = ? LIMIT 1',
+        [queryId]
+      );
+    } else if (querySlug) {
+      users = await query<any[]>(
+        'SELECT id, name, email, role, avatar, bio, writer_name, linkedin_url, created_at FROM users WHERE LOWER(REPLACE(REPLACE(name, " ", "-"), ".", "")) = ? OR LOWER(writer_name) = ? OR LOWER(email) LIKE ? OR id = ? LIMIT 1',
+        [querySlug.toLowerCase(), querySlug.toLowerCase(), `${querySlug.toLowerCase()}%`, Number(querySlug) || 0]
+      );
+    } else {
+      let fallbackEmail = 'samrathasneem20@gmail.com';
+      if (cookieRole === 'writer' || cookieRole === 'writter') {
+        fallbackEmail = 'writter@gmail.com';
+      }
+      const email = (queryEmail || cookieEmail || fallbackEmail).trim().toLowerCase();
+
+      users = await query<any[]>(
+        'SELECT id, name, email, role, avatar, bio, writer_name, linkedin_url, created_at FROM users WHERE LOWER(email) = ? LIMIT 1',
+        [email]
+      );
     }
-
-    const email = (queryEmail || cookieEmail || fallbackEmail).trim().toLowerCase();
-
-    if (!email) {
-      return NextResponse.json({ success: false, error: 'No user email provided.' }, { status: 400 });
-    }
-
-    // Query user in MySQL
-    const users = await query<any[]>(
-      'SELECT id, name, email, role, avatar, bio, writer_name, linkedin_url, created_at FROM users WHERE LOWER(email) = ? LIMIT 1',
-      [email]
-    );
 
     if (!users || users.length === 0) {
       return NextResponse.json(
-        { success: false, error: `Account with email "${email}" not found.` },
+        { success: false, error: 'User account not found.' },
         { status: 404 }
       );
     }
@@ -43,7 +52,7 @@ export async function GET(request: Request) {
     // Fetch user settings/profile extras
     const settings = await query<any[]>(
       'SELECT bio, writer_name, linkedin_url, avatar, phone, facebook_connected, google_connected, plan_name, plan_status, plan_renewal FROM user_settings WHERE LOWER(user_email) = ? LIMIT 1',
-      [email]
+      [u.email.toLowerCase()]
     );
 
     const s = settings?.[0] || {};

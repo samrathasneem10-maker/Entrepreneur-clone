@@ -484,7 +484,17 @@ export default function AuthorProfilePage() {
   const rawSlug = params?.slug as string | undefined;
   const slug = (Array.isArray(rawSlug) ? rawSlug[0] : rawSlug) || 'sherin-shibu';
 
-  const author = AUTHORS_MAP[slug] || AUTHORS_MAP['sherin-shibu'];
+  const [author, setAuthor] = useState<AuthorProfile>(() => {
+    if (AUTHORS_MAP[slug]) return AUTHORS_MAP[slug];
+    return {
+      name: slug.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()),
+      role: 'Staff Writer',
+      badge: 'Entrepreneur Staff',
+      avatar: '/images/user-avatar-butterfly.png',
+      bio: 'Staff Writer at Entrepreneur.',
+    };
+  });
+  const [dbArticles, setDbArticles] = useState<any[] | null>(null);
 
   // Read initial page from URL query string on mount
   useEffect(() => {
@@ -514,7 +524,45 @@ export default function AuthorProfilePage() {
     }
   };
 
-  const currentArticles = getArticlesForPage(slug, currentPage);
+  // Fetch author details and published articles
+  useEffect(() => {
+    fetch(`/api/user/profile?slug=${encodeURIComponent(slug)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success && data?.profile) {
+          const p = data.profile;
+          setAuthor({
+            name: p.fullName || p.name || 'Staff Writer',
+            role: 'Staff Writer',
+            badge: 'Entrepreneur Staff',
+            avatar: p.avatar || '/images/user-avatar-butterfly.png',
+            bio: p.bio || 'Staff Writer at Entrepreneur covering business, technology, and entrepreneurship.',
+          });
+        }
+      })
+      .catch(() => {});
+
+    // Fetch published articles only (no drafts, pending_review, rejected, or trashed)
+    fetch('/api/articles?status=published&limit=30')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success && Array.isArray(data.data) && data.data.length > 0) {
+          const authorSlugClean = slug.toLowerCase();
+          const matching = data.data.filter((a: any) => {
+            const artAuthor = (a.author?.name || a.authorName || '').toLowerCase();
+            return artAuthor.includes(authorSlugClean) || authorSlugClean.includes(artAuthor);
+          });
+          if (matching.length > 0) {
+            setDbArticles(matching);
+          } else if (!AUTHORS_MAP[slug]) {
+            setDbArticles(data.data.slice(0, 24));
+          }
+        }
+      })
+      .catch(() => {});
+  }, [slug]);
+
+  const currentArticles = dbArticles && dbArticles.length > 0 ? dbArticles : getArticlesForPage(slug, currentPage);
 
   return (
     <div className="min-h-screen flex flex-col bg-white font-sans antialiased text-slate-900">

@@ -195,7 +195,7 @@ function WriterDashboardMain() {
   const tabParam = searchParams.get('tab') as WriterTab;
   const initialTab: WriterTab = tabParam && ['modified', 'published', 'draft', 'pending_review', 'rejected', 'trash'].includes(tabParam)
     ? tabParam
-    : 'published';
+    : 'pending_review';
 
   // Active status tab: 'modified' | 'published' | 'draft' | 'pending_review' | 'rejected' | 'trash'
   const [activeTab, setActiveTab] = useState<WriterTab>(initialTab);
@@ -252,10 +252,10 @@ function WriterDashboardMain() {
   useEffect(() => {
     setMounted(true);
     fetchCounts();
-    const currentTab = (searchParams.get('tab') as WriterTab) || 'published';
+    const currentTab = (searchParams.get('tab') as WriterTab) || 'pending_review';
     const tabToLoad: WriterTab = ['modified', 'published', 'draft', 'pending_review', 'rejected', 'trash'].includes(currentTab)
       ? currentTab
-      : 'published';
+      : 'pending_review';
     setActiveTab(tabToLoad);
     fetchArticles(tabToLoad);
   }, [searchParams]);

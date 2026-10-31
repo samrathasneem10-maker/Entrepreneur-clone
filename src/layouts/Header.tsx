@@ -205,38 +205,69 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
                       <div className="px-4 py-2.5 border-b border-slate-100 bg-slate-50/80">
                         <p className="text-xs font-bold text-slate-900 truncate">{user.name}</p>
                         <p className="text-[11px] text-slate-500 truncate">{user.email || 'user@entrepreneur.com'}</p>
-                        <span className="inline-block mt-1 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-50 text-[#1642D0] border border-blue-100">
-                          {user.role === 'writer' ? 'Editorial Contributor' : 'Reader Member'}
-                        </span>
+                        {user.role !== 'writer' && (
+                          <span className="inline-block mt-1 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-50 text-[#1642D0] border border-blue-100">
+                            Reader Member
+                          </span>
+                        )}
                       </div>
 
                       <div className="py-1">
-                        {user.role === 'writer' && (
-                          <Link
-                            href="/dashboard/writer"
-                            onClick={() => setShowAccountDropdown(false)}
-                            className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
-                          >
-                            <LayoutDashboard className="w-3.5 h-3.5 text-slate-400" />
-                            <span>Writer Dashboard</span>
-                          </Link>
+                        {user.role === 'writer' ? (
+                          <>
+                            {/* 1. Writer Dashboard */}
+                            <Link
+                              href="/dashboard/writer"
+                              onClick={() => setShowAccountDropdown(false)}
+                              className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
+                            >
+                              <LayoutDashboard className="w-3.5 h-3.5 text-slate-400" />
+                              <span>Writer Dashboard</span>
+                            </Link>
+
+                            {/* 2. Staff Writer */}
+                            <Link
+                              href={`/author/${encodeURIComponent((user.name || 'fathima').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-'))}`}
+                              onClick={() => setShowAccountDropdown(false)}
+                              className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
+                            >
+                              <User className="w-3.5 h-3.5 text-slate-400" />
+                              <span>Staff Writer</span>
+                            </Link>
+
+                            {/* 3. Profile Settings */}
+                            <Link
+                              href="/dashboard/reader?tab=profile"
+                              onClick={() => setShowAccountDropdown(false)}
+                              className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
+                            >
+                              <Settings className="w-3.5 h-3.5 text-slate-400" />
+                              <span>Profile Settings</span>
+                            </Link>
+                          </>
+                        ) : (
+                          <>
+                            {/* 1. Reader Dashboard */}
+                            <Link
+                              href="/dashboard/reader"
+                              onClick={() => setShowAccountDropdown(false)}
+                              className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
+                            >
+                              <LayoutDashboard className="w-3.5 h-3.5 text-slate-400" />
+                              <span>Reader Dashboard</span>
+                            </Link>
+
+                            {/* 2. Profile Settings */}
+                            <Link
+                              href="/dashboard/reader?tab=profile"
+                              onClick={() => setShowAccountDropdown(false)}
+                              className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
+                            >
+                              <Settings className="w-3.5 h-3.5 text-slate-400" />
+                              <span>Profile Settings</span>
+                            </Link>
+                          </>
                         )}
-                        <Link
-                          href="/dashboard/reader"
-                          onClick={() => setShowAccountDropdown(false)}
-                          className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
-                        >
-                          <LayoutDashboard className="w-3.5 h-3.5 text-slate-400" />
-                          <span>Reader Dashboard</span>
-                        </Link>
-                        <Link
-                          href="/dashboard/reader?tab=profile"
-                          onClick={() => setShowAccountDropdown(false)}
-                          className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
-                        >
-                          <Settings className="w-3.5 h-3.5 text-slate-400" />
-                          <span>Profile Settings</span>
-                        </Link>
                       </div>
 
                       <div className="border-t border-slate-100 pt-1">
@@ -288,7 +319,7 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
                 {NAVIGATION_STRUCTURE.primary.map((item) => {
                   const isActive = activeCategory.toLowerCase() === item.label.toLowerCase();
                   return (
-                    <li key={item.label} className="relative group shrink-0">
+                    <li key={item.label} className="relative shrink-0">
                       <Link
                         href={item.href}
                         onClick={() => setActiveCategory(item.label)}
@@ -304,36 +335,6 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
                           <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#FF5E14] rounded-full" />
                         )}
                       </Link>
-
-                      {/* Dropdown Hover Menu */}
-                      {item.subcategories && (
-                        <div className="absolute top-full left-0 min-w-[270px] max-w-[340px] max-h-[460px] overflow-y-auto bg-white shadow-xl rounded-b-xl border border-slate-200 py-2 hidden group-hover:block animate-in fade-in duration-150 z-50">
-                          <div className="px-3.5 py-1.5 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                              {item.subcategories.length} Subcategories
-                            </span>
-                            <Link
-                              href={item.href}
-                              onClick={() => setActiveCategory(item.label)}
-                              className="text-[10px] font-bold text-[#FF5E14] hover:underline"
-                            >
-                              View All &rarr;
-                            </Link>
-                          </div>
-                          <div className="py-1">
-                            {item.subcategories.map((sub) => (
-                              <Link
-                                key={sub.label}
-                                href={sub.href}
-                                onClick={() => setActiveCategory(item.label)}
-                                className="block px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-orange-50 hover:text-[#FF5E14] transition-colors"
-                              >
-                                {sub.label}
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      )}
                     </li>
                   );
                 })}
