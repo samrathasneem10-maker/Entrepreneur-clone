@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     const cookieEmail = cookieStore.get('user_email')?.value;
     const cookieRole = cookieStore.get('user_role')?.value;
 
-    let fallbackEmail = 'fathisamra66@gmail.com';
+    let fallbackEmail = 'samrathasneem20@gmail.com';
     if (cookieRole === 'writer' || cookieRole === 'writter') {
       fallbackEmail = 'mishalzuhrie@gmail.com';
     }

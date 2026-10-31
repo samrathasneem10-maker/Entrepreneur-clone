@@ -11,7 +11,7 @@ export async function GET() {
     const roleCookie = cookieStore.get('user_role')?.value;
 
     // Prioritize active session email from cookie; fallback based on role or default user
-    let fallbackEmail = 'samrathasneem10@gmail.com';
+    let fallbackEmail = 'samrathasneem20@gmail.com';
     if (roleCookie === 'writer' || roleCookie === 'writter') {
       fallbackEmail = 'mishalzuhrie@gmail.com';
     }

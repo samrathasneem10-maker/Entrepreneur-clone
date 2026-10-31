@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Search, User, Mail, LogOut } from 'lucide-react';
+import { Search, User, Mail, LogOut, LayoutDashboard, Settings } from 'lucide-react';
 import { SearchBar } from '@/components/SearchBar';
 import { NavDrawer } from '@/components/NavDrawer';
 import { NAVIGATION_STRUCTURE } from '@/data/newsData';
@@ -211,29 +211,40 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
                       </div>
 
                       <div className="py-1">
+                        {user.role === 'writer' && (
+                          <Link
+                            href="/dashboard/writer"
+                            onClick={() => setShowAccountDropdown(false)}
+                            className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
+                          >
+                            <LayoutDashboard className="w-3.5 h-3.5 text-slate-400" />
+                            <span>Writer Dashboard</span>
+                          </Link>
+                        )}
                         <Link
-                          href={user.role === 'writer' ? '/dashboard/writer' : '/dashboard'}
+                          href="/dashboard/reader"
                           onClick={() => setShowAccountDropdown(false)}
                           className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
                         >
-                          <User className="w-3.5 h-3.5 text-slate-400" />
-                          <span>Profile &amp; Dashboard</span>
+                          <LayoutDashboard className="w-3.5 h-3.5 text-slate-400" />
+                          <span>Reader Dashboard</span>
                         </Link>
                         <Link
-                          href="/start-llc"
+                          href="/dashboard/reader?tab=profile"
                           onClick={() => setShowAccountDropdown(false)}
                           className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
                         >
-                          <span className="w-3.5 text-center text-slate-400 font-serif font-bold text-xs">§</span>
-                          <span>Start Your LLC</span>
+                          <Settings className="w-3.5 h-3.5 text-slate-400" />
+                          <span>Profile Settings</span>
                         </Link>
                       </div>
 
                       <div className="border-t border-slate-100 pt-1">
                         <button
-                          onClick={() => {
+                          onClick={async () => {
                             setShowAccountDropdown(false);
-                            logout();
+                            await logout();
+                            window.location.href = '/';
                           }}
                           className="w-full text-left px-4 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors cursor-pointer flex items-center justify-between"
                         >
