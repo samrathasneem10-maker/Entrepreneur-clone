@@ -122,21 +122,27 @@ export default function LatestArticlesPage() {
           </div>
         </div>
 
-        {/* Category Filter Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-3 mb-8">
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-                selectedCategory === cat
-                  ? 'bg-[#1642D0] text-white shadow-xs'
-                  : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+        {/* Clean Category Navigation matching reference design without box styling */}
+        <div className="flex items-center gap-6 sm:gap-8 overflow-x-auto no-scrollbar border-b border-slate-200 pb-1 mb-8 font-sans">
+          {CATEGORIES.map((cat) => {
+            const isActive = selectedCategory === cat;
+            return (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`relative pb-3 pt-1 text-xs sm:text-[13px] font-bold uppercase tracking-wider transition-colors cursor-pointer whitespace-nowrap ${
+                  isActive
+                    ? 'text-[#020618]'
+                    : 'text-slate-600 hover:text-[#FF5E14]'
+                }`}
+              >
+                <span>{cat}</span>
+                {isActive && (
+                  <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#FF5E14] rounded-full" />
+                )}
+              </button>
+            );
+          })}
         </div>
 
         {/* Articles Grid (Responsive cards) */}

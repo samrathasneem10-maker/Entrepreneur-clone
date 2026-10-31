@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Search, User, Mail, LogOut } from 'lucide-react';
 import { SearchBar } from '@/components/SearchBar';
 import { NavDrawer } from '@/components/NavDrawer';
@@ -13,6 +14,7 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
+  const pathname = usePathname();
   const { user, openLogin, logout } = useAuth();
   const [mounted, setMounted] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -20,7 +22,21 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [readingProgress, setReadingProgress] = useState(0);
   const [showAccountDropdown, setShowAccountDropdown] = useState(false);
+  const [activeCategory, setActiveCategory] = useState<string>('Business');
   const accountDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!pathname) return;
+    const match = NAVIGATION_STRUCTURE.primary.find((item) => {
+      if (pathname === item.href) return true;
+      if (item.href !== '/' && pathname.startsWith(item.href)) return true;
+      if (item.subcategories?.some((sub) => pathname === sub.href || pathname.startsWith(sub.href))) return true;
+      return false;
+    });
+    if (match) {
+      setActiveCategory(match.label);
+    }
+  }, [pathname]);
 
   useEffect(() => {
     setMounted(true);
@@ -253,49 +269,63 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
           </div>
         </div>
 
-        {/* Lower Header Bar: Category Navigation matching Reference Image 1 */}
+        {/* Lower Header Bar: Category Navigation matching Reference Image */}
         <div className="border-t border-slate-200 bg-white">
           <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
-            <nav className="overflow-x-auto no-scrollbar font-sans py-2.5">
+            <nav className="overflow-x-auto no-scrollbar font-sans py-2 sm:py-2.5">
               <ul className="flex items-center justify-between gap-4 sm:gap-6 whitespace-nowrap min-w-max">
-                {NAVIGATION_STRUCTURE.primary.map((item) => (
-                  <li key={item.label} className="relative group py-0.5 shrink-0">
-                    <Link
-                      href={item.href}
-                      className="text-[11px] sm:text-[11.5px] lg:text-[12px] font-bold uppercase tracking-wider text-[#020618] hover:text-[#1642D0] transition-colors flex items-center gap-1 whitespace-nowrap"
-                    >
-                      {item.label}
-                    </Link>
+                {NAVIGATION_STRUCTURE.primary.map((item) => {
+                  const isActive = activeCategory.toLowerCase() === item.label.toLowerCase();
+                  return (
+                    <li key={item.label} className="relative group shrink-0">
+                      <Link
+                        href={item.href}
+                        onClick={() => setActiveCategory(item.label)}
+                        className={`relative pb-2.5 pt-1 text-[11px] sm:text-[11.5px] lg:text-[12px] font-bold uppercase tracking-wider transition-colors flex items-center gap-1 whitespace-nowrap ${
+                          isActive
+                            ? 'text-[#020618]'
+                            : 'text-[#020618] hover:text-[#FF5E14]'
+                        }`}
+                      >
+                        <span>{item.label}</span>
+                        {/* Orange Active Indicator */}
+                        {isActive && (
+                          <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#FF5E14] rounded-full" />
+                        )}
+                      </Link>
 
-                    {/* Dropdown Hover Menu */}
-                    {item.subcategories && (
-                      <div className="absolute top-full left-0 min-w-[270px] max-w-[340px] max-h-[460px] overflow-y-auto bg-white shadow-xl rounded-b-xl border border-slate-200 py-2 hidden group-hover:block animate-in fade-in duration-150 z-50">
-                        <div className="px-3.5 py-1.5 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                            {item.subcategories.length} Subcategories
-                          </span>
-                          <Link
-                            href={item.href}
-                            className="text-[10px] font-bold text-[#1642D0] hover:underline"
-                          >
-                            View All &rarr;
-                          </Link>
-                        </div>
-                        <div className="py-1">
-                          {item.subcategories.map((sub) => (
+                      {/* Dropdown Hover Menu */}
+                      {item.subcategories && (
+                        <div className="absolute top-full left-0 min-w-[270px] max-w-[340px] max-h-[460px] overflow-y-auto bg-white shadow-xl rounded-b-xl border border-slate-200 py-2 hidden group-hover:block animate-in fade-in duration-150 z-50">
+                          <div className="px-3.5 py-1.5 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                              {item.subcategories.length} Subcategories
+                            </span>
                             <Link
-                              key={sub.label}
-                              href={sub.href}
-                              className="block px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
+                              href={item.href}
+                              onClick={() => setActiveCategory(item.label)}
+                              className="text-[10px] font-bold text-[#FF5E14] hover:underline"
                             >
-                              {sub.label}
+                              View All &rarr;
                             </Link>
-                          ))}
+                          </div>
+                          <div className="py-1">
+                            {item.subcategories.map((sub) => (
+                              <Link
+                                key={sub.label}
+                                href={sub.href}
+                                onClick={() => setActiveCategory(item.label)}
+                                className="block px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-orange-50 hover:text-[#FF5E14] transition-colors"
+                              >
+                                {sub.label}
+                              </Link>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  </li>
-                ))}
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </nav>
           </div>
