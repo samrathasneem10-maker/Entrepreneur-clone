@@ -338,17 +338,9 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
                       <Link
                         href={item.href}
                         onClick={() => setActiveCategory(item.label)}
-                        className={`relative pb-2.5 pt-1 text-[11px] sm:text-[11.5px] lg:text-[12px] font-bold uppercase tracking-wider transition-colors flex items-center gap-1 whitespace-nowrap ${
-                          isActive
-                            ? 'text-[#020618]'
-                            : 'text-[#020618] hover:text-[#FF5E14]'
-                        }`}
+                        className="relative pb-2 pt-1 text-[11px] sm:text-[11.5px] lg:text-[12px] font-bold uppercase tracking-wider transition-colors flex items-center gap-1 whitespace-nowrap text-[#020618] hover:text-[#1642D0]"
                       >
                         <span>{item.label}</span>
-                        {/* Orange Active Indicator */}
-                        {isActive && (
-                          <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#FF5E14] rounded-full" />
-                        )}
                       </Link>
                     </li>
                   );

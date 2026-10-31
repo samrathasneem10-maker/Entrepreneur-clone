@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { ChevronRight, ChevronLeft } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Home } from 'lucide-react';
 import { Header } from '@/layouts/Header';
 import { Footer } from '@/layouts/Footer';
 import { getTopicDataBySlug } from '@/data/newsData';
@@ -819,6 +819,72 @@ export default function DynamicTopicPage() {
     currentPage * ARTICLES_PER_PAGE
   );
 
+  
+  // Hero section articles configuration (Dynamic across all categories, with explicit Breaking News content)
+  const isBreakingNews =
+    rawSlug === 'breaking-business-news' ||
+    rawSlug === 'breaking-news' ||
+    topicData.slug === 'breaking-business-news' ||
+    topicData.slug === 'breaking-news';
+
+  const art1 = topicData.articles?.[0];
+  const art2 = topicData.articles?.[1];
+  const art3 = topicData.articles?.[2];
+
+  const heroFeatured = {
+    title: isBreakingNews
+      ? 'How Great Leaders Build Teams That Thrive'
+      : (art1?.title || 'How Great Leaders Build Teams That Thrive'),
+    category: isBreakingNews
+      ? 'Breaking News'
+      : (art1?.category || topicData.title || 'Breaking News'),
+    description: isBreakingNews
+      ? "Strong leadership isn't just about making decisions; it is about building teams that thrive."
+      : (art1?.excerpt || (art1 as any)?.description || "Strong leadership isn't just about making decisions; it is about building teams that thrive."),
+    image: isBreakingNews
+      ? '/images/topic-hero-leaders.jpg'
+      : (art1?.imageUrl || (art1 as any)?.image || '/images/topic-hero-leaders.jpg'),
+    link: isBreakingNews
+      ? '/article/how-great-leaders-build-teams-that-thrive'
+      : (art1?.id ? `/article/${art1.id}` : '/article/how-great-leaders-build-teams-that-thrive'),
+  };
+
+  const heroSub1 = {
+    title: isBreakingNews
+      ? 'The Power of Effective Communication in Leadership'
+      : (art2?.title || 'The Power of Effective Communication in Leadership'),
+    category: isBreakingNews
+      ? 'Breaking News'
+      : (art2?.category || topicData.title || 'Breaking News'),
+    description: isBreakingNews
+      ? "Great leaders don't just give direction — they listen, inspire and bring people together."
+      : (art2?.excerpt || (art2 as any)?.description || "Great leaders don't just give direction — they listen, inspire and bring people together."),
+    image: isBreakingNews
+      ? '/images/topic-sub-1.jpg'
+      : (art2?.imageUrl || (art2 as any)?.image || '/images/topic-sub-1.jpg'),
+    link: isBreakingNews
+      ? '/article/power-of-effective-communication-leadership'
+      : (art2?.id ? `/article/${art2.id}` : '/article/power-of-effective-communication-leadership'),
+  };
+
+  const heroSub2 = {
+    title: isBreakingNews
+      ? 'Collaboration Drives Innovation and Growth'
+      : (art3?.title || 'Collaboration Drives Innovation and Growth'),
+    category: isBreakingNews
+      ? 'Breaking News'
+      : (art3?.category || topicData.title || 'Breaking News'),
+    description: isBreakingNews
+      ? 'When great minds work together, new ideas turn into real progress.'
+      : (art3?.excerpt || (art3 as any)?.description || 'When great minds work together, new ideas turn into real progress.'),
+    image: isBreakingNews
+      ? '/images/topic-sub-2.jpg'
+      : (art3?.imageUrl || (art3 as any)?.image || '/images/topic-sub-2.jpg'),
+    link: isBreakingNews
+      ? '/article/collaboration-drives-innovation-growth'
+      : (art3?.id ? `/article/${art3.id}` : '/article/collaboration-drives-innovation-growth'),
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-white font-sans antialiased text-slate-900">
       {/* 1. Header Navigation */}
@@ -827,8 +893,9 @@ export default function DynamicTopicPage() {
       {/* Breadcrumb Bar */}
       <div className="bg-white py-2.5 px-4 sm:px-6 lg:px-8 xl:px-10 text-xs text-slate-600 font-sans">
         <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 flex items-center gap-2 overflow-x-auto no-scrollbar">
-          <Link href="/" className="hover:text-[#1642D0] transition-colors shrink-0">
-            Home
+          <Link href="/" className="hover:text-[#1642D0] transition-colors shrink-0 inline-flex items-center gap-1.5 font-medium">
+            <Home className="w-3.5 h-3.5 text-slate-500 hover:text-[#1642D0]" />
+            <span>Home</span>
           </Link>
           <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
           {topicData.parentTitle && topicData.parentSlug && (
@@ -857,101 +924,92 @@ export default function DynamicTopicPage() {
         </div>
       </div>
 
-      {/* Main Hero Story: Full width image + THOUGHT LEADERS + Full length bold heading + Natural full width summary */}
-      <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pb-4">
-        {/* Full width hero image matching Image 3 */}
-        <Link
-          href="/article/how-great-leaders-build-teams-that-thrive"
-          className="block w-full overflow-hidden rounded-none bg-slate-100 group cursor-pointer border border-slate-200/80 shadow-xs"
-        >
-          <img
-            src="/images/topic-hero-leaders.jpg"
-            alt="How Great Leaders Build Teams That Thrive"
-            className="w-full aspect-[2.6/1] sm:aspect-[3/1] lg:aspect-[3.6/1] max-h-[260px] sm:max-h-[290px] lg:max-h-[310px] object-cover object-center group-hover:scale-[1.01] transition-transform duration-500 rounded-none"
-          />
-        </Link>
-
-        {/* Story details */}
-        <div className="pt-2 sm:pt-2.5">
-          <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans block mb-1">
-            {topicData.title}
-          </span>
-
-          {/* Full length bold heading matching Image 2 */}
-          <h1 className="text-xl sm:text-2xl lg:text-[26px] xl:text-[30px] font-serif font-bold text-[#020618] leading-[1.2] tracking-tight my-1">
-            <Link
-              href="/article/how-great-leaders-build-teams-that-thrive"
-              className="hover:text-[#1642D0] hover:underline transition-colors"
-            >
-              How Great Leaders Build Teams That Thrive
-            </Link>
-          </h1>
-
-          {/* Natural full-width continuous summary matching user requirement */}
-          <p className="font-serif text-slate-600 sm:text-slate-700 text-sm sm:text-base lg:text-[15.5px] leading-relaxed mt-1 my-0 w-full">
-            Strong leadership isn&apos;t just about making decisions — it&apos;s about creating an environment where people can grow, contribute and succeed.
-          </p>
-        </div>
-      </div>
-
-      {/* 2-Column Sub-Featured Cards matching Image 2 */}
-      <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pb-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-          {/* Card 1 */}
+      {/* 2-Column Section: 1 Featured Article on Left & 2 Stacked Articles on Right (Applied across all categories) */}
+      <section className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pt-2 pb-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-start">
+          
+          {/* Left Column: 1 Featured Article */}
           <article className="group flex flex-col items-start text-left w-full">
-            <div className="w-full aspect-[16/10] overflow-hidden bg-slate-100 mb-3.5">
-              <Link
-                href="/article/power-of-effective-communication-leadership"
-                className="block w-full h-full cursor-pointer"
-              >
+            <div className="w-full aspect-[16/10] overflow-hidden bg-slate-100 mb-3.5 border border-slate-200/80 rounded-none shadow-2xs">
+              <Link href={heroFeatured.link} className="block w-full h-full cursor-pointer">
                 <img
-                  src="/images/topic-sub-1.jpg"
-                  alt="The Power of Effective Communication in Leadership"
-                  className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
+                  src={heroFeatured.image}
+                  alt={heroFeatured.title}
+                  className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300 rounded-none"
                 />
               </Link>
             </div>
             <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-1.5 block">
-              {topicData.title}
+              {heroFeatured.category}
             </span>
-            <h2 className="font-serif font-bold text-[15px] sm:text-[15.5px] md:text-[16px] lg:text-[16px] xl:text-[18.5px] tracking-tight text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-1.5 min-h-[24px] sm:min-h-[26px] flex items-center">
-              <Link href="/article/power-of-effective-communication-leadership">
-                The Power of Effective Communication in Leadership
+            <h2 className="font-serif font-bold text-xl sm:text-2xl lg:text-[25px] xl:text-[27px] tracking-tight text-[#020618] leading-[1.25] group-hover:underline decoration-1 underline-offset-2 my-1">
+              <Link href={heroFeatured.link} className="hover:text-[#1642D0] transition-colors">
+                {heroFeatured.title}
               </Link>
             </h2>
-            <p className="font-serif text-slate-600 text-xs sm:text-[13px] lg:text-[13px] xl:text-[13.5px] leading-relaxed mt-2 my-0 w-full min-h-[20px] sm:min-h-[22px]">
-              Great leaders don&apos;t just give direction — they listen, inspire and bring people together.
+            <p className="font-serif text-slate-600 sm:text-slate-700 text-sm sm:text-base lg:text-[15px] leading-relaxed mt-2 my-0 w-full">
+              {heroFeatured.description}
             </p>
           </article>
 
-          {/* Card 2 */}
-          <article className="group flex flex-col items-start text-left w-full">
-            <div className="w-full aspect-[16/10] overflow-hidden bg-slate-100 mb-3.5">
-              <Link
-                href="/article/collaboration-drives-innovation-growth"
-                className="block w-full h-full cursor-pointer"
-              >
-                <img
-                  src="/images/topic-sub-2.jpg"
-                  alt="Collaboration Drives Innovation and Growth"
-                  className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
-                />
-              </Link>
-            </div>
-            <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-1.5 block">
-              {topicData.title}
-            </span>
-            <h2 className="font-serif font-bold text-[15px] sm:text-[15.5px] md:text-[16px] lg:text-[16px] xl:text-[18.5px] tracking-tight text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-1.5 min-h-[24px] sm:min-h-[26px] flex items-center">
-              <Link href="/article/collaboration-drives-innovation-growth">
-                Collaboration Drives Innovation and Growth
-              </Link>
-            </h2>
-            <p className="font-serif text-slate-600 text-xs sm:text-[13px] lg:text-[13px] xl:text-[13.5px] leading-relaxed mt-2 my-0 w-full min-h-[20px] sm:min-h-[22px]">
-              When great minds work together, new ideas turn into real progress.
-            </p>
-          </article>
+          {/* Right Column: 2 Stacked Articles */}
+          <div className="flex flex-col gap-6 lg:gap-7 w-full">
+            
+            {/* Right Column - Article 1 */}
+            <article className="group flex flex-col sm:flex-row gap-4 sm:gap-5 items-start text-left w-full border-b border-slate-200/80 pb-6 lg:pb-7">
+              <div className="w-full sm:w-[210px] md:w-[230px] lg:w-[220px] aspect-[16/10] shrink-0 overflow-hidden bg-slate-100 border border-slate-200/80 rounded-none shadow-2xs">
+                <Link href={heroSub1.link} className="block w-full h-full cursor-pointer">
+                  <img
+                    src={heroSub1.image}
+                    alt={heroSub1.title}
+                    className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300 rounded-none"
+                  />
+                </Link>
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-1 block">
+                  {heroSub1.category}
+                </span>
+                <h3 className="font-serif font-bold text-[16px] sm:text-[17px] lg:text-[18px] tracking-tight text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-1">
+                  <Link href={heroSub1.link} className="hover:text-[#1642D0] transition-colors">
+                    {heroSub1.title}
+                  </Link>
+                </h3>
+                <p className="font-serif text-slate-600 text-xs sm:text-[13px] lg:text-[13.5px] leading-relaxed mt-1.5 my-0 line-clamp-3">
+                  {heroSub1.description}
+                </p>
+              </div>
+            </article>
+
+            {/* Right Column - Article 2 */}
+            <article className="group flex flex-col sm:flex-row gap-4 sm:gap-5 items-start text-left w-full">
+              <div className="w-full sm:w-[210px] md:w-[230px] lg:w-[220px] aspect-[16/10] shrink-0 overflow-hidden bg-slate-100 border border-slate-200/80 rounded-none shadow-2xs">
+                <Link href={heroSub2.link} className="block w-full h-full cursor-pointer">
+                  <img
+                    src={heroSub2.image}
+                    alt={heroSub2.title}
+                    className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300 rounded-none"
+                  />
+                </Link>
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-1 block">
+                  {heroSub2.category}
+                </span>
+                <h3 className="font-serif font-bold text-[16px] sm:text-[17px] lg:text-[18px] tracking-tight text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-1">
+                  <Link href={heroSub2.link} className="hover:text-[#1642D0] transition-colors">
+                    {heroSub2.title}
+                  </Link>
+                </h3>
+                <p className="font-serif text-slate-600 text-xs sm:text-[13px] lg:text-[13.5px] leading-relaxed mt-1.5 my-0 line-clamp-3">
+                  {heroSub2.description}
+                </p>
+              </div>
+            </article>
+
+          </div>
         </div>
-      </div>
+      </section>
 
       {/* Bottom Section: Left Stream (10 Articles per page + NEXT/PREVIOUS Controls) & Right Sidebar (Large Ad + Laptop Image) */}
       <div id="articles-list-section" className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pb-16 scroll-mt-20">

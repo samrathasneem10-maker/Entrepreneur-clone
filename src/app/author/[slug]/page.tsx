@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { Header } from '@/layouts/Header';
 import { Footer } from '@/layouts/Footer';
 import { getArticleUrl } from '@/data/newsData';
@@ -436,6 +436,179 @@ const BEN_ANGEL_AUTHOR_ARTICLES = [
   },
 ];
 
+
+// ADDITIONAL ARTICLES FOR FULL PAGINATION WITHOUT DUPLICATES (PAGES 3 - 5)
+const ADDITIONAL_AUTHOR_ARTICLES = [
+  {
+    id: 'ai-governance-framework-for-enterprise',
+    title: 'How Fortune 500 Boards Are Structuring AI Governance and Oversight in 2026',
+    category: 'BUSINESS NEWS',
+    excerpt: 'Comprehensive risk modeling, algorithmic audits, and automated compliance tracking become standard operating procedure.',
+    imageUrl: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'b2b-saas-pricing-revolution-usage-based',
+    title: 'The Death of Per-Seat Pricing: Why Usage-Based Monetization Is Dominating B2B SaaS',
+    category: 'STARTUPS & ENTREPRENEURSHIP',
+    excerpt: 'Software executives reveal why unit economics favor consumption metrics and value-aligned annual contracts.',
+    imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'zero-interest-rate-phenomenon-hangover',
+    title: 'Surviving the ZIRP Hangover: How Capital Efficiency Became the Ultimate Status Symbol',
+    category: 'MARKETS & INVESTING',
+    excerpt: 'Founders who weathered the venture crunch are now generating record free cash flow with lean engineering teams.',
+    imageUrl: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'supply-chain-nearshoring-mexico-boom',
+    title: 'The Multi-Billion Dollar Nearshoring Boom: American Manufacturers Shift Focus South',
+    category: 'ECONOMY',
+    excerpt: 'Shorter transit cycles and reduced tariff friction create unprecedented industrial growth along northern Mexico border corridors.',
+    imageUrl: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'deep-work-culture-scaling-remote-teams',
+    title: 'Deep Work Culture: How Asynchronous Teams Outperform Real-Time Meeting Addicts',
+    category: 'LEADERSHIP',
+    excerpt: 'Eliminating recurring status syncs and adopting written documentation systems doubles engineering throughput.',
+    imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'cybersecurity-quantum-resilient-encryption',
+    title: 'Preparing for Q-Day: Enterprise Financial Networks Upgrade to Quantum-Safe Encryption',
+    category: 'TECHNOLOGY & AI',
+    excerpt: 'Banks and cloud service providers deploy post-quantum cryptography to prevent retroactive decrypt-later attacks.',
+    imageUrl: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'franchise-ownership-playbook-multi-unit',
+    title: 'The Multi-Unit Franchise Playbook: Turning One Fast-Casual Location into a $30M Portfolio',
+    category: 'FRANCHISES',
+    excerpt: 'Standardized hiring matrices, local store marketing campaigns, and real estate selection metrics decoded.',
+    imageUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'biotech-longevity-breakthroughs-executive-health',
+    title: 'Biomarker Tracking and Metabolic Health: The Next Frontier in Founder Performance',
+    category: 'HEALTH & WELLNESS',
+    excerpt: 'Preventative diagnostics and personalized nutrition regimens replace reactive healthcare among startup leaders.',
+    imageUrl: 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'customer-acquisition-cost-retention-metrics',
+    title: 'Why Customer Retention Is the Only Growth Metric That Truly Matters in 2026',
+    category: 'MARKETING',
+    excerpt: 'High churn destroys venture returns. Here is how leading direct-to-consumer brands achieve 85% annual renewal rates.',
+    imageUrl: 'https://images.unsplash.com/photo-1556740738-b6a63e27c4df?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'commercial-real-estate-repurposing-urban',
+    title: 'Repurposing Downtown Skylines: How Empty Office Towers Become Vibrant Mixed-Use Hubs',
+    category: 'REAL ESTATE',
+    excerpt: 'Architectural retrofitters and municipal tax incentives combine to revitalize metropolitan business districts.',
+    imageUrl: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'battery-technology-grid-scale-storage',
+    title: 'Grid-Scale Energy Storage: The Billion-Dollar Clean Energy Bottleneck Being Solved',
+    category: 'GREEN ENERGY',
+    excerpt: 'Sodium-ion and iron-flow battery installations unlock 24/7 baseload renewable electricity for industrial grids.',
+    imageUrl: 'https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'fintech-cross-border-b2b-payments-settlement',
+    title: 'Cross-Border B2B Payments: How Real-Time Global Settlement Slashes FX Transaction Fees',
+    category: 'FINANCE',
+    excerpt: 'Modern APIs replace century-old correspondent banking networks, saving mid-market exporters millions annually.',
+    imageUrl: 'https://images.unsplash.com/photo-1559526323-cb2f2fe2591b?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'creator-economy-owned-media-infrastructure',
+    title: 'From Social Influencer to Media Conglomerate: The Architecture of Owned Distribution',
+    category: 'MEDIA & ENTERTAINMENT',
+    excerpt: 'Building proprietary video streaming hubs, paid memberships, and merchandise lines insulated from algorithm shifts.',
+    imageUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'neuromarketing-brand-storytelling-psychology',
+    title: 'The Psychology of Irresistible Brands: How Cognitive Science Shapes Buyer Decisions',
+    category: 'BRANDING',
+    excerpt: 'Eye-tracking data, fMRI research, and narrative arcs transform commodity consumer packaged goods into cult icons.',
+    imageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'quantum-computing-drug-discovery-acceleration',
+    title: 'Simulating Molecules in Seconds: Quantum Computing Accelerates Oncology Drug Pipelines',
+    category: 'TECHNOLOGY',
+    excerpt: 'Biotech partnerships with quantum hardware giants compress preclinical drug discovery timelines from years to months.',
+    imageUrl: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'esg-reporting-automated-carbon-accounting',
+    title: 'Automated Carbon Accounting: Navigating Mandatory Global Climate Disclosure Rules',
+    category: 'SUSTAINABILITY',
+    excerpt: 'Enterprise software platforms integrate supply chain telemetry to generate audited Scope 1, 2, and 3 disclosures.',
+    imageUrl: 'https://images.unsplash.com/photo-1473448912268-2022ce9509d8?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'ai-agents-autonomous-sales-development',
+    title: 'Autonomous Sales Development: How AI Agents Quadruple Qualified Pipeline Velocity',
+    category: 'SALES & STRATEGY',
+    excerpt: 'Hyper-personalized research, automated lead scoring, and contextual objection handling revolutionize sales ops.',
+    imageUrl: 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'venture-debt-non-dilutive-capital-playbook',
+    title: 'Venture Debt vs. Equity: The Non-Dilutive Financing Playbook for Fast-Growing Startups',
+    category: 'STARTUP FUNDING',
+    excerpt: 'When to draw down credit facilities, how to structure covenant holidays, and how to avoid costly warrant dilution.',
+    imageUrl: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'retail-omnichannel-fulfillment-micro-hubs',
+    title: 'Urban Micro-Fulfillment Hubs: Delivering Same-Hour E-Commerce at Scale',
+    category: 'RETAIL',
+    excerpt: 'Automated picking robots in converted basement parking structures power 30-minute grocery and retail delivery.',
+    imageUrl: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'executive-decision-frameworks-uncertain-markets',
+    title: 'Mental Models for High-Stakes Decision Making Under Incomplete Information',
+    category: 'LEADERSHIP',
+    excerpt: 'First-principles reasoning, probabilistic scenario trees, and premortem analysis for corporate executives.',
+    imageUrl: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'global-wealth-management-family-office-trends',
+    title: 'Inside Modern Family Offices: How Billionaires Allocate Capital Across Direct Tech Investments',
+    category: 'WEALTH',
+    excerpt: 'Disintermediating traditional private equity funds to back direct early-stage clean-tech and aerospace ventures.',
+    imageUrl: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'semiconductor-foundries-geopolitical-resilience',
+    title: 'Building Sovereign Chip Fabrication: The Global Race for Advanced 2nm Foundries',
+    category: 'SUPER INTELLIGENCE',
+    excerpt: 'Multibillion-dollar subsidies spur domestic extreme ultraviolet lithography manufacturing across America and Europe.',
+    imageUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'remote-work-asynchronous-collaboration-playbook',
+    title: 'The Asynchronous Organization: How 1,000-Person Companies Run Without Video Calls',
+    category: 'WORKPLACE CULTURE',
+    excerpt: 'Document-driven decision frameworks replace endless Zoom meetings, boosting productivity and employee satisfaction.',
+    imageUrl: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?q=80&w=600&auto=format&fit=crop',
+  },
+  {
+    id: 'robotics-automation-warehousing-logistics',
+    title: 'Humanoid Robots Enter Commercial Logistics: Inside Next-Generation Robotic Fulfillment',
+    category: 'ROBOTICS',
+    excerpt: 'Vision-guided bipedal mobile manipulators take over hazardous heavy pallet sorting in global cargo terminals.',
+    imageUrl: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=600&auto=format&fit=crop',
+  },
+];
+
 // Helper to provide articles for each page (1 to 10)
 function getArticlesForPage(slug: string, page: number) {
   if (slug === 'ben-angel') {
@@ -477,9 +650,22 @@ function getArticlesForPage(slug: string, page: number) {
   }));
 }
 
+
+// Master article pool ensuring clean, non-duplicate pagination across both 20-item Desktop and 21-item Left views
+const MASTER_AUTHOR_ARTICLES = [
+  ...PAGE_1_ARTICLES,
+  ...PAGE_2_ARTICLES,
+  ...ADDITIONAL_AUTHOR_ARTICLES,
+];
+
 export default function AuthorProfilePage() {
   const params = useParams();
-  const [currentPage, setCurrentPage] = useState(1);
+  const searchParams = useSearchParams();
+  const initialViewParam = searchParams?.get('view');
+  const initialPageParam = parseInt(searchParams?.get('page') || '1', 10);
+
+  const [currentPage, setCurrentPage] = useState(() => !isNaN(initialPageParam) && initialPageParam >= 1 ? initialPageParam : 1);
+  const [isDesktopView, setIsDesktopView] = useState<boolean>(() => initialViewParam !== 'left');
 
   const rawSlug = params?.slug as string | undefined;
   const slug = (Array.isArray(rawSlug) ? rawSlug[0] : rawSlug) || 'sherin-shibu';
@@ -496,33 +682,32 @@ export default function AuthorProfilePage() {
   });
   const [dbArticles, setDbArticles] = useState<any[] | null>(null);
 
-  // Read initial page from URL query string on mount
+  // Responsive view detection and query string synchronization
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const searchParams = new URLSearchParams(window.location.search);
-      const pageQuery = parseInt(searchParams.get('page') || '1', 10);
-      if (!isNaN(pageQuery) && pageQuery >= 1 && pageQuery <= 10) {
-        setCurrentPage(pageQuery);
+    const detectViewAndPage = () => {
+      if (typeof window !== 'undefined') {
+        const searchParams = new URLSearchParams(window.location.search);
+        const viewParam = searchParams.get('view');
+        if (viewParam === 'left') {
+          setIsDesktopView(false);
+        } else if (viewParam === 'desktop') {
+          setIsDesktopView(true);
+        } else {
+          // PC Desktop default when screen width >= 1200px
+          setIsDesktopView(window.innerWidth >= 1200);
+        }
+
+        const pageQuery = parseInt(searchParams.get('page') || '1', 10);
+        if (!isNaN(pageQuery) && pageQuery >= 1) {
+          setCurrentPage(pageQuery);
+        }
       }
-    }
+    };
+
+    detectViewAndPage();
+    window.addEventListener('resize', detectViewAndPage);
+    return () => window.removeEventListener('resize', detectViewAndPage);
   }, []);
-
-  // Handle page change: update state, update URL query string, and scroll to articles stream
-  const handlePageChange = (newPage: number) => {
-    if (newPage < 1 || newPage > 10) return;
-    setCurrentPage(newPage);
-
-    if (typeof window !== 'undefined') {
-      const url = new URL(window.location.href);
-      url.searchParams.set('page', String(newPage));
-      window.history.pushState({}, '', url.toString());
-
-      const el = document.getElementById('author-articles-stream');
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-  };
 
   // Fetch author details and published articles
   useEffect(() => {
@@ -543,7 +728,7 @@ export default function AuthorProfilePage() {
       .catch(() => {});
 
     // Fetch published articles only (no drafts, pending_review, rejected, or trashed)
-    fetch('/api/articles?status=published&limit=30')
+    fetch('/api/articles?status=published&limit=50')
       .then((res) => res.json())
       .then((data) => {
         if (data?.success && Array.isArray(data.data) && data.data.length > 0) {
@@ -555,14 +740,45 @@ export default function AuthorProfilePage() {
           if (matching.length > 0) {
             setDbArticles(matching);
           } else if (!AUTHORS_MAP[slug]) {
-            setDbArticles(data.data.slice(0, 24));
+            setDbArticles(data.data.slice(0, 30));
           }
         }
       })
       .catch(() => {});
   }, [slug]);
 
-  const currentArticles = dbArticles && dbArticles.length > 0 ? dbArticles : getArticlesForPage(slug, currentPage);
+  // Master articles pool
+  const basePool = slug === 'ben-angel'
+    ? [...BEN_ANGEL_AUTHOR_ARTICLES, ...MASTER_AUTHOR_ARTICLES.filter(a => !BEN_ANGEL_AUTHOR_ARTICLES.some(b => b.id === a.id))]
+    : MASTER_AUTHOR_ARTICLES;
+
+  const fullPool = dbArticles && dbArticles.length > 0
+    ? [...dbArticles, ...basePool.filter(a => !dbArticles.some((d: any) => d.id === a.id))]
+    : basePool;
+
+  // PC Desktop layout: 20 articles per page (4 cols x 5 rows)
+  // Left-view layout: 21 articles per page (3 cols x 7 rows)
+  const pageSize = isDesktopView ? 20 : 21;
+  const totalPages = Math.max(1, Math.ceil(fullPool.length / pageSize));
+  const startIndex = (currentPage - 1) * pageSize;
+  const currentArticles = fullPool.slice(startIndex, startIndex + pageSize);
+
+  // Handle page change: update state, update URL query string, and scroll to articles stream
+  const handlePageChange = (newPage: number) => {
+    if (newPage < 1 || newPage > totalPages) return;
+    setCurrentPage(newPage);
+
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      url.searchParams.set('page', String(newPage));
+      window.history.pushState({}, '', url.toString());
+
+      const el = document.getElementById('author-articles-stream');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-white font-sans antialiased text-slate-900">
@@ -625,17 +841,69 @@ export default function AuthorProfilePage() {
         </div>
       </section>
 
-      {/* ARTICLES STREAM - 1 ROW 3 COLUMNS GRID */}
+      {/* ARTICLES STREAM */}
       <main id="author-articles-stream" className="flex-1 w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 py-6 md:py-10">
-        {/* Section Headline */}
-        <div className="mb-8">
+        {/* Section Headline & Layout View Controls */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-serif font-black text-[#020618] tracking-tight my-0">
             More From {author.name}
           </h2>
+
+          {/* Quick Layout Mode View Switcher (Supports testing on any screen size) */}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setIsDesktopView(false);
+                setCurrentPage(1);
+                if (typeof window !== 'undefined') {
+                  const url = new URL(window.location.href);
+                  url.searchParams.set('view', 'left');
+                  url.searchParams.set('page', '1');
+                  window.history.pushState({}, '', url.toString());
+                }
+              }}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-[3px] border cursor-pointer transition-colors ${
+                !isDesktopView
+                  ? 'bg-[#1642D0] text-white border-[#1642D0]'
+                  : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+              }`}
+              aria-label="Switch to Left View (3 Columns, 21 articles per page)"
+            >
+              Left View (3 Cols • 21/page)
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setIsDesktopView(true);
+                setCurrentPage(1);
+                if (typeof window !== 'undefined') {
+                  const url = new URL(window.location.href);
+                  url.searchParams.set('view', 'desktop');
+                  url.searchParams.set('page', '1');
+                  window.history.pushState({}, '', url.toString());
+                }
+              }}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-[3px] border cursor-pointer transition-colors ${
+                isDesktopView
+                  ? 'bg-[#1642D0] text-white border-[#1642D0]'
+                  : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+              }`}
+              aria-label="Switch to PC Desktop View (4 Columns, 20 articles per page)"
+            >
+              PC Desktop View (4 Cols • 20/page)
+            </button>
+          </div>
         </div>
 
-        {/* 1 Row 3 Columns Grid for Current Page Articles */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
+        {/* Dynamic Grid: 4 columns for PC Desktop View, 3 columns for Left View */}
+        <div
+          className={
+            isDesktopView
+              ? 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 xl:gap-8'
+              : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8'
+          }
+        >
           {currentArticles.map((art) => (
             <article key={art.id} className="relative group flex flex-col items-start text-left cursor-pointer">
               {/* Stretched link so the entire card is clickable */}
@@ -645,7 +913,7 @@ export default function AuthorProfilePage() {
                 aria-label={art.title}
               />
 
-              {/* Card Image */}
+              {/* Card Image: Sharp square rectangular corners */}
               <div className="w-full aspect-[16/10] overflow-hidden rounded-none bg-slate-100 mb-3.5 border border-slate-200/60 pointer-events-none">
                 <img
                   src={art.imageUrl}
@@ -674,9 +942,21 @@ export default function AuthorProfilePage() {
           ))}
         </div>
 
-        {/* DYNAMIC FUNCTIONAL PAGINATION MATCHING IMAGE 3 */}
+        {/* DYNAMIC FUNCTIONAL PAGINATION WITH PREVIOUS AND NEXT */}
         <div className="flex items-center justify-center gap-1.5 sm:gap-2 pt-12 pb-8">
-          {[1, 2, 3].map((pageNum) => (
+          {/* Previous Button */}
+          <button
+            type="button"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage <= 1}
+            className="h-9 sm:h-10 px-4 rounded-[3px] bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 disabled:opacity-40 font-sans font-semibold text-xs sm:text-[13px] flex items-center justify-center cursor-pointer transition-colors"
+            aria-label="Previous page"
+          >
+            Previous
+          </button>
+
+          {/* Numeric Page Buttons */}
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
             <button
               key={pageNum}
               type="button"
@@ -693,31 +973,11 @@ export default function AuthorProfilePage() {
             </button>
           ))}
 
-          {/* Ellipsis */}
-          <span className="min-w-[36px] sm:min-w-[40px] h-9 sm:h-10 px-2 rounded-[3px] bg-white border border-slate-300 text-slate-400 font-sans text-xs sm:text-[13px] flex items-center justify-center select-none">
-            ...
-          </span>
-
-          {/* Page 10 Button */}
-          <button
-            type="button"
-            onClick={() => handlePageChange(10)}
-            className={`min-w-[36px] sm:min-w-[40px] h-9 sm:h-10 px-3 rounded-[3px] font-sans text-xs sm:text-[13px] flex items-center justify-center cursor-pointer transition-all duration-150 ${
-              currentPage === 10
-                ? 'bg-[#1642D0] text-white font-bold border border-[#1642D0]'
-                : 'bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 font-semibold hover:border-slate-400'
-            }`}
-            aria-label="Go to page 10"
-            aria-current={currentPage === 10 ? 'page' : undefined}
-          >
-            10
-          </button>
-
           {/* Next Button */}
           <button
             type="button"
-            onClick={() => handlePageChange(Math.min(10, currentPage + 1))}
-            disabled={currentPage === 10}
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage >= totalPages}
             className="h-9 sm:h-10 px-4 rounded-[3px] bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 disabled:opacity-40 font-sans font-semibold text-xs sm:text-[13px] flex items-center justify-center cursor-pointer transition-colors"
             aria-label="Next page"
           >
