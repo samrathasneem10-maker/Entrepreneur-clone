@@ -45,11 +45,11 @@ export const BusinessLegalAffairsSection: React.FC = () => {
                 aria-label={card.title}
               >
                 {/* Image */}
-                <figure className="relative w-full aspect-[16/10] overflow-hidden rounded-lg sm:rounded-xl mb-3.5 border border-slate-200/90 bg-slate-100 flex-shrink-0">
+                <figure className="relative w-full aspect-[16/9.5] overflow-hidden rounded-xs mb-3 border border-slate-200/90 bg-slate-100 flex-shrink-0">
                   <img
                     src={card.imageUrl}
                     alt={card.title}
-                    className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 rounded-lg sm:rounded-xl"
+                    className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 rounded-xs"
                   />
                 </figure>
 

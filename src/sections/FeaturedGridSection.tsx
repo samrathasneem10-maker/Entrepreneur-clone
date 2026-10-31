@@ -20,7 +20,7 @@ export const FeaturedGridSection: React.FC = () => {
                 >
                   {/* Card Image */}
                   {article.imageUrl && (
-                    <figure className="relative w-full aspect-[16/10] overflow-hidden rounded-lg sm:rounded-xl mb-3.5 border border-slate-200/90 bg-slate-100 flex-shrink-0">
+                    <figure className="relative w-full aspect-[16/9.5] overflow-hidden rounded-xs mb-3 border border-slate-200/90 bg-slate-100 flex-shrink-0">
                       <img
                         src={article.imageUrl}
                         alt={article.title}
@@ -35,7 +35,7 @@ export const FeaturedGridSection: React.FC = () => {
                             else if (article.id === 'grid-4') target.src = '/images/home-hero/grid-card-4.png';
                           }
                         }}
-                        className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 rounded-lg sm:rounded-xl"
+                        className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 rounded-xs"
                       />
                     </figure>
                   )}

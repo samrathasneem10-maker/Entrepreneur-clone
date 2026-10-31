@@ -47,7 +47,7 @@ export const StartupsEntrepreneurshipSection: React.FC = () => {
             >
               <div className="flex flex-col">
                 {/* Featured Image */}
-                <figure className="relative w-full aspect-[16/9] overflow-hidden rounded-xs mb-3.5 border border-slate-200/90 bg-slate-100 flex-shrink-0">
+                <figure className="relative w-full aspect-[16/9.5] overflow-hidden rounded-xs mb-3 border border-slate-200/90 bg-slate-100 flex-shrink-0">
                   <img
                     src={featured.imageUrl}
                     alt={featured.title}

@@ -312,15 +312,7 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
         )}
       </header>
 
-      {/* Promotional Announcement Banner: "Turn Your Inbox Into a Growth Tool" matching Reference Image 1 */}
-      <div className="w-full bg-[#1642D0] py-2 px-4 text-center select-none shadow-xs">
-        <Link
-          href="/newsletters"
-          className="text-white text-xs sm:text-[13px] font-bold tracking-wide hover:underline cursor-pointer transition-all inline-block"
-        >
-          Turn Your Inbox Into a Growth Tool
-        </Link>
-      </div>
+
 
       {/* Slide-out Navigation Drawer */}
       <NavDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
