@@ -204,3 +204,32 @@ pre.code-section::-webkit-scrollbar-thumb:hover {
   background: #64748b !important;
 }
 
+/* Automatic Text Wrapping across All Article Editor Text Fields */
+.article-editor-content,
+.article-editor-canvas,
+.article-editor-content p,
+.article-editor-content h1,
+.article-editor-content h2,
+.article-editor-content h3,
+.article-editor-content h4,
+.article-editor-content h5,
+.article-editor-content h6,
+.article-editor-content div,
+.article-editor-content span,
+.article-editor-content blockquote,
+.article-editor-content li {
+  white-space: pre-wrap !important;
+  word-break: break-word !important;
+  overflow-wrap: anywhere !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.article-editor-content pre,
+pre.code-section {
+  white-space: pre !important;
+  overflow-x: auto !important;
+  max-width: 100% !important;
+}
+
+

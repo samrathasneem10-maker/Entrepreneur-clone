@@ -52,55 +52,14 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import ProfileSettingsModal from '@/components/writer/ProfileSettingsModal';
+import { MAIN_CATEGORIES } from '@/data/categoriesData';
 
-const WEBSITE_CATEGORIES = [
-  'Business',
-  'Breaking Business News',
-  'Politics and Policy',
-  'Opinion and Analysis',
-  'Sports Business',
-  'Markets and Investing',
-  'Startups and Entrepreneurship',
-  'Technology and AI',
-  'Leadership',
-  'Research and Insights',
-  'Economy',
-  'Banking and Finance',
-  'Building a Business',
-];
+const WEBSITE_CATEGORIES = MAIN_CATEGORIES.map((c) => c.name);
 
-const CATEGORY_SUBCATEGORIES_MAP: Record<string, string[]> = {
-  'Business': [
-    'US',
-    'World',
-    'Politics',
-    'Economy & Trade',
-    'Crypto',
-    'Technology',
-    'Travel',
-    'Opinion',
-    'CEO Spotlight',
-    'Sports',
-    'Entertainment',
-    'Security',
-    'Culture',
-    'Markets',
-    'Leadership',
-    'Startups',
-    'Energy',
-    'Real Estate',
-    'Legal',
-  ],
-  'Breaking Business News': ['US', 'World', 'Politics', 'Economy & Trade', 'Policy', 'Corporate', 'Mergers', 'Regulations'],
-  'Markets and Investing': ['Stocks', 'Crypto', 'Commodities', 'Bonds', 'Real Estate', 'Venture Capital', 'Private Equity', 'ETFs'],
-  'Startups and Entrepreneurship': ['Founders', 'Venture Funding', 'Bootstrapping', 'Growth', 'Pivots', 'Pitch Decks', 'Incubators', 'Scaleups'],
-  'Technology and AI': ['Artificial Intelligence', 'Software & SaaS', 'Cybersecurity', 'Autonomous Agents', 'Hardware', 'Robotics', 'Quantum', 'Cloud'],
-  'Leadership': ['Executive Strategy', 'Management', 'Hiring & Teams', 'Company Culture', 'Crisis Management', 'Mentorship', 'Board Relations'],
-  'Research and Insights': ['Industry Reports', 'Consumer Trends', 'Market Data', 'Case Studies', 'Economic Forecasts', 'Surveys'],
-  'Economy': ['Global Trade', 'Inflation', 'Federal Reserve', 'Labor Market', 'Supply Chains', 'Fiscal Policy', 'GDP Reports'],
-  'Banking and Finance': ['Fintech', 'Commercial Banking', 'Digital Assets', 'Lending', 'Payments', 'Wealth Management', 'Interest Rates'],
-  'Building a Business': ['Operations', 'Sales Funnels', 'Legal & Tax', 'Franchises', 'Branding', 'Customer Retention', 'Product Design'],
-};
+const CATEGORY_SUBCATEGORIES_MAP: Record<string, string[]> = MAIN_CATEGORIES.reduce((acc, cat) => {
+  acc[cat.name] = cat.subcategories.map((s) => s.name);
+  return acc;
+}, {} as Record<string, string[]>);
 
 const PRESET_EDITORIAL_IMAGES = [
   { name: 'Business Leadership', url: '/images/topic-hero-leaders.jpg' },
@@ -111,14 +70,7 @@ const PRESET_EDITORIAL_IMAGES = [
   { name: 'Operations & Scaling', url: '/images/related-founders-warehouse.png' },
 ];
 
-const INITIAL_ALL_CATEGORIES: string[] = Array.from(
-  new Set([
-    'Business',
-    ...(CATEGORY_SUBCATEGORIES_MAP['Business'] || []),
-    ...WEBSITE_CATEGORIES,
-    ...Object.values(CATEGORY_SUBCATEGORIES_MAP).flat(),
-  ])
-);
+const INITIAL_ALL_CATEGORIES: string[] = MAIN_CATEGORIES.map((c) => c.name);
 
 // Helper: Extract plain text from HTML string
 function extractPlainTextFromHtml(html: string): string {
@@ -318,10 +270,41 @@ function WriterEditorMain() {
   // Article Core Fields
   const [title, setTitle] = useState('');
   const [subtitle, setSubtitle] = useState('');
+  const titleTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const subtitleTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const autoResizeTextarea = (el: HTMLTextAreaElement | null) => {
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${el.scrollHeight}px`;
+  };
+
+  useEffect(() => {
+    autoResizeTextarea(titleTextareaRef.current);
+  }, [title]);
+
+  useEffect(() => {
+    autoResizeTextarea(subtitleTextareaRef.current);
+  }, [subtitle]);
+
   const [authorName, setAuthorName] = useState('');
-  const [mainCategory, setMainCategory] = useState('Business');
+  const [mainCategory, setMainCategory] = useState(MAIN_CATEGORIES[0].name);
   const [allCategories, setAllCategories] = useState<string[]>(INITIAL_ALL_CATEGORIES);
   const [selectedSubCategories, setSelectedSubCategories] = useState<string[]>([]);
+
+  // Synchronized Categories using Navigation Menu (MAIN_CATEGORIES) as Single Source of Truth
+  const activeMainCatObj = useMemo(() => {
+    return (
+      MAIN_CATEGORIES.find((c) => c.name.toLowerCase() === mainCategory.trim().toLowerCase()) ||
+      MAIN_CATEGORIES.find((c) => c.aliases?.some((a) => a.toLowerCase() === mainCategory.trim().toLowerCase())) ||
+      MAIN_CATEGORIES.find((c) => c.slug.toLowerCase() === mainCategory.trim().toLowerCase()) ||
+      MAIN_CATEGORIES[0]
+    );
+  }, [mainCategory]);
+
+  const currentSubcategories = useMemo(() => {
+    return activeMainCatObj ? activeMainCatObj.subcategories : [];
+  }, [activeMainCatObj]);
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
   const tagInputRef = useRef<HTMLInputElement>(null);
@@ -1450,9 +1433,6 @@ function WriterEditorMain() {
     setShowImageModal(true);
   };
 
-  const currentSubcategories = (allCategories && allCategories.length > 0 ? allCategories : INITIAL_ALL_CATEGORIES)
-    .filter((cat) => cat.trim().toLowerCase() !== mainCategory.trim().toLowerCase());
-
   const handleToggleSubCategory = (sub: string) => {
     if (selectedSubCategories.includes(sub)) {
       setSelectedSubCategories((prev) => prev.filter((s) => s !== sub));
@@ -2135,25 +2115,59 @@ function WriterEditorMain() {
 
               </div>
 
-              {/* Title Field: "Add Title..." in large bold serif font */}
+              {/* Title Field: "Add Title..." in large bold serif font with automatic word-wrapping */}
               <div>
-                <input
-                  type="text"
+                <textarea
+                  ref={titleTextareaRef}
+                  rows={1}
                   value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  onChange={(e) => {
+                    setTitle(e.target.value);
+                    autoResizeTextarea(e.target);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      subtitleTextareaRef.current?.focus();
+                    }
+                  }}
                   placeholder="Add Title..."
-                  className="w-full text-3xl sm:text-4xl font-serif font-bold text-slate-900 placeholder:text-slate-300 border-none outline-none focus:ring-0 px-0 py-1 bg-transparent"
+                  className="w-full text-3xl sm:text-4xl font-serif font-bold text-slate-900 placeholder:text-slate-300 border-none outline-none focus:ring-0 px-0 py-1 bg-transparent resize-none overflow-hidden block"
+                  style={{
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word',
+                    overflowWrap: 'anywhere',
+                    maxWidth: '100%',
+                    boxSizing: 'border-box',
+                  }}
                 />
               </div>
 
-              {/* Subheading Field: "Add Subheading / Deck..." in italic serif font */}
+              {/* Subheading Field: "Add Subheading / Deck..." in italic serif font with automatic word-wrapping */}
               <div>
-                <input
-                  type="text"
+                <textarea
+                  ref={subtitleTextareaRef}
+                  rows={1}
                   value={subtitle}
-                  onChange={(e) => setSubtitle(e.target.value)}
+                  onChange={(e) => {
+                    setSubtitle(e.target.value);
+                    autoResizeTextarea(e.target);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      editorRef.current?.focus();
+                    }
+                  }}
                   placeholder="Add Subheading / Deck..."
-                  className="w-full text-lg sm:text-xl font-serif italic text-slate-700 placeholder:text-slate-300 border-none outline-none focus:ring-0 px-0 py-1 bg-transparent"
+                  className="w-full text-lg sm:text-xl font-serif italic text-slate-700 placeholder:text-slate-300 border-none outline-none focus:ring-0 px-0 py-1 bg-transparent resize-none overflow-hidden block"
+                  style={{
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word',
+                    overflowWrap: 'anywhere',
+                    maxWidth: '100%',
+                    boxSizing: 'border-box',
+                  }}
                 />
               </div>
 
@@ -2301,7 +2315,14 @@ function WriterEditorMain() {
                   }}
                   onKeyDown={handleEditorKeyDown}
                   className="article-editor-canvas article-editor-content w-full flex-1 min-h-[640px] text-base text-slate-800 border-none outline-none focus:ring-0 px-0 py-2 leading-relaxed font-sans bg-transparent prose prose-slate max-w-none focus:outline-none"
-                  style={{ minHeight: '640px' }}
+                  style={{
+                    minHeight: '640px',
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word',
+                    overflowWrap: 'anywhere',
+                    maxWidth: '100%',
+                    boxSizing: 'border-box',
+                  }}
                 />
               </div>
 
@@ -2393,19 +2414,21 @@ function WriterEditorMain() {
                       <div className="p-3 pt-2 border-t border-slate-100 bg-white">
                         <div className="relative">
                           <select
-                            value={mainCategory}
+                            value={activeMainCatObj.name}
                             onChange={(e) => {
                               const newCat = e.target.value;
                               setMainCategory(newCat);
+                              const targetCat = MAIN_CATEGORIES.find((c) => c.name === newCat);
+                              const validSubs = targetCat ? targetCat.subcategories.map((s) => s.name) : [];
                               setSelectedSubCategories((prev) =>
-                                prev.filter((s) => s.trim().toLowerCase() !== newCat.trim().toLowerCase())
+                                prev.filter((s) => validSubs.includes(s))
                               );
                             }}
                             className="w-full appearance-none px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-hidden focus:border-[#1642D0] cursor-pointer"
                           >
-                            {(allCategories && allCategories.length > 0 ? allCategories : INITIAL_ALL_CATEGORIES).map((cat) => (
-                              <option key={cat} value={cat}>
-                                {cat}
+                            {MAIN_CATEGORIES.map((cat) => (
+                              <option key={cat.id} value={cat.name}>
+                                {cat.name}
                               </option>
                             ))}
                           </select>
@@ -2443,23 +2466,29 @@ function WriterEditorMain() {
                       <div className="p-3.5 pt-2 border-t border-slate-100 bg-white flex flex-col gap-4">
                         {/* 2-Column Checkbox Grid */}
                         <div className="grid grid-cols-2 gap-2 p-2.5 bg-slate-50 border border-slate-200 rounded-xl max-h-56 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300">
-                          {currentSubcategories.map((sub) => {
-                            const isChecked = selectedSubCategories.includes(sub);
-                            return (
-                              <label
-                                key={sub}
-                                className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer select-none hover:text-slate-900"
-                              >
-                                <input
-                                  type="checkbox"
-                                  checked={isChecked}
-                                  onChange={() => handleToggleSubCategory(sub)}
-                                  className="w-4 h-4 rounded border-slate-300 text-[#1642D0] focus:ring-[#1642D0]/30 cursor-pointer"
-                                />
-                                <span className="truncate">{sub}</span>
-                              </label>
-                            );
-                          })}
+                          {currentSubcategories.length === 0 ? (
+                            <p className="col-span-2 text-center text-xs text-slate-400 py-3">
+                              No sub-categories available for this category.
+                            </p>
+                          ) : (
+                            currentSubcategories.map((sub) => {
+                              const isChecked = selectedSubCategories.includes(sub.name);
+                              return (
+                                <label
+                                  key={sub.name}
+                                  className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer select-none hover:text-slate-900"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={isChecked}
+                                    onChange={() => handleToggleSubCategory(sub.name)}
+                                    className="w-4 h-4 rounded border-slate-300 text-[#1642D0] focus:ring-[#1642D0]/30 cursor-pointer"
+                                  />
+                                  <span className="truncate" title={sub.name}>{sub.name}</span>
+                                </label>
+                              );
+                            })
+                          )}
                         </div>
 
                         {/* Counter: SELECTED: X / 5 */}
