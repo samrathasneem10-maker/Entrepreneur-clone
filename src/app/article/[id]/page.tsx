@@ -677,6 +677,15 @@ export default function ArticleDetailPage() {
               >
                 {article.author?.name || 'SHERIN SHIBU'}
               </Link>
+              <a
+                href={article.author?.linkedinUrl || 'https://www.linkedin.com'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center w-3.5 h-3.5 bg-[#0A66C2] rounded-[2px] text-white text-[9px] font-bold leading-none hover:opacity-90 transition-opacity"
+                aria-label={`${article.author?.name || 'Author'} LinkedIn Profile`}
+              >
+                in
+              </a>
               <span className="text-slate-300 font-normal">|</span>
               <span className="text-slate-500 font-normal">
                 {article.date || 'JAN 26, 2026'}
@@ -1130,7 +1139,7 @@ export default function ArticleDetailPage() {
                       </Link>
                     </h4>
                     <a
-                      href="https://linkedin.com"
+                      href={article.author?.linkedinUrl || 'https://www.linkedin.com'}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center justify-center w-3.5 h-3.5 bg-[#0A66C2] rounded-[2px] text-white text-[9px] font-bold ml-0.5 leading-none hover:opacity-90 transition-opacity"

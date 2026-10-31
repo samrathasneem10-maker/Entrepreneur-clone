@@ -102,11 +102,13 @@ export async function GET(request: Request) {
         a.sub_categories as subCategories,
         a.created_at as createdAt,
         a.updated_at as updatedAt,
-        au.avatar as authorAvatar,
-        au.role as authorTitle,
-        au.bio as authorBio
+        COALESCE(u.avatar, au.avatar) as authorAvatar,
+        COALESCE(au.role, 'Staff Contributor') as authorTitle,
+        COALESCE(u.bio, au.bio) as authorBio,
+        COALESCE(u.linkedin_url, au.linkedin_url) as authorLinkedinUrl
       FROM articles a
-      LEFT JOIN authors au ON a.author_id = au.id
+      LEFT JOIN authors au ON (a.author_id = au.id OR LOWER(TRIM(a.author_name)) = LOWER(TRIM(au.name)))
+      LEFT JOIN users u ON (a.author_id = u.id OR LOWER(TRIM(a.author_name)) = LOWER(TRIM(u.name)) OR LOWER(TRIM(a.author_name)) = LOWER(TRIM(u.writer_name)))
       ${whereClause}
       ORDER BY a.id DESC
       LIMIT ? OFFSET ?
@@ -142,9 +144,11 @@ export async function GET(request: Request) {
       author: {
         name: r.authorName || 'Staff Contributor',
         avatar: r.authorAvatar || '/images/author-sherin.png',
-        title: r.authorTitle || 'Executive Contributor',
+        title: r.authorTitle || 'Staff Contributor',
         bio: r.authorBio,
+        linkedinUrl: r.authorLinkedinUrl || null,
       },
+      authorLinkedinUrl: r.authorLinkedinUrl || null,
     }));
 
     return NextResponse.json({

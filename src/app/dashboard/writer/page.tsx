@@ -30,6 +30,11 @@ interface ArticleItem {
   title: string;
   category: string;
   date: string;
+  authorName?: string;
+  author?: {
+    name: string;
+    avatar?: string;
+  };
   readTime?: string;
   excerpt?: string;
   content?: string;
@@ -299,6 +304,7 @@ function WriterDashboardMain() {
       if (data?.success && Array.isArray(data.data)) {
         const withImgs: ArticleItem[] = data.data.map((item: any, idx: number) => ({
           ...item,
+          authorName: item.authorName || item.author?.name || 'Staff Contributor',
           imageUrl:
             item.imageUrl && item.imageUrl.trim() !== ''
               ? item.imageUrl
@@ -307,7 +313,14 @@ function WriterDashboardMain() {
         if (append) {
           setArticles((prev) => [...prev, ...withImgs]);
         } else {
-          setArticles(withImgs);
+          const seen = new Set();
+          const unique = withImgs.filter((item) => {
+            const key = item.dbId || item.id;
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+          });
+          setArticles(unique);
         }
         setCurrentPage(data.page || pageNum);
         setTotalPages(data.totalPages || 1);
@@ -830,7 +843,7 @@ function WriterDashboardMain() {
                       <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-4.5 flex-1 min-w-0 w-full">
                         
                         {/* Featured Image Thumbnail with Quick Change Overlay */}
-                        <div className="relative w-full sm:w-36 md:w-40 h-32 sm:h-24 md:h-26 shrink-0 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 group/img">
+                        <div className="relative w-full sm:w-36 md:w-40 h-32 sm:h-24 md:h-26 shrink-0 rounded-none overflow-hidden border border-slate-200 bg-slate-100 group/img">
                           <img
                             src={art.imageUrl || '/images/topic-hero-leaders.jpg'}
                             alt={art.title}
@@ -855,9 +868,17 @@ function WriterDashboardMain() {
                         {/* Article Details */}
                         <div className="flex-1 min-w-0 w-full">
                           <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                            <span className="text-[11px] font-bold uppercase tracking-wider text-[#1642D0] bg-blue-50 border border-blue-200/60 px-2.5 py-0.5 rounded-md">
+                            <span className="text-[11px] font-bold uppercase tracking-wider text-[#1642D0] bg-blue-50 border border-blue-200/60 px-2.5 py-0.5 rounded-none">
                               {art.category || 'General'}
                             </span>
+                            {(art.authorName || art.author?.name) && (
+                              <>
+                                <span className="text-slate-300">•</span>
+                                <span className="text-xs font-semibold text-slate-700">
+                                  By {art.authorName || art.author?.name}
+                                </span>
+                              </>
+                            )}
                             <span className="text-slate-300">•</span>
                             <span className="text-xs text-slate-500 font-medium flex items-center gap-1">
                               <Clock className="w-3.5 h-3.5 text-slate-400" />

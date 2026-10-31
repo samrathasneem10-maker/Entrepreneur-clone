@@ -646,11 +646,11 @@ export default function AuthorProfilePage() {
               />
 
               {/* Card Image */}
-              <div className="w-full aspect-[16/10] overflow-hidden rounded-xl bg-slate-100 mb-3.5 border border-slate-200/60 pointer-events-none">
+              <div className="w-full aspect-[16/10] overflow-hidden rounded-none bg-slate-100 mb-3.5 border border-slate-200/60 pointer-events-none">
                 <img
                   src={art.imageUrl}
                   alt={art.title}
-                  className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 rounded-xl"
+                  className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 rounded-none"
                 />
               </div>
 

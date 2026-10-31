@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/components/auth/AuthContext';
-import { ArrowLeft, ChevronDown, ChevronUp, User, LogOut } from 'lucide-react';
+import { ArrowLeft, ChevronDown, ChevronUp, User, LogOut, PenTool, LayoutDashboard, Settings } from 'lucide-react';
 import ProfileSettingsModal from './ProfileSettingsModal';
 
 function HeaderQuerySync({
@@ -69,6 +69,7 @@ export default function WriterHeader({ backHref = '/' }: WriterHeaderProps) {
   const displayEmail = user?.email || 'mishalzuhrie@gmail.com';
   const displayAvatar = user?.avatar || '/images/user-avatar-butterfly.png';
   const displayRole = user?.role ? user.role.toUpperCase() : 'WRITER';
+  const authorSlug = encodeURIComponent((user?.writerName || user?.name || 'fathima').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-'));
 
   return (
     <>
@@ -176,29 +177,61 @@ export default function WriterHeader({ backHref = '/' }: WriterHeaderProps) {
 
                 <div className="border-t border-slate-100 my-2.5" />
 
-                {/* Profile Settings Option */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsDropdownOpen(false);
-                    setIsSettingsModalOpen(true);
-                  }}
-                  className="w-full flex items-center gap-2.5 py-2 px-2 rounded-lg text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors text-left cursor-pointer"
-                >
-                  <User className="w-4 h-4 text-slate-400" />
-                  <span>Profile Settings</span>
-                </button>
+                <div className="space-y-0.5">
+                  {/* 1. Write Article */}
+                  <Link
+                    href="/writer"
+                    onClick={() => setIsDropdownOpen(false)}
+                    className="w-full flex items-center gap-2.5 py-2 px-2 rounded-lg text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors text-left"
+                  >
+                    <PenTool className="w-4 h-4 text-slate-400" />
+                    <span>Write Article</span>
+                  </Link>
+
+                  {/* 2. Dashboard */}
+                  <Link
+                    href="/dashboard/writer"
+                    onClick={() => setIsDropdownOpen(false)}
+                    className="w-full flex items-center gap-2.5 py-2 px-2 rounded-lg text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors text-left"
+                  >
+                    <LayoutDashboard className="w-4 h-4 text-slate-400" />
+                    <span>Dashboard</span>
+                  </Link>
+
+                  {/* 3. Staff Writer */}
+                  <Link
+                    href={`/author/${authorSlug}`}
+                    onClick={() => setIsDropdownOpen(false)}
+                    className="w-full flex items-center gap-2.5 py-2 px-2 rounded-lg text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors text-left"
+                  >
+                    <User className="w-4 h-4 text-slate-400" />
+                    <span>Staff Writer</span>
+                  </Link>
+
+                  {/* 4. Profile Settings */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsDropdownOpen(false);
+                      setIsSettingsModalOpen(true);
+                    }}
+                    className="w-full flex items-center gap-2.5 py-2 px-2 rounded-lg text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors text-left cursor-pointer"
+                  >
+                    <Settings className="w-4 h-4 text-slate-400" />
+                    <span>Profile Settings</span>
+                  </button>
+                </div>
 
                 <div className="border-t border-slate-100 my-2" />
 
-                {/* Log Out Option */}
+                {/* 5. Sign Out */}
                 <button
                   type="button"
                   onClick={handleLogout}
                   className="w-full flex items-center gap-2.5 py-2 px-2 rounded-lg text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50/60 transition-colors text-left cursor-pointer"
                 >
                   <LogOut className="w-4 h-4 text-rose-500" />
-                  <span>Log Out</span>
+                  <span>Sign Out</span>
                 </button>
               </div>
             )}

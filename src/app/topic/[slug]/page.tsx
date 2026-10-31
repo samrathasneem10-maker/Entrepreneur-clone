@@ -846,39 +846,39 @@ export default function DynamicTopicPage() {
       </div>
 
       {/* Category Header */}
-      <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pt-5 pb-3">
+      <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pt-3 pb-1.5">
         <div>
           <span className="text-[11px] font-bold text-[#1642D0] uppercase tracking-wider font-sans block mb-1">
             {topicData.parentTitle ? `${topicData.parentTitle} • Subcategory` : 'Category'}
           </span>
-          <h1 className="text-2xl sm:text-3xl lg:text-[38px] font-serif font-black text-[#020618] tracking-tight my-1">
+          <h1 className="text-2xl sm:text-3xl lg:text-[32px] font-serif font-black text-[#020618] tracking-tight my-0.5">
             {topicData.title}
           </h1>
         </div>
       </div>
 
       {/* Main Hero Story: Full width image + THOUGHT LEADERS + Full length bold heading + Natural full width summary */}
-      <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pb-8">
+      <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pb-4">
         {/* Full width hero image matching Image 3 */}
         <Link
           href="/article/how-great-leaders-build-teams-that-thrive"
-          className="block w-full overflow-hidden rounded-xl bg-slate-100 group cursor-pointer border border-slate-200/80 shadow-xs"
+          className="block w-full overflow-hidden rounded-none bg-slate-100 group cursor-pointer border border-slate-200/80 shadow-xs"
         >
           <img
             src="/images/topic-hero-leaders.jpg"
             alt="How Great Leaders Build Teams That Thrive"
-            className="w-full aspect-[16/8] sm:aspect-[2.2/1] md:aspect-[2.4/1] max-h-[500px] object-cover object-center group-hover:scale-[1.01] transition-transform duration-500 rounded-xl"
+            className="w-full aspect-[2.6/1] sm:aspect-[3/1] lg:aspect-[3.6/1] max-h-[260px] sm:max-h-[290px] lg:max-h-[310px] object-cover object-center group-hover:scale-[1.01] transition-transform duration-500 rounded-none"
           />
         </Link>
 
         {/* Story details */}
-        <div className="pt-4">
+        <div className="pt-2 sm:pt-2.5">
           <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans block mb-1">
             {topicData.title}
           </span>
 
           {/* Full length bold heading matching Image 2 */}
-          <h1 className="text-2xl sm:text-3xl lg:text-[38px] xl:text-[42px] font-serif font-bold text-[#020618] leading-[1.18] tracking-tight my-2">
+          <h1 className="text-xl sm:text-2xl lg:text-[26px] xl:text-[30px] font-serif font-bold text-[#020618] leading-[1.2] tracking-tight my-1">
             <Link
               href="/article/how-great-leaders-build-teams-that-thrive"
               className="hover:text-[#1642D0] hover:underline transition-colors"
@@ -888,7 +888,7 @@ export default function DynamicTopicPage() {
           </h1>
 
           {/* Natural full-width continuous summary matching user requirement */}
-          <p className="font-serif text-slate-600 sm:text-slate-700 text-base sm:text-lg lg:text-[18.5px] leading-relaxed mt-2.5 my-0 w-full">
+          <p className="font-serif text-slate-600 sm:text-slate-700 text-sm sm:text-base lg:text-[15.5px] leading-relaxed mt-1 my-0 w-full">
             Strong leadership isn&apos;t just about making decisions — it&apos;s about creating an environment where people can grow, contribute and succeed.
           </p>
         </div>

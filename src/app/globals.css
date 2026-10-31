@@ -232,4 +232,29 @@ pre.code-section {
   max-width: 100% !important;
 }
 
+/* Global Website Image Box Shape Fix — Sharp Rectangular Corners (border-radius: 0) */
+article img,
+article [class*="aspect-"],
+.article-card img,
+.article-card div[class*="aspect-"],
+.featured-article img,
+.related-article img,
+.topic-page img,
+.topic-hero-img,
+.more-from-author img,
+.author-article-img,
+[data-article-card] img,
+[data-article-card] [class*="aspect-"],
+.homepage-news-card img,
+.homepage-news-card [class*="aspect-"],
+.article-thumbnail-box,
+.article-thumbnail-box img,
+main article img,
+main article div[class*="overflow-hidden"],
+main section article img,
+main section article div[class*="overflow-hidden"] {
+  border-radius: 0 !important;
+}
+
+
 

@@ -1,10 +1,12 @@
 import mysql from 'mysql2/promise';
 
-let pool: mysql.Pool | null = null;
+declare global {
+  var _mysqlPool: mysql.Pool | undefined;
+}
 
 export function getDbPool(): mysql.Pool {
-  if (!pool) {
-    pool = mysql.createPool({
+  if (!globalThis._mysqlPool) {
+    globalThis._mysqlPool = mysql.createPool({
       host: process.env.DB_HOST || '127.0.0.1',
       port: Number(process.env.DB_PORT) || 3306,
       user: process.env.DB_USER || 'root',
@@ -17,7 +19,7 @@ export function getDbPool(): mysql.Pool {
       keepAliveInitialDelay: 0,
     });
   }
-  return pool;
+  return globalThis._mysqlPool;
 }
 
 export async function query<T = any>(sql: string, params?: any[]): Promise<T> {

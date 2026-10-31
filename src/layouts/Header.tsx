@@ -3,11 +3,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Search, User, Mail, LogOut, LayoutDashboard, Settings } from 'lucide-react';
+import { Search, User, Mail, LogOut, LayoutDashboard, Settings, PenTool } from 'lucide-react';
 import { SearchBar } from '@/components/SearchBar';
 import { NavDrawer } from '@/components/NavDrawer';
 import { NAVIGATION_STRUCTURE } from '@/data/newsData';
 import { useAuth } from '@/components/auth/AuthContext';
+import ProfileSettingsModal from '@/components/writer/ProfileSettingsModal';
 
 interface HeaderProps {
   showProgressBar?: boolean;
@@ -22,6 +23,7 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [readingProgress, setReadingProgress] = useState(0);
   const [showAccountDropdown, setShowAccountDropdown] = useState(false);
+  const [showWriterProfileModal, setShowWriterProfileModal] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string>('Business');
   const accountDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -215,19 +217,29 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
                       <div className="py-1">
                         {user.role === 'writer' ? (
                           <>
-                            {/* 1. Writer Dashboard */}
+                            {/* 1. Write Article */}
+                            <Link
+                              href="/writer"
+                              onClick={() => setShowAccountDropdown(false)}
+                              className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
+                            >
+                              <PenTool className="w-3.5 h-3.5 text-slate-400" />
+                              <span>Write Article</span>
+                            </Link>
+
+                            {/* 2. Dashboard */}
                             <Link
                               href="/dashboard/writer"
                               onClick={() => setShowAccountDropdown(false)}
                               className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
                             >
                               <LayoutDashboard className="w-3.5 h-3.5 text-slate-400" />
-                              <span>Writer Dashboard</span>
+                              <span>Dashboard</span>
                             </Link>
 
-                            {/* 2. Staff Writer */}
+                            {/* 3. Staff Writer */}
                             <Link
-                              href={`/author/${encodeURIComponent((user.name || 'fathima').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-'))}`}
+                              href={`/author/${encodeURIComponent((user.writerName || user.name || 'fathima').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-'))}`}
                               onClick={() => setShowAccountDropdown(false)}
                               className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
                             >
@@ -235,15 +247,18 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
                               <span>Staff Writer</span>
                             </Link>
 
-                            {/* 3. Profile Settings */}
-                            <Link
-                              href="/dashboard/reader?tab=profile"
-                              onClick={() => setShowAccountDropdown(false)}
-                              className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
+                            {/* 4. Profile Settings (Opens Writer Profile Settings Modal Directly) */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setShowAccountDropdown(false);
+                                setShowWriterProfileModal(true);
+                              }}
+                              className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors text-left cursor-pointer"
                             >
                               <Settings className="w-3.5 h-3.5 text-slate-400" />
                               <span>Profile Settings</span>
-                            </Link>
+                            </button>
                           </>
                         ) : (
                           <>
@@ -361,6 +376,14 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
 
       {/* Search Overlay */}
       <SearchBar isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+
+      {/* Writer Profile Settings Modal */}
+      {showWriterProfileModal && (
+        <ProfileSettingsModal
+          isOpen={showWriterProfileModal}
+          onClose={() => setShowWriterProfileModal(false)}
+        />
+      )}
     </>
   );
 };

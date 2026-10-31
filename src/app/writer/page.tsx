@@ -272,6 +272,7 @@ function WriterEditorMain() {
   const [subtitle, setSubtitle] = useState('');
   const titleTextareaRef = useRef<HTMLTextAreaElement>(null);
   const subtitleTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const initialDraftLoadedRef = useRef(false);
 
   const autoResizeTextarea = (el: HTMLTextAreaElement | null) => {
     if (!el) return;
@@ -472,60 +473,55 @@ function WriterEditorMain() {
       setShowPreviewModal(true);
     }
 
-    if (!idParam) {
-      try {
-        const savedDraftStr = localStorage.getItem('entrepreneur_writer_draft');
-        if (savedDraftStr) {
-          const savedDraft = JSON.parse(savedDraftStr);
-          if (
-            savedDraft &&
-            (savedDraft.title ||
-              savedDraft.htmlContent ||
-              (savedDraft.selectedSubCategories && savedDraft.selectedSubCategories.length > 0) ||
-              savedDraft.mainCategory)
-          ) {
-            if (savedDraft.title) setTitle(savedDraft.title);
-            if (savedDraft.subtitle) setSubtitle(savedDraft.subtitle);
-            if (savedDraft.authorName) setAuthorName(savedDraft.authorName);
-            if (savedDraft.mainCategory) setMainCategory(savedDraft.mainCategory);
-            if (savedDraft.selectedSubCategories && Array.isArray(savedDraft.selectedSubCategories)) {
-              setSelectedSubCategories(savedDraft.selectedSubCategories);
-            }
-            if (savedDraft.tags && Array.isArray(savedDraft.tags)) {
-              setTags(savedDraft.tags);
-            }
-            if (savedDraft.readDuration) setReadDuration(savedDraft.readDuration);
-            if (savedDraft.featuredImageUrl) setFeaturedImageUrl(savedDraft.featuredImageUrl);
-            if (savedDraft.cardSummary) setCardSummary(savedDraft.cardSummary);
-            if (savedDraft.focusKeyword) setFocusKeyword(savedDraft.focusKeyword);
-            if (savedDraft.metaDescription) setMetaDescription(savedDraft.metaDescription);
-            if (savedDraft.htmlContent) {
-              setHtmlContent(savedDraft.htmlContent);
-              setIsEditorEmpty(false);
-              setTimeout(() => {
-                if (editorRef.current) {
-                  editorRef.current.innerHTML = savedDraft.htmlContent;
-                }
-              }, 100);
-            }
-            return;
+    if (idParam) {
+      loadArticleById(idParam);
+      return;
+    }
+
+    if (initialDraftLoadedRef.current) {
+      return;
+    }
+    initialDraftLoadedRef.current = true;
+
+    try {
+      const savedDraftStr = localStorage.getItem('entrepreneur_writer_draft');
+      if (savedDraftStr) {
+        const savedDraft = JSON.parse(savedDraftStr);
+        if (
+          savedDraft &&
+          (savedDraft.title ||
+            savedDraft.htmlContent ||
+            (savedDraft.selectedSubCategories && savedDraft.selectedSubCategories.length > 0) ||
+            savedDraft.mainCategory)
+        ) {
+          if (savedDraft.title) setTitle(savedDraft.title);
+          if (savedDraft.subtitle) setSubtitle(savedDraft.subtitle);
+          if (savedDraft.authorName) setAuthorName(savedDraft.authorName);
+          if (savedDraft.mainCategory) setMainCategory(savedDraft.mainCategory);
+          if (savedDraft.selectedSubCategories && Array.isArray(savedDraft.selectedSubCategories)) {
+            setSelectedSubCategories(savedDraft.selectedSubCategories);
+          }
+          if (savedDraft.tags && Array.isArray(savedDraft.tags)) {
+            setTags(savedDraft.tags);
+          }
+          if (savedDraft.readDuration) setReadDuration(savedDraft.readDuration);
+          if (savedDraft.featuredImageUrl) setFeaturedImageUrl(savedDraft.featuredImageUrl);
+          if (savedDraft.cardSummary) setCardSummary(savedDraft.cardSummary);
+          if (savedDraft.focusKeyword) setFocusKeyword(savedDraft.focusKeyword);
+          if (savedDraft.metaDescription) setMetaDescription(savedDraft.metaDescription);
+          if (savedDraft.htmlContent) {
+            setHtmlContent(savedDraft.htmlContent);
+            setIsEditorEmpty(false);
+            setTimeout(() => {
+              if (editorRef.current) {
+                editorRef.current.innerHTML = savedDraft.htmlContent;
+              }
+            }, 100);
           }
         }
-      } catch (err) {
-        console.error('Error reading draft on mount:', err);
       }
-
-      // Clean slate only on opening fresh editor without draft
-      setTitle('');
-      setSubtitle('');
-      setTags([]);
-      setTagInput('');
-      setHtmlContent('');
-      setIsEditorEmpty(true);
-      setFeaturedImageUrl('');
-      if (editorRef.current) {
-        editorRef.current.innerHTML = '';
-      }
+    } catch (err) {
+      console.error('Error reading draft on mount:', err);
     }
   }, [searchParams]);
 
@@ -602,7 +598,7 @@ function WriterEditorMain() {
     }
   }, [title, subtitle, htmlContent, mounted, isCardSummaryEdited, isFocusKeywordEdited, isMetaDescriptionEdited]);
 
-  // Auto-persist category, author, subcategories, tags, and SEO to draft storage on change
+  // Auto-persist draft (title, subtitle, content, category, author, subcategories, tags, and SEO) to draft storage on change
   useEffect(() => {
     if (!mounted) return;
     try {
@@ -612,6 +608,10 @@ function WriterEditorMain() {
         'entrepreneur_writer_draft',
         JSON.stringify({
           ...existing,
+          title,
+          subtitle,
+          htmlContent: editorRef.current ? editorRef.current.innerHTML : htmlContent,
+          featuredImageUrl,
           authorName,
           mainCategory,
           selectedSubCategories,
@@ -623,7 +623,7 @@ function WriterEditorMain() {
         })
       );
     } catch {}
-  }, [mainCategory, selectedSubCategories, authorName, tags, cardSummary, focusKeyword, metaDescription, mounted]);
+  }, [title, subtitle, htmlContent, featuredImageUrl, mainCategory, selectedSubCategories, authorName, tags, cardSummary, focusKeyword, metaDescription, mounted]);
 
   const loadArticleById = async (idOrSlug: string) => {
     try {
@@ -1635,7 +1635,7 @@ function WriterEditorMain() {
     const newImageId = 'img_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
     const figureMarkup = `
       <figure class="article-image-figure group relative cursor-pointer ${alignClass} ${sizeClass} select-none" data-image-id="${newImageId}" data-size="${imageSize}" data-align="${imageAlignment}" contenteditable="false">
-        <img src="${finalUrl}" alt="${altSafe}" class="rounded-xl w-full h-auto object-cover shadow-sm border border-slate-200 pointer-events-none" />
+        <img src="${finalUrl}" alt="${altSafe}" class="rounded-none w-full h-auto object-cover shadow-sm border border-slate-200 pointer-events-none" />
         ${captionMarkup}
       </figure>
       <p><br></p>
@@ -1714,6 +1714,11 @@ function WriterEditorMain() {
 
     setIsSubmitting(true);
     const currentHtml = editorRef.current ? editorRef.current.innerHTML : htmlContent;
+    const editorImg = editorRef.current?.querySelector('img')?.getAttribute('src');
+    const latestImage = editorImg || featuredImageUrl || '';
+    if (latestImage && latestImage !== featuredImageUrl) {
+      setFeaturedImageUrl(latestImage);
+    }
 
     try {
       localStorage.setItem(
@@ -1726,7 +1731,7 @@ function WriterEditorMain() {
           selectedSubCategories,
           tags,
           readDuration,
-          featuredImageUrl,
+          featuredImageUrl: latestImage,
           htmlContent: currentHtml,
           cardSummary,
           focusKeyword,
@@ -1744,9 +1749,9 @@ function WriterEditorMain() {
         category: mainCategory,
         excerpt: subtitle.trim() || cardSummary.trim() || title.trim(),
         content: currentHtml || subtitle.trim() || title.trim(),
-        imageUrl: featuredImageUrl || '/images/topic-hero-leaders.jpg',
+        imageUrl: latestImage || '/images/topic-hero-leaders.jpg',
         status: 'draft',
-        authorName: authorName.trim() || user?.name || 'Staff Contributor',
+        authorName: authorName.trim() || user?.writerName || user?.name || 'Staff Contributor',
         readTime: readDuration,
         tags,
         subCategories: selectedSubCategories,
@@ -1792,11 +1797,30 @@ function WriterEditorMain() {
     }
 
     const currentHtml = editorRef.current ? editorRef.current.innerHTML : htmlContent;
-    const plainText = editorRef.current ? editorRef.current.innerText.trim() : '';
+    const plainText = editorRef.current ? editorRef.current.innerText.replace(/\u00a0/g, ' ').trim() : '';
+    const editorImg = editorRef.current?.querySelector('img')?.getAttribute('src');
+    const latestImage = editorImg || featuredImageUrl || '';
 
-    if (!plainText && !currentHtml.includes('<img')) {
-      showToast('Please write your article content before submitting.', 'error');
+    const hasDescription = plainText.length > 0;
+    const hasImage = Boolean(latestImage && latestImage.trim() !== '');
+
+    if (!hasDescription && !hasImage) {
+      showToast('Please add both article description and an image before submitting for review.', 'error');
       return;
+    }
+
+    if (!hasDescription) {
+      showToast('Please write the article description before submitting for review.', 'error');
+      return;
+    }
+
+    if (!hasImage) {
+      showToast('Please add at least one article image before submitting for review.', 'error');
+      return;
+    }
+
+    if (latestImage && latestImage !== featuredImageUrl) {
+      setFeaturedImageUrl(latestImage);
     }
 
     setIsSubmitting(true);
@@ -1806,9 +1830,9 @@ function WriterEditorMain() {
         category: mainCategory,
         excerpt: subtitle.trim() || cardSummary.trim() || title.trim(),
         content: currentHtml,
-        imageUrl: featuredImageUrl || '/images/topic-hero-leaders.jpg',
+        imageUrl: latestImage,
         status: 'pending_review',
-        authorName: authorName.trim() || user?.name || 'Staff Contributor',
+        authorName: authorName.trim() || user?.writerName || user?.name || 'Staff Contributor',
         readTime: readDuration,
         tags,
         subCategories: selectedSubCategories,
@@ -3190,11 +3214,13 @@ function WriterEditorMain() {
               {/* Horizontal Line Above Byline */}
               <div className="border-t border-slate-200 mt-2 mb-1" />
 
-              {/* Byline with Author Name, Avatar, Date, Read Duration, and Bookmark */}
+              {/* Byline with Author Name, Avatar, Date, Read Duration, and Clickable LinkedIn Profile Link */}
               <div className="flex items-center justify-between py-1">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-slate-100 border border-slate-300 flex items-center justify-center font-bold text-slate-700 text-sm overflow-hidden shrink-0">
-                    {(authorName.trim() || user?.name) ? (
+                    {user?.avatar ? (
+                      <img src={user.avatar} alt={authorName || user.name} className="w-full h-full object-cover" />
+                    ) : (authorName.trim() || user?.name) ? (
                       <span className="uppercase text-[#1642D0]">
                         {(authorName.trim() || user?.name || 'W').charAt(0)}
                       </span>
@@ -3206,8 +3232,21 @@ function WriterEditorMain() {
                     <div className="flex items-center gap-2 text-xs sm:text-[13px] font-sans font-bold uppercase tracking-wider text-slate-800">
                       <span className="text-slate-600 font-bold">BY</span>
                       <span className="text-[#1642D0] font-bold">
-                        {authorName.trim() || user?.name || 'Sherin Shibu'}
+                        {authorName.trim() || user?.writerName || user?.name || 'Staff Contributor'}
                       </span>
+                      {/* Clickable LinkedIn Link opening in new tab */}
+                      <a
+                        href={user?.linkedinUrl || 'https://www.linkedin.com'}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center w-4 h-4 bg-[#0A66C2] hover:bg-[#004182] text-white rounded-[2px] transition-colors p-0.5"
+                        title="View Author LinkedIn Profile"
+                        aria-label="Author LinkedIn Profile"
+                      >
+                        <svg className="w-2.5 h-2.5 fill-current" viewBox="0 0 24 24">
+                          <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                        </svg>
+                      </a>
                       <span className="text-slate-300 font-normal">|</span>
                       <span className="text-slate-500 font-normal">
                         {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -3252,10 +3291,14 @@ function WriterEditorMain() {
               </div>
             </div>
 
-            {/* Featured Image if assigned */}
-            {featuredImageUrl && (
-              <div className="rounded-2xl overflow-hidden border border-slate-200">
-                <img src={featuredImageUrl} alt={title} className="w-full h-80 sm:h-96 object-cover" />
+            {/* Featured Image - Sharp Rectangular Corners */}
+            {(featuredImageUrl || (typeof document !== 'undefined' && editorRef.current?.querySelector('img')?.getAttribute('src'))) && (
+              <div className="rounded-none overflow-hidden border border-slate-200">
+                <img
+                  src={featuredImageUrl || editorRef.current?.querySelector('img')?.getAttribute('src') || ''}
+                  alt={title}
+                  className="w-full h-80 sm:h-96 object-cover rounded-none"
+                />
               </div>
             )}
 
