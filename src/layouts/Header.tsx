@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Search, User, Mail, LogOut, LayoutDashboard, Settings, PenTool } from 'lucide-react';
+import { Search, User, Mail, LogOut, LayoutDashboard, Settings } from 'lucide-react';
 import { SearchBar } from '@/components/SearchBar';
 import { NavDrawer } from '@/components/NavDrawer';
 import { NAVIGATION_STRUCTURE } from '@/data/newsData';
@@ -24,11 +24,18 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
   const [readingProgress, setReadingProgress] = useState(0);
   const [showAccountDropdown, setShowAccountDropdown] = useState(false);
   const [showWriterProfileModal, setShowWriterProfileModal] = useState(false);
-  const [activeCategory, setActiveCategory] = useState<string>('Business');
+  const [activeCategory, setActiveCategory] = useState<string>('Breaking News');
   const accountDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!pathname) return;
+    if (pathname === '/') {
+      setActiveCategory('Breaking News');
+      try {
+        sessionStorage.removeItem('activeNavCategory');
+      } catch (_) {}
+      return;
+    }
     const match = NAVIGATION_STRUCTURE.primary.find((item) => {
       if (pathname === item.href) return true;
       if (item.href !== '/' && pathname.startsWith(item.href)) return true;
@@ -37,6 +44,9 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
     });
     if (match) {
       setActiveCategory(match.label);
+      try {
+        sessionStorage.setItem('activeNavCategory', match.label);
+      } catch (_) {}
     }
   }, [pathname]);
 
@@ -217,37 +227,27 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
                       <div className="py-1">
                         {user.role === 'writer' ? (
                           <>
-                            {/* 1. Write Article */}
-                            <Link
-                              href="/writer"
-                              onClick={() => setShowAccountDropdown(false)}
-                              className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
-                            >
-                              <PenTool className="w-3.5 h-3.5 text-slate-400" />
-                              <span>Write Article</span>
-                            </Link>
-
-                            {/* 2. Dashboard */}
+                            {/* 1. Writer Dashboard */}
                             <Link
                               href="/dashboard/writer"
                               onClick={() => setShowAccountDropdown(false)}
                               className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
                             >
                               <LayoutDashboard className="w-3.5 h-3.5 text-slate-400" />
-                              <span>Dashboard</span>
+                              <span>Writer Dashboard</span>
                             </Link>
 
-                            {/* 3. Staff Writer */}
+                            {/* 2. Writer Page */}
                             <Link
                               href={`/author/${encodeURIComponent((user.writerName || user.name || 'fathima').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-'))}`}
                               onClick={() => setShowAccountDropdown(false)}
                               className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
                             >
                               <User className="w-3.5 h-3.5 text-slate-400" />
-                              <span>Staff Writer</span>
+                              <span>Writer Page</span>
                             </Link>
 
-                            {/* 4. Profile Settings (Opens Writer Profile Settings Modal Directly) */}
+                            {/* 3. Profile Settings (Opens Writer Profile Settings Modal Directly) */}
                             <button
                               type="button"
                               onClick={() => {
@@ -328,19 +328,29 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
 
         {/* Lower Header Bar: Category Navigation matching Reference Image */}
         <div className="border-t border-slate-200 bg-white">
-          <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
+          <div className="w-full max-w-[1840px] mx-auto px-3 sm:px-4 md:px-3 lg:px-4 xl:px-6 2xl:px-8">
             <nav className="overflow-x-auto no-scrollbar font-sans py-2 sm:py-2.5">
-              <ul className="flex items-center justify-between gap-4 sm:gap-6 whitespace-nowrap min-w-max">
+              <ul className="flex items-center justify-between gap-2 md:gap-1.5 lg:gap-2 xl:gap-3 2xl:gap-5 whitespace-nowrap min-w-max md:min-w-0 w-full">
                 {NAVIGATION_STRUCTURE.primary.map((item) => {
                   const isActive = activeCategory.toLowerCase() === item.label.toLowerCase();
                   return (
                     <li key={item.label} className="relative shrink-0">
                       <Link
                         href={item.href}
-                        onClick={() => setActiveCategory(item.label)}
-                        className="relative pb-2 pt-1 text-[11px] sm:text-[11.5px] lg:text-[12px] font-bold uppercase tracking-wider transition-colors flex items-center gap-1 whitespace-nowrap text-[#020618] hover:text-[#1642D0]"
+                        onClick={() => {
+                          setActiveCategory(item.label);
+                          try {
+                            sessionStorage.setItem('activeNavCategory', item.label);
+                          } catch (_) {}
+                        }}
+                        className={`relative pb-2.5 pt-1 text-[9.5px] sm:text-[10px] md:text-[9.5px] lg:text-[10px] xl:text-[11px] 2xl:text-[12px] font-bold uppercase tracking-tight md:tracking-tighter lg:tracking-tight xl:tracking-normal 2xl:tracking-wider transition-colors flex items-center gap-1 whitespace-nowrap ${
+                          isActive ? 'text-[#020618]' : 'text-[#020618] hover:text-[#1642D0]'
+                        }`}
                       >
                         <span>{item.label}</span>
+                        {isActive && (
+                          <span className="hidden md:block absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#1642D0]" />
+                        )}
                       </Link>
                     </li>
                   );

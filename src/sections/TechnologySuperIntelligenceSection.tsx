@@ -13,15 +13,17 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-3.5 sm:mb-4.5 gap-3">
         <div>
           <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
+          <Link href="/topic/technology-super-intelligence" className="hover:text-[#1642D0] transition-colors">
             Technology &amp; Super Intelligence
-          </h2>
+          </Link>
+        </h2>
           <p className="text-xs sm:text-sm text-slate-500 font-sans mt-1">
             Exploring AI breakthroughs, emerging technologies, and the innovations shaping a smarter future.
           </p>
         </div>
 
         <Link
-          href="/category/tech-superintelligence"
+          href="/topic/technology-super-intelligence"
           className="inline-flex items-center gap-2 group text-xs sm:text-sm font-sans font-bold tracking-wider uppercase text-slate-800 hover:text-[#1642D0] transition-colors flex-shrink-0"
         >
           <span>SEE ALL</span>

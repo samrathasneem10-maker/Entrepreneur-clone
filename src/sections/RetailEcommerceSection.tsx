@@ -10,10 +10,12 @@ export const RetailEcommerceSection: React.FC = () => {
       {/* Section Header */}
       <div className="flex items-center justify-between mb-3.5 sm:mb-4.5">
         <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
-          Retail &amp; E-commerce
+          <Link href="/topic/retail-ecommerce" className="hover:text-[#1642D0] transition-colors">
+            Retail &amp; E-commerce
+          </Link>
         </h2>
         <Link
-          href="/topic/business-news"
+          href="/topic/retail-ecommerce"
           className="inline-flex items-center gap-2 group text-xs sm:text-sm font-sans font-bold tracking-wider uppercase text-slate-800 hover:text-[#1642D0] transition-colors"
         >
           <span>SEE ALL</span>

@@ -301,6 +301,7 @@ function WriterEditorMain() {
       MAIN_CATEGORIES_20.find((c) => c.name.toLowerCase() === mainCategory.trim().toLowerCase()) ||
       MAIN_CATEGORIES_20.find((c) => c.aliases?.some((a) => a.toLowerCase() === mainCategory.trim().toLowerCase())) ||
       MAIN_CATEGORIES_20.find((c) => c.slug.toLowerCase() === mainCategory.trim().toLowerCase()) ||
+      MAIN_CATEGORIES_20.find((c) => c.subcategories.some((s) => s.name.toLowerCase() === mainCategory.trim().toLowerCase())) ||
       null
     );
   }, [mainCategory]);
@@ -482,50 +483,25 @@ function WriterEditorMain() {
       return;
     }
 
-    if (initialDraftLoadedRef.current) {
-      return;
-    }
-    initialDraftLoadedRef.current = true;
-
+    // Always start empty when opening "Create New Post" without an idParam
     try {
-      const savedDraftStr = localStorage.getItem('entrepreneur_writer_draft');
-      if (savedDraftStr) {
-        const savedDraft = JSON.parse(savedDraftStr);
-        if (
-          savedDraft &&
-          (savedDraft.title ||
-            savedDraft.htmlContent ||
-            (savedDraft.selectedSubCategories && savedDraft.selectedSubCategories.length > 0) ||
-            savedDraft.mainCategory)
-        ) {
-          if (savedDraft.title) setTitle(savedDraft.title);
-          if (savedDraft.subtitle) setSubtitle(savedDraft.subtitle);
-          if (savedDraft.authorName) setAuthorName(savedDraft.authorName);
-          if (savedDraft.mainCategory) setMainCategory(savedDraft.mainCategory);
-          if (savedDraft.selectedSubCategories && Array.isArray(savedDraft.selectedSubCategories)) {
-            setSelectedSubCategories(savedDraft.selectedSubCategories);
-          }
-          if (savedDraft.tags && Array.isArray(savedDraft.tags)) {
-            setTags(savedDraft.tags);
-          }
-          if (savedDraft.readDuration) setReadDuration(savedDraft.readDuration);
-          if (savedDraft.featuredImageUrl) setFeaturedImageUrl(savedDraft.featuredImageUrl);
-          if (savedDraft.cardSummary) setCardSummary(savedDraft.cardSummary);
-          if (savedDraft.focusKeyword) setFocusKeyword(savedDraft.focusKeyword);
-          if (savedDraft.metaDescription) setMetaDescription(savedDraft.metaDescription);
-          if (savedDraft.htmlContent) {
-            setHtmlContent(savedDraft.htmlContent);
-            setIsEditorEmpty(false);
-            setTimeout(() => {
-              if (editorRef.current) {
-                editorRef.current.innerHTML = savedDraft.htmlContent;
-              }
-            }, 100);
-          }
-        }
-      }
-    } catch (err) {
-      console.error('Error reading draft on mount:', err);
+      localStorage.removeItem('entrepreneur_writer_draft');
+    } catch (_) {}
+    setTitle('');
+    setSubtitle('');
+    setHtmlContent('');
+    setIsEditorEmpty(true);
+    setFeaturedImageUrl('');
+    setImageCaption('');
+    setImageCredit('');
+    setSelectedSubCategories([]);
+    setTags([]);
+    setCardSummary('');
+    setFocusKeyword('');
+    setMetaDescription('');
+    setEditingArticleId(null);
+    if (editorRef.current) {
+      editorRef.current.innerHTML = '';
     }
   }, [searchParams]);
 
@@ -1824,7 +1800,7 @@ function WriterEditorMain() {
         category: mainCategory,
         excerpt: subtitle.trim() || cardSummary.trim() || title.trim(),
         content: currentHtml || subtitle.trim() || title.trim(),
-        imageUrl: latestImage || '/images/topic-hero-leaders.jpg',
+        imageUrl: latestImage || '',
         status: 'draft',
         authorName: authorName.trim() || user?.writerName || user?.name || 'Staff Contributor',
         readTime: readDuration,
@@ -1887,7 +1863,7 @@ function WriterEditorMain() {
     }
 
     if (!hasImage) {
-      showToast('Please upload an image before submitting for review.', 'error');
+      showToast('Please add at least one image before submitting your article for review.', 'error');
       return;
     }
 
@@ -1934,7 +1910,7 @@ function WriterEditorMain() {
         showToast('Article submitted for review successfully!', 'success');
         localStorage.removeItem('entrepreneur_writer_draft');
         setTimeout(() => {
-          router.push('/dashboard/writer?tab=pending_review');
+          router.push('/writer/dashboard?tab=pending_review');
         }, 1500);
       } else {
         showToast(data?.error || 'Failed to submit article.', 'error');
@@ -2618,138 +2594,125 @@ function WriterEditorMain() {
               {activeSidebarTab === 'details' && (
                 <div className="flex flex-col gap-4">
                   
-                  {/* 1. SELECT CATEGORY (MAIN) - Collapsible Section */}
-                  <div className="border border-slate-200/90 rounded-xl overflow-hidden bg-white shadow-2xs">
-                    <button
-                      type="button"
-                      onClick={() => setIsMainCatExpanded((prev) => !prev)}
-                      aria-expanded={isMainCatExpanded}
-                      className="w-full flex items-center justify-between p-3 bg-slate-50 hover:bg-slate-100/80 transition-colors text-left cursor-pointer"
-                    >
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-slate-700">
-                        Select Category (Main)
-                      </span>
-                      {isMainCatExpanded ? (
-                        <ChevronUp className="w-4 h-4 text-slate-500" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4 text-slate-500" />
-                      )}
-                    </button>
-                    {isMainCatExpanded && (
-                      <div className="p-3 pt-2 border-t border-slate-100 bg-white">
-                        <div className="relative">
-                          <select
-                            value={mainCategory}
-                            onChange={(e) => {
-                              const newCat = e.target.value;
-                              setMainCategory(newCat);
-                              setSelectedSubCategory('');
-                              const targetCat = MAIN_CATEGORIES_20.find((c) => c.name === newCat);
-                              const validSubs = targetCat ? targetCat.subcategories.map((s) => s.name) : [];
-                              setSelectedSubCategories((prev) =>
-                                prev.filter((s) => validSubs.includes(s))
-                              );
-                            }}
-                            className="w-full appearance-none px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-hidden focus:border-[#1642D0] cursor-pointer"
-                          >
-                            <option value="">Select Main Category</option>
-                            {MAIN_CATEGORIES_20.map((cat) => (
-                              <option key={cat.id} value={cat.name}>
-                                {cat.name}
-                              </option>
-                            ))}
-                          </select>
-                          <ChevronDown className="w-4 h-4 text-slate-500 absolute right-3 top-3 pointer-events-none" />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* 2. SELECT SUB-CATEGORIES (OPTIONAL) & METADATA - Collapsible Section */}
-                  <div className="border border-slate-200/90 rounded-xl overflow-hidden bg-white shadow-2xs">
-                    <button
-                      type="button"
-                      onClick={() => setIsSubCatExpanded((prev) => !prev)}
-                      aria-expanded={isSubCatExpanded}
-                      className="w-full flex items-center justify-between p-3 bg-slate-50 hover:bg-slate-100/80 transition-colors text-left cursor-pointer"
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-700">
-                          Select Sub-Categories (Optional)
-                        </span>
-                        {selectedSubCategories.length > 0 && (
-                          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-[#1642D0]">
-                            {selectedSubCategories.length}/5
-                          </span>
-                        )}
-                      </div>
-                      {isSubCatExpanded ? (
-                        <ChevronUp className="w-4 h-4 text-slate-500" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4 text-slate-500" />
-                      )}
-                    </button>
-                    {isSubCatExpanded && (
-                      <div className="p-3.5 pt-2 border-t border-slate-100 bg-white flex flex-col gap-4">
-                        {/* Single Optional Subcategory Dropdown */}
-                        <div className="relative">
-                          <select
-                            value={selectedSubCategory}
-                            onChange={(e) => {
-                              const val = e.target.value;
-                              setSelectedSubCategory(val);
-                              if (val && !selectedSubCategories.includes(val)) {
-                                if (selectedSubCategories.length < 5) {
-                                  setSelectedSubCategories((prev) => [...prev, val]);
-                                }
-                              }
-                            }}
-                            disabled={!mainCategory || currentSubcategories.length === 0}
-                            className="w-full appearance-none px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-hidden focus:border-[#1642D0] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
-                            <option value="">Select Subcategory (Optional)</option>
-                            {currentSubcategories.map((sub) => (
-                              <option key={sub.name} value={sub.name}>
+                  {/* 1. SELECT CATEGORY (MAIN) */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[11px] font-bold uppercase tracking-wider text-slate-600">
+                      Select Category (Main)
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={mainCategory}
+                        onChange={(e) => {
+                          const newCat = e.target.value;
+                          setMainCategory(newCat);
+                          // Selected main category must not appear as a selectable subcategory option in Select Subcategories (Optional)
+                          setSelectedSubCategories((prev) =>
+                            prev.filter((s) => s.trim().toLowerCase() !== newCat.trim().toLowerCase())
+                          );
+                        }}
+                        className="w-full appearance-none px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-hidden focus:border-[#1642D0] cursor-pointer"
+                      >
+                        <option value="">Select Main Category</option>
+                        {MAIN_CATEGORIES_20.map((cat) => (
+                          <React.Fragment key={cat.id}>
+                            {/* Main Category */}
+                            <option value={cat.name} className="text-xs font-medium text-slate-900 bg-white">
+                              {cat.name}
+                            </option>
+                            {/* Subcategories directly underneath: plain text without arrow icons, aligned consistently */}
+                            {cat.subcategories.map((sub) => (
+                              <option
+                                key={`${cat.id}-${sub.name}`}
+                                value={sub.name}
+                                className="text-xs font-medium text-slate-900 bg-white"
+                              >
                                 {sub.name}
                               </option>
                             ))}
-                          </select>
-                          <ChevronDown className="w-4 h-4 text-slate-500 absolute right-3 top-3 pointer-events-none" />
-                        </div>
+                          </React.Fragment>
+                        ))}
+                      </select>
+                      <ChevronDown className="w-4 h-4 text-slate-500 absolute right-3 top-3 pointer-events-none" />
+                    </div>
+                  </div>
 
-                        {/* 2-Column Checkbox Grid */}
-                        <div className="grid grid-cols-2 gap-2 p-2.5 bg-slate-50 border border-slate-200 rounded-xl max-h-56 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300">
-                          {currentSubcategories.length === 0 ? (
-                            <p className="col-span-2 text-center text-xs text-slate-400 py-3">
-                              No sub-categories available for this category.
-                            </p>
-                          ) : (
-                            currentSubcategories.map((sub) => {
-                              const isChecked = selectedSubCategories.includes(sub.name);
-                              return (
-                                <label
-                                  key={sub.name}
-                                  className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer select-none hover:text-slate-900"
-                                >
-                                  <input
-                                    type="checkbox"
-                                    checked={isChecked}
-                                    onChange={() => handleToggleSubCategory(sub.name)}
-                                    className="w-4 h-4 rounded border-slate-300 text-[#1642D0] focus:ring-[#1642D0]/30 cursor-pointer"
-                                  />
-                                  <span className="truncate" title={sub.name}>{sub.name}</span>
-                                </label>
-                              );
-                            })
-                          )}
-                        </div>
+                  {/* 2. SELECT SUB-CATEGORIES (OPTIONAL) - Permanently Visible Scrollable Panel Matching Reference Image */}
+                  <div className="flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[11px] font-bold uppercase tracking-wider text-slate-600">
+                        Select Sub-Categories (Optional, Max 5)
+                      </label>
+                      {selectedSubCategories.length > 0 && (
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-[#1642D0]">
+                          {selectedSubCategories.length}/5
+                        </span>
+                      )}
+                    </div>
 
-                        {/* Counter: SELECTED: X / 5 */}
-                        <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                          Selected: {selectedSubCategories.length} / 5
-                        </div>
+                    {/* Bordered Vertically Scrollable Panel with Square Checkboxes */}
+                    <div className="border border-slate-300 rounded-xl bg-white p-3 max-h-56 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-400 space-y-3">
+                      {MAIN_CATEGORIES_20.map((cat) => {
+                        const isCatSelectedInMain = cat.name.trim().toLowerCase() === mainCategory.trim().toLowerCase();
+                        const visibleSubs = cat.subcategories.filter(
+                          (sub) => sub.name.trim().toLowerCase() !== mainCategory.trim().toLowerCase()
+                        );
 
-                        {/* 3. TAGS matching Screenshot 1 */}
+                        return (
+                          <div key={cat.id} className="border-b border-slate-100 last:border-b-0 pb-2.5 last:pb-0">
+                            {/* Main Category Row */}
+                            {!isCatSelectedInMain ? (
+                              <label className="flex items-center gap-2 text-xs font-medium text-slate-800 cursor-pointer select-none hover:text-[#1642D0]">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedSubCategories.includes(cat.name)}
+                                  onChange={() => handleToggleSubCategory(cat.name)}
+                                  className="w-4 h-4 rounded border-slate-300 text-[#1642D0] focus:ring-[#1642D0]/30 cursor-pointer shrink-0"
+                                />
+                                <span className="text-xs font-medium text-slate-800">{cat.name}</span>
+                              </label>
+                            ) : (
+                              <div className="text-xs font-medium text-slate-400 flex items-center gap-2 py-0.5">
+                                <span>{cat.name}</span>
+                                <span className="text-[10px] text-blue-600 font-normal">(Selected as Main Category)</span>
+                              </div>
+                            )}
+
+                            {/* Subcategories directly underneath in 2 columns with neat indentation */}
+                            {visibleSubs.length > 0 && (
+                              <div className="grid grid-cols-2 gap-x-3 gap-y-2 pl-4 mt-2">
+                                {visibleSubs.map((sub) => {
+                                  const isChecked = selectedSubCategories.includes(sub.name);
+                                  return (
+                                    <label
+                                      key={`${cat.id}-${sub.name}`}
+                                      className="flex items-center gap-2 text-xs font-medium text-slate-800 cursor-pointer select-none hover:text-slate-900 min-w-0"
+                                    >
+                                      <input
+                                        type="checkbox"
+                                        checked={isChecked}
+                                        onChange={() => handleToggleSubCategory(sub.name)}
+                                        className="w-4 h-4 rounded border-slate-300 text-[#1642D0] focus:ring-[#1642D0]/30 cursor-pointer shrink-0"
+                                      />
+                                      <span className="truncate text-xs font-medium text-slate-800" title={sub.name}>
+                                        {sub.name}
+                                      </span>
+                                    </label>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Counter matching Reference Image */}
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      Selected: {selectedSubCategories.length} / 5
+                    </div>
+                  </div>
+
+                  {/* 3. TAGS matching Screenshot 1 */}
                         <div className="flex flex-col gap-1.5 pt-2 border-t border-slate-100">
                           <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
                             Tags
@@ -2841,9 +2804,6 @@ function WriterEditorMain() {
                             <User className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
                           </div>
                         </div>
-                      </div>
-                    )}
-                  </div>
 
                 </div>
               )}
@@ -3525,13 +3485,25 @@ function WriterEditorMain() {
 
             {/* Featured Image - Sharp Rectangular Corners */}
             {(featuredImageUrl || (typeof document !== 'undefined' && editorRef.current?.querySelector('img')?.getAttribute('src'))) && (
-              <div className="rounded-none overflow-hidden border border-slate-200">
-                <img
-                  src={featuredImageUrl || editorRef.current?.querySelector('img')?.getAttribute('src') || ''}
-                  alt={title}
-                  className="w-full h-80 sm:h-96 object-cover rounded-none"
-                />
-              </div>
+              <figure className="m-0 p-0">
+                <div className="rounded-none overflow-hidden border border-slate-200">
+                  <img
+                    src={featuredImageUrl || editorRef.current?.querySelector('img')?.getAttribute('src') || ''}
+                    alt={title}
+                    className="w-full h-80 sm:h-96 object-cover rounded-none"
+                  />
+                </div>
+                {(imageCaption || imageCredit) && (
+                  <figcaption className="flex items-center justify-between text-xs text-slate-500 pt-2 px-1 font-sans">
+                    <span className="italic">{imageCaption || ''}</span>
+                    {imageCredit && (
+                      <span className="uppercase text-[11px] font-semibold text-slate-400">
+                        (PHOTO: {imageCredit})
+                      </span>
+                    )}
+                  </figcaption>
+                )}
+              </figure>
             )}
 
             {/* Rendered HTML Content */}

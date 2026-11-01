@@ -32,6 +32,7 @@ import {
   MessageSquare,
   FileQuestion,
   Headphones,
+  Home,
 } from 'lucide-react';
 
 type TabType = 'profile' | 'saved' | 'subscriptions' | 'settings' | 'help';
@@ -662,10 +663,24 @@ export function ReaderDashboardContent() {
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
 
         {/* READER DASHBOARD TITLE ROW */}
-        <div className="mb-6">
-          <h1 className="text-3xl sm:text-4xl md:text-[42px] font-serif font-bold text-slate-900 tracking-tight my-0">
-            Reader Dashboard
-          </h1>
+        <div className="mb-6 relative flex items-center justify-between min-h-[44px]">
+          {/* Left: Back to Home link aligned exactly with the left edge of the main dashboard content box */}
+          <div className="z-10 flex items-center">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-[#1642D0] transition-colors group cursor-pointer"
+            >
+              <span className="text-sm font-bold group-hover:-translate-x-0.5 transition-transform">&lt;</span>
+              <span>BACK TO HOME</span>
+            </Link>
+          </div>
+
+          {/* Center: Reader Dashboard heading centered horizontally */}
+          <div className="absolute inset-x-0 text-center pointer-events-none">
+            <h1 className="text-3xl sm:text-4xl md:text-[42px] font-serif font-bold text-slate-900 tracking-tight my-0 pointer-events-auto inline-block">
+              Reader Dashboard
+            </h1>
+          </div>
         </div>
 
         {/* WHITE CARD CONTAINER FOR SETTINGS (Matching Reference Images 3 & 4) */}

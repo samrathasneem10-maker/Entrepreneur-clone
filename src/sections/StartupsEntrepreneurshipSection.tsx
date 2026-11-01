@@ -12,10 +12,12 @@ export const StartupsEntrepreneurshipSection: React.FC = () => {
       {/* Section Header with consistent border-b matching reference */}
       <div className="flex items-center justify-between mb-3.5 sm:mb-4.5">
         <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
-          Startups &amp; Entrepreneurship
+          <Link href="/topic/startups-entrepreneurship" className="hover:text-[#1642D0] transition-colors">
+            Startups &amp; Entrepreneurship
+          </Link>
         </h2>
         <Link
-          href="/category/startups-entrepreneurship"
+          href="/topic/startups-entrepreneurship"
           className="inline-flex items-center gap-2 group text-xs sm:text-sm font-sans font-bold tracking-wider uppercase text-slate-800 hover:text-[#1642D0] transition-colors"
         >
           <span>See All</span>

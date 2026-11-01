@@ -9,6 +9,7 @@ import {
   Plus,
   Trash2,
   AlertTriangle,
+  AlertCircle,
   CheckCircle2,
   FileText,
   Clock,
@@ -22,6 +23,8 @@ import {
   User,
   ChevronRight,
   Menu,
+  ImageIcon,
+  Home,
 } from 'lucide-react';
 import ProfileSettingsModal from './ProfileSettingsModal';
 
@@ -279,7 +282,7 @@ function WriterDashboardInner() {
     try {
       const res = await fetch(`/api/articles?status=${status}&limit=100`);
       const data = await res.json();
-      if (data?.success && Array.isArray(data.data) && data.data.length > 0) {
+      if (data?.success && Array.isArray(data.data)) {
         const mapped: ArticleItem[] = data.data.map((item: any) => {
           let resolvedImage = item.imageUrl;
           if ((!resolvedImage || resolvedImage.trim() === '' || resolvedImage.includes('placeholder')) && item.content) {
@@ -295,14 +298,14 @@ function WriterDashboardInner() {
           }
           return {
             ...item,
-            imageUrl: resolvedImage && resolvedImage.trim() !== '' ? resolvedImage : '/images/topic-hero-leaders.jpg',
+            imageUrl: resolvedImage && resolvedImage.trim() !== '' ? resolvedImage : '',
             excerpt: resolvedExcerpt || item.cardSummary || '',
             readTime: item.readTime || '5 min read',
           };
         });
         setArticles(mapped);
       } else {
-        // Use realistic fallback matching reference screenshots
+        // Use realistic fallback matching reference screenshots if fetch failed
         const fallback = FALLBACK_WRITER_ARTICLES[status] || [];
         setArticles(fallback);
       }
@@ -413,12 +416,12 @@ function WriterDashboardInner() {
 
   const writerDisplayName = user?.writerName || user?.name || 'Kalid Writer User';
 
-  const tabsConfig: { key: WriterTab; label: string; count: number }[] = [
-    { key: 'published', label: 'Published', count: statusCounts.published },
-    { key: 'draft', label: 'Drafts', count: statusCounts.draft },
-    { key: 'pending_review', label: 'Pending review', count: statusCounts.pending_review },
-    { key: 'rejected', label: 'Rejected', count: statusCounts.rejected },
-    { key: 'trash', label: 'Trash', count: statusCounts.trash },
+  const tabsConfig: { key: WriterTab; label: string; count: number; icon: React.ComponentType<{ className?: string }> }[] = [
+    { key: 'published', label: 'Published', count: statusCounts.published, icon: CheckCircle2 },
+    { key: 'draft', label: 'Draft', count: statusCounts.draft, icon: FileText },
+    { key: 'pending_review', label: 'Pending Review', count: statusCounts.pending_review, icon: Clock },
+    { key: 'rejected', label: 'Rejected', count: statusCounts.rejected, icon: AlertCircle },
+    { key: 'trash', label: 'Trash', count: statusCounts.trash, icon: Trash2 },
   ];
 
   if (!mounted) {
@@ -430,7 +433,7 @@ function WriterDashboardInner() {
   }
 
   return (
-    <div className="min-h-screen bg-[#EAECEF] flex flex-col md:flex-row antialiased font-sans text-slate-800">
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col antialiased font-sans text-slate-800">
       {/* Toast Notification */}
       {toastMessage && (
         <div
@@ -529,93 +532,50 @@ function WriterDashboardInner() {
         </div>
       )}
 
-      {/* 1. LEFT SIDEBAR (Matching Reference Screenshots 1-5) */}
-      <aside className="w-full md:w-60 lg:w-64 bg-[#0B0F17] text-white flex flex-col justify-between shrink-0 min-h-screen">
-        <div className="p-5 sm:p-6">
-          {/* Logo Brand matching Screenshot */}
-          <div className="mb-6 flex items-center justify-between">
-            <Link href="/" className="inline-block group">
-              <span className="text-xl sm:text-2xl font-black text-[#E50914] tracking-tight group-hover:opacity-90 transition-opacity">
-                Newyork Capital
-              </span>
-            </Link>
-            {/* Mobile Hamburger toggle */}
-            <button
-              type="button"
-              onClick={() => setMobileSidebarOpen((prev) => !prev)}
-              className="md:hidden p-1.5 text-slate-400 hover:text-white"
+      {/* TOP HEADER - Exact authentic Entrepreneur header matching Reader Dashboard */}
+      <header className="w-full bg-white border-b border-slate-200/90 sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          
+          {/* Authentic Entrepreneur Wordmark Logo */}
+          <Link href="/" className="flex items-center group py-0.5 select-none" aria-label="Entrepreneur">
+            <svg
+              className="h-7 sm:h-8 md:h-9 w-auto fill-current text-[#000000] group-hover:text-[#1642D0] transition-colors"
+              viewBox="0 0 545.8 107.1"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
             >
-              <Menu className="w-5 h-5" />
-            </button>
-          </div>
-
-          {/* Back to Home Link */}
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors mb-7 group"
-          >
-            <span className="group-hover:-translate-x-0.5 transition-transform">←</span>
-            <span>Back to Home</span>
+              <path d="M0.8,72.7l6.9-1.1V7.9L0,6.9L0.4,0h48.2l-1.2,19.3l-9.6-0.3L37.2,6.9H22.3v28.7h6.5l1.5-6.6l6.7,0.2V49h-6.7 l-1.6-6.8h-6.5v30.4h15l1.4-13.2l10.1,0.3l0.8,20.1H0.5L0.8,72.7z" />
+              <path d="M54,79.9l0.3-5.9l5.4-1.1V32.7l-6.3-0.6v-6l15.8-2.3l1.2,3.4v2.3c3.8-4,8.4-6.4,14.3-6.4 c8.6,0,15,5.2,15,15.5v34.2l5.7,1.1l-0.3,5.9H86.3V41.6c0-5.5-2-8.6-7-8.6c-1.7,0-2.9,0.3-4.2,0.8c-0.8,0.7-1.6,1.7-2.3,2.6v36.6 l5.7,1.1l-0.4,5.9H54z" />
+              <path d="M356.1,79.9l0.2-5.9l5.4-1.1V32.7l-6.3-0.6v-6l15.8-2.3l1.2,3.4v2.3c3.8-4,8.4-6.4,14.3-6.4 c8.6,0,15,5.2,15,15.5v34.2l5.7,1.1l-0.3,5.9h-18.7V41.6c0-5.5-2-8.6-7-8.6c-1.7,0-2.9,0.3-4.2,0.8c-0.8,0.7-1.6,1.7-2.3,2.6v36.6 l5.7,1.1l-0.4,5.9H356.1z" />
+              <path d="M135.2,78.8c-2.2,0.9-6.1,1.9-11.2,1.9c-6.7,0-12.9-3-12.9-12.8V32.7l-6.4-1l0.3-7l7.2-0.3l3.1-10.7l9.2-0.4 v11.5h9.9l-0.7,7l-9.1,1v35.2c0,2.9,1.6,4.8,4.6,4.8h5.4L135.2,78.8z" />
+              <path d="M509.5,79.9l0.2-5.8l5.1-1.2V32.7l-6-0.6v-6l16.4-2.3l1.1,3.9V29c4.3-3.2,10.1-5.3,17.1-5.3l2.4,2.1L544.1,41 l-9-0.3l-0.9-8.1c-2.1,0.3-4.1,0.9-5.8,2.1V73l5.7,1.2l-0.4,5.8H509.5z" />
+              <path d="M274,79.9l0.3-5.8l5.1-1.2V32.7l-6-0.6v-6l16.4-2.3l1.1,3.9V29c4.3-3.2,10.1-5.3,17.1-5.3l2.4,2.1L308.5,41 l-9-0.3l-0.9-8.1c-2.1,0.3-4.1,0.9-5.8,2.1V73l5.7,1.2l-0.4,5.8H274z" />
+              <path d="M139.2,79.9l0.3-5.8l5.1-1.2V32.7l-6-0.6v-6l16.4-2.3l1.1,3.9V29c4.3-3.2,10.1-5.3,17-5.3l2.4,2.1L173.8,41 l-9-0.3l-0.9-8.1c-2.1,0.3-4.1,0.9-5.8,2.1V73l5.7,1.2l-0.4,5.8H139.2z" />
+              <path d="M191,55.4c0,9.6,4.2,17,12.5,17c4.3,0,7.7-0.9,11.7-2.8l2.3,5.3c-4.1,3.3-10.1,5.8-17.6,5.8 c-14.6,0-23-12.6-23-28.8c0-13.8,6.1-28.9,22.8-28.9c14.6,0,20.1,13.5,20.1,28.5l-1.4,3.6L191,55.4z M190.8,49l16.8-0.8 c-0.3-6.7-1.7-17.3-8.3-17.3c-1.6,0-2.7,0.3-4.7,1.3C191.9,36.8,190.8,45.1,190.8,49z" />
+              <path d="M423.4,55.4c0,9.6,4.2,17,12.5,17c4.3,0,7.7-0.9,11.7-2.8l2.3,5.3c-4.1,3.3-10.1,5.8-17.6,5.8 c-14.6,0-23-12.6-23-28.8c0-13.8,6.1-28.9,22.8-28.9c14.6,0,20.1,13.5,20.1,28.5l-1.4,3.6L423.4,55.4z M423.2,49l16.8-0.8 c-0.3-6.7-1.7-17.3-8.3-17.3c-1.6,0-2.7,0.3-4.7,1.3C424.3,36.8,423.2,45.1,423.2,49z" />
+              <path d="M325.8,55.4c0,9.6,4.2,17,12.5,17c4.3,0,7.7-0.9,11.7-2.8l2.3,5.3c-4.1,3.3-10.1,5.8-17.6,5.8 c-14.6,0-23-12.6-23-28.8c0-13.8,6.1-28.9,22.8-28.9c14.6,0,20.1,13.5,20.1,28.5l-1.4,3.6L325.8,55.4z M325.6,49l16.8-0.8 c-0.3-6.7-1.7-17.3-8.3-17.3c-1.6,0-2.7,0.3-4.7,1.3C326.7,36.8,325.5,45.1,325.6,49z" />
+              <path d="M490,79.9l-1.4-4.8c-3.7,3.5-7.3,5.6-12.9,5.6c-8.6,0-16.3-4.3-16.3-16.2V31.3l-6.3-0.6v-5.3l18.2-2.1 l1.4,4.8v34.8c0,6.1,2.5,9.3,7.4,9.3c1.4,0,3.2-0.2,4.8-0.8c0.9-0.9,1.8-2,2.5-3.1v-37l-6.5-0.6v-5.3l18.4-2.1l1.4,4.8v44.8 l5.7,1.1l-0.7,5.9H490z" />
+              <path d="M247.1,72.7c-2.9,0-5.2-0.5-7-1.5V35.9c0.8-1.2,1.7-2.3,2.6-3.3c1.7-0.6,3.2-0.8,5-0.8c7.5,0,8.8,7.6,8.8,21.2 c0,13.1-2,16.7-2.5,18.2C251.9,72.2,249.7,72.7,247.1,72.7z M269.5,50.6c0-16.9-5-27.5-17.5-27.5c-8.3,0-12.2,4.8-13.8,6.8V28 l-1.4-4.8l-16.3,2.3v5.8l6.3,0.8v68.2l-5.4,1.1l-0.3,5.7h24.1l0.4-5.7l-5.7-1.1V78.7c2.3,1.3,5.5,2.1,9,2.1 C269.3,80.8,269.5,60.1,269.5,50.6z" />
+            </svg>
+            <span className="text-[#000000] text-xs font-sans font-bold ml-1 self-start mt-0.5">®</span>
           </Link>
 
-          {/* Navigation Tabs (5 Tabs) */}
-          <nav className={`space-y-1.5 ${mobileSidebarOpen ? 'block' : 'hidden md:block'}`} aria-label="Status Sidebar">
-            {tabsConfig.map((tab) => {
-              const isActive = activeTab === tab.key;
-              return (
-                <button
-                  key={tab.key}
-                  type="button"
-                  onClick={() => handleTabChange(tab.key)}
-                  className={`w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
-                    isActive
-                      ? 'bg-[#E50914] text-white shadow-md'
-                      : 'text-slate-300 hover:text-white hover:bg-white/5'
-                  }`}
-                >
-                  <span>{tab.label}</span>
-                  <span
-                    className={`px-2 py-0.5 rounded-full text-[11px] font-bold transition-colors ${
-                      isActive ? 'bg-white text-[#E50914]' : 'bg-white/10 text-slate-300'
-                    }`}
-                  >
-                    {tab.count}
-                  </span>
-                </button>
-              );
-            })}
-          </nav>
-        </div>
-
-        {/* Bottom Logo Avatar mark */}
-        <div className="p-5 sm:p-6 hidden md:block">
-          <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-white">
-            N
-          </div>
-        </div>
-      </aside>
-
-      {/* 2. MAIN CONTENT AREA */}
-      <div className="flex-1 flex flex-col min-w-0">
-        
-        {/* Top Header Row with Writer Avatar & Profile */}
-        <header className="w-full px-6 sm:px-10 lg:px-12 pt-6 pb-2 flex items-center justify-end">
-          {/* User Profile Pill matching top right */}
+          {/* Right User Avatar & Profile Dropdown (Profile Settings and Logout) */}
           <div className="relative" ref={userDropdownRef}>
             <button
               type="button"
               onClick={() => setShowUserDropdown((prev) => !prev)}
-              className="flex items-center gap-2.5 bg-white py-1 px-2.5 sm:px-3 rounded-full border border-slate-200/90 shadow-2xs hover:shadow-xs transition-all cursor-pointer"
+              className="flex items-center gap-2.5 bg-white py-1.5 px-3 rounded-full border border-slate-200/90 shadow-2xs hover:shadow-xs transition-all cursor-pointer group"
             >
               <img
                 src={user?.avatar || '/images/user-avatar-butterfly.png'}
                 alt={writerDisplayName}
-                className="w-7 h-7 rounded-full object-cover border border-slate-200"
+                className="w-8 h-8 rounded-full object-cover border border-slate-200"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = '/images/user-avatar-butterfly.png';
                 }}
               />
-              <span className="text-xs sm:text-sm font-bold text-slate-800 hidden sm:inline">
+              <span className="font-bold text-xs sm:text-sm text-slate-900 hidden sm:inline">
                 {writerDisplayName}
               </span>
             </button>
@@ -639,14 +599,7 @@ function WriterDashboardInner() {
                     <Settings className="w-3.5 h-3.5 text-slate-400" />
                     <span>Profile Settings</span>
                   </button>
-                  <Link
-                    href={`/author/${encodeURIComponent((user?.writerName || user?.name || 'fathima').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-'))}`}
-                    onClick={() => setShowUserDropdown(false)}
-                    className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-[#1642D0] transition-colors"
-                  >
-                    <User className="w-3.5 h-3.5 text-slate-400" />
-                    <span>Author Page</span>
-                  </Link>
+                  
                   <button
                     type="button"
                     onClick={async () => {
@@ -657,26 +610,40 @@ function WriterDashboardInner() {
                     className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors text-left cursor-pointer"
                   >
                     <LogOut className="w-3.5 h-3.5" />
-                    <span>Sign Out</span>
+                    <span>Logout</span>
                   </button>
                 </div>
               </div>
             )}
           </div>
-        </header>
+        </div>
+      </header>
 
-        {/* Dashboard Title & Create New Post Button */}
-        <div className="w-full px-6 sm:px-10 lg:px-12 pb-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight my-0">
-              Writer Dashboard
-            </h1>
-            <p className="text-xs sm:text-sm text-slate-600 mt-1 mb-0 font-normal">
-              Welcome back, {writerDisplayName}!
-            </p>
+      {/* MAIN CONTAINER (Matching Reader Dashboard max-w-7xl) */}
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+
+        {/* WRITER DASHBOARD TITLE ROW */}
+        <div className="mb-6 relative flex items-center justify-between min-h-[44px]">
+          {/* Left: Back to Home link aligned exactly with the left edge of the main dashboard content box */}
+          <div className="z-10 flex items-center">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-[#1642D0] transition-colors group cursor-pointer"
+            >
+              <span className="text-sm font-bold group-hover:-translate-x-0.5 transition-transform">&lt;</span>
+              <span>BACK TO HOME</span>
+            </Link>
           </div>
 
-          <div>
+          {/* Center: Writer Dashboard heading centered horizontally */}
+          <div className="absolute inset-x-0 text-center pointer-events-none">
+            <h1 className="text-3xl sm:text-4xl md:text-[42px] font-serif font-bold text-slate-900 tracking-tight my-0 pointer-events-auto inline-block">
+              Writer Dashboard
+            </h1>
+          </div>
+
+          {/* Right: Create New Post Button */}
+          <div className="z-10 shrink-0">
             <button
               type="button"
               onClick={() => router.push('/writer')}
@@ -688,23 +655,59 @@ function WriterDashboardInner() {
           </div>
         </div>
 
-        {/* 3. MAIN POSTS CONTAINER (Expanded evenly on left & right, centered with balanced margins) */}
-        <main className="flex-1 w-full px-6 sm:px-10 lg:px-12 pb-12">
-          <div className="w-full bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
-            
-            {/* Top Bar of Container: Search Box */}
-            <div className="px-6 sm:px-8 pt-6 pb-4 flex items-center justify-end">
-              <div className="relative w-full sm:w-72">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search..."
-                  className="w-full pl-9 pr-4 py-2 bg-[#F8FAFC] border border-slate-200 rounded-full text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white transition-colors"
-                />
-              </div>
+        {/* WHITE CARD CONTAINER FOR ARTICLES (Matching Reader Dashboard format) */}
+        <div className="w-full bg-white border border-slate-200/90 rounded-xl shadow-xs overflow-hidden">
+          
+          {/* NAVIGATION TABS WITH ICONS & BADGES (Matching Reader Dashboard divide-x format) */}
+          <div className="border-b border-slate-200 bg-slate-50/70">
+            <nav className="flex items-stretch divide-x divide-slate-200 overflow-x-auto scrollbar-none" aria-label="Status Tabs">
+              {tabsConfig.map((tab) => {
+                const isActive = activeTab === tab.key;
+                const IconComponent = tab.icon;
+                return (
+                  <button
+                    key={tab.key}
+                    type="button"
+                    onClick={() => handleTabChange(tab.key)}
+                    className={`py-4 px-5 sm:px-7 inline-flex items-center gap-2.5 text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
+                      isActive
+                        ? 'bg-white text-slate-950 border-b-2 border-b-[#1642D0] shadow-2xs'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/60'
+                    }`}
+                  >
+                    <IconComponent className={`w-4 h-4 ${isActive ? 'text-[#1642D0]' : 'text-slate-600'}`} />
+                    <span>{tab.label}</span>
+                    <span
+                      className={`ml-1 px-2 py-0.5 rounded-full text-xs transition-colors ${
+                        isActive
+                          ? 'bg-blue-50 text-[#1642D0] border border-blue-200 font-bold'
+                          : 'bg-slate-100 text-slate-700 border border-slate-200 font-medium'
+                      }`}
+                    >
+                      {tab.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
+
+          {/* Sub-Header Bar: Search Box + Section summary */}
+          <div className="px-6 py-3.5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white">
+            <span className="text-xs text-slate-500 font-medium">
+              Manage your <strong className="text-slate-700 capitalize">{activeTab.replace('_', ' ')}</strong> articles
+            </span>
+            <div className="relative w-full sm:w-72 shrink-0">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search..."
+                className="w-full pl-9 pr-4 py-1.5 bg-[#F8FAFC] border border-slate-200 rounded-lg text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white transition-colors"
+              />
             </div>
+          </div>
 
             {/* 5-Column Table */}
             <div className="overflow-x-auto">
@@ -758,15 +761,25 @@ function WriterDashboardInner() {
                           <td className="py-4 px-6 sm:px-8 align-middle">
                             <div className="flex items-center gap-3.5 sm:gap-4">
                               {/* Square Thumbnail */}
-                              <div className="w-14 h-14 sm:w-16 sm:h-16 aspect-square shrink-0 rounded-md overflow-hidden bg-slate-100 border border-slate-200/80">
-                                <img
-                                  src={art.imageUrl || '/images/topic-hero-leaders.jpg'}
-                                  alt={art.title}
-                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                  onError={(e) => {
-                                    (e.target as HTMLImageElement).src = '/images/topic-hero-leaders.jpg';
-                                  }}
-                                />
+                              <div className="w-14 h-14 sm:w-16 sm:h-16 aspect-square shrink-0 rounded-md overflow-hidden bg-slate-100 border border-slate-200/80 flex items-center justify-center">
+                                {art.imageUrl ? (
+                                  <img
+                                    src={art.imageUrl}
+                                    alt={art.title}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                    onError={(e) => {
+                                      const target = e.target as HTMLImageElement;
+                                      target.style.display = 'none';
+                                      if (target.parentElement) {
+                                        target.parentElement.innerHTML = '<div class="w-full h-full flex items-center justify-center bg-slate-100 text-slate-400"><svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg></div>';
+                                      }
+                                    }}
+                                  />
+                                ) : (
+                                  <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-400">
+                                    <ImageIcon className="w-6 h-6" />
+                                  </div>
+                                )}
                               </div>
 
                               {/* Title, Description & Reading Time */}
@@ -969,7 +982,6 @@ function WriterDashboardInner() {
             </div>
           </div>
         </main>
-      </div>
     </div>
   );
 }

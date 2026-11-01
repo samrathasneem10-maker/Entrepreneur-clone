@@ -10,10 +10,12 @@ export const LuxuryLifestyleSection: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-3.5 sm:mb-4.5">
         <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
-          Luxury &amp; Lifestyle
+          <Link href="/topic/luxury-lifestyle" className="hover:text-[#1642D0] transition-colors">
+            Luxury &amp; Lifestyle
+          </Link>
         </h2>
         <Link
-          href="/category/luxury-lifestyle"
+          href="/topic/luxury-lifestyle"
           className="inline-flex items-center gap-2 group text-xs sm:text-sm font-sans font-bold tracking-wider uppercase text-slate-800 hover:text-[#1642D0] transition-colors"
         >
           <span>SEE ALL</span>

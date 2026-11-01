@@ -178,37 +178,27 @@ export default function WriterHeader({ backHref = '/' }: WriterHeaderProps) {
                 <div className="border-t border-slate-100 my-2.5" />
 
                 <div className="space-y-0.5">
-                  {/* 1. Write Article */}
-                  <Link
-                    href="/writer"
-                    onClick={() => setIsDropdownOpen(false)}
-                    className="w-full flex items-center gap-2.5 py-2 px-2 rounded-lg text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors text-left"
-                  >
-                    <PenTool className="w-4 h-4 text-slate-400" />
-                    <span>Write Article</span>
-                  </Link>
-
-                  {/* 2. Dashboard */}
+                  {/* 1. Writer Dashboard */}
                   <Link
                     href="/dashboard/writer"
                     onClick={() => setIsDropdownOpen(false)}
                     className="w-full flex items-center gap-2.5 py-2 px-2 rounded-lg text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors text-left"
                   >
                     <LayoutDashboard className="w-4 h-4 text-slate-400" />
-                    <span>Dashboard</span>
+                    <span>Writer Dashboard</span>
                   </Link>
 
-                  {/* 3. Staff Writer */}
+                  {/* 2. Writer Page */}
                   <Link
                     href={`/author/${authorSlug}`}
                     onClick={() => setIsDropdownOpen(false)}
                     className="w-full flex items-center gap-2.5 py-2 px-2 rounded-lg text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors text-left"
                   >
                     <User className="w-4 h-4 text-slate-400" />
-                    <span>Staff Writer</span>
+                    <span>Writer Page</span>
                   </Link>
 
-                  {/* 4. Profile Settings */}
+                  {/* 3. Profile Settings */}
                   <button
                     type="button"
                     onClick={() => {

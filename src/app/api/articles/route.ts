@@ -29,8 +29,8 @@ export async function GET(request: Request) {
       };
       if (Array.isArray(countsRows)) {
         countsRows.forEach((r) => {
-          const s = String(r.status).toLowerCase();
-          counts[s] = Number(r.count) || 0;
+          const s = String(r.status).toLowerCase().replace(/\s+/g, '_');
+          counts[s] = (counts[s] || 0) + (Number(r.count) || 0);
         });
       }
       try {
@@ -57,11 +57,14 @@ export async function GET(request: Request) {
       params.push(author);
     }
     if (status) {
-      if (status.toLowerCase() === 'modified') {
+      const s = status.toLowerCase().replace(/\s+/g, '_');
+      if (s === 'modified') {
         whereClause += ' AND (LOWER(COALESCE(a.status, "published")) = "modified" OR (a.updated_at > a.created_at AND LOWER(COALESCE(a.status, "published")) != "trash"))';
+      } else if (s === 'pending_review') {
+        whereClause += ' AND (LOWER(COALESCE(a.status, "published")) = "pending_review" OR LOWER(COALESCE(a.status, "published")) = "pending review")';
       } else {
         whereClause += ' AND LOWER(COALESCE(a.status, "published")) = ?';
-        params.push(status.toLowerCase());
+        params.push(s);
       }
     }
     if (slug) {
@@ -117,21 +120,27 @@ export async function GET(request: Request) {
     const queryParams = [...params, limit, offset];
     const rows = await query(sql, queryParams);
 
-    const formatted = (rows as any[]).map((r) => ({
-      id: r.slug || String(r.id),
-      dbId: r.id,
-      slug: r.slug,
-      title: r.title,
-      category: r.category || 'Business',
-      editor: r.editor,
-      date: r.date || 'Oct 29, 2026',
-      readTime: r.readTime || '5 min read',
-      excerpt: r.excerpt || '',
-      content: r.content || '',
-      imageUrl: r.imageUrl || '/images/coding-agents.jpg',
-      imageAspect: r.imageAspect,
-      views: r.views || '1',
-      status: (r.status || 'published').toLowerCase(),
+    const formatted = (rows as any[]).map((r) => {
+      let resolvedImg = r.imageUrl;
+      if ((!resolvedImg || resolvedImg.trim() === '' || resolvedImg.includes('placeholder')) && r.content) {
+        const m = r.content.match(/<img[^>]+src=["']([^"']+)["']/i);
+        if (m) resolvedImg = m[1];
+      }
+      return {
+        id: r.slug || String(r.id),
+        dbId: r.id,
+        slug: r.slug,
+        title: r.title,
+        category: r.category || 'Business',
+        editor: r.editor,
+        date: r.date || 'Oct 29, 2026',
+        readTime: r.readTime || '5 min read',
+        excerpt: r.excerpt || '',
+        content: r.content || '',
+        imageUrl: resolvedImg || '',
+        imageAspect: r.imageAspect,
+        views: r.views || '1',
+        status: (r.status || 'published').toLowerCase(),
       rejectionReason: r.rejectionReason || null,
       reviewerNotes: r.reviewerNotes || null,
       tags: r.tags ? (typeof r.tags === 'string' && (r.tags.startsWith('[') || r.tags.startsWith('{')) ? JSON.parse(r.tags) : r.tags.split(',').map((t: string) => t.trim())) : [],
@@ -149,7 +158,8 @@ export async function GET(request: Request) {
         linkedinUrl: r.authorLinkedinUrl || null,
       },
       authorLinkedinUrl: r.authorLinkedinUrl || null,
-    }));
+      };
+    });
 
     return NextResponse.json({
       success: true,
@@ -222,7 +232,7 @@ export async function POST(request: Request) {
       category = 'Business',
       excerpt = '',
       content = '',
-      imageUrl = '/images/coding-agents.jpg',
+      imageUrl = '',
       status = 'published',
       authorName = 'Staff Contributor',
       readTime = '5 min read',
@@ -237,8 +247,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: 'Title is required.' }, { status: 400 });
     }
 
+    const normalizedStatus = (status || 'published').toLowerCase().replace(/\s+/g, '_');
+
     // Backend Validation for Pending Review Submissions
-    if (status && status.toLowerCase() === 'pending_review') {
+    if (normalizedStatus === 'pending_review') {
       const plainDescription = (content || '')
         .replace(/<[^>]*>/g, ' ')
         .replace(/&nbsp;/gi, ' ')
@@ -246,14 +258,14 @@ export async function POST(request: Request) {
         .trim();
       const hasDescription = plainDescription.length > 0;
 
-      let extractedImg = imageUrl;
-      if (!extractedImg || extractedImg.trim() === '' || extractedImg.includes('placeholder')) {
+      let extractedImg = (imageUrl || '').trim();
+      if (!extractedImg || extractedImg.includes('placeholder')) {
         const m = (content || '').match(/<img[^>]+src=["']([^"']+)["']/i);
         if (m) {
           extractedImg = m[1];
         }
       }
-      const hasImage = Boolean(extractedImg && extractedImg.trim() !== '' && !extractedImg.includes('placeholder'));
+      const hasImage = Boolean(extractedImg && extractedImg !== '' && !extractedImg.includes('placeholder'));
 
       if (!hasDescription && !hasImage) {
         return NextResponse.json(
@@ -263,7 +275,7 @@ export async function POST(request: Request) {
       }
       if (!hasImage) {
         return NextResponse.json(
-          { success: false, error: 'Please upload an image before submitting for review.' },
+          { success: false, error: 'Please add at least one image before submitting your article for review.' },
           { status: 400 }
         );
       }
@@ -275,15 +287,15 @@ export async function POST(request: Request) {
       }
     }
 
-    // Resolve exact image: prefer content img if available or explicit imageUrl
-    let finalImageUrl = imageUrl;
-    if (!finalImageUrl || finalImageUrl.trim() === '' || finalImageUrl.includes('placeholder')) {
+    // Resolve exact image: prefer explicit imageUrl if available, otherwise extract from content
+    let finalImageUrl = (imageUrl || '').trim();
+    if (!finalImageUrl || finalImageUrl.includes('placeholder')) {
       const m = (content || '').match(/<img[^>]+src=["']([^"']+)["']/i);
       if (m) {
         finalImageUrl = m[1];
       }
     }
-    if (!finalImageUrl) finalImageUrl = '/images/topic-hero-leaders.jpg';
+    finalImageUrl = finalImageUrl || '';
 
     // Resolve exact excerpt/description
     let finalExcerpt = (excerpt || '').trim();
@@ -319,7 +331,7 @@ export async function POST(request: Request) {
         finalExcerpt,
         content,
         finalImageUrl,
-        status.toLowerCase(),
+        normalizedStatus,
         formattedTags,
         cardSummary || excerpt,
         focusKeyword || '',
@@ -340,10 +352,10 @@ export async function POST(request: Request) {
         authorName,
         date: formattedDate,
         readTime: readTime || '5 min read',
-        excerpt,
+        excerpt: finalExcerpt,
         content,
-        imageUrl,
-        status: status.toLowerCase(),
+        imageUrl: finalImageUrl,
+        status: normalizedStatus,
         tags: Array.isArray(tags) ? tags : [],
         cardSummary: cardSummary || excerpt,
         focusKeyword: focusKeyword || '',
@@ -392,7 +404,7 @@ export async function PUT(request: Request) {
     }
 
     // Backend Validation for Pending Review Submissions on Update
-    if (status !== undefined && status.toLowerCase() === 'pending_review') {
+    if (status !== undefined && (status.toLowerCase() === 'pending_review' || status.toLowerCase() === 'pending review')) {
       let contentToCheck = content;
       let imageToCheck = imageUrl;
 
@@ -430,7 +442,7 @@ export async function PUT(request: Request) {
       }
       if (!hasImage) {
         return NextResponse.json(
-          { success: false, error: 'Please upload an image before submitting for review.' },
+          { success: false, error: 'Please add at least one image before submitting your article for review.' },
           { status: 400 }
         );
       }
@@ -446,8 +458,9 @@ export async function PUT(request: Request) {
     const params: any[] = [];
 
     if (status !== undefined) {
+      const normalizedStatus = status.toLowerCase().replace(/\s+/g, '_');
       updates.push('status = ?');
-      params.push(status.toLowerCase());
+      params.push(normalizedStatus);
     }
     if (title !== undefined) {
       updates.push('title = ?');
@@ -473,9 +486,16 @@ export async function PUT(request: Request) {
       updates.push('content = ?');
       params.push(content);
     }
-    if (imageUrl !== undefined) {
+    let finalImageUrl = imageUrl;
+    if ((finalImageUrl === undefined || finalImageUrl === '' || (typeof finalImageUrl === 'string' && finalImageUrl.includes('placeholder'))) && content) {
+      const m = (content || '').match(/<img[^>]+src=["']([^"']+)["']/i);
+      if (m) {
+        finalImageUrl = m[1];
+      }
+    }
+    if (finalImageUrl !== undefined && finalImageUrl !== null) {
       updates.push('image_url = ?');
-      params.push(imageUrl);
+      params.push(finalImageUrl || '');
     }
     if (rejectionReason !== undefined) {
       updates.push('rejection_reason = ?');

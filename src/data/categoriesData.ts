@@ -247,7 +247,7 @@ export const MAIN_CATEGORIES: MainCategory[] = [
     name: 'Interviews & Opinions',
     slug: 'interviews-opinions',
     description: 'Exclusive sit-downs with visionary leaders, billionaire investors, distinguished academics, and provocative op-eds.',
-    aliases: ['ceo-interviews', 'interviews'],
+    aliases: ['ceo-interviews', 'interviews', 'opinion', 'opinions'],
     subcategories: [
       { name: 'CEO Interviews', slug: 'ceo-interviews-sub', description: 'Frank, unvarnished conversations with top executives steering global enterprises.' },
       { name: 'Founder Interviews', slug: 'founder-interviews', description: 'Candid reflections from startup creators on sacrifice, product vision, and tenacity.' },

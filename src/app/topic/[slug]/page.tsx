@@ -807,7 +807,7 @@ export default function DynamicTopicPage() {
   const params = useParams();
   const rawSlug = typeof params?.slug === 'string' ? params.slug : 'thought-leaders';
   const topicData = getTopicDataBySlug(rawSlug);
-  const displayTitle = rawSlug === 'business' ? 'Business' : topicData.title;
+  const displayTitle = rawSlug === 'business' ? 'Business' : rawSlug === 'breaking-news' ? 'Breaking News' : rawSlug === 'breaking-business-news' ? 'Breaking Business News' : topicData.title;
 
   // Pagination state: 10 articles per page
   const [currentPage, setCurrentPage] = useState(1);
@@ -821,69 +821,33 @@ export default function DynamicTopicPage() {
   );
 
   
-  // Hero section articles configuration (Dynamic across all categories, with explicit Breaking News content)
-  const isBreakingNews =
-    rawSlug === 'breaking-business-news' ||
-    rawSlug === 'breaking-news' ||
-    topicData.slug === 'breaking-business-news' ||
-    topicData.slug === 'breaking-news';
-
+  // Hero section articles configuration (Dynamic across all categories, displaying authentic topic articles)
   const art1 = topicData.articles?.[0];
   const art2 = topicData.articles?.[1];
   const art3 = topicData.articles?.[2];
 
   const heroFeatured = {
-    title: isBreakingNews
-      ? 'How Great Leaders Build Teams That Thrive'
-      : (art1?.title || 'How Great Leaders Build Teams That Thrive'),
-    category: isBreakingNews
-      ? 'Breaking News'
-      : (art1?.category || topicData.title || 'Breaking News'),
-    description: isBreakingNews
-      ? "Strong leadership isn't just about making decisions; it is about building teams that thrive."
-      : (art1?.excerpt || (art1 as any)?.description || "Strong leadership isn't just about making decisions; it is about building teams that thrive."),
-    image: isBreakingNews
-      ? '/images/topic-hero-leaders.jpg'
-      : (art1?.imageUrl || (art1 as any)?.image || '/images/topic-hero-leaders.jpg'),
-    link: isBreakingNews
-      ? '/article/how-great-leaders-build-teams-that-thrive'
-      : (art1?.id ? `/article/${art1.id}` : '/article/how-great-leaders-build-teams-that-thrive'),
+    title: art1?.title || 'How Great Leaders Build Teams That Thrive',
+    category: art1?.category || topicData.title || 'Business News',
+    description: art1?.excerpt || (art1 as any)?.description || "Strong leadership isn't just about making decisions. It's about building teams that thrive.",
+    image: art1?.imageUrl || (art1 as any)?.image || '/images/topic-hero-leaders.jpg',
+    link: art1?.id ? `/article/${art1.id}` : '/article/how-great-leaders-build-teams-that-thrive',
   };
 
   const heroSub1 = {
-    title: isBreakingNews
-      ? 'The Power of Effective Communication in Leadership'
-      : (art2?.title || 'The Power of Effective Communication in Leadership'),
-    category: isBreakingNews
-      ? 'Breaking News'
-      : (art2?.category || topicData.title || 'Breaking News'),
-    description: isBreakingNews
-      ? "Great leaders don't just give direction — they listen, inspire and bring people together."
-      : (art2?.excerpt || (art2 as any)?.description || "Great leaders don't just give direction — they listen, inspire and bring people together."),
-    image: isBreakingNews
-      ? '/images/topic-sub-1.jpg'
-      : (art2?.imageUrl || (art2 as any)?.image || '/images/topic-sub-1.jpg'),
-    link: isBreakingNews
-      ? '/article/power-of-effective-communication-leadership'
-      : (art2?.id ? `/article/${art2.id}` : '/article/power-of-effective-communication-leadership'),
+    title: art2?.title || 'The Power of Effective Communication in Leadership',
+    category: art2?.category || topicData.title || 'Business News',
+    description: art2?.excerpt || (art2 as any)?.description || "Great leaders don't just give direction — they listen, inspire and bring people together.",
+    image: art2?.imageUrl || (art2 as any)?.image || '/images/topic-sub-1.jpg',
+    link: art2?.id ? `/article/${art2.id}` : '/article/power-of-effective-communication-leadership',
   };
 
   const heroSub2 = {
-    title: isBreakingNews
-      ? 'Collaboration Drives Innovation and Growth'
-      : (art3?.title || 'Collaboration Drives Innovation and Growth'),
-    category: isBreakingNews
-      ? 'Breaking News'
-      : (art3?.category || topicData.title || 'Breaking News'),
-    description: isBreakingNews
-      ? 'When great minds work together, new ideas turn into real progress.'
-      : (art3?.excerpt || (art3 as any)?.description || 'When great minds work together, new ideas turn into real progress.'),
-    image: isBreakingNews
-      ? '/images/topic-sub-2.jpg'
-      : (art3?.imageUrl || (art3 as any)?.image || '/images/topic-sub-2.jpg'),
-    link: isBreakingNews
-      ? '/article/collaboration-drives-innovation-growth'
-      : (art3?.id ? `/article/${art3.id}` : '/article/collaboration-drives-innovation-growth'),
+    title: art3?.title || 'Collaboration Drives Innovation and Growth',
+    category: art3?.category || topicData.title || 'Business News',
+    description: art3?.excerpt || (art3 as any)?.description || 'When great minds work together, new ideas turn into real progress.',
+    image: art3?.imageUrl || (art3 as any)?.image || '/images/topic-sub-2.jpg',
+    link: art3?.id ? `/article/${art3.id}` : '/article/collaboration-drives-innovation-growth',
   };
 
   return (
@@ -925,40 +889,42 @@ export default function DynamicTopicPage() {
         </div>
       </div>
 
-      {/* 2-Column Section: 1 Featured Article on Left & 2 Stacked Articles on Right (Applied across all categories) */}
+      {/* 2-Column Section: 1 Featured Article on Left & 2 Stacked Articles on Right (Applied across all categories with synchronized vertical alignment) */}
       <section className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pt-2 pb-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-stretch">
           
-          {/* Left Column: 1 Featured Article */}
-          <article className="group flex flex-col items-start text-left w-full">
-            <div className="w-full aspect-[16/10] sm:aspect-[16/9.5] max-h-[350px] overflow-hidden bg-slate-100 mb-3.5 border border-slate-200/80 rounded-none shadow-2xs">
-              <Link href={heroFeatured.link} className="block w-full h-full cursor-pointer">
-                <img
-                  src={heroFeatured.image}
-                  alt={heroFeatured.title}
-                  className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300 rounded-none"
-                />
-              </Link>
+          {/* Left Column: 1 Featured Article - flex-col justify-between to anchor description at bottom */}
+          <article className="group flex flex-col justify-between w-full h-full text-left">
+            <div className="flex flex-col">
+              <div className="w-full aspect-[16/10] sm:aspect-[16/9.5] overflow-hidden bg-slate-100 mb-3.5 border border-slate-200/80 rounded-none shadow-2xs flex-shrink-0">
+                <Link href={heroFeatured.link} className="block w-full h-full cursor-pointer">
+                  <img
+                    src={heroFeatured.image}
+                    alt={heroFeatured.title}
+                    className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300 rounded-none"
+                  />
+                </Link>
+              </div>
+              <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-1.5 block">
+                {heroFeatured.category}
+              </span>
+              <h2 className="font-serif font-bold text-xl sm:text-2xl lg:text-[25px] xl:text-[27px] tracking-tight text-[#020618] leading-[1.25] group-hover:underline decoration-1 underline-offset-2 my-1">
+                <Link href={heroFeatured.link} className="hover:text-[#1642D0] transition-colors">
+                  {heroFeatured.title}
+                </Link>
+              </h2>
             </div>
-            <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-1.5 block">
-              {heroFeatured.category}
-            </span>
-            <h2 className="font-serif font-bold text-xl sm:text-2xl lg:text-[25px] xl:text-[27px] tracking-tight text-[#020618] leading-[1.25] group-hover:underline decoration-1 underline-offset-2 my-1">
-              <Link href={heroFeatured.link} className="hover:text-[#1642D0] transition-colors">
-                {heroFeatured.title}
-              </Link>
-            </h2>
             <p className="font-serif text-slate-600 sm:text-slate-700 text-sm sm:text-base lg:text-[15px] leading-relaxed mt-2 my-0 w-full">
               {heroFeatured.description}
             </p>
           </article>
 
-          {/* Right Column: 2 Stacked Articles */}
-          <div className="flex flex-col gap-6 lg:gap-7 w-full">
+          {/* Right Column: 2 Stacked Articles - justify-between h-full with enlarged image height matching Left Column alignment */}
+          <div className="flex flex-col justify-between h-full w-full gap-6 sm:gap-7 lg:gap-8">
             
-            {/* Right Column - Article 1 */}
-            <article className="group flex flex-col sm:flex-row gap-4 sm:gap-5 items-start text-left w-full border-b border-slate-200/80 pb-6 lg:pb-7">
-              <div className="w-full sm:w-[260px] md:w-[280px] lg:w-[290px] xl:w-[310px] aspect-[16/10] shrink-0 overflow-hidden bg-slate-100 border border-slate-200/80 rounded-none shadow-2xs">
+            {/* Right Column - Article 1 (Top Level) */}
+            <article className="group flex flex-col sm:flex-row gap-4 sm:gap-5 items-start text-left w-full">
+              <div className="w-full sm:w-[280px] md:w-[310px] lg:w-[330px] xl:w-[350px] aspect-[4/3] shrink-0 overflow-hidden bg-slate-100 border border-slate-200/80 rounded-none shadow-2xs">
                 <Link href={heroSub1.link} className="block w-full h-full cursor-pointer">
                   <img
                     src={heroSub1.image}
@@ -982,9 +948,9 @@ export default function DynamicTopicPage() {
               </div>
             </article>
 
-            {/* Right Column - Article 2 */}
+            {/* Right Column - Article 2 (Bottom Level - clean top alignment matching Article 1 with synchronized bottom boundary) */}
             <article className="group flex flex-col sm:flex-row gap-4 sm:gap-5 items-start text-left w-full">
-              <div className="w-full sm:w-[260px] md:w-[280px] lg:w-[290px] xl:w-[310px] aspect-[16/10] shrink-0 overflow-hidden bg-slate-100 border border-slate-200/80 rounded-none shadow-2xs">
+              <div className="w-full sm:w-[280px] md:w-[310px] lg:w-[330px] xl:w-[350px] aspect-[4/3] shrink-0 overflow-hidden bg-slate-100 border border-slate-200/80 rounded-none shadow-2xs">
                 <Link href={heroSub2.link} className="block w-full h-full cursor-pointer">
                   <img
                     src={heroSub2.image}
@@ -1045,7 +1011,7 @@ export default function DynamicTopicPage() {
                   </Link>
                   <div className="flex-1 min-w-0">
                     <span className="text-[11px] font-bold text-[#1642D0] uppercase tracking-wider font-sans block mb-1">
-                      {art.category}
+                      {displayTitle.toUpperCase()}
                     </span>
                     <h3 className="font-serif font-bold text-sm sm:text-base text-[#020618] leading-snug hover:underline my-1">
                       <Link href={`/article/${art.id}`}>

@@ -107,7 +107,7 @@ export const HeroNewsSection: React.FC = () => {
     <section className="bg-white pt-2.5 sm:pt-3.5 pb-4 sm:pb-5 w-full">
       <div className="w-full">
         {/* Main 3-Column Layout: Perfectly balanced height across Left, Middle, and Right to fit within visible window */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_1.65fr_1.25fr] gap-4 sm:gap-5 xl:gap-6 items-stretch lg:h-[495px] xl:h-[515px]">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_1.65fr_1.25fr] xl:grid-cols-[1.2fr_1.75fr_1.3fr] gap-4 sm:gap-5 xl:gap-6 items-stretch lg:h-[515px] xl:h-[535px] 2xl:h-[545px]">
           
           {/* ========================================================= */}
           {/* 1. LEFT COLUMN: Latest (Mobile: order-2, Desktop: order-1) */}
@@ -156,12 +156,12 @@ export const HeroNewsSection: React.FC = () => {
 
                   <Link
                     href={`/article/${art.slug || art.id}`}
-                    className="w-[110px] h-[74px] sm:w-[118px] sm:h-[78px] shrink-0 rounded-xs overflow-hidden bg-slate-100 block cursor-pointer"
+                    className="w-[110px] h-[74px] sm:w-[118px] sm:h-[78px] xl:w-[118px] xl:h-[78px] 2xl:w-[120px] 2xl:h-[80px] shrink-0 rounded-none overflow-hidden bg-slate-100 block cursor-pointer"
                   >
                     <img
                       src={art.imageUrl}
                       alt={art.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 rounded-xs"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 rounded-none"
                     />
                   </Link>
                 </article>
@@ -173,7 +173,7 @@ export const HeroNewsSection: React.FC = () => {
           {/* 2. CENTER COLUMN: Main Featured Hero Card (Mobile: order-1, Desktop: order-2) */}
           {/* ========================================================= */}
           <div className="order-1 lg:order-2 flex flex-col h-full">
-            <div className="relative h-full flex-1 w-full rounded-xs overflow-hidden bg-[#070b19] text-white flex flex-col justify-end min-h-[380px] shadow-sm group">
+            <div className="relative h-full flex-1 w-full rounded-xs overflow-hidden bg-[#070b19] text-white flex flex-col justify-end min-h-[380px] xl:min-h-[400px] 2xl:min-h-[415px] shadow-sm group">
               {/* Background Image */}
               <img
                 src={currentHero.imageUrl || '/images/home-hero/hero-growth-decision.png'}
@@ -275,15 +275,15 @@ export const HeroNewsSection: React.FC = () => {
           <div className="order-3 lg:order-3 flex flex-col justify-between h-full">
             
             {/* Top Featured Card: Uber Driver Bonuses */}
-            <article className="rounded-xs overflow-hidden bg-[#070b19] text-white group cursor-pointer flex flex-col shadow-xs flex-shrink-0 mb-2">
+            <article className="rounded-none overflow-hidden bg-[#070b19] text-white group cursor-pointer flex flex-col shadow-xs flex-shrink-0 mb-2">
               <Link
                 href={`/article/${UBER_DRIVER_BONUSES_ARTICLE.slug}`}
-                className="w-full aspect-[16/8.5] max-h-[125px] overflow-hidden bg-slate-900 block"
+                className="w-full aspect-[16/9] max-h-[145px] xl:max-h-[155px] 2xl:max-h-[165px] overflow-hidden bg-slate-900 block"
               >
                 <img
                   src={UBER_DRIVER_BONUSES_ARTICLE.imageUrl}
                   alt={UBER_DRIVER_BONUSES_ARTICLE.title}
-                  className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300 rounded-xs"
+                  className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300 rounded-none"
                 />
               </Link>
               <div className="p-2.5 sm:p-3">
@@ -324,12 +324,12 @@ export const HeroNewsSection: React.FC = () => {
 
                   <Link
                     href={`/article/${art.slug || art.id}`}
-                    className="w-[110px] h-[74px] sm:w-[118px] sm:h-[78px] shrink-0 rounded-xs overflow-hidden bg-slate-100 block cursor-pointer"
+                    className="w-[110px] h-[74px] sm:w-[118px] sm:h-[78px] xl:w-[118px] xl:h-[78px] 2xl:w-[120px] 2xl:h-[80px] shrink-0 rounded-none overflow-hidden bg-slate-100 block cursor-pointer"
                   >
                     <img
                       src={art.imageUrl}
                       alt={art.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 rounded-xs"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 rounded-none"
                     />
                   </Link>
                 </article>
