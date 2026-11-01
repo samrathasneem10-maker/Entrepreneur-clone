@@ -434,6 +434,8 @@ function WriterEditorMain() {
   const [imageKeywordInput, setImageKeywordInput] = useState('');
   const [imageCaption, setImageCaption] = useState('');
   const [imageCredit, setImageCredit] = useState('');
+  const [activeImageCaption, setActiveImageCaption] = useState('');
+  const [activeImageCredit, setActiveImageCredit] = useState('');
   const [imageSize, setImageSize] = useState<'small' | 'medium' | 'full'>('medium');
   const [imageAlignment, setImageAlignment] = useState<'left' | 'center' | 'no_wrap' | 'right'>('center');
   const [sizeDropdownOpen, setSizeDropdownOpen] = useState(false);
@@ -1319,11 +1321,19 @@ function WriterEditorMain() {
       const size = (figure.dataset.size as 'small' | 'medium' | 'full') || 'medium';
       const align = (figure.dataset.align as 'left' | 'center' | 'no_wrap' | 'right') || 'center';
 
+      const extractedCaption = figure.dataset.caption !== undefined ? figure.dataset.caption : parsedCaption;
+      const extractedCredit = figure.dataset.credit !== undefined ? figure.dataset.credit : cleanCredit;
+
+      setActiveImageCaption(extractedCaption);
+      setActiveImageCredit(extractedCredit);
+      setImageCaption(extractedCaption);
+      setImageCredit(extractedCredit);
+
       setSelectedImageProps({
         src: img?.getAttribute('src') || '',
         alt: img?.getAttribute('alt') || '',
-        caption: parsedCaption,
-        credit: cleanCredit,
+        caption: extractedCaption,
+        credit: extractedCredit,
         size,
         alignment: align,
       });
@@ -1338,8 +1348,61 @@ function WriterEditorMain() {
       setSelectedImageFigure(null);
       setToolbarPosition(null);
       setSelectedImageProps(null);
+      setActiveImageCaption('');
+      setActiveImageCredit('');
     }
     updateActiveFormats();
+  };
+
+  const updateFigureCaptionAndCredit = (fig: HTMLElement, captionText: string, creditText: string) => {
+    fig.dataset.caption = captionText;
+    fig.dataset.credit = creditText;
+
+    const captionSafe = captionText.trim().replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const rawCredit = creditText.trim().replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    let formattedCredit = '';
+    if (rawCredit) {
+      if (rawCredit.startsWith('(') && rawCredit.endsWith(')')) {
+        formattedCredit = rawCredit;
+      } else if (/^photo:\s*/i.test(rawCredit)) {
+        formattedCredit = `(${rawCredit.toUpperCase()})`;
+      } else {
+        formattedCredit = `(PHOTO: ${rawCredit})`;
+      }
+    }
+
+    let figcaption = fig.querySelector('figcaption');
+    if (!captionSafe && !formattedCredit) {
+      if (figcaption) figcaption.remove();
+    } else {
+      if (!figcaption) {
+        figcaption = document.createElement('figcaption');
+        fig.appendChild(figcaption);
+      }
+      figcaption.className = 'flex items-center justify-between text-xs text-slate-500 mt-1.5 px-0.5 w-full font-sans';
+      figcaption.innerHTML = `
+        <span class="image-caption text-left text-slate-600 italic font-normal">${captionSafe}</span>
+        <span class="image-credit text-right text-slate-400 font-medium tracking-wide">${formattedCredit}</span>
+      `;
+    }
+    handleEditorInput();
+  };
+
+  const handleSidebarCaptionChange = (val: string) => {
+    setActiveImageCaption(val);
+    setImageCaption(val);
+    if (selectedImageFigure && editorRef.current?.contains(selectedImageFigure)) {
+      updateFigureCaptionAndCredit(selectedImageFigure, val, activeImageCredit);
+    }
+  };
+
+  const handleSidebarCreditChange = (val: string) => {
+    setActiveImageCredit(val);
+    setImageCredit(val);
+    if (selectedImageFigure && editorRef.current?.contains(selectedImageFigure)) {
+      updateFigureCaptionAndCredit(selectedImageFigure, activeImageCaption, val);
+    }
   };
 
   const handleUpdateImageSize = (size: 'small' | 'medium' | 'full') => {
@@ -1591,6 +1654,8 @@ function WriterEditorMain() {
     if (targetFigure && editorRef.current?.contains(targetFigure)) {
       targetFigure.dataset.size = imageSize;
       targetFigure.dataset.align = imageAlignment;
+      targetFigure.dataset.caption = captionSafe;
+      targetFigure.dataset.credit = rawCredit;
       targetFigure.className = `article-image-figure group relative cursor-pointer ${alignClass} ${sizeClass} select-none`;
       const img = targetFigure.querySelector('img');
       if (img) {
@@ -1636,7 +1701,7 @@ function WriterEditorMain() {
 
     const newImageId = 'img_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
     const figureMarkup = `
-      <figure class="article-image-figure group relative cursor-pointer ${alignClass} ${sizeClass} select-none" data-image-id="${newImageId}" data-size="${imageSize}" data-align="${imageAlignment}" contenteditable="false">
+      <figure class="article-image-figure group relative cursor-pointer ${alignClass} ${sizeClass} select-none" data-image-id="${newImageId}" data-size="${imageSize}" data-align="${imageAlignment}" data-caption="${captionSafe}" data-credit="${rawCredit}" contenteditable="false">
         <img src="${finalUrl}" alt="${altSafe}" class="rounded-none w-full h-auto object-cover shadow-sm border border-slate-200 pointer-events-none" />
         ${captionMarkup}
       </figure>
@@ -1672,6 +1737,14 @@ function WriterEditorMain() {
     setImageKeywords([]);
     setImageCaption('');
     setImageCredit('');
+    setTimeout(() => {
+      const inserted = editorRef.current?.querySelector(`figure[data-image-id="${newImageId}"]`) as HTMLElement | null;
+      if (inserted) {
+        setSelectedImageFigure(inserted);
+        setActiveImageCaption(captionSafe);
+        setActiveImageCredit(rawCredit);
+      }
+    }, 50);
     showToast('Image inserted into article body!', 'success');
   };
 
@@ -1799,25 +1872,27 @@ function WriterEditorMain() {
     }
 
     const currentHtml = editorRef.current ? editorRef.current.innerHTML : htmlContent;
-    const plainText = editorRef.current ? editorRef.current.innerText.replace(/\u00a0/g, ' ').trim() : '';
+    const plainText = editorRef.current
+      ? editorRef.current.innerText.replace(/\u00a0/g, ' ').replace(/&nbsp;/g, ' ').trim()
+      : htmlContent.replace(/<[^>]*>/g, ' ').replace(/&nbsp;/gi, ' ').replace(/\u00a0/g, ' ').trim();
     const editorImg = editorRef.current?.querySelector('img')?.getAttribute('src');
     const latestImage = editorImg || featuredImageUrl || '';
 
     const hasDescription = plainText.length > 0;
-    const hasImage = Boolean(latestImage && latestImage.trim() !== '');
+    const hasImage = Boolean(latestImage && latestImage.trim() !== '' && !latestImage.includes('placeholder'));
 
     if (!hasDescription && !hasImage) {
-      showToast('Please add both article description and an image before submitting for review.', 'error');
-      return;
-    }
-
-    if (!hasDescription) {
-      showToast('Please write the article description before submitting for review.', 'error');
+      showToast('Both an image and a description are required before submitting for review.', 'error');
       return;
     }
 
     if (!hasImage) {
-      showToast('Please add at least one article image before submitting for review.', 'error');
+      showToast('Please upload an image before submitting for review.', 'error');
+      return;
+    }
+
+    if (!hasDescription) {
+      showToast('Please enter a description before submitting for review.', 'error');
       return;
     }
 
@@ -2129,8 +2204,10 @@ function WriterEditorMain() {
                     saveSelectionRange();
                     setSelectedImageFigure(null);
                     setModalImageUrl('/images/writer-reference-book.png');
-                    setImageCaption('apple');
-                    setImageCredit('122445');
+                    setImageCaption('');
+                    setImageCredit('');
+                    setActiveImageCaption('');
+                    setActiveImageCredit('');
                     setShowImageModal(true);
                   }}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FFF7ED] border border-[#FFEDD5] hover:bg-[#FFEDD5] text-[#EA580C] text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer shadow-2xs"
@@ -2381,6 +2458,128 @@ function WriterEditorMain() {
               id="article-settings-sidebar"
               className="w-full lg:w-[320px] xl:w-[335px] shrink-0 relative bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs flex flex-col gap-4 sticky top-20 transition-all duration-300 text-slate-800 min-h-[920px] lg:min-h-[960px] self-start animate-in fade-in zoom-in-95 duration-200"
             >
+              {/* IMAGE SETTINGS PANEL (Visible when an article image is selected) */}
+              {selectedImageFigure && (
+                <div className="border border-orange-200/90 rounded-xl overflow-hidden bg-white shadow-2xs animate-in fade-in duration-150">
+                  <div className="flex items-center justify-between p-3 bg-orange-50/80 border-b border-orange-100">
+                    <div className="flex items-center gap-2">
+                      <ImageIcon className="w-4 h-4 text-[#EA580C]" />
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-orange-950">
+                        Image Settings
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedImageFigure(null);
+                        setToolbarPosition(null);
+                      }}
+                      className="text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
+                      title="Close image settings"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  <div className="p-3.5 flex flex-col gap-2.5">
+                    {/* Compact Image Caption & Image Credit / Source */}
+                    <div className="flex flex-col gap-2">
+                      {/* Image Caption */}
+                      <div className="flex flex-col gap-1">
+                        <label className="text-[11px] font-bold uppercase tracking-wider text-slate-700">
+                          Image Caption
+                        </label>
+                        <input
+                          type="text"
+                          value={activeImageCaption}
+                          onChange={(e) => handleSidebarCaptionChange(e.target.value)}
+                          placeholder="Enter caption..."
+                          className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#1642D0] focus:bg-white transition-all"
+                        />
+                      </div>
+
+                      {/* Image Credit / Source (Moved closer together) */}
+                      <div className="flex flex-col gap-1">
+                        <label className="text-[11px] font-bold uppercase tracking-wider text-slate-700">
+                          Image Credit / Source
+                        </label>
+                        <input
+                          type="text"
+                          value={activeImageCredit}
+                          onChange={(e) => handleSidebarCreditChange(e.target.value)}
+                          placeholder="e.g. Reuters / Photographer"
+                          className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#1642D0] focus:bg-white transition-all"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Size & Alignment Controls */}
+                    <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 text-xs">
+                      <div>
+                        <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                          Size
+                        </span>
+                        <div className="flex items-center rounded-lg border border-slate-200 overflow-hidden">
+                          {(['small', 'medium', 'full'] as const).map((s) => (
+                            <button
+                              key={s}
+                              type="button"
+                              onClick={() => handleUpdateImageSize(s)}
+                              className={`flex-1 py-1 text-[10px] font-bold uppercase transition-colors cursor-pointer ${
+                                (selectedImageFigure?.dataset.size || 'medium') === s
+                                  ? 'bg-[#1642D0] text-white'
+                                  : 'bg-white text-slate-600 hover:bg-slate-50'
+                              }`}
+                            >
+                              {s === 'small' ? 'S' : s === 'medium' ? 'M' : 'Full'}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                          Align
+                        </span>
+                        <div className="flex items-center rounded-lg border border-slate-200 overflow-hidden">
+                          {(['left', 'center', 'right'] as const).map((a) => (
+                            <button
+                              key={a}
+                              type="button"
+                              onClick={() => handleUpdateImageAlignment(a)}
+                              className={`flex-1 py-1 text-[10px] font-bold uppercase transition-colors cursor-pointer ${
+                                (selectedImageFigure?.dataset.align || 'center') === a
+                                  ? 'bg-[#1642D0] text-white'
+                                  : 'bg-white text-slate-600 hover:bg-slate-50'
+                              }`}
+                            >
+                              {a.slice(0, 1).toUpperCase()}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-1 border-t border-slate-100">
+                      <button
+                        type="button"
+                        onClick={handleEditSelectedImage}
+                        className="text-[11px] font-semibold text-[#1642D0] hover:underline cursor-pointer"
+                      >
+                        More Options...
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleDeleteSelectedImage}
+                        className="text-[11px] font-semibold text-rose-600 hover:underline cursor-pointer"
+                      >
+                        Remove Image
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Sidebar Header: ⚙️ ARTICLE SETTINGS */}
               <div className="flex items-center gap-2 text-slate-900 border-b border-slate-100 pb-2.5">
                 <Settings className="w-4 h-4 text-slate-600" />
@@ -2998,32 +3197,35 @@ function WriterEditorMain() {
               </div>
             </div>
 
-            {/* Image Caption */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-slate-700">
-                Image Caption (Visible under picture to readers)
-              </label>
-              <input
-                type="text"
-                value={imageCaption}
-                onChange={(e) => setImageCaption(e.target.value)}
-                placeholder="e.g. apple"
-                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#1642D0]"
-              />
-            </div>
+            {/* Image Caption & Credit Container (Compact, aligned spacing) */}
+            <div className="bg-slate-50/70 p-3.5 rounded-xl border border-slate-200/80 flex flex-col gap-2.5">
+              {/* Image Caption */}
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-bold text-slate-700">
+                  Image Caption
+                </label>
+                <input
+                  type="text"
+                  value={imageCaption}
+                  onChange={(e) => setImageCaption(e.target.value)}
+                  placeholder="Enter caption..."
+                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#1642D0]"
+                />
+              </div>
 
-            {/* Image Credit / Source (Optional) */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-slate-700">
-                Image Credit / Source (e.g. 122445 or Reuters)
-              </label>
-              <input
-                type="text"
-                value={imageCredit}
-                onChange={(e) => setImageCredit(e.target.value)}
-                placeholder="e.g. 122445"
-                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#1642D0]"
-              />
+              {/* Image Credit / Source */}
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-bold text-slate-700">
+                  Image Credit / Source
+                </label>
+                <input
+                  type="text"
+                  value={imageCredit}
+                  onChange={(e) => setImageCredit(e.target.value)}
+                  placeholder="e.g. Reuters / Photographer"
+                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#1642D0]"
+                />
+              </div>
             </div>
 
             {/* TWO-COLUMN ROW: IMAGE SIZE & POSITION ALIGNMENT */}

@@ -237,6 +237,63 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: 'Title is required.' }, { status: 400 });
     }
 
+    // Backend Validation for Pending Review Submissions
+    if (status && status.toLowerCase() === 'pending_review') {
+      const plainDescription = (content || '')
+        .replace(/<[^>]*>/g, ' ')
+        .replace(/&nbsp;/gi, ' ')
+        .replace(/\u00a0/g, ' ')
+        .trim();
+      const hasDescription = plainDescription.length > 0;
+
+      let extractedImg = imageUrl;
+      if (!extractedImg || extractedImg.trim() === '' || extractedImg.includes('placeholder')) {
+        const m = (content || '').match(/<img[^>]+src=["']([^"']+)["']/i);
+        if (m) {
+          extractedImg = m[1];
+        }
+      }
+      const hasImage = Boolean(extractedImg && extractedImg.trim() !== '' && !extractedImg.includes('placeholder'));
+
+      if (!hasDescription && !hasImage) {
+        return NextResponse.json(
+          { success: false, error: 'Both an image and a description are required before submitting for review.' },
+          { status: 400 }
+        );
+      }
+      if (!hasImage) {
+        return NextResponse.json(
+          { success: false, error: 'Please upload an image before submitting for review.' },
+          { status: 400 }
+        );
+      }
+      if (!hasDescription) {
+        return NextResponse.json(
+          { success: false, error: 'Please enter a description before submitting for review.' },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Resolve exact image: prefer content img if available or explicit imageUrl
+    let finalImageUrl = imageUrl;
+    if (!finalImageUrl || finalImageUrl.trim() === '' || finalImageUrl.includes('placeholder')) {
+      const m = (content || '').match(/<img[^>]+src=["']([^"']+)["']/i);
+      if (m) {
+        finalImageUrl = m[1];
+      }
+    }
+    if (!finalImageUrl) finalImageUrl = '/images/topic-hero-leaders.jpg';
+
+    // Resolve exact excerpt/description
+    let finalExcerpt = (excerpt || '').trim();
+    if (!finalExcerpt && content) {
+      const plain = (content || '').replace(/<[^>]*>/g, ' ').replace(/&nbsp;/gi, ' ').replace(/\u00a0/g, ' ').trim();
+      if (plain) {
+        finalExcerpt = plain.slice(0, 180) + (plain.length > 180 ? '...' : '');
+      }
+    }
+
     const slug = title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
@@ -259,9 +316,9 @@ export async function POST(request: Request) {
         authorName,
         formattedDate,
         readTime || '5 min read',
-        excerpt,
+        finalExcerpt,
         content,
-        imageUrl,
+        finalImageUrl,
         status.toLowerCase(),
         formattedTags,
         cardSummary || excerpt,
@@ -332,6 +389,57 @@ export async function PUT(request: Request) {
 
     if (!id && !dbId) {
       return NextResponse.json({ success: false, error: 'Article identifier is required.' }, { status: 400 });
+    }
+
+    // Backend Validation for Pending Review Submissions on Update
+    if (status !== undefined && status.toLowerCase() === 'pending_review') {
+      let contentToCheck = content;
+      let imageToCheck = imageUrl;
+
+      if (contentToCheck === undefined || imageToCheck === undefined) {
+        let whereQ = dbId ? 'WHERE id = ?' : 'WHERE slug = ? OR id = ?';
+        let paramQ = dbId ? [dbId] : [id, id];
+        const existingRows: any = await query(`SELECT content, image_url FROM articles ${whereQ} LIMIT 1`, paramQ);
+        if (existingRows && existingRows[0]) {
+          if (contentToCheck === undefined) contentToCheck = existingRows[0].content;
+          if (imageToCheck === undefined) imageToCheck = existingRows[0].image_url;
+        }
+      }
+
+      const plainDescription = (contentToCheck || '')
+        .replace(/<[^>]*>/g, ' ')
+        .replace(/&nbsp;/gi, ' ')
+        .replace(/\u00a0/g, ' ')
+        .trim();
+      const hasDescription = plainDescription.length > 0;
+
+      let extractedImg = imageToCheck;
+      if (!extractedImg || extractedImg.trim() === '' || extractedImg.includes('placeholder')) {
+        const m = (contentToCheck || '').match(/<img[^>]+src=["']([^"']+)["']/i);
+        if (m) {
+          extractedImg = m[1];
+        }
+      }
+      const hasImage = Boolean(extractedImg && extractedImg.trim() !== '' && !extractedImg.includes('placeholder'));
+
+      if (!hasDescription && !hasImage) {
+        return NextResponse.json(
+          { success: false, error: 'Both an image and a description are required before submitting for review.' },
+          { status: 400 }
+        );
+      }
+      if (!hasImage) {
+        return NextResponse.json(
+          { success: false, error: 'Please upload an image before submitting for review.' },
+          { status: 400 }
+        );
+      }
+      if (!hasDescription) {
+        return NextResponse.json(
+          { success: false, error: 'Please enter a description before submitting for review.' },
+          { status: 400 }
+        );
+      }
     }
 
     const updates: string[] = [];

@@ -280,11 +280,26 @@ function WriterDashboardInner() {
       const res = await fetch(`/api/articles?status=${status}&limit=100`);
       const data = await res.json();
       if (data?.success && Array.isArray(data.data) && data.data.length > 0) {
-        const mapped: ArticleItem[] = data.data.map((item: any) => ({
-          ...item,
-          readTime: item.readTime || '5 min read',
-          imageUrl: item.imageUrl && item.imageUrl.trim() !== '' ? item.imageUrl : '/images/topic-hero-leaders.jpg',
-        }));
+        const mapped: ArticleItem[] = data.data.map((item: any) => {
+          let resolvedImage = item.imageUrl;
+          if ((!resolvedImage || resolvedImage.trim() === '' || resolvedImage.includes('placeholder')) && item.content) {
+            const m = item.content.match(/<img[^>]+src=["']([^"']+)["']/i);
+            if (m) resolvedImage = m[1];
+          }
+          let resolvedExcerpt = item.excerpt;
+          if ((!resolvedExcerpt || resolvedExcerpt.trim() === '') && item.content) {
+            const plain = item.content.replace(/<[^>]*>/g, ' ').replace(/&nbsp;/gi, ' ').replace(/\u00a0/g, ' ').trim();
+            if (plain) {
+              resolvedExcerpt = plain.slice(0, 180) + (plain.length > 180 ? '...' : '');
+            }
+          }
+          return {
+            ...item,
+            imageUrl: resolvedImage && resolvedImage.trim() !== '' ? resolvedImage : '/images/topic-hero-leaders.jpg',
+            excerpt: resolvedExcerpt || item.cardSummary || '',
+            readTime: item.readTime || '5 min read',
+          };
+        });
         setArticles(mapped);
       } else {
         // Use realistic fallback matching reference screenshots
