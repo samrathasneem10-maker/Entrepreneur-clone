@@ -104,10 +104,10 @@ export const HeroNewsSection: React.FC = () => {
   const currentHero = HERO_SLIDES[activeSlide];
 
   return (
-    <section className="bg-white pt-2.5 sm:pt-3.5 xl:pt-3.5 2xl:pt-4 pb-4 sm:pb-5 xl:pb-5 2xl:pb-6 w-full">
+    <section className="bg-white pt-2.5 sm:pt-3.5 2xl:pt-4 pb-4 sm:pb-5 2xl:pb-6 w-full">
       <div className="w-full">
-        {/* Main 3-Column Layout: Desktop/PC view fits cleanly within initial open window without next section leaking */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_1.65fr_1.25fr] xl:grid-cols-[1.2fr_1.75fr_1.3fr] gap-4 sm:gap-5 xl:gap-6 items-stretch lg:h-[515px] xl:h-[calc(100vh-172px)] xl:min-h-[635px] xl:max-h-[850px] 2xl:h-[calc(100vh-168px)] 2xl:min-h-[760px] 2xl:max-h-[880px]">
+        {/* Main 3-Column Layout: Laptop view preserves original design; Desktop/PC view (2xl) fits cleanly within initial open window */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_1.65fr_1.25fr] gap-4 sm:gap-5 xl:gap-6 items-stretch lg:h-[495px] xl:h-[515px] 2xl:h-[calc(100vh-168px)] 2xl:min-h-[760px] 2xl:max-h-[880px]">
           
           {/* ========================================================= */}
           {/* 1. LEFT COLUMN: Latest (Mobile: order-2, Desktop: order-1) */}
@@ -138,13 +138,13 @@ export const HeroNewsSection: React.FC = () => {
               {latestArticles.slice(0, 4).map((art) => (
                 <article
                   key={art.id}
-                  className="py-2 first:pt-1 last:pb-0 xl:py-3 2xl:py-4.5 first:xl:pt-1.5 last:xl:pb-0 flex items-center justify-between gap-3 xl:gap-4 group"
+                  className="py-2 first:pt-1 last:pb-0 2xl:py-4.5 first:2xl:pt-1.5 last:2xl:pb-0 flex items-center justify-between gap-3 xl:gap-4 group"
                 >
                   <div className="flex-1 min-w-0 pr-1">
                     <span className="text-[9.5px] font-bold text-[#1642D0] uppercase tracking-wider block font-sans mb-0.5">
                       {art.category}
                     </span>
-                    <h3 className="font-serif font-bold text-[13px] sm:text-[13.5px] xl:text-[14px] 2xl:text-[15px] leading-snug text-[#020618] group-hover:underline line-clamp-2 my-0">
+                    <h3 className="font-serif font-bold text-[13px] sm:text-[13.5px] 2xl:text-[15px] leading-snug text-[#020618] group-hover:underline line-clamp-2 my-0">
                       <Link href={`/article/${art.slug || art.id}`}>
                         {art.title}
                       </Link>
@@ -156,7 +156,7 @@ export const HeroNewsSection: React.FC = () => {
 
                   <Link
                     href={`/article/${art.slug || art.id}`}
-                    className="w-[110px] h-[74px] sm:w-[118px] sm:h-[78px] xl:w-[134px] xl:h-[92px] 2xl:w-[165px] 2xl:h-[112px] shrink-0 rounded-none overflow-hidden bg-slate-100 block cursor-pointer"
+                    className="w-[110px] h-[74px] sm:w-[118px] sm:h-[78px] 2xl:w-[165px] 2xl:h-[112px] shrink-0 rounded-none overflow-hidden bg-slate-100 block cursor-pointer"
                   >
                     <img
                       src={art.imageUrl}
@@ -173,7 +173,7 @@ export const HeroNewsSection: React.FC = () => {
           {/* 2. CENTER COLUMN: Main Featured Hero Card (Mobile: order-1, Desktop: order-2) */}
           {/* ========================================================= */}
           <div className="order-1 lg:order-2 flex flex-col h-full">
-            <div className="relative h-full flex-1 w-full rounded-xs overflow-hidden bg-[#070b19] text-white flex flex-col justify-end min-h-[380px] xl:min-h-[580px] 2xl:min-h-[700px] shadow-sm group">
+            <div className="relative h-full flex-1 w-full rounded-xs overflow-hidden bg-[#070b19] text-white flex flex-col justify-end min-h-[380px] 2xl:min-h-[700px] shadow-sm group">
               {/* Background Image */}
               <img
                 src={currentHero.imageUrl || '/images/home-hero/hero-growth-decision.png'}
@@ -185,7 +185,7 @@ export const HeroNewsSection: React.FC = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/75 to-transparent" />
 
               {/* Hero Content Overlay */}
-              <div className="relative z-10 p-4 sm:p-5 lg:p-6 xl:p-6.5 2xl:p-8 flex flex-col justify-end">
+              <div className="relative z-10 p-4 sm:p-5 lg:p-6 2xl:p-8 flex flex-col justify-end">
                 {/* Category Badge */}
                 <Link
                   href="/topic/startups-entrepreneurship"
@@ -195,7 +195,7 @@ export const HeroNewsSection: React.FC = () => {
                 </Link>
 
                 {/* Title */}
-                <h1 className="font-serif font-bold text-xl sm:text-2xl lg:text-[25px] xl:text-[28px] 2xl:text-[33px] leading-[1.2] tracking-tight text-white my-1">
+                <h1 className="font-serif font-bold text-xl sm:text-2xl lg:text-[25px] 2xl:text-[33px] leading-[1.2] tracking-tight text-white my-1">
                   <Link
                     href={`/article/${currentHero.slug || currentHero.id}`}
                     className="hover:underline"
@@ -206,7 +206,7 @@ export const HeroNewsSection: React.FC = () => {
 
                 {/* Excerpt */}
                 {currentHero.excerpt && (
-                  <p className="font-sans text-xs xl:text-[13px] 2xl:text-[14.5px] text-slate-200 leading-relaxed mt-1.5 max-w-xl my-0 line-clamp-2">
+                  <p className="font-sans text-xs 2xl:text-[14.5px] text-slate-200 leading-relaxed mt-1.5 max-w-xl my-0 line-clamp-2">
                     {currentHero.excerpt}
                   </p>
                 )}
@@ -216,7 +216,7 @@ export const HeroNewsSection: React.FC = () => {
                   <img
                     src={currentHero.author?.avatar || '/images/home-hero/author-scott.png'}
                     alt={currentHero.author?.name || 'Author'}
-                    className="w-6.5 h-6.5 sm:w-7 sm:h-7 xl:w-7.5 xl:h-7.5 2xl:w-8.5 2xl:h-8.5 rounded-full object-cover border border-slate-500"
+                    className="w-6.5 h-6.5 sm:w-7 sm:h-7 2xl:w-8.5 2xl:h-8.5 rounded-full object-cover border border-slate-500"
                   />
                   <div className="text-xs font-sans">
                     <span className="font-bold text-white block leading-tight">
@@ -275,10 +275,10 @@ export const HeroNewsSection: React.FC = () => {
           <div className="order-3 lg:order-3 flex flex-col justify-between h-full">
             
             {/* Top Featured Card: Uber Driver Bonuses */}
-            <article className="rounded-none overflow-hidden bg-[#070b19] text-white group cursor-pointer flex flex-col shadow-xs flex-shrink-0 mb-2 xl:mb-2.5">
+            <article className="rounded-none overflow-hidden bg-[#070b19] text-white group cursor-pointer flex flex-col shadow-xs flex-shrink-0 mb-2 2xl:mb-3">
               <Link
                 href={`/article/${UBER_DRIVER_BONUSES_ARTICLE.slug}`}
-                className="w-full aspect-[16/9] max-h-[145px] xl:max-h-[205px] 2xl:max-h-[265px] overflow-hidden bg-slate-900 block"
+                className="w-full aspect-[16/9] max-h-[145px] 2xl:max-h-[265px] overflow-hidden bg-slate-900 block"
               >
                 <img
                   src={UBER_DRIVER_BONUSES_ARTICLE.imageUrl}
@@ -286,16 +286,16 @@ export const HeroNewsSection: React.FC = () => {
                   className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300 rounded-none"
                 />
               </Link>
-              <div className="p-2.5 sm:p-3 xl:p-3 2xl:p-3.5">
-                <span className="inline-block bg-[#1642D0] text-white text-[9px] xl:text-[9.5px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-xs w-fit font-sans">
+              <div className="p-2.5 sm:p-3 2xl:p-3.5">
+                <span className="inline-block bg-[#1642D0] text-white text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-xs w-fit font-sans">
                   {UBER_DRIVER_BONUSES_ARTICLE.category}
                 </span>
-                <h3 className="font-serif font-bold text-[14.5px] sm:text-[15.5px] xl:text-[16px] 2xl:text-[17.5px] leading-snug text-white group-hover:underline mt-1 my-0 line-clamp-2">
+                <h3 className="font-serif font-bold text-[14.5px] sm:text-[15.5px] 2xl:text-[17.5px] leading-snug text-white group-hover:underline mt-1 my-0 line-clamp-2">
                   <Link href={`/article/${UBER_DRIVER_BONUSES_ARTICLE.slug}`}>
                     {UBER_DRIVER_BONUSES_ARTICLE.title}
                   </Link>
                 </h3>
-                <span className="text-[10px] xl:text-[10.5px] text-slate-400 font-sans block mt-1">
+                <span className="text-[10px] text-slate-400 font-sans block mt-1">
                   {UBER_DRIVER_BONUSES_ARTICLE.date} • {UBER_DRIVER_BONUSES_ARTICLE.readTime}
                 </span>
               </div>
@@ -306,25 +306,25 @@ export const HeroNewsSection: React.FC = () => {
               {HOMEPAGE_RIGHT_STREAM.map((art) => (
                 <article
                   key={art.id}
-                  className="py-1.5 first:pt-0 last:pb-0 xl:py-2.5 2xl:py-3.5 flex items-center justify-between gap-3 xl:gap-4 group"
+                  className="py-1.5 first:pt-0 last:pb-0 2xl:py-3.5 flex items-center justify-between gap-3 xl:gap-4 group"
                 >
                   <div className="flex-1 min-w-0 pr-1">
                     <span className="text-[9.5px] font-bold text-[#1642D0] uppercase tracking-wider block font-sans mb-0.5">
                       {art.category}
                     </span>
-                    <h4 className="font-serif font-bold text-[12.5px] sm:text-[13px] xl:text-[13.5px] 2xl:text-[14px] leading-snug text-[#020618] group-hover:underline line-clamp-2 my-0">
+                    <h4 className="font-serif font-bold text-[12.5px] sm:text-[13px] 2xl:text-[14px] leading-snug text-[#020618] group-hover:underline line-clamp-2 my-0">
                       <Link href={`/article/${art.slug || art.id}`}>
                         {art.title}
                       </Link>
                     </h4>
-                    <span className="text-[10px] xl:text-[10.5px] text-slate-400 font-sans block mt-0.5">
+                    <span className="text-[10px] text-slate-400 font-sans block mt-0.5">
                       {art.date} • {art.readTime}
                     </span>
                   </div>
 
                   <Link
                     href={`/article/${art.slug || art.id}`}
-                    className="w-[110px] h-[74px] sm:w-[118px] sm:h-[78px] xl:w-[134px] xl:h-[92px] 2xl:w-[165px] 2xl:h-[112px] shrink-0 rounded-none overflow-hidden bg-slate-100 block cursor-pointer"
+                    className="w-[110px] h-[74px] sm:w-[118px] sm:h-[78px] 2xl:w-[165px] 2xl:h-[112px] shrink-0 rounded-none overflow-hidden bg-slate-100 block cursor-pointer"
                   >
                     <img
                       src={art.imageUrl}
