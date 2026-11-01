@@ -1701,6 +1701,49 @@ export interface TopicPageData {
 }
 
 export const CATEGORY_TOPICS_DATA: Record<string, { title: string; description: string; articles: Article[] }> = {
+  'business': {
+    title: 'Business',
+    description: 'Executive leadership, corporate strategy, venture investments, and global enterprise operations.',
+    articles: [
+      {
+        id: 'zero-burn-operations-frameworks-doubling-margins',
+        title: 'Zero-Burn Operations: Frameworks for Doubling Profit Margins Without Layoffs',
+        category: 'BUSINESS',
+        author: { name: 'MICHAEL ANDREWS COOPER' },
+        date: 'Oct 28, 2026',
+        excerpt: 'How prudent founders eliminate bloat, automate operational workflows, and achieve record profitability.',
+        imageUrl: '/images/home-hero/latest-2-meeting.png',
+      },
+      {
+        id: 'uber-driver-bonuses-ahead-of-holiday-rush',
+        title: 'Uber Is Offering Big Driver Bonuses Ahead of Holiday Rush',
+        category: 'BUSINESS NEWS',
+        author: { name: 'SHERIN SHIBU' },
+        date: 'Oct 21, 2026',
+        excerpt: 'Rideshare incentives surge as delivery platforms compete for contracted driver supply in peak quarters.',
+        imageUrl: '/images/home-hero/right-uber.png',
+      },
+      {
+        id: 'companies-rethinking-workplace-culture-hybrid-world',
+        title: 'Companies Are Rethinking Workplace Culture in a Hybrid World',
+        category: 'BUSINESS NEWS',
+        author: { name: 'BENJAMIN AHMED' },
+        date: 'Oct 21, 2026',
+        excerpt: 'Structured collaboration rhythms and async documentation replace mandated physical attendance policies.',
+        imageUrl: '/images/home-hero/right-workplace.png',
+      },
+      {
+        id: 'global-markets-steady-investors-year-end-growth',
+        title: 'Global Markets Steady as Investors Eye Year-End Growth',
+        category: 'GLOBAL BUSINESS',
+        author: { name: 'JAMES CARTER' },
+        date: 'Oct 21, 2026',
+        excerpt: 'Equities maintain momentum as macroeconomic indicators signal resilient consumer spending trends.',
+        imageUrl: '/images/home-hero/right-city.png',
+      },
+    ],
+  },
+
   'breaking-business-news': {
     title: 'Breaking Business News',
     description: 'Breaking news, market updates, regulatory shifts, and major corporate developments.',
@@ -3827,6 +3870,7 @@ export function getTopicDataBySlug(slugInput: string): TopicPageData {
   const categoryLookup = getCategoryBySlug(slug);
 
   const aliasMap: Record<string, string> = {
+    'business': 'corporate-news',
     'breaking-business-news': 'breaking-news',
     'markets-and-investing': 'markets-investing',
     'economy': 'economy-policy',

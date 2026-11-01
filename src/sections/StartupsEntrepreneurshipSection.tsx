@@ -47,11 +47,11 @@ export const StartupsEntrepreneurshipSection: React.FC = () => {
             >
               <div className="flex flex-col">
                 {/* Featured Image */}
-                <figure className="relative w-full aspect-[16/9.5] overflow-hidden rounded-xs mb-3 border border-slate-200/90 bg-slate-100 flex-shrink-0">
+                <figure className="relative w-full aspect-[16/9.5] overflow-hidden rounded-none mb-3 border border-slate-200/90 bg-slate-100 flex-shrink-0">
                   <img
                     src={featured.imageUrl}
                     alt={featured.title}
-                    className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300 rounded-xs"
+                    className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300 rounded-none"
                     onError={(e) => {
                       const target = e.currentTarget;
                       if (!target.dataset.fallback) {
@@ -112,7 +112,7 @@ export const StartupsEntrepreneurshipSection: React.FC = () => {
                         {item.category}
                       </span>
 
-                      <h4 className="text-[15.5px] sm:text-[16.5px] lg:text-[17.5px] xl:text-[18px] font-serif font-bold text-slate-900 leading-snug tracking-tight mb-1.5 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 transition-all line-clamp-2">
+                      <h4 className="text-[13.5px] sm:text-[15.5px] lg:text-[17.5px] xl:text-[18px] font-serif font-bold text-slate-900 leading-snug tracking-tight mb-1.5 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 transition-all line-clamp-2">
                         {item.title}
                       </h4>
                     </div>
@@ -128,11 +128,11 @@ export const StartupsEntrepreneurshipSection: React.FC = () => {
 
                   {/* Right Thumbnail */}
                   {item.imageUrl && (
-                    <figure className="relative w-56 sm:w-64 md:w-72 lg:w-76 xl:w-84 aspect-[16/9.5] flex-shrink-0 overflow-hidden rounded-xs border border-slate-200/90 bg-slate-100">
+                    <figure className="relative w-32 sm:w-44 md:w-56 lg:w-72 xl:w-80 aspect-[16/9.5] flex-shrink-0 overflow-hidden rounded-none border border-slate-200/90 bg-slate-100">
                       <img
                         src={item.imageUrl}
                         alt={item.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 rounded-xs"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 rounded-none"
                         onError={(e) => {
                           const target = e.currentTarget;
                           if (!target.dataset.fallback) {

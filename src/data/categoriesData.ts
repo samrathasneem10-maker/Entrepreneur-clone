@@ -19,7 +19,7 @@ export const MAIN_CATEGORIES: MainCategory[] = [
     name: 'Breaking News',
     slug: 'breaking-news',
     description: 'Real-time breaking business headlines, financial alerts, market disruptions, and urgent corporate announcements.',
-    aliases: ['breaking-business-news', 'business'],
+    aliases: ['breaking-business-news'],
     subcategories: [
       { name: 'Breaking Headlines', slug: 'breaking-headlines', description: 'Urgent business alerts and top market breaking stories.' },
       { name: 'Business Alerts', slug: 'business-alerts', description: 'High-priority real-time commercial and market alerts.' },
@@ -68,6 +68,7 @@ export const MAIN_CATEGORIES: MainCategory[] = [
     id: 4,
     name: 'Corporate News',
     slug: 'corporate-news',
+    aliases: ['business', 'corporate'],
     description: 'Quarterly financial earnings, mergers and acquisitions, board governance, and global enterprise strategy.',
     subcategories: [
       { name: 'Corporate Earnings', slug: 'corporate-earnings', description: 'Earnings season reports, revenue guidance, and profit performance.' },
@@ -448,3 +449,5 @@ export function getAllFlattenedCategories(): FlatCategoryEntry[] {
 
   return result;
 }
+
+export const MAIN_CATEGORIES_20: MainCategory[] = MAIN_CATEGORIES.slice(0, 20);

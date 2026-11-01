@@ -52,7 +52,7 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import ProfileSettingsModal from '@/components/writer/ProfileSettingsModal';
-import { MAIN_CATEGORIES } from '@/data/categoriesData';
+import { MAIN_CATEGORIES, MAIN_CATEGORIES_20 } from '@/data/categoriesData';
 
 const WEBSITE_CATEGORIES = MAIN_CATEGORIES.map((c) => c.name);
 
@@ -291,15 +291,17 @@ function WriterEditorMain() {
   const [authorName, setAuthorName] = useState('');
   const [mainCategory, setMainCategory] = useState(MAIN_CATEGORIES[0].name);
   const [allCategories, setAllCategories] = useState<string[]>(INITIAL_ALL_CATEGORIES);
+  const [selectedSubCategory, setSelectedSubCategory] = useState<string>('');
   const [selectedSubCategories, setSelectedSubCategories] = useState<string[]>([]);
 
-  // Synchronized Categories using Navigation Menu (MAIN_CATEGORIES) as Single Source of Truth
+  // Synchronized Categories using Navigation Menu (MAIN_CATEGORIES_20) as Single Source of Truth
   const activeMainCatObj = useMemo(() => {
+    if (!mainCategory) return null;
     return (
-      MAIN_CATEGORIES.find((c) => c.name.toLowerCase() === mainCategory.trim().toLowerCase()) ||
-      MAIN_CATEGORIES.find((c) => c.aliases?.some((a) => a.toLowerCase() === mainCategory.trim().toLowerCase())) ||
-      MAIN_CATEGORIES.find((c) => c.slug.toLowerCase() === mainCategory.trim().toLowerCase()) ||
-      MAIN_CATEGORIES[0]
+      MAIN_CATEGORIES_20.find((c) => c.name.toLowerCase() === mainCategory.trim().toLowerCase()) ||
+      MAIN_CATEGORIES_20.find((c) => c.aliases?.some((a) => a.toLowerCase() === mainCategory.trim().toLowerCase())) ||
+      MAIN_CATEGORIES_20.find((c) => c.slug.toLowerCase() === mainCategory.trim().toLowerCase()) ||
+      null
     );
   }, [mainCategory]);
 
@@ -2438,11 +2440,12 @@ function WriterEditorMain() {
                       <div className="p-3 pt-2 border-t border-slate-100 bg-white">
                         <div className="relative">
                           <select
-                            value={activeMainCatObj.name}
+                            value={mainCategory}
                             onChange={(e) => {
                               const newCat = e.target.value;
                               setMainCategory(newCat);
-                              const targetCat = MAIN_CATEGORIES.find((c) => c.name === newCat);
+                              setSelectedSubCategory('');
+                              const targetCat = MAIN_CATEGORIES_20.find((c) => c.name === newCat);
                               const validSubs = targetCat ? targetCat.subcategories.map((s) => s.name) : [];
                               setSelectedSubCategories((prev) =>
                                 prev.filter((s) => validSubs.includes(s))
@@ -2450,7 +2453,8 @@ function WriterEditorMain() {
                             }}
                             className="w-full appearance-none px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-hidden focus:border-[#1642D0] cursor-pointer"
                           >
-                            {MAIN_CATEGORIES.map((cat) => (
+                            <option value="">Select Main Category</option>
+                            {MAIN_CATEGORIES_20.map((cat) => (
                               <option key={cat.id} value={cat.name}>
                                 {cat.name}
                               </option>
@@ -2488,6 +2492,32 @@ function WriterEditorMain() {
                     </button>
                     {isSubCatExpanded && (
                       <div className="p-3.5 pt-2 border-t border-slate-100 bg-white flex flex-col gap-4">
+                        {/* Single Optional Subcategory Dropdown */}
+                        <div className="relative">
+                          <select
+                            value={selectedSubCategory}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setSelectedSubCategory(val);
+                              if (val && !selectedSubCategories.includes(val)) {
+                                if (selectedSubCategories.length < 5) {
+                                  setSelectedSubCategories((prev) => [...prev, val]);
+                                }
+                              }
+                            }}
+                            disabled={!mainCategory || currentSubcategories.length === 0}
+                            className="w-full appearance-none px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-hidden focus:border-[#1642D0] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            <option value="">Select Subcategory (Optional)</option>
+                            {currentSubcategories.map((sub) => (
+                              <option key={sub.name} value={sub.name}>
+                                {sub.name}
+                              </option>
+                            ))}
+                          </select>
+                          <ChevronDown className="w-4 h-4 text-slate-500 absolute right-3 top-3 pointer-events-none" />
+                        </div>
+
                         {/* 2-Column Checkbox Grid */}
                         <div className="grid grid-cols-2 gap-2 p-2.5 bg-slate-50 border border-slate-200 rounded-xl max-h-56 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300">
                           {currentSubcategories.length === 0 ? (

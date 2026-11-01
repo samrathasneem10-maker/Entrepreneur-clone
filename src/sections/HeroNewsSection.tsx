@@ -110,9 +110,9 @@ export const HeroNewsSection: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_1.65fr_1.25fr] gap-4 sm:gap-5 xl:gap-6 items-stretch lg:h-[495px] xl:h-[515px]">
           
           {/* ========================================================= */}
-          {/* 1. LEFT COLUMN: Latest (aligned top and bottom)           */}
+          {/* 1. LEFT COLUMN: Latest (Mobile: order-2, Desktop: order-1) */}
           {/* ========================================================= */}
-          <div className="flex flex-col justify-between h-full">
+          <div className="order-2 lg:order-1 flex flex-col justify-between h-full">
             {/* Header: Latest + See All [->] */}
             <div className="flex items-center justify-between pb-1.5 mb-1 flex-shrink-0">
               <h2 className="font-serif font-black text-xl sm:text-2xl text-[#020618] leading-none my-0">
@@ -170,9 +170,9 @@ export const HeroNewsSection: React.FC = () => {
           </div>
 
           {/* ========================================================= */}
-          {/* 2. CENTER COLUMN: Main Featured Hero Card                */}
+          {/* 2. CENTER COLUMN: Main Featured Hero Card (Mobile: order-1, Desktop: order-2) */}
           {/* ========================================================= */}
-          <div className="flex flex-col h-full">
+          <div className="order-1 lg:order-2 flex flex-col h-full">
             <div className="relative h-full flex-1 w-full rounded-xs overflow-hidden bg-[#070b19] text-white flex flex-col justify-end min-h-[380px] shadow-sm group">
               {/* Background Image */}
               <img
@@ -270,9 +270,9 @@ export const HeroNewsSection: React.FC = () => {
           </div>
 
           {/* ========================================================= */}
-          {/* 3. RIGHT COLUMN: Top Uber Card + 3 Articles               */}
+          {/* 3. RIGHT COLUMN: Top Uber Card + 3 Articles (order-3)     */}
           {/* ========================================================= */}
-          <div className="flex flex-col justify-between h-full">
+          <div className="order-3 lg:order-3 flex flex-col justify-between h-full">
             
             {/* Top Featured Card: Uber Driver Bonuses */}
             <article className="rounded-xs overflow-hidden bg-[#070b19] text-white group cursor-pointer flex flex-col shadow-xs flex-shrink-0 mb-2">

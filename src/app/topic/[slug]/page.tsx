@@ -807,6 +807,7 @@ export default function DynamicTopicPage() {
   const params = useParams();
   const rawSlug = typeof params?.slug === 'string' ? params.slug : 'thought-leaders';
   const topicData = getTopicDataBySlug(rawSlug);
+  const displayTitle = rawSlug === 'business' ? 'Business' : topicData.title;
 
   // Pagination state: 10 articles per page
   const [currentPage, setCurrentPage] = useState(1);
@@ -907,7 +908,7 @@ export default function DynamicTopicPage() {
             </>
           )}
           <span className="text-slate-900 font-bold uppercase tracking-wider whitespace-nowrap truncate">
-            {topicData.title || 'TOPICS'}
+            {displayTitle || 'TOPICS'}
           </span>
         </div>
       </div>
@@ -919,7 +920,7 @@ export default function DynamicTopicPage() {
             {topicData.parentTitle ? `${topicData.parentTitle} • Subcategory` : 'Category'}
           </span>
           <h1 className="text-2xl sm:text-3xl lg:text-[32px] font-serif font-black text-[#020618] tracking-tight my-0.5">
-            {topicData.title}
+            {displayTitle}
           </h1>
         </div>
       </div>
@@ -930,7 +931,7 @@ export default function DynamicTopicPage() {
           
           {/* Left Column: 1 Featured Article */}
           <article className="group flex flex-col items-start text-left w-full">
-            <div className="w-full aspect-[16/10] overflow-hidden bg-slate-100 mb-3.5 border border-slate-200/80 rounded-none shadow-2xs">
+            <div className="w-full aspect-[16/10] sm:aspect-[16/9.5] max-h-[350px] overflow-hidden bg-slate-100 mb-3.5 border border-slate-200/80 rounded-none shadow-2xs">
               <Link href={heroFeatured.link} className="block w-full h-full cursor-pointer">
                 <img
                   src={heroFeatured.image}
@@ -957,7 +958,7 @@ export default function DynamicTopicPage() {
             
             {/* Right Column - Article 1 */}
             <article className="group flex flex-col sm:flex-row gap-4 sm:gap-5 items-start text-left w-full border-b border-slate-200/80 pb-6 lg:pb-7">
-              <div className="w-full sm:w-[210px] md:w-[230px] lg:w-[220px] aspect-[16/10] shrink-0 overflow-hidden bg-slate-100 border border-slate-200/80 rounded-none shadow-2xs">
+              <div className="w-full sm:w-[260px] md:w-[280px] lg:w-[290px] xl:w-[310px] aspect-[16/10] shrink-0 overflow-hidden bg-slate-100 border border-slate-200/80 rounded-none shadow-2xs">
                 <Link href={heroSub1.link} className="block w-full h-full cursor-pointer">
                   <img
                     src={heroSub1.image}
@@ -983,7 +984,7 @@ export default function DynamicTopicPage() {
 
             {/* Right Column - Article 2 */}
             <article className="group flex flex-col sm:flex-row gap-4 sm:gap-5 items-start text-left w-full">
-              <div className="w-full sm:w-[210px] md:w-[230px] lg:w-[220px] aspect-[16/10] shrink-0 overflow-hidden bg-slate-100 border border-slate-200/80 rounded-none shadow-2xs">
+              <div className="w-full sm:w-[260px] md:w-[280px] lg:w-[290px] xl:w-[310px] aspect-[16/10] shrink-0 overflow-hidden bg-slate-100 border border-slate-200/80 rounded-none shadow-2xs">
                 <Link href={heroSub2.link} className="block w-full h-full cursor-pointer">
                   <img
                     src={heroSub2.image}
@@ -1018,8 +1019,8 @@ export default function DynamicTopicPage() {
           {/* Left Column: MORE NEWS heading + Bordered box with 10 articles per page */}
           <div className="lg:col-span-7 flex flex-col h-full">
             {/* MORE NEWS Heading and Line */}
-            <div className="flex items-center justify-between mb-5 sm:mb-6">
-              <h2 className="text-xl sm:text-2xl font-serif font-bold text-slate-900 tracking-tight uppercase">
+            <div className="flex items-center justify-between mb-4 sm:mb-5 h-[32px]">
+              <h2 className="text-xl sm:text-2xl font-serif font-bold text-slate-900 tracking-tight uppercase my-0 leading-none">
                 MORE NEWS
               </h2>
             </div>
@@ -1115,14 +1116,18 @@ export default function DynamicTopicPage() {
           </div>
           </div>
 
-          {/* Right Column: Sidebar with 2 Advertisements (Left & Right same alignment) */}
+          {/* Right Column: Sidebar with 2 Advertisements (Neatly aligned at top with MORE NEWS box) */}
           <div className="lg:col-span-5 flex flex-col h-full gap-6">
             
-            {/* 1st Sidebar Advertisement: 300 × 400 */}
-            <div className="w-full text-center flex-shrink-0">
-              <span className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-400 block mb-2">
+            {/* Aligned Advertisement Header matching MORE NEWS header height */}
+            <div className="flex items-center justify-between mb-4 sm:mb-5 h-[32px]">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-400 font-sans my-0 leading-none">
                 ADVERTISEMENT
               </span>
+            </div>
+
+            {/* 1st Sidebar Advertisement: 300 × 400 */}
+            <div className="w-full text-center flex-shrink-0">
               <div className="w-full h-[400px] min-h-[400px] bg-[#edf2f7] border border-slate-300 flex flex-col items-center justify-center p-6 text-center shadow-2xs">
                 <span className="text-xs sm:text-[13px] font-semibold text-slate-600 font-sans">
                   300 × 400 Banner

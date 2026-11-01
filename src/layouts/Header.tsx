@@ -264,7 +264,7 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
                           <>
                             {/* 1. Reader Dashboard */}
                             <Link
-                              href="/dashboard/reader"
+                              href="/dashboard/reader?tab=saved"
                               onClick={() => setShowAccountDropdown(false)}
                               className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
                             >
