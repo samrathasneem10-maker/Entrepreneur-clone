@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import {
   Copy,
   Check,
@@ -136,6 +136,8 @@ function formatTime(seconds: number): string {
 export default function ArticleDetailPage() {
   const params = useParams();
   const articleId = typeof params?.id === 'string' ? params.id : 'autonomous-enterprise-ai-how-small-teams-build-billion-dollar-products-8786';
+  const searchParams = useSearchParams();
+  const isPreview = searchParams?.get('preview') === 'true' || articleId === 'preview';
   const rawArticle = getArticleById(articleId);
   const [dbArticle, setDbArticle] = useState<any>(null);
 
@@ -620,7 +622,7 @@ export default function ArticleDetailPage() {
   return (
     <div className="min-h-screen flex flex-col bg-white font-sans antialiased text-slate-900">
       {/* 1. Header with Sticky Reading Progress Bar */}
-      <Header showProgressBar={true} />
+      {!isPreview && <Header showProgressBar={true} />}
 
       {/* Main Article Container with 2-Column Layout */}
       <main className="flex-1 w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pt-4 pb-10">
@@ -1442,7 +1444,7 @@ export default function ArticleDetailPage() {
       )}
 
       {/* 2. Footer */}
-      <Footer />
+      {!isPreview && <Footer />}
     </div>
   );
 }
