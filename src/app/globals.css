@@ -13,6 +13,7 @@
   --font-serif: Georgia, 'Playfair Display', Cambria, "Times New Roman", Times, serif;
   --font-georgia: Georgia, Cambria, "Times New Roman", Times, serif;
   --font-logo: "Noe Display", 'Bodoni Moda', Didot, "Bodoni MT", Georgia, serif;
+  --breakpoint-2xl: 100rem;
 }
 
 :root {
