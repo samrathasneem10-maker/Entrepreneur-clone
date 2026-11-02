@@ -877,16 +877,11 @@ export default function DynamicTopicPage() {
         </div>
       </div>
 
-      {/* Category Header */}
-      <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pt-3 pb-1.5">
-        <div>
-          <span className="text-[11px] font-bold text-[#1642D0] uppercase tracking-wider font-sans block mb-1">
-            {topicData.parentTitle ? `${topicData.parentTitle} • Subcategory` : 'Category'}
-          </span>
-          <h1 className="text-2xl sm:text-3xl lg:text-[32px] font-serif font-black text-[#020618] tracking-tight my-0.5">
-            {displayTitle}
-          </h1>
-        </div>
+      {/* Category Header - Centered heading with blue category element and underline removed */}
+      <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pt-4 pb-2 text-center">
+        <h1 className="text-2xl sm:text-3xl lg:text-[32px] font-serif font-black text-[#020618] tracking-tight my-0.5 text-center">
+          {displayTitle}
+        </h1>
       </div>
 
       {/* 2-Column Section: 1 Featured Article on Left & 2 Stacked Articles on Right (Applied across all categories with synchronized vertical alignment) */}

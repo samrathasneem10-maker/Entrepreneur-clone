@@ -104,10 +104,10 @@ export const HeroNewsSection: React.FC = () => {
   const currentHero = HERO_SLIDES[activeSlide];
 
   return (
-    <section className="bg-white pt-2.5 sm:pt-3.5 2xl:pt-4 pb-4 sm:pb-5 2xl:pb-6 w-full">
+    <section className="bg-white pt-2.5 sm:pt-3.5 2xl:pt-4 pb-4 sm:pb-5 2xl:pb-12 2xl:mb-4 w-full">
       <div className="w-full">
         {/* Main 3-Column Layout: Laptop view preserves original design; Desktop/PC view (2xl) fits cleanly within initial open window */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_1.65fr_1.25fr] xl:grid-cols-[1.2fr_1.75fr_1.3fr] gap-4 sm:gap-5 xl:gap-6 items-stretch lg:h-[515px] xl:h-[535px] 2xl:h-[calc(100vh-168px)] 2xl:min-h-[760px] 2xl:max-h-[880px]">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_1.65fr_1.25fr] xl:grid-cols-[1.2fr_1.75fr_1.3fr] gap-4 sm:gap-5 xl:gap-6 items-stretch lg:h-[515px] xl:h-[535px] 2xl:h-[calc(100vh-190px)] 2xl:min-h-[660px] 2xl:max-h-[780px]">
           
           {/* ========================================================= */}
           {/* 1. LEFT COLUMN: Latest (Mobile: order-2, Desktop: order-1) */}
@@ -173,7 +173,7 @@ export const HeroNewsSection: React.FC = () => {
           {/* 2. CENTER COLUMN: Main Featured Hero Card (Mobile: order-1, Desktop: order-2) */}
           {/* ========================================================= */}
           <div className="order-1 lg:order-2 flex flex-col h-full">
-            <div className="relative h-full flex-1 w-full rounded-xs overflow-hidden bg-[#070b19] text-white flex flex-col justify-end min-h-[380px] xl:min-h-[400px] 2xl:min-h-[700px] shadow-sm group">
+            <div className="relative h-full flex-1 w-full rounded-xs overflow-hidden bg-[#070b19] text-white flex flex-col justify-end min-h-[380px] xl:min-h-[400px] 2xl:min-h-[620px] shadow-sm group">
               {/* Background Image */}
               <img
                 src={currentHero.imageUrl || '/images/home-hero/hero-growth-decision.png'}

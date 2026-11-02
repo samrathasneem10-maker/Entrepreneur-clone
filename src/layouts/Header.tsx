@@ -24,7 +24,7 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
   const [readingProgress, setReadingProgress] = useState(0);
   const [showAccountDropdown, setShowAccountDropdown] = useState(false);
   const [showWriterProfileModal, setShowWriterProfileModal] = useState(false);
-  const [activeCategory, setActiveCategory] = useState<string>('Breaking News');
+  const [activeCategory, setActiveCategory] = useState<string>('');
   const accountDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -37,7 +37,7 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
           return;
         }
       } catch (_) {}
-      setActiveCategory('Breaking News');
+      setActiveCategory('');
       return;
     }
     const match = NAVIGATION_STRUCTURE.primary.find((item) => {

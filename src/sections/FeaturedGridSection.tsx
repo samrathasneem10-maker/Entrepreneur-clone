@@ -8,7 +8,7 @@ export const FeaturedGridSection: React.FC = () => {
   return (
     <section className="bg-white pt-5 sm:pt-6 pb-5 sm:pb-6 w-full">
       <div className="w-full">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-8 items-stretch">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-4 xl:gap-5 items-stretch">
           {TOP_STORIES_GRID.map((article) => {
             const articleUrl = getArticleUrl(article);
             const authorSlug = (article.author?.name || 'author')
@@ -21,7 +21,7 @@ export const FeaturedGridSection: React.FC = () => {
                 <div className="flex flex-col justify-between h-full no-underline text-inherit">
                   {/* Card Image - Sharp Rectangular Corners */}
                   {article.imageUrl && (
-                    <figure className="relative w-full aspect-[16/9.5] overflow-hidden rounded-none mb-3 border border-slate-200/90 bg-slate-100 flex-shrink-0">
+                    <figure className="relative w-full aspect-[16/10.5] sm:aspect-[16/10.8] lg:aspect-[16/11] overflow-hidden rounded-none mb-3 border border-slate-200/90 bg-slate-100 flex-shrink-0">
                       <Link href={articleUrl} className="block w-full h-full cursor-pointer">
                         <img
                           src={article.imageUrl}
