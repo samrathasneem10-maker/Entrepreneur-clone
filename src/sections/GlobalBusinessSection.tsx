@@ -12,7 +12,7 @@ export const GlobalBusinessSection: React.FC = () => {
       {/* Section Header */}
       <div className="flex items-center justify-between mb-3.5 sm:mb-4.5">
         <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
-          <Link href="/topic/global-business" className="hover:text-[#1642D0] transition-colors">
+          <Link href="/topic/global-business" className="hover:text-[#1642D0] transition-colors no-underline hover:no-underline active:no-underline focus:no-underline">
             Global Business
           </Link>
         </h2>
@@ -120,7 +120,7 @@ export const GlobalBusinessSection: React.FC = () => {
                         className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 rounded-xs"
                       />
                     </figure>
-                    <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1 block">
+                    <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] no-underline hover:no-underline active:no-underline focus:no-underline mb-1 block">
                       {card.category}
                     </span>
                     <h4 className="text-[15px] sm:text-[16px] xl:text-[17px] font-serif font-bold text-slate-900 leading-snug tracking-tight mb-1.5 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 line-clamp-2">
@@ -157,7 +157,7 @@ export const GlobalBusinessSection: React.FC = () => {
 
                   {/* Text Details */}
                   <div className="flex-1 min-w-0 pr-2">
-                    <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-0.5 block">
+                    <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] no-underline hover:no-underline active:no-underline focus:no-underline mb-0.5 block">
                       {item.category}
                     </span>
                     <h5 className="text-[14.5px] sm:text-[15.5px] lg:text-[16px] font-serif font-bold text-slate-900 leading-snug tracking-tight line-clamp-2 mb-1 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2">

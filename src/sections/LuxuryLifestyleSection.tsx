@@ -10,7 +10,7 @@ export const LuxuryLifestyleSection: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-3.5 sm:mb-4.5">
         <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
-          <Link href="/topic/luxury-lifestyle" className="hover:text-[#1642D0] transition-colors">
+          <Link href="/topic/luxury-lifestyle" className="hover:text-[#1642D0] transition-colors no-underline hover:no-underline active:no-underline focus:no-underline">
             Luxury &amp; Lifestyle
           </Link>
         </h2>
@@ -56,7 +56,7 @@ export const LuxuryLifestyleSection: React.FC = () => {
                 </figure>
 
                 {/* Respective text placed underneath each image */}
-                <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1.5 block">
+                <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] no-underline hover:no-underline active:no-underline focus:no-underline mb-1.5 block">
                   {card.category}
                 </span>
 

@@ -10,7 +10,7 @@ export const MarketingBrandingSection: React.FC = () => {
       {/* Section Header */}
       <div className="flex items-center justify-between mb-3.5 sm:mb-4.5">
         <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
-          <Link href="/topic/marketing-branding" className="hover:text-[#1642D0] transition-colors">
+          <Link href="/topic/marketing-branding" className="hover:text-[#1642D0] transition-colors no-underline hover:no-underline active:no-underline focus:no-underline">
             Marketing &amp; Branding
           </Link>
         </h2>
@@ -57,7 +57,7 @@ export const MarketingBrandingSection: React.FC = () => {
                   </figure>
 
                   {/* Blue Category Badge */}
-                  <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1 block">
+                  <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] no-underline hover:no-underline active:no-underline focus:no-underline mb-1 block">
                     {card.category}
                   </span>
 

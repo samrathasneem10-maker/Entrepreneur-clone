@@ -46,7 +46,7 @@ export const FeaturedGridSection: React.FC = () => {
                   {/* Text Content: Displayed with descriptions and author details matching Image 1 */}
                   <div className="flex flex-col justify-between flex-1">
                     {/* Category Badge */}
-                    <span className="text-[11px] sm:text-xs font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-2 text-left block">
+                    <span className="text-[11px] sm:text-xs font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-2 text-left block no-underline hover:no-underline active:no-underline focus:no-underline">
                       {article.category}
                     </span>
 

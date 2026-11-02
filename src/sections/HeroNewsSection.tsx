@@ -116,7 +116,7 @@ export const HeroNewsSection: React.FC = () => {
             {/* Header: Latest + See All [->] */}
             <div className="flex items-center justify-between pb-1.5 mb-1 flex-shrink-0">
               <h2 className="font-serif font-black text-xl sm:text-2xl text-[#020618] leading-none my-0">
-                <Link href="/latest" className="hover:underline">
+                <Link href="/latest" className="no-underline hover:no-underline active:no-underline focus:no-underline">
                   Latest
                 </Link>
               </h2>
@@ -141,7 +141,7 @@ export const HeroNewsSection: React.FC = () => {
                   className="py-2 first:pt-1 last:pb-0 2xl:py-4.5 first:2xl:pt-1.5 last:2xl:pb-0 flex items-center justify-between gap-3 xl:gap-4 group"
                 >
                   <div className="flex-1 min-w-0 pr-1">
-                    <span className="text-[9.5px] font-bold text-[#1642D0] uppercase tracking-wider block font-sans mb-0.5">
+                    <span className="text-[9.5px] font-bold text-[#1642D0] uppercase tracking-wider block font-sans mb-0.5 no-underline hover:no-underline active:no-underline focus:no-underline">
                       {art.category}
                     </span>
                     <h3 className="font-serif font-bold text-[13px] sm:text-[13.5px] 2xl:text-[15px] leading-snug text-[#020618] group-hover:underline line-clamp-2 my-0">
@@ -189,7 +189,7 @@ export const HeroNewsSection: React.FC = () => {
                 {/* Category Badge */}
                 <Link
                   href="/topic/startups-entrepreneurship"
-                  className="inline-block bg-[#1642D0] hover:bg-blue-700 text-white text-[9.5px] sm:text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-xs mb-1.5 w-fit font-sans transition-colors"
+                  className="inline-block bg-[#1642D0] hover:bg-blue-700 text-white text-[9.5px] sm:text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-xs mb-1.5 w-fit font-sans transition-colors no-underline hover:no-underline active:no-underline focus:no-underline"
                 >
                   {currentHero.category}
                 </Link>
@@ -287,7 +287,7 @@ export const HeroNewsSection: React.FC = () => {
                 />
               </Link>
               <div className="p-2.5 sm:p-3 2xl:p-3.5">
-                <span className="inline-block bg-[#1642D0] text-white text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-xs w-fit font-sans">
+                <span className="inline-block bg-[#1642D0] text-white text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-xs w-fit font-sans no-underline hover:no-underline active:no-underline focus:no-underline">
                   {UBER_DRIVER_BONUSES_ARTICLE.category}
                 </span>
                 <h3 className="font-serif font-bold text-[14.5px] sm:text-[15.5px] 2xl:text-[17.5px] leading-snug text-white group-hover:underline mt-1 my-0 line-clamp-2">
@@ -309,7 +309,7 @@ export const HeroNewsSection: React.FC = () => {
                   className="py-1.5 first:pt-0 last:pb-0 2xl:py-3.5 flex items-center justify-between gap-3 xl:gap-4 group"
                 >
                   <div className="flex-1 min-w-0 pr-1">
-                    <span className="text-[9.5px] font-bold text-[#1642D0] uppercase tracking-wider block font-sans mb-0.5">
+                    <span className="text-[9.5px] font-bold text-[#1642D0] uppercase tracking-wider block font-sans mb-0.5 no-underline hover:no-underline active:no-underline focus:no-underline">
                       {art.category}
                     </span>
                     <h4 className="font-serif font-bold text-[12.5px] sm:text-[13px] 2xl:text-[14px] leading-snug text-[#020618] group-hover:underline line-clamp-2 my-0">

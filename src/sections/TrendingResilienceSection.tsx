@@ -97,7 +97,7 @@ export const TrendingResilienceSection: React.FC = () => {
 
                   {/* Title & Details */}
                   <div className="flex-1 min-w-0 pr-1">
-                    <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-0.5 block">
+                    <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] no-underline hover:no-underline active:no-underline focus:no-underline mb-0.5 block">
                       {item.category}
                     </span>
                     <h4 className="text-[14px] sm:text-[15px] lg:text-[15.5px] font-serif font-bold text-slate-900 leading-snug tracking-tight line-clamp-2 mb-1 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2">

@@ -30,10 +30,14 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
   useEffect(() => {
     if (!pathname) return;
     if (pathname === '/') {
-      setActiveCategory('Breaking News');
       try {
-        sessionStorage.removeItem('activeNavCategory');
+        const saved = sessionStorage.getItem('activeNavCategory');
+        if (saved) {
+          setActiveCategory(saved);
+          return;
+        }
       } catch (_) {}
+      setActiveCategory('Breaking News');
       return;
     }
     const match = NAVIGATION_STRUCTURE.primary.find((item) => {
@@ -343,13 +347,13 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
                             sessionStorage.setItem('activeNavCategory', item.label);
                           } catch (_) {}
                         }}
-                        className={`relative pb-2.5 pt-1 text-[9.5px] sm:text-[10px] md:text-[9.5px] lg:text-[10px] xl:text-[11px] 2xl:text-[12px] font-bold uppercase tracking-tight md:tracking-tighter lg:tracking-tight xl:tracking-normal 2xl:tracking-wider transition-colors flex items-center gap-1 whitespace-nowrap ${
+                        className={`relative pb-2.5 pt-1 text-[9.5px] sm:text-[10px] md:text-[9.5px] lg:text-[10px] xl:text-[11px] 2xl:text-[12px] font-bold uppercase tracking-tight md:tracking-tighter lg:tracking-tight xl:tracking-normal 2xl:tracking-wider transition-colors flex items-center gap-1 whitespace-nowrap no-underline hover:no-underline active:no-underline focus:no-underline ${
                           isActive ? 'text-[#020618]' : 'text-[#020618] hover:text-[#1642D0]'
                         }`}
                       >
                         <span>{item.label}</span>
                         {isActive && (
-                          <span className="hidden md:block absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#1642D0]" />
+                          <span className="block absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#1642D0]" />
                         )}
                       </Link>
                     </li>

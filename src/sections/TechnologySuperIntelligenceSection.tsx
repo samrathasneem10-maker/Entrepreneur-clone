@@ -13,7 +13,7 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-3.5 sm:mb-4.5 gap-3">
         <div>
           <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
-          <Link href="/topic/technology-super-intelligence" className="hover:text-[#1642D0] transition-colors">
+          <Link href="/topic/technology-super-intelligence" className="hover:text-[#1642D0] transition-colors no-underline hover:no-underline active:no-underline focus:no-underline">
             Technology &amp; Super Intelligence
           </Link>
         </h2>
@@ -100,7 +100,7 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
                 </figure>
 
                 {/* Content Placed Separately Below the Image */}
-                <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1 block">
+                <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] no-underline hover:no-underline active:no-underline focus:no-underline mb-1 block">
                   {featured.category}
                 </span>
 

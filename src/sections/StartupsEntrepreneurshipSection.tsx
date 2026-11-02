@@ -12,7 +12,7 @@ export const StartupsEntrepreneurshipSection: React.FC = () => {
       {/* Section Header with consistent border-b matching reference */}
       <div className="flex items-center justify-between mb-3.5 sm:mb-4.5">
         <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
-          <Link href="/topic/startups-entrepreneurship" className="hover:text-[#1642D0] transition-colors">
+          <Link href="/topic/startups-entrepreneurship" className="hover:text-[#1642D0] transition-colors no-underline hover:no-underline active:no-underline focus:no-underline">
             Startups &amp; Entrepreneurship
           </Link>
         </h2>
@@ -65,7 +65,7 @@ export const StartupsEntrepreneurshipSection: React.FC = () => {
                 </figure>
 
                 {/* Category Badge */}
-                <span className="text-[11px] sm:text-xs font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1.5 text-left block">
+                <span className="text-[11px] sm:text-xs font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1.5 text-left block no-underline hover:no-underline active:no-underline focus:no-underline">
                   {featured.category}
                 </span>
 
@@ -110,7 +110,7 @@ export const StartupsEntrepreneurshipSection: React.FC = () => {
                   {/* Left Text Block: Category, Title, Author */}
                   <div className="flex-1 min-w-0 pr-1 flex flex-col justify-between self-stretch py-0.5">
                     <div>
-                      <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1 block">
+                      <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1 block no-underline hover:no-underline active:no-underline focus:no-underline">
                         {item.category}
                       </span>
 

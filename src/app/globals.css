@@ -259,3 +259,31 @@ main section article div[class*="overflow-hidden"] {
 
 
 
+
+/* Remove all underlines from category names, badges, and labels on the Home Page across all states (hover, active, clicked, focus) */
+a[href*="/topic/"]:not(header nav a),
+a[href="/latest"],
+main article span[class*="tracking-wider"],
+main section span[class*="tracking-wider"],
+main span[class*="uppercase"][class*="text-[#1642D0]"],
+main span[class*="uppercase"][class*="text-white"],
+main [data-category-badge] {
+  text-decoration: none !important;
+}
+
+a[href*="/topic/"]:not(header nav a):hover,
+a[href*="/topic/"]:not(header nav a):active,
+a[href*="/topic/"]:not(header nav a):focus,
+a[href="/latest"]:hover,
+a[href="/latest"]:active,
+a[href="/latest"]:focus,
+main article span[class*="tracking-wider"]:hover,
+main article span[class*="tracking-wider"]:active,
+main section span[class*="tracking-wider"]:hover,
+main section span[class*="tracking-wider"]:active,
+main span[class*="uppercase"][class*="text-[#1642D0]"]:hover,
+main span[class*="uppercase"][class*="text-[#1642D0]"]:active,
+main span[class*="uppercase"][class*="text-white"]:hover,
+main span[class*="uppercase"][class*="text-white"]:active {
+  text-decoration: none !important;
+}

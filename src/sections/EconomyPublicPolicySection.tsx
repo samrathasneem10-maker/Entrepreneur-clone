@@ -10,7 +10,7 @@ export const EconomyPublicPolicySection: React.FC = () => {
       {/* Section Header */}
       <div className="flex items-center justify-between mb-3.5 sm:mb-4.5">
         <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
-          <Link href="/topic/economy-policy" className="hover:text-[#1642D0] transition-colors">
+          <Link href="/topic/economy-policy" className="hover:text-[#1642D0] transition-colors no-underline hover:no-underline active:no-underline focus:no-underline">
             Economy &amp; Public Policy
           </Link>
         </h2>

@@ -13,7 +13,7 @@ export const EnergyCommoditiesSection: React.FC = () => {
       {/* Section Header */}
       <div className="flex items-center justify-between mb-3.5 sm:mb-4.5">
         <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
-          <Link href="/topic/energy-commodities" className="hover:text-[#1642D0] transition-colors">
+          <Link href="/topic/energy-commodities" className="hover:text-[#1642D0] transition-colors no-underline hover:no-underline active:no-underline focus:no-underline">
             Energy &amp; Commodities
           </Link>
         </h2>
@@ -95,7 +95,7 @@ export const EnergyCommoditiesSection: React.FC = () => {
                   {/* Story Details on Right */}
                   <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
                     <div>
-                      <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1 block">
+                      <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] no-underline hover:no-underline active:no-underline focus:no-underline mb-1 block">
                         {item.category}
                       </span>
 
