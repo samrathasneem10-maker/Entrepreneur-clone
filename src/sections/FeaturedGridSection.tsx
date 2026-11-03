@@ -6,9 +6,9 @@ import { TOP_STORIES_GRID, getArticleUrl } from '@/data/newsData';
 
 export const FeaturedGridSection: React.FC = () => {
   return (
-    <section className="bg-white pt-5 sm:pt-6 pb-2 sm:pb-3 w-full">
+    <section className="bg-white pt-4 sm:pt-4.5 pb-1 sm:pb-2 w-full">
       <div className="w-full">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-4 xl:gap-5 items-stretch">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-3.5 lg:gap-3.5 xl:gap-4 items-stretch">
           {TOP_STORIES_GRID.map((article) => {
             const articleUrl = getArticleUrl(article);
             const authorSlug = (article.author?.name || 'author')
@@ -19,9 +19,9 @@ export const FeaturedGridSection: React.FC = () => {
             return (
               <article key={article.id} className="group flex flex-col justify-between w-full h-full">
                 <div className="flex flex-col justify-between h-full no-underline text-inherit">
-                  {/* Card Image - Sharp Rectangular Corners */}
+                  {/* Card Image - Sharp Rectangular Corners with slightly increased height for laptop & desktop */}
                   {article.imageUrl && (
-                    <figure className="relative w-full aspect-[16/10.5] sm:aspect-[16/10.8] lg:aspect-[16/11] overflow-hidden rounded-none mb-3 border border-slate-200/90 bg-slate-100 flex-shrink-0">
+                    <figure className="relative w-full aspect-[16/10.5] sm:aspect-[16/11.8] lg:aspect-[16/12] overflow-hidden rounded-none mb-2 border border-slate-200/90 bg-slate-100 flex-shrink-0">
                       <Link href={articleUrl} className="block w-full h-full cursor-pointer">
                         <img
                           src={article.imageUrl}
@@ -46,12 +46,12 @@ export const FeaturedGridSection: React.FC = () => {
                   {/* Text Content: Displayed with descriptions and author details matching Image 1 */}
                   <div className="flex flex-col justify-between flex-1">
                     {/* Category Badge */}
-                    <span className="text-[11px] sm:text-xs font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-2 text-left block no-underline hover:no-underline active:no-underline focus:no-underline">
+                    <span className="text-[11px] sm:text-xs font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1.5 text-left block no-underline hover:no-underline active:no-underline focus:no-underline">
                       {article.category}
                     </span>
 
                     {/* Title */}
-                    <h3 className="text-[17px] sm:text-[18px] lg:text-[19px] font-serif font-bold text-[#020618] leading-[1.3] tracking-tight mb-2 text-left group-hover:underline decoration-[#020618] decoration-1 underline-offset-2 transition-all">
+                    <h3 className="text-[17px] sm:text-[18px] lg:text-[19px] font-serif font-bold text-[#020618] leading-[1.3] tracking-tight mb-1.5 text-left group-hover:underline decoration-[#020618] decoration-1 underline-offset-2 transition-all">
                       <Link href={articleUrl} className="hover:text-[#1642D0] transition-colors">
                         {article.title}
                       </Link>
@@ -59,7 +59,7 @@ export const FeaturedGridSection: React.FC = () => {
 
                     {/* Excerpt / Description */}
                     {article.excerpt && (
-                      <p className="text-xs sm:text-[13px] text-slate-600 font-serif font-normal leading-relaxed mb-4 line-clamp-3 text-left flex-1">
+                      <p className="text-xs sm:text-[13px] text-slate-600 font-serif font-normal leading-relaxed mb-3 sm:mb-2.5 line-clamp-3 text-left flex-1">
                         {article.excerpt}
                       </p>
                     )}

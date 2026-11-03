@@ -168,9 +168,6 @@ export default function ArticlePreviewPage() {
             <Eye className="w-3.5 h-3.5" />
             <span>Article Preview</span>
           </div>
-          <span className="text-xs text-slate-300 hidden md:inline">
-            Full-page simulation of your article on the live website.
-          </span>
         </div>
 
         <div className="flex items-center gap-2.5 sm:gap-3">
@@ -181,15 +178,6 @@ export default function ArticlePreviewPage() {
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Back to Editor</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => router.push('/dashboard/writer')}
-            className="px-4 py-1.5 rounded-lg bg-[#EA580C] hover:bg-[#C2410C] text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 shadow-md cursor-pointer"
-          >
-            <Send className="w-3.5 h-3.5" />
-            <span>Go to Dashboard</span>
           </button>
         </div>
       </div>

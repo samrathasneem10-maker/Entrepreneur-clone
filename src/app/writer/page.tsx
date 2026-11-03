@@ -1466,9 +1466,10 @@ function WriterEditorMain() {
 
       const figRect = figure.getBoundingClientRect();
       const editorRect = editorRef.current.getBoundingClientRect();
+      const toolbarWidth = 336;
       setToolbarPosition({
-        top: Math.max(10, figRect.top - editorRect.top - 48),
-        left: Math.max(10, figRect.left - editorRect.left + figRect.width / 2 - 180),
+        top: Math.max(8, figRect.top - editorRect.top - 46),
+        left: Math.max(10, figRect.left - editorRect.left + (figRect.width - toolbarWidth) / 2),
       });
     } else {
       setSelectedImageFigure(null);
@@ -1490,11 +1491,11 @@ function WriterEditorMain() {
     let formattedCredit = '';
     if (rawCredit) {
       if (rawCredit.startsWith('(') && rawCredit.endsWith(')')) {
-        formattedCredit = rawCredit;
+        formattedCredit = rawCredit.toUpperCase();
       } else if (/^photo:\s*/i.test(rawCredit)) {
         formattedCredit = `(${rawCredit.toUpperCase()})`;
       } else {
-        formattedCredit = `(PHOTO: ${rawCredit})`;
+        formattedCredit = `(PHOTO: ${rawCredit.toUpperCase()})`;
       }
     }
 
@@ -1506,9 +1507,9 @@ function WriterEditorMain() {
         figcaption = document.createElement('figcaption');
         fig.appendChild(figcaption);
       }
-      figcaption.className = 'flex items-center justify-between text-xs text-slate-500 mt-1.5 px-0.5 w-full font-sans';
+      figcaption.className = 'flex items-center justify-between text-xs text-slate-500 mt-1 px-0.5 w-full font-sans select-none';
       figcaption.innerHTML = `
-        <span class="image-caption text-left text-slate-600 italic font-normal">${captionSafe}</span>
+        <span class="image-caption text-left text-slate-600 font-normal">${captionSafe}</span>
         <span class="image-credit text-right text-slate-400 font-medium tracking-wide">${formattedCredit}</span>
       `;
     }
@@ -2408,7 +2409,7 @@ function WriterEditorMain() {
                   <div
                     onClick={(e) => e.stopPropagation()}
                     style={{ top: `${toolbarPosition.top}px`, left: `${toolbarPosition.left}px` }}
-                    className="floating-image-toolbar absolute z-30 bg-[#0B132B] text-white px-3 py-1.5 rounded-xl shadow-2xl border border-slate-700 flex items-center gap-2.5 text-xs animate-in fade-in duration-150"
+                    className="floating-image-toolbar absolute z-30 bg-[#0B132B] text-white px-3 py-1.5 rounded-xl shadow-2xl border border-slate-700 flex items-center gap-2.5 text-xs animate-in fade-in duration-150 whitespace-nowrap"
                   >
                     {/* Edit Image Button */}
                     <button
@@ -2799,61 +2800,94 @@ function WriterEditorMain() {
                       )}
                     </div>
 
-                    {/* Bordered Vertically Scrollable Panel with Square Checkboxes */}
-                    <div className="border border-slate-300 rounded-xl bg-white p-3 max-h-56 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-400 space-y-3">
-                      {MAIN_CATEGORIES_20.map((cat) => {
-                        const isCatSelectedInMain = cat.name.trim().toLowerCase() === mainCategory.trim().toLowerCase();
-                        const visibleSubs = cat.subcategories.filter(
-                          (sub) => sub.name.trim().toLowerCase() !== mainCategory.trim().toLowerCase()
-                        );
+                    {/* Bordered Vertically Scrollable Panel with Square Checkboxes: Continuous Unified Sequence */}
+                    <div className="border border-slate-300 rounded-xl bg-white p-3 max-h-56 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-400">
+                      <div className="grid grid-cols-2 gap-x-2.5 gap-y-2">
+                        {MAIN_CATEGORIES_20.map((cat) => {
+                          const isCatSelectedInMain = cat.name.trim().toLowerCase() === mainCategory.trim().toLowerCase();
 
-                        return (
-                          <div key={cat.id} className="border-b border-slate-100 last:border-b-0 pb-2.5 last:pb-0">
-                            {/* Main Category Row */}
-                            {!isCatSelectedInMain ? (
-                              <label className="flex items-center gap-2 text-xs font-medium text-slate-800 cursor-pointer select-none hover:text-[#1642D0]">
-                                <input
-                                  type="checkbox"
-                                  checked={selectedSubCategories.includes(cat.name)}
-                                  onChange={() => handleToggleSubCategory(cat.name)}
-                                  className="w-4 h-4 rounded border-slate-300 text-[#1642D0] focus:ring-[#1642D0]/30 cursor-pointer shrink-0"
-                                />
-                                <span className="text-xs font-medium text-slate-800">{cat.name}</span>
-                              </label>
-                            ) : (
-                              <div className="text-xs font-medium text-slate-400 flex items-center gap-2 py-0.5">
-                                <span>{cat.name}</span>
-                                <span className="text-[10px] text-blue-600 font-normal">(Selected as Main Category)</span>
-                              </div>
-                            )}
+                          return (
+                            <React.Fragment key={cat.id}>
+                              {/* Main Category */}
+                              {!isCatSelectedInMain ? (
+                                <label
+                                  className="flex items-center gap-2 text-xs font-medium text-slate-800 cursor-pointer select-none hover:text-[#1642D0] min-w-0"
+                                  title={cat.name}
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedSubCategories.includes(cat.name)}
+                                    onChange={() => handleToggleSubCategory(cat.name)}
+                                    className="w-4 h-4 rounded border-slate-300 text-[#1642D0] focus:ring-[#1642D0]/30 cursor-pointer shrink-0"
+                                  />
+                                  <span className="truncate text-xs font-medium text-slate-800">
+                                    {cat.name}
+                                  </span>
+                                </label>
+                              ) : (
+                                <label
+                                  className="flex items-center gap-2 text-xs font-medium text-slate-400 cursor-not-allowed select-none min-w-0"
+                                  title={`${cat.name} (Selected as Main Category)`}
+                                >
+                                  <input
+                                    type="checkbox"
+                                    disabled
+                                    checked={false}
+                                    className="w-4 h-4 rounded border-slate-300 text-slate-300 cursor-not-allowed shrink-0"
+                                  />
+                                  <span className="truncate text-xs font-medium text-slate-400">
+                                    {cat.name}
+                                  </span>
+                                </label>
+                              )}
 
-                            {/* Subcategories directly underneath in 2 columns with neat indentation */}
-                            {visibleSubs.length > 0 && (
-                              <div className="grid grid-cols-2 gap-x-3 gap-y-2 pl-4 mt-2">
-                                {visibleSubs.map((sub) => {
-                                  const isChecked = selectedSubCategories.includes(sub.name);
+                              {/* Subcategories directly following in the same continuous grid */}
+                              {cat.subcategories.map((sub) => {
+                                const isSubSelectedInMain = sub.name.trim().toLowerCase() === mainCategory.trim().toLowerCase();
+                                const isChecked = selectedSubCategories.includes(sub.name);
+
+                                if (isSubSelectedInMain) {
                                   return (
                                     <label
                                       key={`${cat.id}-${sub.name}`}
-                                      className="flex items-center gap-2 text-xs font-medium text-slate-800 cursor-pointer select-none hover:text-slate-900 min-w-0"
+                                      className="flex items-center gap-2 text-xs font-medium text-slate-400 cursor-not-allowed select-none min-w-0"
+                                      title={`${sub.name} (Selected as Main Category)`}
                                     >
                                       <input
                                         type="checkbox"
-                                        checked={isChecked}
-                                        onChange={() => handleToggleSubCategory(sub.name)}
-                                        className="w-4 h-4 rounded border-slate-300 text-[#1642D0] focus:ring-[#1642D0]/30 cursor-pointer shrink-0"
+                                        disabled
+                                        checked={false}
+                                        className="w-4 h-4 rounded border-slate-300 text-slate-300 cursor-not-allowed shrink-0"
                                       />
-                                      <span className="truncate text-xs font-medium text-slate-800" title={sub.name}>
+                                      <span className="truncate text-xs font-medium text-slate-400">
                                         {sub.name}
                                       </span>
                                     </label>
                                   );
-                                })}
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
+                                }
+
+                                return (
+                                  <label
+                                    key={`${cat.id}-${sub.name}`}
+                                    className="flex items-center gap-2 text-xs font-medium text-slate-800 cursor-pointer select-none hover:text-[#1642D0] min-w-0"
+                                    title={sub.name}
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={isChecked}
+                                      onChange={() => handleToggleSubCategory(sub.name)}
+                                      className="w-4 h-4 rounded border-slate-300 text-[#1642D0] focus:ring-[#1642D0]/30 cursor-pointer shrink-0"
+                                    />
+                                    <span className="truncate text-xs font-medium text-slate-800">
+                                      {sub.name}
+                                    </span>
+                                  </label>
+                                );
+                              })}
+                            </React.Fragment>
+                          );
+                        })}
+                      </div>
                     </div>
 
                     {/* Counter matching Reference Image */}
@@ -2934,24 +2968,6 @@ function WriterEditorMain() {
                               className="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-hidden focus:border-[#1642D0]"
                             />
                             <Clock className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
-                          </div>
-                        </div>
-
-                        {/* 5. AUTHOR / WRITER */}
-                        <div className="flex flex-col gap-2 pt-2 border-t border-slate-100">
-                          <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                            Author / Writer
-                          </label>
-                          <div className="relative">
-                            <input
-                              type="text"
-                              value={authorName}
-                              onChange={(e) => setAuthorName(e.target.value)}
-                              placeholder="Writer Account"
-                                suppressHydrationWarning
-                              className="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-hidden focus:border-[#1642D0]"
-                            />
-                            <User className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
                           </div>
                         </div>
 
@@ -3070,66 +3086,11 @@ function WriterEditorMain() {
                     />
                   </div>
 
-                  {/* 4. PREVIEW IN SEARCH RESULTS (Google Snippet Card) */}
+                  {/* 4. PREVIEW IN SEARCH RESULTS (Google Snippet Card matching Reference Image 3) */}
                   <div className="flex flex-col gap-2 pt-2 border-t border-slate-100">
-                    <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                      <div className="flex items-center gap-1.5">
-                        <Search className="w-3.5 h-3.5" />
-                        <span>Preview in Search Results</span>
-                      </div>
-
-                      {/* Three-dot menu button with functional actions */}
-                      <div className="relative">
-                        <button
-                          type="button"
-                          onClick={() => setShowPreviewMenu(!showPreviewMenu)}
-                          className="p-1 text-slate-400 hover:text-slate-700 rounded-md hover:bg-slate-100 transition-colors cursor-pointer"
-                          title="Preview options"
-                        >
-                          <MoreVertical className="w-3.5 h-3.5" />
-                        </button>
-                        {showPreviewMenu && (
-                          <div className="absolute right-0 top-full mt-1 w-44 bg-white border border-slate-200 rounded-xl shadow-lg z-20 py-1 text-xs animate-in fade-in zoom-in-95 duration-100">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                navigator.clipboard.writeText(`${metaTitle || title.trim() || 'Your Article Title'} | Washington Times\nhttps://washington-times.com/article/${currentSlug}`);
-                                showToast('Search snippet copied to clipboard!', 'success');
-                                setShowPreviewMenu(false);
-                              }}
-                              className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 flex items-center gap-2 cursor-pointer"
-                            >
-                              <Copy className="w-3.5 h-3.5 text-slate-400" />
-                              <span>Copy Snippet</span>
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                handleAutoGenerateSEO();
-                                setShowPreviewMenu(false);
-                              }}
-                              className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 flex items-center gap-2 cursor-pointer"
-                            >
-                              <Sparkles className="w-3.5 h-3.5 text-[#EA580C]" />
-                              <span>Regenerate SEO</span>
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setIsCardSummaryEdited(false);
-                                setIsFocusKeywordEdited(false);
-                                setIsMetaDescriptionEdited(false);
-                                showToast('Manual SEO overrides reset.', 'success');
-                                setShowPreviewMenu(false);
-                              }}
-                              className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 flex items-center gap-2 cursor-pointer"
-                            >
-                              <RotateCcw className="w-3.5 h-3.5 text-slate-400" />
-                              <span>Reset Overrides</span>
-                            </button>
-                          </div>
-                        )}
-                      </div>
+                    <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      <Search className="w-3.5 h-3.5 text-slate-400" />
+                      <span>Preview in Search Results</span>
                     </div>
 
                     <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex flex-col gap-2">
@@ -3141,22 +3102,26 @@ function WriterEditorMain() {
                           <span className="text-xs font-semibold text-slate-900 leading-none">
                             Washington Times
                           </span>
-                          <span className="text-[10px] text-slate-500 truncate leading-none mt-1">
-                            washington-times.com &rsaquo; arti..
+                          <span className="text-[10px] text-slate-400 truncate leading-none mt-1">
+                            washington-times.com &gt; article &gt; y...
                           </span>
                         </div>
                       </div>
 
                       <div className="text-sm font-semibold text-[#1a0dab] hover:underline cursor-pointer leading-tight truncate">
-                        {metaTitle || (title.trim() ? `${title.trim()} | Washington Times` : 'Your Article Title |...')}
+                        {metaTitle || (title.trim() ? `${title.trim()} |...` : 'Your Article Title |...')}
                       </div>
 
-                      <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                      <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
                         {metaDescription ||
                           cardSummary ||
                           'Add a meta description to control the snippet shown in search results.'}
                       </p>
                     </div>
+
+                    <p className="text-[11px] text-slate-400 leading-relaxed font-normal">
+                      This is how the article can appear on google. Meta description drives the snippet under the link.
+                    </p>
                   </div>
 
                 </div>
@@ -3525,30 +3490,9 @@ function WriterEditorMain() {
                 <Eye className="w-3.5 h-3.5" />
                 <span>Article Preview</span>
               </div>
-              <span className="text-xs text-slate-300 hidden md:inline">
-                Full-page simulation of your article on the live website.
-              </span>
             </div>
 
             <div className="flex items-center gap-2.5 sm:gap-3">
-              <button
-                type="button"
-                onClick={() => {
-                  const data = getPreviewData();
-                  try {
-                    localStorage.setItem('entrepreneur_article_preview', JSON.stringify(data));
-                    window.open('/article/preview', '_blank');
-                  } catch (e) {
-                    console.error(e);
-                  }
-                }}
-                className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 cursor-pointer border border-slate-700 hidden sm:flex"
-                title="Open preview in a separate browser tab"
-              >
-                <ExternalLink className="w-3.5 h-3.5" />
-                <span>Open in New Tab</span>
-              </button>
-
               <button
                 type="button"
                 onClick={handleClosePreview}
@@ -3556,18 +3500,6 @@ function WriterEditorMain() {
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span>Back to Editor</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  handleClosePreview();
-                  handleSubmitForReview();
-                }}
-                className="px-4 py-1.5 rounded-lg bg-[#EA580C] hover:bg-[#C2410C] text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 shadow-md cursor-pointer"
-              >
-                <Send className="w-3.5 h-3.5" />
-                <span>Submit for Review</span>
               </button>
             </div>
           </div>
