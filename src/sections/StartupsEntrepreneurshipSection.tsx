@@ -8,9 +8,9 @@ export const StartupsEntrepreneurshipSection: React.FC = () => {
   const { featured, items } = STARTUPS_ENTREPRENEURSHIP_SECTION;
 
   return (
-    <section className="bg-white pt-5 sm:pt-6 pb-5 sm:pb-6 w-full">
+    <section className="bg-white pt-2 sm:pt-3 pb-5 sm:pb-6 w-full">
       {/* Section Header with consistent border-b matching reference */}
-      <div className="flex items-center justify-between mb-3.5 sm:mb-4.5">
+      <div className="flex items-center justify-between mb-2.5 sm:mb-3">
         <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
           <Link href="/topic/startups-entrepreneurship" className="hover:text-[#1642D0] transition-colors no-underline hover:no-underline active:no-underline focus:no-underline">
             Startups &amp; Entrepreneurship

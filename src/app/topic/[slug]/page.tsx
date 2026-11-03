@@ -856,7 +856,7 @@ export default function DynamicTopicPage() {
       <Header />
 
       {/* Breadcrumb Bar */}
-      <div className="bg-white py-2.5 px-4 sm:px-6 lg:px-8 xl:px-10 text-xs text-slate-600 font-sans">
+      <div className="bg-white py-1.5 px-4 sm:px-6 lg:px-8 xl:px-10 text-xs text-slate-600 font-sans">
         <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 flex items-center gap-2 overflow-x-auto no-scrollbar">
           <Link href="/" className="hover:text-[#1642D0] transition-colors shrink-0 inline-flex items-center gap-1.5 font-medium">
             <Home className="w-3.5 h-3.5 text-slate-500 hover:text-[#1642D0]" />
@@ -877,21 +877,21 @@ export default function DynamicTopicPage() {
         </div>
       </div>
 
-      {/* Category Header - Centered heading with blue category element and underline removed */}
-      <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pt-4 pb-2 text-center">
-        <h1 className="text-2xl sm:text-3xl lg:text-[32px] font-serif font-black text-[#020618] tracking-tight my-0.5 text-center">
+      {/* Category Header - Centered heading, compact spacing matching Reference Image 2 */}
+      <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pt-1 pb-1 lg:pt-0.5 lg:pb-1 text-center">
+        <h1 className="text-2xl sm:text-3xl lg:text-[30px] xl:text-[32px] font-serif font-black text-[#020618] tracking-tight my-0 text-center">
           {displayTitle}
         </h1>
       </div>
 
       {/* 2-Column Section: 1 Featured Article on Left & 2 Stacked Articles on Right (Applied across all categories with synchronized vertical alignment) */}
-      <section className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pt-2 pb-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-stretch">
+      <section className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pt-1 lg:pt-1.5 pb-4 lg:pb-5 2xl:pb-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-7 xl:gap-9 2xl:gap-10 items-stretch">
           
           {/* Left Column: 1 Featured Article - flex-col justify-between to anchor description at bottom */}
           <article className="group flex flex-col justify-between w-full h-full text-left">
             <div className="flex flex-col">
-              <div className="w-full aspect-[16/10] sm:aspect-[16/9.5] overflow-hidden bg-slate-100 mb-3.5 border border-slate-200/80 rounded-none shadow-2xs flex-shrink-0">
+              <div className="w-full aspect-[16/10] sm:aspect-[16/9.5] lg:aspect-[16/9.2] lg:max-h-[250px] xl:max-h-[275px] 2xl:max-h-none overflow-hidden bg-slate-100 mb-2.5 lg:mb-3 border border-slate-200/80 rounded-none shadow-2xs flex-shrink-0">
                 <Link href={heroFeatured.link} className="block w-full h-full cursor-pointer">
                   <img
                     src={heroFeatured.image}
@@ -900,26 +900,26 @@ export default function DynamicTopicPage() {
                   />
                 </Link>
               </div>
-              <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-1.5 block">
+              <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-1 lg:mb-1.5 block">
                 {heroFeatured.category}
               </span>
-              <h2 className="font-serif font-bold text-xl sm:text-2xl lg:text-[25px] xl:text-[27px] tracking-tight text-[#020618] leading-[1.25] group-hover:underline decoration-1 underline-offset-2 my-1">
+              <h2 className="font-serif font-bold text-xl sm:text-2xl lg:text-[21px] xl:text-[24px] 2xl:text-[27px] tracking-tight text-[#020618] leading-[1.25] group-hover:underline decoration-1 underline-offset-2 my-0.5 lg:my-1">
                 <Link href={heroFeatured.link} className="hover:text-[#1642D0] transition-colors">
                   {heroFeatured.title}
                 </Link>
               </h2>
             </div>
-            <p className="font-serif text-slate-600 sm:text-slate-700 text-sm sm:text-base lg:text-[15px] leading-relaxed mt-2 my-0 w-full">
+            <p className="font-serif text-slate-600 sm:text-slate-700 text-sm sm:text-base lg:text-[13.5px] xl:text-[14.5px] 2xl:text-[15px] leading-relaxed mt-1.5 lg:mt-2 my-0 w-full line-clamp-2 lg:line-clamp-3">
               {heroFeatured.description}
             </p>
           </article>
 
-          {/* Right Column: 2 Stacked Articles - justify-between h-full with enlarged image height matching Left Column alignment */}
-          <div className="flex flex-col justify-between h-full w-full gap-6 sm:gap-7 lg:gap-8">
+          {/* Right Column: 2 Stacked Articles - calibrated for laptop resolutions matching Reference Image 2 */}
+          <div className="flex flex-col justify-between h-full w-full gap-4 sm:gap-5 lg:gap-3.5 xl:gap-4.5 2xl:gap-8">
             
             {/* Right Column - Article 1 (Top Level) */}
-            <article className="group flex flex-col sm:flex-row gap-4 sm:gap-5 items-start text-left w-full">
-              <div className="w-full sm:w-[280px] md:w-[310px] lg:w-[330px] xl:w-[350px] aspect-[4/3] shrink-0 overflow-hidden bg-slate-100 border border-slate-200/80 rounded-none shadow-2xs">
+            <article className="group flex flex-col sm:flex-row gap-3.5 sm:gap-4 lg:gap-3.5 xl:gap-4.5 items-start text-left w-full">
+              <div className="w-full sm:w-[260px] md:w-[280px] lg:w-[200px] xl:w-[230px] 2xl:w-[330px] aspect-[16/10] sm:aspect-[4/3] lg:aspect-[16/11] xl:aspect-[16/10.5] 2xl:aspect-[4/3] shrink-0 overflow-hidden bg-slate-100 border border-slate-200/80 rounded-none shadow-2xs">
                 <Link href={heroSub1.link} className="block w-full h-full cursor-pointer">
                   <img
                     src={heroSub1.image}
@@ -929,23 +929,23 @@ export default function DynamicTopicPage() {
                 </Link>
               </div>
               <div className="flex-1 min-w-0">
-                <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-1 block">
+                <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-0.5 lg:mb-1 block">
                   {heroSub1.category}
                 </span>
-                <h3 className="font-serif font-bold text-[16px] sm:text-[17px] lg:text-[18px] tracking-tight text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-1">
+                <h3 className="font-serif font-bold text-[15px] sm:text-[16px] lg:text-[15px] xl:text-[16.5px] 2xl:text-[18px] tracking-tight text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-0.5 lg:my-1 line-clamp-2">
                   <Link href={heroSub1.link} className="hover:text-[#1642D0] transition-colors">
                     {heroSub1.title}
                   </Link>
                 </h3>
-                <p className="font-serif text-slate-600 text-xs sm:text-[13px] lg:text-[13.5px] leading-relaxed mt-1.5 my-0 line-clamp-3">
+                <p className="font-serif text-slate-600 text-xs sm:text-[13px] lg:text-[12px] xl:text-[13px] 2xl:text-[13.5px] leading-relaxed mt-1 my-0 line-clamp-3">
                   {heroSub1.description}
                 </p>
               </div>
             </article>
 
-            {/* Right Column - Article 2 (Bottom Level - clean top alignment matching Article 1 with synchronized bottom boundary) */}
-            <article className="group flex flex-col sm:flex-row gap-4 sm:gap-5 items-start text-left w-full">
-              <div className="w-full sm:w-[280px] md:w-[310px] lg:w-[330px] xl:w-[350px] aspect-[4/3] shrink-0 overflow-hidden bg-slate-100 border border-slate-200/80 rounded-none shadow-2xs">
+            {/* Right Column - Article 2 (Bottom Level - clean alignment matching Reference Image 2) */}
+            <article className="group flex flex-col sm:flex-row gap-3.5 sm:gap-4 lg:gap-3.5 xl:gap-4.5 items-start text-left w-full">
+              <div className="w-full sm:w-[260px] md:w-[280px] lg:w-[200px] xl:w-[230px] 2xl:w-[330px] aspect-[16/10] sm:aspect-[4/3] lg:aspect-[16/11] xl:aspect-[16/10.5] 2xl:aspect-[4/3] shrink-0 overflow-hidden bg-slate-100 border border-slate-200/80 rounded-none shadow-2xs">
                 <Link href={heroSub2.link} className="block w-full h-full cursor-pointer">
                   <img
                     src={heroSub2.image}
@@ -955,15 +955,15 @@ export default function DynamicTopicPage() {
                 </Link>
               </div>
               <div className="flex-1 min-w-0">
-                <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-1 block">
+                <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-0.5 lg:mb-1 block">
                   {heroSub2.category}
                 </span>
-                <h3 className="font-serif font-bold text-[16px] sm:text-[17px] lg:text-[18px] tracking-tight text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-1">
+                <h3 className="font-serif font-bold text-[15px] sm:text-[16px] lg:text-[15px] xl:text-[16.5px] 2xl:text-[18px] tracking-tight text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-0.5 lg:my-1 line-clamp-2">
                   <Link href={heroSub2.link} className="hover:text-[#1642D0] transition-colors">
                     {heroSub2.title}
                   </Link>
                 </h3>
-                <p className="font-serif text-slate-600 text-xs sm:text-[13px] lg:text-[13.5px] leading-relaxed mt-1.5 my-0 line-clamp-3">
+                <p className="font-serif text-slate-600 text-xs sm:text-[13px] lg:text-[12px] xl:text-[13px] 2xl:text-[13.5px] leading-relaxed mt-1 my-0 line-clamp-3">
                   {heroSub2.description}
                 </p>
               </div>

@@ -31,11 +31,7 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
     if (!pathname) return;
     if (pathname === '/') {
       try {
-        const saved = sessionStorage.getItem('activeNavCategory');
-        if (saved) {
-          setActiveCategory(saved);
-          return;
-        }
+        sessionStorage.removeItem('activeNavCategory');
       } catch (_) {}
       setActiveCategory('');
       return;
