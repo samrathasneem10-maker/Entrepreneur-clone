@@ -12,6 +12,7 @@ import {
   ArrowLeft,
   Eye,
   Send,
+  X,
 } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthContext';
 
@@ -161,25 +162,22 @@ export default function ArticlePreviewPage() {
 
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans antialiased">
-      {/* Top Sticky Preview Banner */}
-      <div className="sticky top-0 z-50 bg-slate-900 text-white px-4 sm:px-6 py-2.5 flex items-center justify-between shadow-md border-b border-slate-800">
+      {/* Top Sticky Preview Banner matching Reference Image 3 */}
+      <div className="sticky top-0 z-50 bg-[#0B132B] text-white px-4 sm:px-6 py-2.5 flex items-center justify-between shadow-md border-b border-slate-800">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-[#EA580C] text-white text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-md shadow-xs">
-            <Eye className="w-3.5 h-3.5" />
-            <span>Article Preview</span>
-          </div>
+          <span className="bg-[#EA580C] text-slate-950 text-[10px] sm:text-[11px] font-black uppercase tracking-wider px-2 py-0.5 rounded-sm select-none shadow-xs">
+            PREVIEW MODE
+          </span>
         </div>
 
-        <div className="flex items-center gap-2.5 sm:gap-3">
-          <button
-            type="button"
-            onClick={() => router.push('/writer')}
-            className="px-3.5 sm:px-4 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 cursor-pointer border border-slate-700 shadow-2xs"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Back to Editor</span>
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => router.push('/writer')}
+          className="text-white hover:text-slate-300 text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 cursor-pointer select-none"
+        >
+          <X className="w-3.5 h-3.5" />
+          <span>EXIT PREVIEW</span>
+        </button>
       </div>
 
       {/* Main Container matching src/app/article/[id]/page.tsx (Header removed on Preview Page) */}

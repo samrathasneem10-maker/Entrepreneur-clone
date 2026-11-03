@@ -2585,128 +2585,6 @@ function WriterEditorMain() {
               id="article-settings-sidebar"
               className="w-full lg:w-[320px] xl:w-[335px] shrink-0 relative bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs flex flex-col gap-4 sticky top-20 transition-all duration-300 text-slate-800 min-h-[920px] lg:min-h-[960px] self-start animate-in fade-in zoom-in-95 duration-200"
             >
-              {/* IMAGE SETTINGS PANEL (Visible when an article image is selected) */}
-              {selectedImageFigure && (
-                <div className="border border-orange-200/90 rounded-xl overflow-hidden bg-white shadow-2xs animate-in fade-in duration-150">
-                  <div className="flex items-center justify-between p-3 bg-orange-50/80 border-b border-orange-100">
-                    <div className="flex items-center gap-2">
-                      <ImageIcon className="w-4 h-4 text-[#EA580C]" />
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-orange-950">
-                        Image Settings
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedImageFigure(null);
-                        setToolbarPosition(null);
-                      }}
-                      className="text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
-                      title="Close image settings"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-
-                  <div className="p-3.5 flex flex-col gap-2.5">
-                    {/* Compact Image Caption & Image Credit / Source */}
-                    <div className="flex flex-col gap-2">
-                      {/* Image Caption */}
-                      <div className="flex flex-col gap-1">
-                        <label className="text-[11px] font-bold uppercase tracking-wider text-slate-700">
-                          Image Caption
-                        </label>
-                        <input
-                          type="text"
-                          value={activeImageCaption}
-                          onChange={(e) => handleSidebarCaptionChange(e.target.value)}
-                          placeholder="Enter caption..."
-                          className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#1642D0] focus:bg-white transition-all"
-                        />
-                      </div>
-
-                      {/* Image Credit / Source (Moved closer together) */}
-                      <div className="flex flex-col gap-1">
-                        <label className="text-[11px] font-bold uppercase tracking-wider text-slate-700">
-                          Image Credit / Source
-                        </label>
-                        <input
-                          type="text"
-                          value={activeImageCredit}
-                          onChange={(e) => handleSidebarCreditChange(e.target.value)}
-                          placeholder="e.g. Reuters / Photographer"
-                          className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#1642D0] focus:bg-white transition-all"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Size & Alignment Controls */}
-                    <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 text-xs">
-                      <div>
-                        <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
-                          Size
-                        </span>
-                        <div className="flex items-center rounded-lg border border-slate-200 overflow-hidden">
-                          {(['small', 'medium', 'full'] as const).map((s) => (
-                            <button
-                              key={s}
-                              type="button"
-                              onClick={() => handleUpdateImageSize(s)}
-                              className={`flex-1 py-1 text-[10px] font-bold uppercase transition-colors cursor-pointer ${
-                                (selectedImageFigure?.dataset.size || 'medium') === s
-                                  ? 'bg-[#1642D0] text-white'
-                                  : 'bg-white text-slate-600 hover:bg-slate-50'
-                              }`}
-                            >
-                              {s === 'small' ? 'S' : s === 'medium' ? 'M' : 'Full'}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div>
-                        <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
-                          Align
-                        </span>
-                        <div className="flex items-center rounded-lg border border-slate-200 overflow-hidden">
-                          {(['left', 'center', 'right'] as const).map((a) => (
-                            <button
-                              key={a}
-                              type="button"
-                              onClick={() => handleUpdateImageAlignment(a)}
-                              className={`flex-1 py-1 text-[10px] font-bold uppercase transition-colors cursor-pointer ${
-                                (selectedImageFigure?.dataset.align || 'center') === a
-                                  ? 'bg-[#1642D0] text-white'
-                                  : 'bg-white text-slate-600 hover:bg-slate-50'
-                              }`}
-                            >
-                              {a.slice(0, 1).toUpperCase()}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between pt-1 border-t border-slate-100">
-                      <button
-                        type="button"
-                        onClick={handleEditSelectedImage}
-                        className="text-[11px] font-semibold text-[#1642D0] hover:underline cursor-pointer"
-                      >
-                        More Options...
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleDeleteSelectedImage}
-                        className="text-[11px] font-semibold text-rose-600 hover:underline cursor-pointer"
-                      >
-                        Remove Image
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {/* Sidebar Header: ⚙️ ARTICLE SETTINGS */}
               <div className="flex items-center gap-2 text-slate-900 border-b border-slate-100 pb-2.5">
                 <Settings className="w-4 h-4 text-slate-600" />
@@ -3483,25 +3361,22 @@ function WriterEditorMain() {
       {showPreviewModal && (
         <div className="fixed inset-0 z-50 bg-white overflow-y-auto text-slate-900 animate-in fade-in duration-150">
           
-          {/* Top Sticky Preview Banner */}
-          <div className="sticky top-0 z-50 bg-slate-900 text-white px-4 sm:px-6 py-2.5 flex items-center justify-between shadow-md border-b border-slate-800">
+          {/* Top Sticky Preview Banner matching Reference Image 3 */}
+          <div className="sticky top-0 z-50 bg-[#0B132B] text-white px-4 sm:px-6 py-2.5 flex items-center justify-between shadow-md border-b border-slate-800">
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 bg-[#EA580C] text-white text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-md shadow-xs">
-                <Eye className="w-3.5 h-3.5" />
-                <span>Article Preview</span>
-              </div>
+              <span className="bg-[#EA580C] text-slate-950 text-[10px] sm:text-[11px] font-black uppercase tracking-wider px-2 py-0.5 rounded-sm select-none shadow-xs">
+                PREVIEW MODE
+              </span>
             </div>
 
-            <div className="flex items-center gap-2.5 sm:gap-3">
-              <button
-                type="button"
-                onClick={handleClosePreview}
-                className="px-3.5 sm:px-4 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 cursor-pointer border border-slate-700 shadow-2xs"
-              >
-                <ArrowLeft className="w-3.5 h-3.5" />
-                <span>Back to Editor</span>
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={handleClosePreview}
+              className="text-white hover:text-slate-300 text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 cursor-pointer select-none"
+            >
+              <X className="w-3.5 h-3.5" />
+              <span>EXIT PREVIEW</span>
+            </button>
           </div>
 
           {/* Main Article Container matching src/app/article/[id]/page.tsx (Header removed on Preview Page) */}
