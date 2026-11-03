@@ -413,6 +413,7 @@ function WriterEditorMain() {
   // Floating Image Toolbar State (Reference Image 4)
   const [selectedImageFigure, setSelectedImageFigure] = useState<HTMLElement | null>(null);
   const [toolbarPosition, setToolbarPosition] = useState<{ top: number; left: number } | null>(null);
+  const [imageBounds, setImageBounds] = useState<{ top: number; left: number; width: number; height: number } | null>(null);
   const [selectedImageProps, setSelectedImageProps] = useState<{
     src: string;
     alt: string;
@@ -1464,21 +1465,48 @@ function WriterEditorMain() {
         alignment: align,
       });
 
-      const figRect = figure.getBoundingClientRect();
+      const targetEl = figure;
+      const targetRect = targetEl.getBoundingClientRect();
       const editorRect = editorRef.current.getBoundingClientRect();
-      const toolbarWidth = 336;
+      const bounds = {
+        top: targetRect.top - editorRect.top,
+        left: targetRect.left - editorRect.left,
+        width: targetRect.width,
+        height: targetRect.height,
+      };
+      setImageBounds(bounds);
+
       setToolbarPosition({
-        top: Math.max(8, figRect.top - editorRect.top - 46),
-        left: Math.max(10, figRect.left - editorRect.left + (figRect.width - toolbarWidth) / 2),
+        top: Math.max(8, bounds.top - 46),
+        left: Math.max(8, Math.min(bounds.left, editorRect.width - 340)),
       });
     } else {
       setSelectedImageFigure(null);
+      setImageBounds(null);
       setToolbarPosition(null);
       setSelectedImageProps(null);
       setActiveImageCaption('');
       setActiveImageCredit('');
     }
     updateActiveFormats();
+  };
+
+  const updateImageSelectionBounds = (fig: HTMLElement) => {
+    if (!editorRef.current) return;
+    const targetRect = fig.getBoundingClientRect();
+    const editorRect = editorRef.current.getBoundingClientRect();
+    const bounds = {
+      top: targetRect.top - editorRect.top,
+      left: targetRect.left - editorRect.left,
+      width: targetRect.width,
+      height: targetRect.height,
+    };
+    setImageBounds(bounds);
+
+    setToolbarPosition({
+      top: Math.max(8, bounds.top - 46),
+      left: Math.max(8, Math.min(bounds.left, editorRect.width - 340)),
+    });
   };
 
   const updateFigureCaptionAndCredit = (fig: HTMLElement, captionText: string, creditText: string) => {
@@ -1536,16 +1564,20 @@ function WriterEditorMain() {
     if (!selectedImageFigure) return;
     selectedImageFigure.dataset.size = size;
 
-    selectedImageFigure.classList.remove('max-w-[250px]', 'max-w-[450px]', 'w-full', 'max-w-none');
+    selectedImageFigure.classList.remove('max-w-[250px]', 'max-w-[450px]', 'w-full', 'max-w-none', 'w-fit');
     if (size === 'small') {
-      selectedImageFigure.classList.add('max-w-[250px]', 'w-full');
+      selectedImageFigure.classList.add('max-w-[250px]', 'w-fit');
     } else if (size === 'medium') {
-      selectedImageFigure.classList.add('max-w-[450px]', 'w-full');
+      selectedImageFigure.classList.add('max-w-[450px]', 'w-fit');
     } else {
       selectedImageFigure.classList.add('w-full', 'max-w-none');
     }
 
+    setSelectedImageProps((prev) => (prev ? { ...prev, size } : null));
     handleEditorInput();
+    setTimeout(() => {
+      if (selectedImageFigure) updateImageSelectionBounds(selectedImageFigure);
+    }, 30);
     showToast(`Image size updated to ${size.toUpperCase()}`);
   };
 
@@ -1564,36 +1596,58 @@ function WriterEditorMain() {
       'text-center',
       'clear-both',
       'my-6',
-      'block'
+      'block',
+      'w-fit'
     );
 
     if (alignment === 'left') {
-      selectedImageFigure.classList.add('float-left', 'mr-6', 'mb-4', 'my-2');
+      selectedImageFigure.classList.add('float-left', 'mr-6', 'mb-4', 'my-2', 'w-fit');
     } else if (alignment === 'right') {
-      selectedImageFigure.classList.add('float-right', 'ml-6', 'mb-4', 'my-2');
+      selectedImageFigure.classList.add('float-right', 'ml-6', 'mb-4', 'my-2', 'w-fit');
     } else if (alignment === 'no_wrap') {
-      selectedImageFigure.classList.add('my-6', 'block', 'clear-both');
+      selectedImageFigure.classList.add('my-6', 'block', 'clear-both', 'w-fit');
     } else {
-      selectedImageFigure.classList.add('my-6', 'block', 'clear-both', 'mx-auto', 'text-center');
+      selectedImageFigure.classList.add('my-6', 'block', 'clear-both', 'mx-auto', 'text-center', 'w-fit');
     }
 
+    setSelectedImageProps((prev) => (prev ? { ...prev, alignment } : null));
     handleEditorInput();
+    setTimeout(() => {
+      if (selectedImageFigure) updateImageSelectionBounds(selectedImageFigure);
+    }, 30);
     showToast(`Image alignment updated to ${alignment}`);
   };
 
   const handleMoveImage = (direction: 'up' | 'down') => {
-    if (!selectedImageFigure) return;
+    if (!selectedImageFigure || !selectedImageFigure.parentNode) return;
+    const parent = selectedImageFigure.parentNode;
     if (direction === 'up') {
-      const prev = selectedImageFigure.previousElementSibling;
-      if (prev) {
-        selectedImageFigure.parentNode?.insertBefore(selectedImageFigure, prev);
+      let target = selectedImageFigure.previousElementSibling;
+      while (target && target.tagName === 'P' && !target.textContent?.trim() && target.previousElementSibling) {
+        target = target.previousElementSibling;
+      }
+      if (target) {
+        parent.insertBefore(selectedImageFigure, target);
         handleEditorInput();
+        setTimeout(() => {
+          if (selectedImageFigure) updateImageSelectionBounds(selectedImageFigure);
+        }, 50);
       }
     } else {
-      const next = selectedImageFigure.nextElementSibling;
-      if (next) {
-        selectedImageFigure.parentNode?.insertBefore(next, selectedImageFigure);
+      let target = selectedImageFigure.nextElementSibling;
+      while (target && target.tagName === 'P' && !target.textContent?.trim() && target.nextElementSibling) {
+        target = target.nextElementSibling;
+      }
+      if (target) {
+        if (target.nextSibling) {
+          parent.insertBefore(selectedImageFigure, target.nextSibling);
+        } else {
+          parent.appendChild(selectedImageFigure);
+        }
         handleEditorInput();
+        setTimeout(() => {
+          if (selectedImageFigure) updateImageSelectionBounds(selectedImageFigure);
+        }, 50);
       }
     }
   };
@@ -1602,6 +1656,7 @@ function WriterEditorMain() {
     if (!selectedImageFigure) return;
     selectedImageFigure.remove();
     setSelectedImageFigure(null);
+    setImageBounds(null);
     setToolbarPosition(null);
     setSelectedImageProps(null);
     handleEditorInput();
@@ -1733,20 +1788,20 @@ function WriterEditorMain() {
       return;
     }
 
-    let sizeClass = 'max-w-[450px] w-full';
+    let sizeClass = 'max-w-[450px] w-fit';
     if (imageSize === 'small') {
-      sizeClass = 'max-w-[250px] w-full';
+      sizeClass = 'max-w-[250px] w-fit';
     } else if (imageSize === 'full') {
       sizeClass = 'w-full max-w-none';
     }
 
-    let alignClass = 'my-6 block clear-both mx-auto text-center';
+    let alignClass = 'my-6 block clear-both mx-auto text-center w-fit';
     if (imageAlignment === 'left') {
-      alignClass = 'float-left mr-6 mb-4 my-2 text-left';
+      alignClass = 'float-left mr-6 mb-4 my-2 text-left w-fit';
     } else if (imageAlignment === 'right') {
-      alignClass = 'float-right ml-6 mb-4 my-2 text-right';
+      alignClass = 'float-right ml-6 mb-4 my-2 text-right w-fit';
     } else if (imageAlignment === 'no_wrap') {
-      alignClass = 'my-6 block clear-both text-left';
+      alignClass = 'my-6 block clear-both text-left w-fit';
     }
 
     const captionSafe = imageCaption.trim().replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -1767,8 +1822,8 @@ function WriterEditorMain() {
     const altSafe = (captionSafe || imageKeywords.join(', ') || title.trim() || 'Article Image').replace(/"/g, '&quot;');
 
     const captionMarkup = (captionSafe || formattedCredit)
-      ? `<figcaption class="flex items-center justify-between text-xs text-slate-500 mt-2 px-0.5 w-full font-sans">
-          <span class="image-caption text-left text-slate-600 italic font-normal">${captionSafe}</span>
+      ? `<figcaption class="flex items-center justify-between text-xs text-slate-500 mt-0.5 px-0.5 w-full font-sans select-none">
+          <span class="image-caption text-left text-slate-600 font-normal">${captionSafe}</span>
           <span class="image-credit text-right text-slate-400 font-medium tracking-wide">${formattedCredit}</span>
         </figcaption>`
       : '';
@@ -1792,9 +1847,9 @@ function WriterEditorMain() {
       const figcaption = targetFigure.querySelector('figcaption');
       if (figcaption) {
         if (captionMarkup) {
-          figcaption.className = 'flex items-center justify-between text-xs text-slate-500 mt-2 px-0.5 w-full font-sans';
+          figcaption.className = 'flex items-center justify-between text-xs text-slate-500 mt-0.5 px-0.5 w-full font-sans select-none';
           figcaption.innerHTML = `
-            <span class="image-caption text-left text-slate-600 italic font-normal">${captionSafe}</span>
+            <span class="image-caption text-left text-slate-600 font-normal">${captionSafe}</span>
             <span class="image-credit text-right text-slate-400 font-medium tracking-wide">${formattedCredit}</span>
           `;
         } else {
@@ -2404,6 +2459,24 @@ function WriterEditorMain() {
               {/* Rich Body Content Area: White canvas with floating image toolbar on image click */}
               <div className="relative flex-1 min-h-[480px] flex flex-col" onClick={handleEditorClick}>
                 
+                {/* Blue Selection Box with 4 Corner Handles matching Reference Image 4 */}
+                {selectedImageFigure && imageBounds && (
+                  <div
+                    className="pointer-events-none absolute z-20 border-2 border-blue-500 rounded-xs"
+                    style={{
+                      top: `${imageBounds.top}px`,
+                      left: `${imageBounds.left}px`,
+                      width: `${imageBounds.width}px`,
+                      height: `${imageBounds.height}px`,
+                    }}
+                  >
+                    <div className="absolute -top-1.5 -left-1.5 w-3 h-3 bg-white border-2 border-blue-500 rounded-full shadow-2xs" />
+                    <div className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-white border-2 border-blue-500 rounded-full shadow-2xs" />
+                    <div className="absolute -bottom-1.5 -left-1.5 w-3 h-3 bg-white border-2 border-blue-500 rounded-full shadow-2xs" />
+                    <div className="absolute -bottom-1.5 -right-1.5 w-3 h-3 bg-white border-2 border-blue-500 rounded-full shadow-2xs" />
+                  </div>
+                )}
+
                 {/* Floating Image Toolbar matching Reference Image 4 */}
                 {selectedImageFigure && toolbarPosition && (
                   <div
@@ -2424,7 +2497,7 @@ function WriterEditorMain() {
 
                     {/* Size Selector */}
                     <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 select-none">
-                      Size
+                      SIZE
                     </span>
                     <div className="flex items-center gap-1 font-bold text-xs">
                       <button
@@ -2464,7 +2537,9 @@ function WriterEditorMain() {
                         type="button"
                         onClick={() => handleUpdateImageAlignment('left')}
                         title="Left (Wrap Text Right)"
-                        className="p-1 text-slate-300 hover:text-white cursor-pointer transition-colors"
+                        className={`p-1 cursor-pointer transition-colors rounded ${
+                          selectedImageProps?.alignment === 'left' ? 'text-[#EA580C] bg-white/10' : 'text-slate-300 hover:text-white'
+                        }`}
                       >
                         <AlignLeft className="w-3.5 h-3.5" />
                       </button>
@@ -2472,7 +2547,9 @@ function WriterEditorMain() {
                         type="button"
                         onClick={() => handleUpdateImageAlignment('center')}
                         title="Center (No Wrap)"
-                        className="p-1 text-slate-300 hover:text-white cursor-pointer transition-colors"
+                        className={`p-1 cursor-pointer transition-colors rounded ${
+                          selectedImageProps?.alignment === 'center' ? 'text-[#EA580C] bg-white/10' : 'text-slate-300 hover:text-white'
+                        }`}
                       >
                         <AlignCenter className="w-3.5 h-3.5" />
                       </button>
@@ -2480,7 +2557,9 @@ function WriterEditorMain() {
                         type="button"
                         onClick={() => handleUpdateImageAlignment('right')}
                         title="Right (Wrap Text Left)"
-                        className="p-1 text-slate-300 hover:text-white cursor-pointer transition-colors"
+                        className={`p-1 cursor-pointer transition-colors rounded ${
+                          selectedImageProps?.alignment === 'right' ? 'text-[#EA580C] bg-white/10' : 'text-slate-300 hover:text-white'
+                        }`}
                       >
                         <AlignRight className="w-3.5 h-3.5" />
                       </button>
@@ -3011,13 +3090,13 @@ function WriterEditorMain() {
         </div>
       </main>
 
-      {/* 3. INSERT / EDIT ARTICLE IMAGE POPUP MODAL */}
+      {/* 3. INSERT / EDIT ARTICLE IMAGE POPUP MODAL - Compact Reference Format */}
       {showImageModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl max-w-xl w-full p-6 sm:p-7 shadow-2xl border border-slate-200 flex flex-col gap-5 my-8 animate-in fade-in zoom-in-95 duration-150 text-slate-800">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-4 sm:p-5 shadow-2xl border border-slate-200 flex flex-col gap-2.5 my-3 max-h-[92vh] overflow-y-auto scrollbar-thin text-slate-800">
             
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-2">
               <div className="flex items-center gap-2">
                 <ImageIcon className="w-5 h-5 text-[#EA580C]" />
                 <h3 className="text-base font-serif font-bold text-slate-900">
@@ -3037,32 +3116,54 @@ function WriterEditorMain() {
               </button>
             </div>
 
+            {/* Active Image Selected Card matching Reference Image 2 */}
+            {modalImageUrl && (
+              <div className="bg-slate-50 border border-slate-200/90 rounded-xl p-2.5 flex items-center gap-3">
+                <img
+                  src={modalImageUrl}
+                  alt="Selected preview"
+                  className="w-12 h-12 rounded-lg object-cover border border-slate-200 bg-white shrink-0"
+                  onError={(e) => {
+                    (e.target as HTMLElement).style.display = 'none';
+                  }}
+                />
+                <div className="flex flex-col min-w-0">
+                  <span className="font-bold text-xs text-slate-800 truncate block">
+                    {uploadedFileName || modalImageUrl.split('/').pop()?.split('?')[0] || 'Image.jpg'}
+                  </span>
+                  <span className="text-[11px] font-semibold text-emerald-600 flex items-center gap-1 mt-0.5">
+                    <span>✓</span> Active Image Selected
+                  </span>
+                </div>
+              </div>
+            )}
+
             {/* PASTE IMAGE URL */}
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1">
               <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                Paste Image URL
+                PASTE IMAGE URL
               </label>
               <input
                 type="text"
                 value={modalImageUrl}
                 onChange={(e) => setModalImageUrl(e.target.value)}
                 placeholder="https://images.unsplash.com/photo-..."
-                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#1642D0]"
+                className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#EA580C]"
               />
             </div>
 
             {/* Divider: OR UPLOAD FILE */}
-            <div className="relative flex items-center justify-center my-1">
+            <div className="relative flex items-center justify-center my-0.5">
               <div className="border-t border-slate-200 w-full" />
-              <span className="bg-white px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 absolute">
-                Or Upload File
+              <span className="bg-white px-2.5 text-[9.5px] font-bold uppercase tracking-wider text-slate-400 absolute">
+                OR UPLOAD FILE
               </span>
             </div>
 
             {/* CHOOSE COMPUTER FILE */}
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1">
               <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                Choose Computer File
+                CHOOSE COMPUTER FILE
               </label>
               <input
                 type="file"
@@ -3073,10 +3174,10 @@ function WriterEditorMain() {
               />
               <div
                 onClick={() => modalFileInputRef.current?.click()}
-                className="w-full py-2.5 px-3.5 border border-dashed border-slate-300 rounded-xl bg-slate-50/50 hover:bg-slate-50 hover:border-[#1642D0] cursor-pointer flex items-center justify-between text-xs text-slate-600 transition-colors"
+                className="w-full py-1.5 px-3 border border-dashed border-slate-300 rounded-lg bg-slate-50/50 hover:bg-slate-50 hover:border-[#EA580C] cursor-pointer flex items-center justify-between text-xs text-slate-600 transition-colors"
               >
                 <div className="flex items-center gap-2 truncate">
-                  <span className="font-semibold text-slate-700 bg-white px-2.5 py-1 rounded border border-slate-200 shadow-2xs shrink-0">
+                  <span className="font-semibold text-slate-700 bg-white px-2 py-0.5 rounded border border-slate-200 shadow-2xs shrink-0 text-xs">
                     Choose file
                   </span>
                   <span className="text-slate-500 truncate text-xs">
@@ -3086,36 +3187,30 @@ function WriterEditorMain() {
                 <Upload className="w-4 h-4 text-slate-400 shrink-0" />
               </div>
 
-              {/* Quick Picks */}
-              <div className="flex items-center gap-2 pt-1 overflow-x-auto no-scrollbar">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 shrink-0">
-                  Quick Picks:
-                </span>
-                {PRESET_EDITORIAL_IMAGES.map((preset) => (
-                  <button
-                    key={preset.url}
-                    type="button"
-                    onClick={() => {
-                      setModalImageUrl(preset.url);
-                      setUploadedFileName(preset.name);
-                    }}
-                    className="text-[11px] font-medium text-slate-600 hover:text-[#EA580C] bg-slate-100 hover:bg-orange-50 px-2 py-0.5 rounded border border-slate-200 shrink-0 cursor-pointer transition-colors"
-                  >
-                    {preset.name}
-                  </button>
-                ))}
-              </div>
+              {/* Compressed & Uploaded to Cloud Confirmation matching Reference Image 2 */}
+              {uploadedFileName && (
+                <div className="flex flex-col gap-0.5 pt-1">
+                  <span className="text-[11px] font-bold text-emerald-600 flex items-center gap-1">
+                    ✓ FILE &quot;{uploadedFileName.toUpperCase()}&quot; COMPRESSED &amp; UPLOADED TO CLOUD!
+                  </span>
+                  {modalImageUrl && (
+                    <span className="text-[10px] text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200/80 truncate block font-mono">
+                      {modalImageUrl}
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* IMAGE SEO KEYWORDS HIGHLIGHTED CARD */}
-            <div className="bg-[#FFFDF7] border border-[#FED7AA] rounded-xl p-3.5 flex flex-col gap-2 shadow-2xs">
+            <div className="bg-[#FFFDF7] border border-[#FED7AA] rounded-lg p-2.5 flex flex-col gap-1.5 shadow-2xs">
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-1.5 text-xs font-bold text-amber-900">
                   <Sparkles className="w-3.5 h-3.5 text-[#EA580C]" />
                   <span>Image SEO Keywords (Max 4 Keywords)</span>
                 </span>
                 <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-orange-100 text-[#EA580C]">
-                  {imageKeywords.length} / 4 Keywords
+                  {imageKeywords.length} / 4 KEYWORDS
                 </span>
               </div>
 
@@ -3125,11 +3220,11 @@ function WriterEditorMain() {
                 onChange={(e) => setImageKeywordInput(e.target.value)}
                 onKeyDown={handleImageKeywordKeyDown}
                 placeholder="e.g. Donald Trump, White House, Election 2026"
-                className="w-full px-3 py-2 bg-white border border-amber-200 rounded-lg text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#EA580C]"
+                className="w-full px-2.5 py-1.5 bg-white border border-amber-200 rounded-md text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#EA580C]"
               />
 
               {imageKeywords.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 pt-1">
+                <div className="flex flex-wrap gap-1 pt-0.5">
                   {imageKeywords.map((kw) => (
                     <span
                       key={kw}
@@ -3144,50 +3239,47 @@ function WriterEditorMain() {
                 </div>
               )}
 
-              <div className="text-[11px] text-amber-800/80 font-medium flex items-center gap-1.5">
+              <div className="text-[10px] text-amber-800/80 font-medium flex items-center gap-1.5">
                 <span>💡</span>
                 <span>Type keyword and press Enter or comma (,) to add. Maximum 4 keywords per image.</span>
               </div>
             </div>
 
-            {/* Image Caption & Credit Container (Compact, aligned spacing) */}
-            <div className="bg-slate-50/70 p-3.5 rounded-xl border border-slate-200/80 flex flex-col gap-2.5">
-              {/* Image Caption */}
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-bold text-slate-700">
-                  Image Caption
-                </label>
-                <input
-                  type="text"
-                  value={imageCaption}
-                  onChange={(e) => setImageCaption(e.target.value)}
-                  placeholder="Enter caption..."
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#1642D0]"
-                />
-              </div>
+            {/* Standalone Image Caption (Visible under picture to readers) */}
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-slate-600">
+                Image Caption (Visible under picture to readers)
+              </label>
+              <input
+                type="text"
+                value={imageCaption}
+                onChange={(e) => setImageCaption(e.target.value)}
+                placeholder="Brief description (e.g. President speaking with reporters outside Capitol)"
+                className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#EA580C]"
+              />
+            </div>
 
-              {/* Image Credit / Source */}
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-bold text-slate-700">
-                  Image Credit / Source
-                </label>
-                <input
-                  type="text"
-                  value={imageCredit}
-                  onChange={(e) => setImageCredit(e.target.value)}
-                  placeholder="e.g. Reuters / Photographer"
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#1642D0]"
-                />
-              </div>
+            {/* Standalone Image Credit / Source (Optional) */}
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-slate-600">
+                Image Credit / Source (Optional)
+              </label>
+              <input
+                type="text"
+                value={imageCredit}
+                onChange={(e) => setImageCredit(e.target.value)}
+                placeholder="e.g. Reuters, AP Photo, Getty Images"
+                className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#EA580C]"
+              />
             </div>
 
             {/* TWO-COLUMN ROW: IMAGE SIZE & POSITION ALIGNMENT */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-0.5">
               
               {/* IMAGE SIZE DROPDOWN */}
-              <div className="flex flex-col gap-1.5 relative">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  Image Size
+              <div className="flex flex-col gap-1 relative">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                  IMAGE SIZE
                 </label>
                 <button
                   type="button"
@@ -3195,7 +3287,7 @@ function WriterEditorMain() {
                     setSizeDropdownOpen(!sizeDropdownOpen);
                     setAlignDropdownOpen(false);
                   }}
-                  className="w-full px-3.5 py-2.5 bg-white border border-[#EA580C] rounded-xl text-xs font-semibold text-slate-800 flex items-center justify-between cursor-pointer focus:outline-hidden"
+                  className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-800 flex items-center justify-between cursor-pointer focus:outline-hidden"
                 >
                   <span>
                     {imageSize === 'small' && 'Small (Width: 250px)'}
@@ -3206,14 +3298,14 @@ function WriterEditorMain() {
                 </button>
 
                 {sizeDropdownOpen && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-20 overflow-hidden text-xs">
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-xl z-20 overflow-hidden text-xs">
                     <button
                       type="button"
                       onClick={() => {
                         setImageSize('small');
                         setSizeDropdownOpen(false);
                       }}
-                      className={`w-full text-left px-3.5 py-2 transition-colors cursor-pointer ${
+                      className={`w-full text-left px-3 py-1.5 transition-colors cursor-pointer ${
                         imageSize === 'small' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
                       }`}
                     >
@@ -3225,7 +3317,7 @@ function WriterEditorMain() {
                         setImageSize('medium');
                         setSizeDropdownOpen(false);
                       }}
-                      className={`w-full text-left px-3.5 py-2 transition-colors cursor-pointer ${
+                      className={`w-full text-left px-3 py-1.5 transition-colors cursor-pointer ${
                         imageSize === 'medium' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
                       }`}
                     >
@@ -3237,7 +3329,7 @@ function WriterEditorMain() {
                         setImageSize('full');
                         setSizeDropdownOpen(false);
                       }}
-                      className={`w-full text-left px-3.5 py-2 transition-colors cursor-pointer ${
+                      className={`w-full text-left px-3 py-1.5 transition-colors cursor-pointer ${
                         imageSize === 'full' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
                       }`}
                     >
@@ -3248,9 +3340,9 @@ function WriterEditorMain() {
               </div>
 
               {/* POSITION ALIGNMENT DROPDOWN */}
-              <div className="flex flex-col gap-1.5 relative">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  Position Alignment
+              <div className="flex flex-col gap-1 relative">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                  POSITION ALIGNMENT
                 </label>
                 <button
                   type="button"
@@ -3258,7 +3350,7 @@ function WriterEditorMain() {
                     setAlignDropdownOpen(!alignDropdownOpen);
                     setSizeDropdownOpen(false);
                   }}
-                  className="w-full px-3.5 py-2.5 bg-white border border-slate-200 hover:border-slate-300 rounded-xl text-xs font-semibold text-slate-800 flex items-center justify-between cursor-pointer focus:outline-hidden"
+                  className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-800 flex items-center justify-between cursor-pointer focus:outline-hidden"
                 >
                   <span className="truncate">
                     {imageAlignment === 'center' && 'Center (No Wrap)'}
@@ -3270,14 +3362,14 @@ function WriterEditorMain() {
                 </button>
 
                 {alignDropdownOpen && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-20 overflow-hidden text-xs">
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-xl z-20 overflow-hidden text-xs">
                     <button
                       type="button"
                       onClick={() => {
                         setImageAlignment('center');
                         setAlignDropdownOpen(false);
                       }}
-                      className={`w-full text-left px-3.5 py-2 transition-colors cursor-pointer flex items-center gap-2 ${
+                      className={`w-full text-left px-3 py-1.5 transition-colors cursor-pointer flex items-center gap-2 ${
                         imageAlignment === 'center' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
                       }`}
                     >
@@ -3290,7 +3382,7 @@ function WriterEditorMain() {
                         setImageAlignment('left');
                         setAlignDropdownOpen(false);
                       }}
-                      className={`w-full text-left px-3.5 py-2 transition-colors cursor-pointer flex items-center gap-2 ${
+                      className={`w-full text-left px-3 py-1.5 transition-colors cursor-pointer flex items-center gap-2 ${
                         imageAlignment === 'left' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
                       }`}
                     >
@@ -3303,7 +3395,7 @@ function WriterEditorMain() {
                         setImageAlignment('right');
                         setAlignDropdownOpen(false);
                       }}
-                      className={`w-full text-left px-3.5 py-2 transition-colors cursor-pointer flex items-center gap-2 ${
+                      className={`w-full text-left px-3 py-1.5 transition-colors cursor-pointer flex items-center gap-2 ${
                         imageAlignment === 'right' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
                       }`}
                     >
@@ -3316,7 +3408,7 @@ function WriterEditorMain() {
                         setImageAlignment('no_wrap');
                         setAlignDropdownOpen(false);
                       }}
-                      className={`w-full text-left px-3.5 py-2 transition-colors cursor-pointer flex items-center gap-2 ${
+                      className={`w-full text-left px-3 py-1.5 transition-colors cursor-pointer flex items-center gap-2 ${
                         imageAlignment === 'no_wrap' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
                       }`}
                     >
@@ -3329,7 +3421,7 @@ function WriterEditorMain() {
             </div>
 
             {/* MODAL FOOTER BUTTONS: CANCEL and + INSERT IMAGE */}
-            <div className="flex items-center justify-between pt-3 border-t border-slate-100 gap-3">
+            <div className="flex items-center justify-between pt-2 border-t border-slate-100 gap-3">
               <button
                 type="button"
                 onClick={() => {
@@ -3337,19 +3429,19 @@ function WriterEditorMain() {
                   editingImageIdRef.current = null;
                   setShowImageModal(false);
                 }}
-                className="px-6 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                className="px-5 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
               >
-                Cancel
+                CANCEL
               </button>
 
               <button
                 type="button"
                 data-testid="modal-submit-image-btn"
                 onClick={handleInsertImageIntoEditor}
-                className="px-6 py-2.5 rounded-xl bg-[#EA580C] hover:bg-[#C2410C] text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-md cursor-pointer flex items-center gap-1.5"
+                className="px-5 py-2 rounded-lg bg-[#EA580C] hover:bg-[#C2410C] text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-xs cursor-pointer flex items-center gap-1.5"
               >
                 <span>+</span>
-                <span>{selectedImageFigure || editingImageFigureRef.current ? 'Update Image' : 'Insert Image'}</span>
+                <span>{selectedImageFigure || editingImageFigureRef.current ? 'UPDATE IMAGE' : 'INSERT IMAGE'}</span>
               </button>
             </div>
 

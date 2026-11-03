@@ -233,6 +233,37 @@ pre.code-section {
   max-width: 100% !important;
 }
 
+/* Tight Caption & Credit alignment for Article Editor images matching Reference Image 3 */
+figure.article-image-figure,
+.article-editor-content figure,
+.prose figure {
+  margin-top: 1rem !important;
+  margin-bottom: 1rem !important;
+}
+
+figure.article-image-figure img,
+.article-editor-content figure img,
+.prose figure img {
+  display: block !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+figure.article-image-figure figcaption,
+.article-editor-content figure figcaption,
+.prose figure figcaption {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  margin-top: 2px !important;
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  font-size: 0.75rem !important;
+  line-height: 1rem !important;
+}
+
 /* Global Website Image Box Shape Fix — Sharp Rectangular Corners (border-radius: 0) */
 article img,
 article [class*="aspect-"],
