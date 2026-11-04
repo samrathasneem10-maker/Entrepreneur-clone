@@ -556,9 +556,9 @@ function WriterEditorMain() {
         linkedinUrl: user?.linkedinUrl || 'https://www.linkedin.com',
       },
       date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase(),
-      imageUrl: featuredImageUrl || editorRef.current?.querySelector('img')?.getAttribute('src') || '/images/side-hustle-53.jpg',
-      imageCaption: imageCaption || 'Opinions expressed by Entrepreneur contributors are their own.',
-      imageCredit: imageCredit || 'kundoy | Getty Images',
+      imageUrl: featuredImageUrl || editorRef.current?.querySelector('img')?.getAttribute('src') || '',
+      imageCaption: imageCaption || '',
+      imageCredit: imageCredit || '',
       content: currentContent || '<p class="text-slate-400 italic">No article body written yet.</p>',
       tags: tags.length > 0 ? tags : ['BUSINESS', 'STARTUPS', 'LEADERSHIP'],
     };
@@ -645,6 +645,13 @@ function WriterEditorMain() {
     setFeaturedImageUrl('');
     setImageCaption('');
     setImageCredit('');
+    setActiveImageCaption('');
+    setActiveImageCredit('');
+    setSelectedImageFigure(null);
+    setSelectedImageProps(null);
+    setImageBounds(null);
+    setToolbarPosition(null);
+    setModalImageUrl('');
     setSelectedSubCategories([]);
     setTags([]);
     setCardSummary('');
@@ -811,6 +818,7 @@ function WriterEditorMain() {
           setTimeout(() => {
             if (editorRef.current) {
               editorRef.current.innerHTML = art.content;
+              normalizeEditorBlocks(editorRef.current);
             }
           }, 150);
         }
@@ -1467,10 +1475,11 @@ function WriterEditorMain() {
 
       const targetEl = figure;
       const targetRect = targetEl.getBoundingClientRect();
-      const editorRect = editorRef.current.getBoundingClientRect();
+      const container = editorRef.current.parentElement || editorRef.current;
+      const containerRect = container.getBoundingClientRect();
       const bounds = {
-        top: targetRect.top - editorRect.top,
-        left: targetRect.left - editorRect.left,
+        top: targetRect.top - containerRect.top,
+        left: targetRect.left - containerRect.left,
         width: targetRect.width,
         height: targetRect.height,
       };
@@ -1478,7 +1487,7 @@ function WriterEditorMain() {
 
       setToolbarPosition({
         top: Math.max(8, bounds.top - 46),
-        left: Math.max(8, Math.min(bounds.left, editorRect.width - 340)),
+        left: Math.max(8, Math.min(bounds.left, containerRect.width - 340)),
       });
     } else {
       setSelectedImageFigure(null);
@@ -1494,10 +1503,11 @@ function WriterEditorMain() {
   const updateImageSelectionBounds = (fig: HTMLElement) => {
     if (!editorRef.current) return;
     const targetRect = fig.getBoundingClientRect();
-    const editorRect = editorRef.current.getBoundingClientRect();
+    const container = editorRef.current.parentElement || editorRef.current;
+    const containerRect = container.getBoundingClientRect();
     const bounds = {
-      top: targetRect.top - editorRect.top,
-      left: targetRect.left - editorRect.left,
+      top: targetRect.top - containerRect.top,
+      left: targetRect.left - containerRect.left,
       width: targetRect.width,
       height: targetRect.height,
     };
@@ -1505,9 +1515,24 @@ function WriterEditorMain() {
 
     setToolbarPosition({
       top: Math.max(8, bounds.top - 46),
-      left: Math.max(8, Math.min(bounds.left, editorRect.width - 340)),
+      left: Math.max(8, Math.min(bounds.left, containerRect.width - 340)),
     });
   };
+
+  useEffect(() => {
+    if (!selectedImageFigure) return;
+    const handleScrollOrResize = () => {
+      if (selectedImageFigure && editorRef.current?.contains(selectedImageFigure)) {
+        updateImageSelectionBounds(selectedImageFigure);
+      }
+    };
+    window.addEventListener('scroll', handleScrollOrResize, { passive: true });
+    window.addEventListener('resize', handleScrollOrResize, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScrollOrResize);
+      window.removeEventListener('resize', handleScrollOrResize);
+    };
+  }, [selectedImageFigure]);
 
   const updateFigureCaptionAndCredit = (fig: HTMLElement, captionText: string, creditText: string) => {
     fig.dataset.caption = captionText;
@@ -1626,6 +1651,59 @@ function WriterEditorMain() {
     showToast(`Image alignment updated to ${alignment}`);
   };
 
+  const normalizeEditorBlocks = (editor: HTMLElement) => {
+    const childNodes = Array.from(editor.childNodes);
+    let currentInlineNodes: Node[] = [];
+
+    const flushInlineNodes = () => {
+      if (currentInlineNodes.length === 0) return;
+      const rawHtml = currentInlineNodes
+        .map((n) => {
+          if (n.nodeType === Node.TEXT_NODE) {
+            return (n.textContent || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          }
+          return (n as HTMLElement).outerHTML || '';
+        })
+        .join('');
+
+      const paragraphs = rawHtml.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+      const firstNode = currentInlineNodes[0];
+
+      if (paragraphs.length > 0) {
+        paragraphs.forEach((pText) => {
+          const p = document.createElement('p');
+          p.className = 'my-3';
+          p.innerHTML = pText.replace(/\n/g, '<br>');
+          editor.insertBefore(p, firstNode);
+        });
+      }
+
+      currentInlineNodes.forEach((n) => n.parentNode?.removeChild(n));
+      currentInlineNodes = [];
+    };
+
+    for (const node of childNodes) {
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        const el = node as HTMLElement;
+        const tag = el.tagName.toLowerCase();
+        if (
+          ['figure', 'p', 'div', 'blockquote', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'pre'].includes(tag)
+        ) {
+          flushInlineNodes();
+        } else {
+          currentInlineNodes.push(node);
+        }
+      } else if (node.nodeType === Node.TEXT_NODE) {
+        if (node.textContent && node.textContent.trim().length > 0) {
+          currentInlineNodes.push(node);
+        } else {
+          node.parentNode?.removeChild(node);
+        }
+      }
+    }
+    flushInlineNodes();
+  };
+
   const handleMoveImage = (direction: 'up' | 'down') => {
     if (!selectedImageFigure || !editorRef.current) return;
     const editor = editorRef.current;
@@ -1639,6 +1717,8 @@ function WriterEditorMain() {
         parentBlock.remove();
       }
     }
+
+    normalizeEditorBlocks(editor);
 
     if (direction === 'up') {
       let target = figure.previousElementSibling as HTMLElement | null;
@@ -1656,6 +1736,7 @@ function WriterEditorMain() {
       if (target && editor.contains(target)) {
         editor.insertBefore(figure, target);
         handleEditorInput();
+        updateImageSelectionBounds(figure);
         setTimeout(() => {
           updateImageSelectionBounds(figure);
         }, 30);
@@ -1680,6 +1761,7 @@ function WriterEditorMain() {
           editor.appendChild(figure);
         }
         handleEditorInput();
+        updateImageSelectionBounds(figure);
         setTimeout(() => {
           updateImageSelectionBounds(figure);
         }, 30);
@@ -1856,13 +1938,13 @@ function WriterEditorMain() {
 
     const altSafe = (captionSafe || imageKeywords.join(', ') || title.trim() || 'Article Image').replace(/"/g, '&quot;');
 
-    let figureInlineStyle = 'display: block !important; margin: 1.5rem auto !important; clear: both !important; width: fit-content !important; max-width: 100% !important;';
+    let figureInlineStyle = 'display: block !important; margin: 1.5rem auto !important; clear: both !important; width: fit-content !important; max-width: 100% !important; height: fit-content !important; padding: 0 !important;';
     if (imageAlignment === 'left') {
-      figureInlineStyle = 'float: left !important; margin: 0.5rem 1.5rem 1rem 0 !important; display: block !important; width: fit-content !important; max-width: 100% !important;';
+      figureInlineStyle = 'float: left !important; margin: 0.5rem 1.5rem 1rem 0 !important; display: block !important; width: fit-content !important; max-width: 100% !important; height: fit-content !important; padding: 0 !important;';
     } else if (imageAlignment === 'right') {
-      figureInlineStyle = 'float: right !important; margin: 0.5rem 0 1rem 1.5rem !important; display: block !important; width: fit-content !important; max-width: 100% !important;';
+      figureInlineStyle = 'float: right !important; margin: 0.5rem 0 1rem 1.5rem !important; display: block !important; width: fit-content !important; max-width: 100% !important; height: fit-content !important; padding: 0 !important;';
     } else if (imageAlignment === 'no_wrap') {
-      figureInlineStyle = 'display: block !important; margin: 1.5rem auto 1.5rem 0 !important; clear: both !important; width: fit-content !important; max-width: 100% !important;';
+      figureInlineStyle = 'display: block !important; margin: 1.5rem auto 1.5rem 0 !important; clear: both !important; width: fit-content !important; max-width: 100% !important; height: fit-content !important; padding: 0 !important;';
     }
 
     const captionMarkup = (captionSafe || formattedCredit)
@@ -3704,24 +3786,28 @@ function WriterEditorMain() {
 
                 {/* Main Featured Article Image matching Reference Image */}
                 {(featuredImageUrl || editorRef.current?.querySelector('img')?.getAttribute('src')) && (
-                  <div className="w-full my-4 overflow-hidden border border-slate-200">
-                    <img
-                      src={featuredImageUrl || editorRef.current?.querySelector('img')?.getAttribute('src') || '/images/side-hustle-53.jpg'}
-                      alt={title || 'Featured Article Image'}
-                      className="w-full h-auto max-h-[580px] object-cover"
-                    />
-                  </div>
-                )}
+                  <>
+                    <div className="w-full my-4 overflow-hidden border border-slate-200">
+                      <img
+                        src={featuredImageUrl || editorRef.current?.querySelector('img')?.getAttribute('src') || ''}
+                        alt={title || 'Featured Article Image'}
+                        className="w-full h-auto max-h-[580px] object-cover"
+                      />
+                    </div>
 
-                {/* Image caption and opinions disclaimer matching Article Page */}
-                <div className="flex items-center justify-between text-xs text-slate-500 font-sans pt-1 pb-2">
-                  <span className="italic">
-                    {imageCaption || 'Opinions expressed by Entrepreneur contributors are their own.'}
-                  </span>
-                  <span className="text-slate-400 font-sans text-[11px]">
-                    {imageCredit ? `PHOTO: ${imageCredit}` : 'kundoy | Getty Images'}
-                  </span>
-                </div>
+                    {/* Image caption and credit directly below image */}
+                    {(imageCaption || imageCredit) && (
+                      <div className="flex items-center justify-between text-xs text-slate-500 font-sans pt-1 pb-2">
+                        <span className="italic">
+                          {imageCaption}
+                        </span>
+                        <span className="text-slate-400 font-sans text-[11px]">
+                          {imageCredit ? (imageCredit.startsWith('(') ? imageCredit : `PHOTO: ${imageCredit}`) : ''}
+                        </span>
+                      </div>
+                    )}
+                  </>
+                )}
 
                 {/* Key Takeaways Section */}
                 <div className="pt-2 pb-1">

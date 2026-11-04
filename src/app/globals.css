@@ -239,12 +239,17 @@ figure.article-image-figure,
 .prose figure {
   margin-top: 1rem !important;
   margin-bottom: 1rem !important;
+  height: fit-content !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
 }
 
 figure.article-image-figure img,
 .article-editor-content figure img,
 .prose figure img {
   display: block !important;
+  width: 100% !important;
+  height: auto !important;
   margin-top: 0 !important;
   margin-bottom: 0 !important;
   padding: 0 !important;
