@@ -1586,24 +1586,70 @@ function WriterEditorMain() {
     }
   };
 
+  const getFigureStyle = (alignment: string, size: string) => {
+    let maxWidth = '480px';
+    let width = '100%';
+    if (size === 'small') {
+      maxWidth = '260px';
+    } else if (size === 'medium') {
+      maxWidth = '480px';
+    } else if (size === 'full') {
+      maxWidth = '100%';
+      width = '100%';
+    }
+
+    let float = 'none';
+    let clear = 'both';
+    let display = 'block';
+    let margin = '1.5rem auto';
+
+    if (alignment === 'left') {
+      float = 'left';
+      clear = 'none';
+      display = 'block';
+      margin = '0.5rem 1.5rem 1rem 0';
+    } else if (alignment === 'right') {
+      float = 'right';
+      clear = 'none';
+      display = 'block';
+      margin = '0.5rem 0 1rem 1.5rem';
+    } else if (alignment === 'center') {
+      float = 'none';
+      clear = 'both';
+      display = 'block';
+      margin = '1.5rem auto';
+    } else if (alignment === 'no_wrap') {
+      float = 'none';
+      clear = 'both';
+      display = 'block';
+      margin = '1.5rem auto 1.5rem 0';
+    }
+
+    return `display: ${display} !important; float: ${float} !important; clear: ${clear} !important; margin: ${margin} !important; width: ${width} !important; max-width: ${maxWidth} !important; height: fit-content !important; padding: 0 !important; box-sizing: border-box !important;`;
+  };
+
   const handleUpdateImageSize = (size: 'small' | 'medium' | 'full') => {
     if (!selectedImageFigure) return;
     selectedImageFigure.dataset.size = size;
 
-    selectedImageFigure.classList.remove('max-w-[250px]', 'max-w-[450px]', 'w-full', 'max-w-none', 'w-fit');
+    selectedImageFigure.classList.remove('max-w-[250px]', 'max-w-[260px]', 'max-w-[450px]', 'max-w-[480px]', 'w-full', 'max-w-none', 'w-fit');
     if (size === 'small') {
-      selectedImageFigure.classList.add('max-w-[250px]', 'w-fit');
+      selectedImageFigure.classList.add('max-w-[260px]', 'w-fit');
     } else if (size === 'medium') {
-      selectedImageFigure.classList.add('max-w-[450px]', 'w-fit');
+      selectedImageFigure.classList.add('max-w-[480px]', 'w-fit');
     } else {
       selectedImageFigure.classList.add('w-full', 'max-w-none');
     }
 
+    const alignment = (selectedImageFigure.dataset.align as 'left' | 'center' | 'no_wrap' | 'right') || 'center';
+    selectedImageFigure.style.cssText = getFigureStyle(alignment, size);
+
     setSelectedImageProps((prev) => (prev ? { ...prev, size } : null));
     handleEditorInput();
+    updateImageSelectionBounds(selectedImageFigure);
     setTimeout(() => {
       if (selectedImageFigure) updateImageSelectionBounds(selectedImageFigure);
-    }, 30);
+    }, 40);
     showToast(`Image size updated to ${size.toUpperCase()}`);
   };
 
@@ -1626,28 +1672,26 @@ function WriterEditorMain() {
       'w-fit'
     );
 
-    let figureInlineStyle = 'display: block !important; margin: 1.5rem auto !important; clear: both !important; width: fit-content !important; max-width: 100% !important;';
+    const size = (selectedImageFigure.dataset.size as 'small' | 'medium' | 'full') || 'medium';
 
     if (alignment === 'left') {
       selectedImageFigure.classList.add('float-left', 'mr-6', 'mb-4', 'my-2', 'w-fit');
-      figureInlineStyle = 'float: left !important; margin: 0.5rem 1.5rem 1rem 0 !important; display: block !important; width: fit-content !important; max-width: 100% !important;';
     } else if (alignment === 'right') {
       selectedImageFigure.classList.add('float-right', 'ml-6', 'mb-4', 'my-2', 'w-fit');
-      figureInlineStyle = 'float: right !important; margin: 0.5rem 0 1rem 1.5rem !important; display: block !important; width: fit-content !important; max-width: 100% !important;';
     } else if (alignment === 'no_wrap') {
       selectedImageFigure.classList.add('my-6', 'block', 'clear-both', 'w-fit');
-      figureInlineStyle = 'display: block !important; margin: 1.5rem auto 1.5rem 0 !important; clear: both !important; width: fit-content !important; max-width: 100% !important;';
     } else {
       selectedImageFigure.classList.add('my-6', 'block', 'clear-both', 'mx-auto', 'text-center', 'w-fit');
     }
 
-    selectedImageFigure.style.cssText = figureInlineStyle;
+    selectedImageFigure.style.cssText = getFigureStyle(alignment, size);
 
     setSelectedImageProps((prev) => (prev ? { ...prev, alignment } : null));
     handleEditorInput();
+    updateImageSelectionBounds(selectedImageFigure);
     setTimeout(() => {
       if (selectedImageFigure) updateImageSelectionBounds(selectedImageFigure);
-    }, 30);
+    }, 40);
     showToast(`Image alignment updated to ${alignment}`);
   };
 
@@ -1938,14 +1982,7 @@ function WriterEditorMain() {
 
     const altSafe = (captionSafe || imageKeywords.join(', ') || title.trim() || 'Article Image').replace(/"/g, '&quot;');
 
-    let figureInlineStyle = 'display: block !important; margin: 1.5rem auto !important; clear: both !important; width: fit-content !important; max-width: 100% !important; height: fit-content !important; padding: 0 !important;';
-    if (imageAlignment === 'left') {
-      figureInlineStyle = 'float: left !important; margin: 0.5rem 1.5rem 1rem 0 !important; display: block !important; width: fit-content !important; max-width: 100% !important; height: fit-content !important; padding: 0 !important;';
-    } else if (imageAlignment === 'right') {
-      figureInlineStyle = 'float: right !important; margin: 0.5rem 0 1rem 1.5rem !important; display: block !important; width: fit-content !important; max-width: 100% !important; height: fit-content !important; padding: 0 !important;';
-    } else if (imageAlignment === 'no_wrap') {
-      figureInlineStyle = 'display: block !important; margin: 1.5rem auto 1.5rem 0 !important; clear: both !important; width: fit-content !important; max-width: 100% !important; height: fit-content !important; padding: 0 !important;';
-    }
+    let figureInlineStyle = getFigureStyle(imageAlignment, imageSize);
 
     const captionMarkup = (captionSafe || formattedCredit)
       ? `<figcaption class="flex items-center justify-between text-[11px] text-slate-500 w-full font-sans select-none" style="margin-top: 2px !important; margin-bottom: 0 !important; padding: 0 !important; display: flex !important; align-items: center !important; justify-content: space-between !important; width: 100% !important;"><span class="image-caption text-left text-slate-600 font-normal truncate max-w-[60%]">${captionSafe}</span><span class="image-credit text-right text-slate-400 font-medium tracking-wide truncate max-w-[40%]">${formattedCredit}</span></figcaption>`
@@ -4059,101 +4096,60 @@ function WriterEditorMain() {
         </div>
       )}
 
-      {/* LINK INSERTION & EDITING MODAL */}
+      {/* LINK INSERTION & EDITING MODAL MATCHING REFERENCE IMAGE 2 */}
       {showLinkModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md p-6 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
-              <div className="flex items-center gap-2">
-                <Link2 className="w-5 h-5 text-[#1642D0]" />
-                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900">
-                  {currentLinkElement ? 'Edit Hyperlink' : 'Insert Hyperlink'}
-                </h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowLinkModal(false)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-md cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
+        <div 
+          className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-start justify-center pt-16 p-4 animate-in fade-in duration-150"
+          onClick={() => setShowLinkModal(false)}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-[460px] p-6 text-slate-800 animate-in zoom-in-95 duration-150"
+          >
+            <div className="text-sm font-semibold text-slate-800 mb-2 select-none">
+              {typeof window !== 'undefined' ? `${window.location.host} says` : 'entrepreneur.com says'}
+            </div>
+            
+            <div className="text-xs sm:text-[13px] text-slate-700 mb-3 font-normal">
+              Enter link URL (e.g. https://google.com):
             </div>
 
-            <div className="flex flex-col gap-4">
-              {/* Display Text */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-slate-600">
-                  Text to Display
-                </label>
-                <input
-                  type="text"
-                  value={linkText}
-                  onChange={(e) => setLinkText(e.target.value)}
-                  placeholder="Clickable link text"
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-hidden focus:border-[#1642D0]"
-                />
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleApplyLink();
+              }}
+            >
+              <input
+                type="text"
+                autoFocus
+                value={linkUrl}
+                onChange={(e) => setLinkUrl(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') {
+                    setShowLinkModal(false);
+                  }
+                }}
+                placeholder="https://..."
+                className="w-full px-3 py-1.5 border-2 border-[#006875] rounded-md text-sm text-slate-900 outline-none shadow-xs focus:ring-1 focus:ring-[#006875]"
+              />
+
+              <div className="flex items-center justify-end gap-2.5 mt-5">
+                <button
+                  type="submit"
+                  className="px-6 py-1.5 bg-[#006875] hover:bg-[#00545F] text-white text-xs font-semibold rounded-full shadow-xs transition-colors cursor-pointer"
+                >
+                  OK
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowLinkModal(false)}
+                  className="px-5 py-1.5 bg-[#9EEFFF] hover:bg-[#85E8FB] text-[#003B46] text-xs font-semibold rounded-full shadow-xs transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
               </div>
-
-              {/* Destination URL */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-slate-600">
-                  Link URL <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={linkUrl}
-                  onChange={(e) => setLinkUrl(e.target.value)}
-                  placeholder="https://example.com"
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-hidden focus:border-[#1642D0]"
-                />
-                <span className="text-[10px] text-slate-400">
-                  Valid protocols: https://, http://, mailto: (https:// prepended by default)
-                </span>
-              </div>
-
-              {/* Open in new tab toggle */}
-              <label className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={linkOpenNewTab}
-                  onChange={(e) => setLinkOpenNewTab(e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-300 text-[#1642D0] focus:ring-[#1642D0]/30 cursor-pointer"
-                />
-                <span>Open link in new browser tab</span>
-              </label>
-
-              {/* Action buttons */}
-              <div className="flex items-center justify-between pt-3 border-t border-slate-100 mt-2">
-                {currentLinkElement ? (
-                  <button
-                    type="button"
-                    onClick={handleRemoveLink}
-                    className="px-3 py-2 text-xs font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
-                  >
-                    Remove Link
-                  </button>
-                ) : (
-                  <span />
-                )}
-
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowLinkModal(false)}
-                    className="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleApplyLink}
-                    className="px-4 py-2 bg-[#1642D0] hover:bg-blue-800 text-white text-xs font-bold uppercase tracking-wider rounded-lg shadow-xs transition-colors cursor-pointer"
-                  >
-                    {currentLinkElement ? 'Update Link' : 'Insert Link'}
-                  </button>
-                </div>
-              </div>
-            </div>
+            </form>
           </div>
         </div>
       )}
