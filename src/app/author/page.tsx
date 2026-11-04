@@ -9,8 +9,8 @@ export default function AuthorIndexPage() {
   const { user } = useAuth();
 
   useEffect(() => {
-    if (user?.role === 'writer' && user?.name) {
-      const slug = user.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-');
+    if (user?.role === 'writer' && (user?.writerName || user?.name)) {
+      const slug = (user.writerName || user.name).toLowerCase().trim().replace(/[^a-z0-9]+/g, '-');
       router.replace(`/author/${slug}`);
     } else {
       router.replace('/author/sherin-shibu');

@@ -20,10 +20,37 @@ export async function GET(request: Request) {
         [queryId]
       );
     } else if (querySlug) {
-      users = await query<any[]>(
-        'SELECT id, name, email, role, avatar, bio, writer_name, linkedin_url, created_at FROM users WHERE LOWER(REPLACE(REPLACE(name, " ", "-"), ".", "")) = ? OR LOWER(writer_name) = ? OR LOWER(email) LIKE ? OR id = ? LIMIT 1',
-        [querySlug.toLowerCase(), querySlug.toLowerCase(), `${querySlug.toLowerCase()}%`, Number(querySlug) || 0]
+      const allUsers = await query<any[]>(
+        'SELECT id, name, email, role, avatar, bio, writer_name, linkedin_url, created_at FROM users'
       );
+      const allSettings = await query<any[]>(
+        'SELECT user_email, bio, writer_name, linkedin_url, avatar FROM user_settings'
+      );
+      const cleanSlug = querySlug.toLowerCase().trim().replace(/[^a-z0-9]/g, '');
+
+      const matchedUser = allUsers.find((u) => {
+        const s = allSettings.find((st) => (st.user_email || '').toLowerCase() === (u.email || '').toLowerCase()) || {};
+        const effectiveWriterName = s.writer_name || u.writer_name || '';
+        const slugName = (u.name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+        const slugWriter = effectiveWriterName.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const slugEmail = (u.email || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+        const emailPrefix = (u.email || '').split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '');
+
+        if (slugWriter && slugWriter === cleanSlug) return true;
+        if (slugName && slugName === cleanSlug) return true;
+        if (slugEmail === cleanSlug || emailPrefix === cleanSlug) return true;
+        if ((cleanSlug === 'writer' || cleanSlug === 'writter' || cleanSlug === 'writeraccount') && u.role === 'writer') return true;
+        if (String(u.id) === querySlug) return true;
+
+        if (cleanSlug.length > 3 && (slugName.includes(cleanSlug) || cleanSlug.includes(slugName))) return true;
+        if (cleanSlug.length > 3 && slugWriter && (slugWriter.includes(cleanSlug) || cleanSlug.includes(slugWriter))) return true;
+
+        return false;
+      });
+
+      if (matchedUser) {
+        users = [matchedUser];
+      }
     } else {
       let fallbackEmail = 'samrathasneem20@gmail.com';
       if (cookieRole === 'writer' || cookieRole === 'writter') {
@@ -56,6 +83,9 @@ export async function GET(request: Request) {
     );
 
     const s = settings?.[0] || {};
+    const effectiveWriterName = s.writer_name || u.writer_name || u.name || 'Writer Account';
+    const effectiveBio = s.bio || u.bio || '';
+    const effectiveAvatar = s.avatar || u.avatar || '/images/user-avatar-butterfly.png';
 
     return NextResponse.json({
       success: true,
@@ -63,13 +93,13 @@ export async function GET(request: Request) {
         id: u.id,
         firstName,
         lastName,
-        fullName: u.name || 'mishal',
-        name: u.name || 'mishal',
+        fullName: effectiveWriterName || u.name,
+        name: effectiveWriterName || u.name,
         email: u.email,
         role: u.role || 'writer',
-        avatar: s.avatar || u.avatar || '/images/user-avatar-butterfly.png',
-        bio: s.bio || u.bio || '',
-        writerName: s.writer_name || u.writer_name || u.name || 'mishal',
+        avatar: effectiveAvatar,
+        bio: effectiveBio,
+        writerName: effectiveWriterName,
         linkedinUrl: s.linkedin_url || u.linkedin_url || '',
         phone: s.phone || '',
         facebookConnected: Boolean(s.facebook_connected),

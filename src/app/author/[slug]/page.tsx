@@ -6,6 +6,7 @@ import { useParams, useSearchParams } from 'next/navigation';
 import { Header } from '@/layouts/Header';
 import { Footer } from '@/layouts/Footer';
 import { ALL_ARTICLES, getArticleUrl } from '@/data/newsData';
+import { useAuth } from '@/components/auth/AuthContext';
 
 interface AuthorProfile {
   name: string;
@@ -141,6 +142,41 @@ const AUTHORS_REGISTRY: Record<string, AuthorProfile> = {
     badge: 'Entrepreneur Staff',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop',
     bio: 'Kalid Mishal is a staff writer at Entrepreneur covering startup growth, leadership principles, and emerging market dynamics.',
+  },
+  'writer-account': {
+    name: 'Writer Account',
+    role: 'Staff Writer',
+    badge: 'Entrepreneur Staff',
+    avatar: '/uploads/avatar_1793324678418_d.jpg',
+    bio: 'Executive business contributor.',
+  },
+  'writer_account': {
+    name: 'Writer Account',
+    role: 'Staff Writer',
+    badge: 'Entrepreneur Staff',
+    avatar: '/uploads/avatar_1793324678418_d.jpg',
+    bio: 'Executive business contributor.',
+  },
+  'writer': {
+    name: 'Writer Account',
+    role: 'Staff Writer',
+    badge: 'Entrepreneur Staff',
+    avatar: '/uploads/avatar_1793324678418_d.jpg',
+    bio: 'Executive business contributor.',
+  },
+  'writter': {
+    name: 'Writer Account',
+    role: 'Staff Writer',
+    badge: 'Entrepreneur Staff',
+    avatar: '/uploads/avatar_1793324678418_d.jpg',
+    bio: 'Executive business contributor.',
+  },
+  'thasneem-samra': {
+    name: 'Writer Account',
+    role: 'Staff Writer',
+    badge: 'Entrepreneur Staff',
+    avatar: '/uploads/avatar_1793324678418_d.jpg',
+    bio: 'Executive business contributor.',
   },
 };
 
@@ -577,62 +613,100 @@ function generateAuthorBeatArticles(authorName: string, slug: string) {
 export default function AuthorProfilePage() {
   const params = useParams();
   const searchParams = useSearchParams();
+  const { user } = useAuth();
   const initialPageParam = parseInt(searchParams?.get('page') || '1', 10);
   const [currentPage, setCurrentPage] = useState(() => !isNaN(initialPageParam) && initialPageParam >= 1 ? initialPageParam : 1);
 
   const rawSlug = params?.slug as string | undefined;
   const slug = (Array.isArray(rawSlug) ? rawSlug[0] : rawSlug) || 'jason-feifer';
 
-  const [author, setAuthor] = useState<AuthorProfile>(() => getAuthorProfile(slug));
+  const [author, setAuthor] = useState<AuthorProfile>(() => {
+    const base = getAuthorProfile(slug);
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('entrepreneur_user');
+        if (stored) {
+          const u = JSON.parse(stored);
+          const cleanSlug = slug.toLowerCase().trim().replace(/[^a-z0-9]/g, '');
+          const userSlugWriter = (u.writerName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+          const userSlugName = (u.name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+          if (
+            (userSlugWriter && userSlugWriter === cleanSlug) ||
+            (userSlugName && userSlugName === cleanSlug) ||
+            (u.role === 'writer' && (cleanSlug === 'writer' || cleanSlug === 'writter' || cleanSlug === 'writeraccount'))
+          ) {
+            return {
+              ...base,
+              name: u.writerName || u.name || base.name,
+              avatar: u.avatar || base.avatar,
+              bio: u.bio && u.bio.trim() !== '' ? u.bio : base.bio,
+            };
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }
+    return base;
+  });
   const [dbArticles, setDbArticles] = useState<any[] | null>(null);
 
   // Synchronize state when slug parameter changes
-  useEffect(() => {
-    setAuthor(getAuthorProfile(slug));
-    setCurrentPage(1);
-  }, [slug]);
-
-  // Synchronize state when searchParams page parameter changes
-  useEffect(() => {
-    const p = parseInt(searchParams?.get('page') || '1', 10);
-    if (!isNaN(p) && p >= 1) {
-      setCurrentPage(p);
-    }
-  }, [searchParams]);
-
   // Fetch author details and author-specific published articles from database
   useEffect(() => {
+    let isCancelled = false;
+    setCurrentPage(1);
+
+    // 1. If currently logged in user matches slug, sync immediately
+    if (user) {
+      const cleanSlug = slug.toLowerCase().trim().replace(/[^a-z0-9]/g, '');
+      const userSlugWriter = (user.writerName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const userSlugName = (user.name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const isCurrentAuthor =
+        (userSlugWriter && userSlugWriter === cleanSlug) ||
+        (userSlugName && userSlugName === cleanSlug) ||
+        (user.role === 'writer' && (cleanSlug === 'writer' || cleanSlug === 'writter' || cleanSlug === 'writeraccount'));
+
+      if (isCurrentAuthor) {
+        setAuthor((prev) => ({
+          ...prev,
+          name: user.writerName || user.name || prev.name,
+          role: prev.role || 'Staff Writer',
+          badge: prev.badge || 'Entrepreneur Staff',
+          avatar: user.avatar || prev.avatar,
+          bio: user.bio && user.bio.trim() !== '' ? user.bio : prev.bio,
+        }));
+      }
+    }
+
+    // 2. Fetch author profile from database API
     fetch(`/api/user/profile?slug=${encodeURIComponent(slug)}`)
       .then((res) => res.json())
       .then((data) => {
-        if (data?.success && data?.profile) {
+        if (!isCancelled && data?.success && data?.profile) {
           const p = data.profile;
           setAuthor((prev) => ({
             ...prev,
-            name: p.fullName || p.name || prev.name,
+            name: p.writerName || p.fullName || p.name || prev.name,
             role: prev.role || 'Staff Writer',
             badge: prev.badge || 'Entrepreneur Staff',
-            avatar: p.avatar && !p.avatar.includes('butterfly') ? p.avatar : prev.avatar,
-            bio: p.bio && p.bio.length > 5 ? p.bio : prev.bio,
+            avatar: p.avatar && p.avatar.trim() !== '' ? p.avatar : prev.avatar,
+            bio: p.bio && p.bio.trim() !== '' ? p.bio : prev.bio,
           }));
         }
       })
       .catch(() => {});
 
-    // Fetch published articles written specifically by this author from the database
+    // 3. Fetch published articles written specifically by this author from the database
     fetch('/api/articles?status=published&limit=100')
       .then((res) => res.json())
       .then((data) => {
-        if (data?.success && Array.isArray(data.data) && data.data.length > 0) {
+        if (!isCancelled && data?.success && Array.isArray(data.data) && data.data.length > 0) {
           const authorSlugClean = slug.toLowerCase().replace(/[^a-z0-9]/g, '');
-          const authorNameClean = author.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-          
           const matching = data.data.filter((a: any) => {
             const artAuthor = (a.author?.name || a.authorName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
             return (
               artAuthor === authorSlugClean ||
-              artAuthor === authorNameClean ||
-              (artAuthor.length > 3 && authorNameClean.includes(artAuthor)) ||
               (artAuthor.length > 3 && authorSlugClean.includes(artAuthor))
             );
           });
@@ -644,7 +718,19 @@ export default function AuthorProfilePage() {
         }
       })
       .catch(() => {});
-  }, [slug, author.name]);
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [slug, user]);
+
+  // Synchronize state when searchParams page parameter changes
+  useEffect(() => {
+    const p = parseInt(searchParams?.get('page') || '1', 10);
+    if (!isNaN(p) && p >= 1) {
+      setCurrentPage(p);
+    }
+  }, [searchParams]);
 
   // Base articles belonging only to the selected author
   const authorBaseArticles = React.useMemo(() => {
