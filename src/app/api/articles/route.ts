@@ -122,9 +122,14 @@ export async function GET(request: Request) {
 
     const formatted = (rows as any[]).map((r) => {
       let resolvedImg = r.imageUrl;
-      if ((!resolvedImg || resolvedImg.trim() === '' || resolvedImg.includes('placeholder')) && r.content) {
+      if (r.content) {
         const m = r.content.match(/<img[^>]+src=["']([^"']+)["']/i);
-        if (m) resolvedImg = m[1];
+        if (m && m[1] && m[1].trim() !== '') {
+          resolvedImg = m[1];
+        }
+      }
+      if (!resolvedImg || resolvedImg.includes('placeholder')) {
+        resolvedImg = r.imageUrl && !r.imageUrl.includes('placeholder') ? r.imageUrl : '';
       }
       return {
         id: r.slug || String(r.id),
@@ -287,15 +292,20 @@ export async function POST(request: Request) {
       }
     }
 
-    // Resolve exact image: prefer explicit imageUrl if available, otherwise extract from content
-    let finalImageUrl = (imageUrl || '').trim();
-    if (!finalImageUrl || finalImageUrl.includes('placeholder')) {
+    // Resolve exact image: ALWAYS prefer actual image uploaded into content if present
+    let finalImageUrl = '';
+    if (content) {
       const m = (content || '').match(/<img[^>]+src=["']([^"']+)["']/i);
-      if (m) {
+      if (m && m[1] && m[1].trim() !== '') {
         finalImageUrl = m[1];
       }
     }
-    finalImageUrl = finalImageUrl || '';
+    if (!finalImageUrl) {
+      finalImageUrl = (imageUrl || '').trim();
+    }
+    if (finalImageUrl.includes('placeholder')) {
+      finalImageUrl = '';
+    }
 
     // Resolve exact excerpt/description
     let finalExcerpt = (excerpt || '').trim();
@@ -487,11 +497,14 @@ export async function PUT(request: Request) {
       params.push(content);
     }
     let finalImageUrl = imageUrl;
-    if ((finalImageUrl === undefined || finalImageUrl === '' || (typeof finalImageUrl === 'string' && finalImageUrl.includes('placeholder'))) && content) {
+    if (content) {
       const m = (content || '').match(/<img[^>]+src=["']([^"']+)["']/i);
-      if (m) {
+      if (m && m[1] && m[1].trim() !== '') {
         finalImageUrl = m[1];
       }
+    }
+    if (finalImageUrl && typeof finalImageUrl === 'string' && finalImageUrl.includes('placeholder')) {
+      finalImageUrl = '';
     }
     if (finalImageUrl !== undefined && finalImageUrl !== null) {
       updates.push('image_url = ?');

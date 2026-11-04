@@ -285,9 +285,14 @@ function WriterDashboardInner() {
       if (data?.success && Array.isArray(data.data)) {
         const mapped: ArticleItem[] = data.data.map((item: any) => {
           let resolvedImage = item.imageUrl;
-          if ((!resolvedImage || resolvedImage.trim() === '' || resolvedImage.includes('placeholder')) && item.content) {
+          if (item.content) {
             const m = item.content.match(/<img[^>]+src=["']([^"']+)["']/i);
-            if (m) resolvedImage = m[1];
+            if (m && m[1] && m[1].trim() !== '') {
+              resolvedImage = m[1];
+            }
+          }
+          if (resolvedImage && resolvedImage.includes('placeholder')) {
+            resolvedImage = '';
           }
           let resolvedExcerpt = item.excerpt;
           if ((!resolvedExcerpt || resolvedExcerpt.trim() === '') && item.content) {

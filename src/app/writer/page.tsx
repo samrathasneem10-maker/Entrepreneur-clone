@@ -543,6 +543,16 @@ function WriterEditorMain() {
 
   const getPreviewData = () => {
     const currentContent = editorRef.current ? editorRef.current.innerHTML : htmlContent;
+    let contentImg = '';
+    if (editorRef.current) {
+      contentImg = editorRef.current.querySelector('img')?.getAttribute('src') || '';
+    }
+    if (!contentImg && currentContent) {
+      const m = currentContent.match(/<img[^>]+src=["']([^"']+)["']/i);
+      if (m && m[1]) contentImg = m[1];
+    }
+    const resolvedImg = contentImg || featuredImageUrl || '';
+
     return {
       title: title.trim() || 'Untitled Article Headline',
       subtitle: subtitle.trim() || cardSummary.trim() || '',
@@ -556,9 +566,9 @@ function WriterEditorMain() {
         linkedinUrl: user?.linkedinUrl || 'https://www.linkedin.com',
       },
       date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase(),
-      imageUrl: featuredImageUrl || editorRef.current?.querySelector('img')?.getAttribute('src') || '',
-      imageCaption: imageCaption || '',
-      imageCredit: imageCredit || '',
+      imageUrl: resolvedImg,
+      imageCaption: activeImageCaption || imageCaption || '',
+      imageCredit: activeImageCredit || imageCredit || '',
       content: currentContent || '<p class="text-slate-400 italic">No article body written yet.</p>',
       tags: tags.length > 0 ? tags : ['BUSINESS', 'STARTUPS', 'LEADERSHIP'],
     };
@@ -2135,8 +2145,15 @@ function WriterEditorMain() {
 
     setIsSubmitting(true);
     const currentHtml = editorRef.current ? editorRef.current.innerHTML : htmlContent;
-    const editorImg = editorRef.current?.querySelector('img')?.getAttribute('src');
-    const latestImage = editorImg || featuredImageUrl || '';
+    let contentImg = '';
+    if (editorRef.current) {
+      contentImg = editorRef.current.querySelector('img')?.getAttribute('src') || '';
+    }
+    if (!contentImg && currentHtml) {
+      const m = currentHtml.match(/<img[^>]+src=["']([^"']+)["']/i);
+      if (m && m[1]) contentImg = m[1];
+    }
+    const latestImage = contentImg || featuredImageUrl || '';
     if (latestImage && latestImage !== featuredImageUrl) {
       setFeaturedImageUrl(latestImage);
     }
@@ -2194,13 +2211,11 @@ function WriterEditorMain() {
 
       const data = await res.json();
       if (data?.success) {
-        if (!editingArticleId && data.article?.dbId) {
-          setEditingArticleId(data.article.dbId);
-          if (typeof window !== 'undefined') {
-            window.history.replaceState(null, '', `?id=${data.article.dbId}`);
-          }
-        }
-        showToast('Draft saved successfully!', 'success');
+        localStorage.removeItem('entrepreneur_writer_draft');
+        showToast('Draft saved successfully! Redirecting to Drafts...', 'success');
+        setTimeout(() => {
+          router.push('/writer/dashboard?tab=draft');
+        }, 1000);
       } else {
         showToast(data?.error || 'Failed to save draft to server.', 'error');
       }
@@ -2221,8 +2236,15 @@ function WriterEditorMain() {
     const plainText = editorRef.current
       ? editorRef.current.innerText.replace(/\u00a0/g, ' ').replace(/&nbsp;/g, ' ').trim()
       : htmlContent.replace(/<[^>]*>/g, ' ').replace(/&nbsp;/gi, ' ').replace(/\u00a0/g, ' ').trim();
-    const editorImg = editorRef.current?.querySelector('img')?.getAttribute('src');
-    const latestImage = editorImg || featuredImageUrl || '';
+    let contentImg = '';
+    if (editorRef.current) {
+      contentImg = editorRef.current.querySelector('img')?.getAttribute('src') || '';
+    }
+    if (!contentImg && currentHtml) {
+      const m = currentHtml.match(/<img[^>]+src=["']([^"']+)["']/i);
+      if (m && m[1]) contentImg = m[1];
+    }
+    const latestImage = contentImg || featuredImageUrl || '';
 
     const hasDescription = plainText.length > 0;
     const hasImage = Boolean(latestImage && latestImage.trim() !== '' && !latestImage.includes('placeholder'));
@@ -2277,11 +2299,11 @@ function WriterEditorMain() {
 
       const data = await res.json();
       if (data?.success) {
-        showToast('Article submitted for review successfully!', 'success');
         localStorage.removeItem('entrepreneur_writer_draft');
+        showToast('Article submitted for review successfully! Redirecting...', 'success');
         setTimeout(() => {
           router.push('/writer/dashboard?tab=pending_review');
-        }, 1500);
+        }, 1000);
       } else {
         showToast(data?.error || 'Failed to submit article.', 'error');
       }
@@ -2329,7 +2351,7 @@ function WriterEditorMain() {
           {/* Left: CANCEL button + Dynamic Real-time Headline */}
           <div className="flex items-center gap-4 min-w-0">
             <button
-              onClick={() => router.push('/dashboard/writer')}
+              onClick={() => router.push('/writer/dashboard')}
               className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-300 hover:text-white transition-colors cursor-pointer shrink-0"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -3821,12 +3843,12 @@ function WriterEditorMain() {
                   )}
                 </div>
 
-                {/* Main Featured Article Image matching Reference Image */}
-                {(featuredImageUrl || editorRef.current?.querySelector('img')?.getAttribute('src')) && (
+                {/* Main Featured Article Image: Only display at the top if the article body does not already contain an image */}
+                {Boolean(!editorRef.current?.querySelector('img') && !(htmlContent && /<img[^>]+src=/i.test(htmlContent)) && featuredImageUrl && !featuredImageUrl.includes('placeholder')) && (
                   <>
                     <div className="w-full my-4 overflow-hidden border border-slate-200">
                       <img
-                        src={featuredImageUrl || editorRef.current?.querySelector('img')?.getAttribute('src') || ''}
+                        src={featuredImageUrl}
                         alt={title || 'Featured Article Image'}
                         className="w-full h-auto max-h-[580px] object-cover"
                       />
@@ -3867,9 +3889,9 @@ function WriterEditorMain() {
                   </ul>
                 </div>
 
-                {/* Rendered HTML Content */}
+                {/* Rendered HTML Content with exact editor formatting */}
                 <div
-                  className="prose prose-slate max-w-none text-slate-800 text-base leading-relaxed break-words font-serif pt-4 space-y-4"
+                  className="article-editor-content prose prose-slate max-w-none text-slate-800 text-base leading-relaxed break-words font-serif pt-4 space-y-4"
                   dangerouslySetInnerHTML={{
                     __html:
                       editorRef.current?.innerHTML ||

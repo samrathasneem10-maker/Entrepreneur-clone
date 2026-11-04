@@ -128,10 +128,10 @@ export default function ArticlePreviewPage() {
   const authorBio = previewData?.author?.bio || user?.bio || 'Business news reporter and contributor at Entrepreneur.com, covering high-growth ventures, market trends, and modern workplace leadership.';
   const authorLinkedin = previewData?.author?.linkedinUrl || user?.linkedinUrl || 'https://www.linkedin.com';
   const date = previewData?.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase();
-  const imageUrl = previewData?.imageUrl || '/images/side-hustle-53.jpg';
-  const imageCaption = previewData?.imageCaption || 'Opinions expressed by Entrepreneur contributors are their own.';
-  const imageCredit = previewData?.imageCredit || 'kundoy | Getty Images';
-  const content = previewData?.content || '<p>High-stakes decision-making defines executive leadership. Discover the core frameworks used by top founders to align stakeholders and maintain operational velocity.</p>';
+  const imageUrl = previewData?.imageUrl || '';
+  const imageCaption = previewData?.imageCaption || '';
+  const imageCredit = previewData?.imageCredit || '';
+  const content = previewData?.content || '';
   const tags: string[] = previewData?.tags || ['BUSINESS', 'STARTUPS', 'LEADERSHIP'];
 
   const handleTogglePlay = () => {
@@ -356,22 +356,26 @@ export default function ArticlePreviewPage() {
               )}
             </div>
 
-            {/* Featured Image */}
-            {imageUrl && (
-              <div className="w-full my-4 overflow-hidden border border-slate-200">
-                <img
-                  src={imageUrl}
-                  alt={title}
-                  className="w-full h-auto max-h-[580px] object-cover"
-                />
-              </div>
-            )}
+            {/* Featured Image: Only display at the top if the article body does not already contain an image */}
+            {Boolean(imageUrl && !imageUrl.includes('placeholder') && !content.includes('<img')) && (
+              <>
+                <div className="w-full my-4 overflow-hidden border border-slate-200">
+                  <img
+                    src={imageUrl}
+                    alt={title}
+                    className="w-full h-auto max-h-[580px] object-cover"
+                  />
+                </div>
 
-            {/* Caption & Credit */}
-            <div className="flex items-center justify-between text-xs text-slate-500 font-sans pt-1 pb-2">
-              <span className="italic">{imageCaption}</span>
-              <span className="text-slate-400 font-sans text-[11px]">{imageCredit}</span>
-            </div>
+                {/* Caption & Credit */}
+                {(imageCaption || imageCredit) && (
+                  <div className="flex items-center justify-between text-xs text-slate-500 font-sans pt-1 pb-2">
+                    <span className="italic">{imageCaption}</span>
+                    <span className="text-slate-400 font-sans text-[11px]">{imageCredit}</span>
+                  </div>
+                )}
+              </>
+            )}
 
             {/* Key Takeaways */}
             <div className="pt-2 pb-1">
@@ -394,9 +398,9 @@ export default function ArticlePreviewPage() {
               </ul>
             </div>
 
-            {/* Rendered HTML Content */}
+            {/* Rendered HTML Content with exact editor formatting */}
             <div
-              className="prose prose-slate max-w-none text-slate-800 text-base leading-relaxed break-words font-serif pt-4 space-y-4"
+              className="article-editor-content prose prose-slate max-w-none text-slate-800 text-base leading-relaxed break-words font-serif pt-4 space-y-4"
               dangerouslySetInnerHTML={{ __html: content }}
             />
 
