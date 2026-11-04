@@ -1535,10 +1535,11 @@ function WriterEditorMain() {
         figcaption = document.createElement('figcaption');
         fig.appendChild(figcaption);
       }
-      figcaption.className = 'flex items-center justify-between text-xs text-slate-500 mt-1 px-0.5 w-full font-sans select-none';
+      figcaption.className = 'flex items-center justify-between text-[11px] text-slate-500 mt-0.5 px-0.5 w-full font-sans select-none';
+      figcaption.style.cssText = 'margin-top: 3px !important; margin-bottom: 0 !important; padding: 0 !important; display: flex !important; align-items: center !important; justify-content: space-between !important; width: 100% !important;';
       figcaption.innerHTML = `
-        <span class="image-caption text-left text-slate-600 font-normal">${captionSafe}</span>
-        <span class="image-credit text-right text-slate-400 font-medium tracking-wide">${formattedCredit}</span>
+        <span class="image-caption text-left text-slate-600 font-normal truncate max-w-[60%]">${captionSafe}</span>
+        <span class="image-credit text-right text-slate-400 font-medium tracking-wide truncate max-w-[40%]">${formattedCredit}</span>
       `;
     }
     handleEditorInput();
@@ -1822,9 +1823,9 @@ function WriterEditorMain() {
     const altSafe = (captionSafe || imageKeywords.join(', ') || title.trim() || 'Article Image').replace(/"/g, '&quot;');
 
     const captionMarkup = (captionSafe || formattedCredit)
-      ? `<figcaption class="flex items-center justify-between text-xs text-slate-500 mt-0.5 px-0.5 w-full font-sans select-none">
-          <span class="image-caption text-left text-slate-600 font-normal">${captionSafe}</span>
-          <span class="image-credit text-right text-slate-400 font-medium tracking-wide">${formattedCredit}</span>
+      ? `<figcaption class="flex items-center justify-between text-[11px] text-slate-500 w-full font-sans select-none" style="margin-top: 3px !important; margin-bottom: 0 !important; padding: 0 !important; display: flex !important; align-items: center !important; justify-content: space-between !important; width: 100% !important;">
+          <span class="image-caption text-left text-slate-600 font-normal truncate max-w-[60%]">${captionSafe}</span>
+          <span class="image-credit text-right text-slate-400 font-medium tracking-wide truncate max-w-[40%]">${formattedCredit}</span>
         </figcaption>`
       : '';
 
@@ -1843,14 +1844,16 @@ function WriterEditorMain() {
       if (img) {
         img.src = finalUrl;
         img.alt = altSafe;
+        img.style.cssText = 'margin: 0 !important; padding: 0 !important; display: block !important;';
       }
       const figcaption = targetFigure.querySelector('figcaption');
       if (figcaption) {
         if (captionMarkup) {
-          figcaption.className = 'flex items-center justify-between text-xs text-slate-500 mt-0.5 px-0.5 w-full font-sans select-none';
+          figcaption.className = 'flex items-center justify-between text-[11px] text-slate-500 w-full font-sans select-none';
+          figcaption.style.cssText = 'margin-top: 3px !important; margin-bottom: 0 !important; padding: 0 !important; display: flex !important; align-items: center !important; justify-content: space-between !important; width: 100% !important;';
           figcaption.innerHTML = `
-            <span class="image-caption text-left text-slate-600 font-normal">${captionSafe}</span>
-            <span class="image-credit text-right text-slate-400 font-medium tracking-wide">${formattedCredit}</span>
+            <span class="image-caption text-left text-slate-600 font-normal truncate max-w-[60%]">${captionSafe}</span>
+            <span class="image-credit text-right text-slate-400 font-medium tracking-wide truncate max-w-[40%]">${formattedCredit}</span>
           `;
         } else {
           figcaption.remove();
@@ -1876,6 +1879,7 @@ function WriterEditorMain() {
       });
 
       handleEditorInput();
+      updateImageSelectionBounds(targetFigure);
       setShowImageModal(false);
       showToast('Image updated successfully in place!', 'success');
       return;
@@ -1883,8 +1887,8 @@ function WriterEditorMain() {
 
     const newImageId = 'img_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
     const figureMarkup = `
-      <figure class="article-image-figure group relative cursor-pointer ${alignClass} ${sizeClass} select-none" data-image-id="${newImageId}" data-size="${imageSize}" data-align="${imageAlignment}" data-caption="${captionSafe}" data-credit="${rawCredit}" contenteditable="false">
-        <img src="${finalUrl}" alt="${altSafe}" class="rounded-none w-full h-auto object-cover shadow-sm border border-slate-200 pointer-events-none" />
+      <figure class="article-image-figure group relative cursor-pointer ${alignClass} ${sizeClass} select-none" data-image-id="${newImageId}" data-size="${imageSize}" data-align="${imageAlignment}" data-caption="${captionSafe}" data-credit="${rawCredit}" contenteditable="false" style="display: block !important; margin: 1.5rem auto !important; width: fit-content !important;">
+        <img src="${finalUrl}" alt="${altSafe}" class="rounded-none w-full h-auto block object-cover shadow-2xs border border-slate-200 pointer-events-none" style="margin: 0 !important; padding: 0 !important; display: block !important;" />
         ${captionMarkup}
       </figure>
       <p><br></p>
@@ -1925,8 +1929,17 @@ function WriterEditorMain() {
         setSelectedImageFigure(inserted);
         setActiveImageCaption(captionSafe);
         setActiveImageCredit(rawCredit);
+        setSelectedImageProps({
+          src: finalUrl,
+          alt: altSafe,
+          caption: captionSafe,
+          credit: rawCredit,
+          size: imageSize,
+          alignment: imageAlignment,
+        });
+        updateImageSelectionBounds(inserted);
       }
-    }, 50);
+    }, 60);
     showToast('Image inserted into article body!', 'success');
   };
 
