@@ -1601,15 +1601,22 @@ function WriterEditorMain() {
       'w-fit'
     );
 
+    let figureInlineStyle = 'display: block !important; margin: 1.5rem auto !important; clear: both !important; width: fit-content !important; max-width: 100% !important;';
+
     if (alignment === 'left') {
       selectedImageFigure.classList.add('float-left', 'mr-6', 'mb-4', 'my-2', 'w-fit');
+      figureInlineStyle = 'float: left !important; margin: 0.5rem 1.5rem 1rem 0 !important; display: block !important; width: fit-content !important; max-width: 100% !important;';
     } else if (alignment === 'right') {
       selectedImageFigure.classList.add('float-right', 'ml-6', 'mb-4', 'my-2', 'w-fit');
+      figureInlineStyle = 'float: right !important; margin: 0.5rem 0 1rem 1.5rem !important; display: block !important; width: fit-content !important; max-width: 100% !important;';
     } else if (alignment === 'no_wrap') {
       selectedImageFigure.classList.add('my-6', 'block', 'clear-both', 'w-fit');
+      figureInlineStyle = 'display: block !important; margin: 1.5rem auto 1.5rem 0 !important; clear: both !important; width: fit-content !important; max-width: 100% !important;';
     } else {
       selectedImageFigure.classList.add('my-6', 'block', 'clear-both', 'mx-auto', 'text-center', 'w-fit');
     }
+
+    selectedImageFigure.style.cssText = figureInlineStyle;
 
     setSelectedImageProps((prev) => (prev ? { ...prev, alignment } : null));
     handleEditorInput();
@@ -1620,35 +1627,62 @@ function WriterEditorMain() {
   };
 
   const handleMoveImage = (direction: 'up' | 'down') => {
-    if (!selectedImageFigure || !selectedImageFigure.parentNode) return;
-    const parent = selectedImageFigure.parentNode;
-    if (direction === 'up') {
-      let target = selectedImageFigure.previousElementSibling;
-      while (target && target.tagName === 'P' && !target.textContent?.trim() && target.previousElementSibling) {
-        target = target.previousElementSibling;
+    if (!selectedImageFigure || !editorRef.current) return;
+    const editor = editorRef.current;
+    let figure = selectedImageFigure;
+
+    // Elevate figure to direct child of editorRef if nested
+    if (figure.parentElement && figure.parentElement !== editor && editor.contains(figure.parentElement)) {
+      const parentBlock = figure.parentElement;
+      editor.insertBefore(figure, parentBlock);
+      if (parentBlock.tagName === 'P' && !parentBlock.textContent?.trim() && !parentBlock.querySelector('img')) {
+        parentBlock.remove();
       }
-      if (target) {
-        parent.insertBefore(selectedImageFigure, target);
+    }
+
+    if (direction === 'up') {
+      let target = figure.previousElementSibling as HTMLElement | null;
+      while (
+        target &&
+        target.tagName === 'P' &&
+        !target.textContent?.trim() &&
+        !target.querySelector('img') &&
+        target.previousElementSibling
+      ) {
+        const emptyP = target;
+        target = target.previousElementSibling as HTMLElement | null;
+        emptyP.remove();
+      }
+      if (target && editor.contains(target)) {
+        editor.insertBefore(figure, target);
         handleEditorInput();
         setTimeout(() => {
-          if (selectedImageFigure) updateImageSelectionBounds(selectedImageFigure);
-        }, 50);
+          updateImageSelectionBounds(figure);
+        }, 30);
       }
     } else {
-      let target = selectedImageFigure.nextElementSibling;
-      while (target && target.tagName === 'P' && !target.textContent?.trim() && target.nextElementSibling) {
-        target = target.nextElementSibling;
+      let target = figure.nextElementSibling as HTMLElement | null;
+      while (
+        target &&
+        target.tagName === 'P' &&
+        !target.textContent?.trim() &&
+        !target.querySelector('img') &&
+        target.nextElementSibling
+      ) {
+        const emptyP = target;
+        target = target.nextElementSibling as HTMLElement | null;
+        emptyP.remove();
       }
-      if (target) {
+      if (target && editor.contains(target)) {
         if (target.nextSibling) {
-          parent.insertBefore(selectedImageFigure, target.nextSibling);
+          editor.insertBefore(figure, target.nextSibling);
         } else {
-          parent.appendChild(selectedImageFigure);
+          editor.appendChild(figure);
         }
         handleEditorInput();
         setTimeout(() => {
-          if (selectedImageFigure) updateImageSelectionBounds(selectedImageFigure);
-        }, 50);
+          updateImageSelectionBounds(figure);
+        }, 30);
       }
     }
   };
@@ -1822,11 +1856,17 @@ function WriterEditorMain() {
 
     const altSafe = (captionSafe || imageKeywords.join(', ') || title.trim() || 'Article Image').replace(/"/g, '&quot;');
 
+    let figureInlineStyle = 'display: block !important; margin: 1.5rem auto !important; clear: both !important; width: fit-content !important; max-width: 100% !important;';
+    if (imageAlignment === 'left') {
+      figureInlineStyle = 'float: left !important; margin: 0.5rem 1.5rem 1rem 0 !important; display: block !important; width: fit-content !important; max-width: 100% !important;';
+    } else if (imageAlignment === 'right') {
+      figureInlineStyle = 'float: right !important; margin: 0.5rem 0 1rem 1.5rem !important; display: block !important; width: fit-content !important; max-width: 100% !important;';
+    } else if (imageAlignment === 'no_wrap') {
+      figureInlineStyle = 'display: block !important; margin: 1.5rem auto 1.5rem 0 !important; clear: both !important; width: fit-content !important; max-width: 100% !important;';
+    }
+
     const captionMarkup = (captionSafe || formattedCredit)
-      ? `<figcaption class="flex items-center justify-between text-[11px] text-slate-500 w-full font-sans select-none" style="margin-top: 3px !important; margin-bottom: 0 !important; padding: 0 !important; display: flex !important; align-items: center !important; justify-content: space-between !important; width: 100% !important;">
-          <span class="image-caption text-left text-slate-600 font-normal truncate max-w-[60%]">${captionSafe}</span>
-          <span class="image-credit text-right text-slate-400 font-medium tracking-wide truncate max-w-[40%]">${formattedCredit}</span>
-        </figcaption>`
+      ? `<figcaption class="flex items-center justify-between text-[11px] text-slate-500 w-full font-sans select-none" style="margin-top: 2px !important; margin-bottom: 0 !important; padding: 0 !important; display: flex !important; align-items: center !important; justify-content: space-between !important; width: 100% !important;"><span class="image-caption text-left text-slate-600 font-normal truncate max-w-[60%]">${captionSafe}</span><span class="image-credit text-right text-slate-400 font-medium tracking-wide truncate max-w-[40%]">${formattedCredit}</span></figcaption>`
       : '';
 
     const targetFigure =
@@ -1840,6 +1880,7 @@ function WriterEditorMain() {
       targetFigure.dataset.caption = captionSafe;
       targetFigure.dataset.credit = rawCredit;
       targetFigure.className = `article-image-figure group relative cursor-pointer ${alignClass} ${sizeClass} select-none`;
+      targetFigure.style.cssText = figureInlineStyle;
       const img = targetFigure.querySelector('img');
       if (img) {
         img.src = finalUrl;
@@ -1850,11 +1891,8 @@ function WriterEditorMain() {
       if (figcaption) {
         if (captionMarkup) {
           figcaption.className = 'flex items-center justify-between text-[11px] text-slate-500 w-full font-sans select-none';
-          figcaption.style.cssText = 'margin-top: 3px !important; margin-bottom: 0 !important; padding: 0 !important; display: flex !important; align-items: center !important; justify-content: space-between !important; width: 100% !important;';
-          figcaption.innerHTML = `
-            <span class="image-caption text-left text-slate-600 font-normal truncate max-w-[60%]">${captionSafe}</span>
-            <span class="image-credit text-right text-slate-400 font-medium tracking-wide truncate max-w-[40%]">${formattedCredit}</span>
-          `;
+          figcaption.style.cssText = 'margin-top: 2px !important; margin-bottom: 0 !important; padding: 0 !important; display: flex !important; align-items: center !important; justify-content: space-between !important; width: 100% !important;';
+          figcaption.innerHTML = `<span class="image-caption text-left text-slate-600 font-normal truncate max-w-[60%]">${captionSafe}</span><span class="image-credit text-right text-slate-400 font-medium tracking-wide truncate max-w-[40%]">${formattedCredit}</span>`;
         } else {
           figcaption.remove();
         }
@@ -1886,13 +1924,7 @@ function WriterEditorMain() {
     }
 
     const newImageId = 'img_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
-    const figureMarkup = `
-      <figure class="article-image-figure group relative cursor-pointer ${alignClass} ${sizeClass} select-none" data-image-id="${newImageId}" data-size="${imageSize}" data-align="${imageAlignment}" data-caption="${captionSafe}" data-credit="${rawCredit}" contenteditable="false" style="display: block !important; margin: 1.5rem auto !important; width: fit-content !important;">
-        <img src="${finalUrl}" alt="${altSafe}" class="rounded-none w-full h-auto block object-cover shadow-2xs border border-slate-200 pointer-events-none" style="margin: 0 !important; padding: 0 !important; display: block !important;" />
-        ${captionMarkup}
-      </figure>
-      <p><br></p>
-    `;
+    const figureMarkup = `<figure class="article-image-figure group relative cursor-pointer ${alignClass} ${sizeClass} select-none" data-image-id="${newImageId}" data-size="${imageSize}" data-align="${imageAlignment}" data-caption="${captionSafe}" data-credit="${rawCredit}" contenteditable="false" style="${figureInlineStyle}"><img src="${finalUrl}" alt="${altSafe}" class="rounded-none w-full h-auto block object-cover shadow-2xs border border-slate-200 pointer-events-none" style="margin: 0 !important; padding: 0 !important; display: block !important;" />${captionMarkup}</figure><p><br></p>`;
 
     if (editorRef.current) {
       editorRef.current.focus();
@@ -2398,11 +2430,16 @@ function WriterEditorMain() {
                   onClick={() => {
                     saveSelectionRange();
                     setSelectedImageFigure(null);
-                    setModalImageUrl('/images/writer-reference-book.png');
+                    editingImageFigureRef.current = null;
+                    editingImageIdRef.current = null;
+                    setModalImageUrl('');
+                    setUploadedFileName('');
                     setImageCaption('');
                     setImageCredit('');
                     setActiveImageCaption('');
                     setActiveImageCredit('');
+                    setImageKeywords([]);
+                    setImageKeywordInput('');
                     setShowImageModal(true);
                   }}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FFF7ED] border border-[#FFEDD5] hover:bg-[#FFEDD5] text-[#EA580C] text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer shadow-2xs"
@@ -2494,6 +2531,10 @@ function WriterEditorMain() {
                 {selectedImageFigure && toolbarPosition && (
                   <div
                     onClick={(e) => e.stopPropagation()}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
                     style={{ top: `${toolbarPosition.top}px`, left: `${toolbarPosition.left}px` }}
                     className="floating-image-toolbar absolute z-30 bg-[#0B132B] text-white px-3 py-1.5 rounded-xl shadow-2xl border border-slate-700 flex items-center gap-2.5 text-xs animate-in fade-in duration-150 whitespace-nowrap"
                   >

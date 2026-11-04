@@ -138,7 +138,7 @@ export const HeroNewsSection: React.FC = () => {
               {latestArticles.slice(0, 4).map((art) => (
                 <article
                   key={art.id}
-                  className="py-2 first:pt-1 last:pb-0 2xl:py-4.5 first:2xl:pt-1.5 last:2xl:pb-0 flex items-center justify-between gap-3 xl:gap-4 group"
+                  className="py-2.5 first:pt-1 last:pb-0 2xl:py-3.5 first:2xl:pt-1 last:2xl:pb-0 flex items-center justify-between gap-3 xl:gap-4 group"
                 >
                   <div className="flex-1 min-w-0 pr-1">
                     <span className="text-[9.5px] font-bold text-[#1642D0] uppercase tracking-wider block font-sans mb-0.5 no-underline hover:no-underline active:no-underline focus:no-underline">
@@ -156,7 +156,7 @@ export const HeroNewsSection: React.FC = () => {
 
                   <Link
                     href={`/article/${art.slug || art.id}`}
-                    className="w-[110px] h-[78px] sm:w-[118px] sm:h-[88px] lg:w-[118px] lg:h-[90px] xl:w-[122px] xl:h-[94px] 2xl:w-[165px] 2xl:h-[122px] shrink-0 rounded-none overflow-hidden bg-slate-100 block cursor-pointer"
+                    className="w-[116px] h-[86px] sm:w-[124px] sm:h-[94px] lg:w-[124px] lg:h-[96px] xl:w-[128px] xl:h-[100px] 2xl:w-[172px] 2xl:h-[136px] shrink-0 rounded-none overflow-hidden bg-slate-100 block cursor-pointer"
                   >
                     <img
                       src={art.imageUrl}

@@ -247,6 +247,7 @@ figure.article-image-figure img,
   display: block !important;
   margin-top: 0 !important;
   margin-bottom: 0 !important;
+  padding: 0 !important;
 }
 
 figure.article-image-figure figcaption,
