@@ -60,6 +60,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
       })
       .catch(() => {});
+    // Listen for cross-component user updates
+    const handleUserUpdated = (e: any) => {
+      if (e?.detail) {
+        setUser((prev) => (prev ? { ...prev, ...e.detail } : e.detail));
+      }
+    };
+    window.addEventListener('entrepreneur_user_updated', handleUserUpdated);
+    return () => window.removeEventListener('entrepreneur_user_updated', handleUserUpdated);
   }, []);
 
   const openLogin = () => {
@@ -94,6 +102,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         localStorage.setItem('entrepreneur_user', JSON.stringify(updated));
       } catch {
         // ignore
+      }
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('entrepreneur_user_updated', { detail: updated }));
       }
       return updated;
     });

@@ -191,13 +191,13 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
                     onClick={() => setShowAccountDropdown((prev) => !prev)}
                     className="w-8 h-8 rounded-full overflow-hidden bg-slate-200 border border-slate-300 hover:ring-2 hover:ring-[#1642D0]/40 transition-all cursor-pointer select-none flex items-center justify-center shrink-0"
                     aria-label="User Account Menu"
-                    title={user.name || 'User Account'}
+                    title={user.name || user.writerName || 'User Account'}
                   >
                     {/* Circular Profile Avatar */}
                     {user.avatar ? (
                       <img
                         src={user.avatar}
-                        alt={user.name || 'User'}
+                        alt={user.name || user.writerName || 'User'}
                         className="w-full h-full object-cover"
                         onError={(e) => {
                           // Professional neutral avatar fallback
@@ -206,7 +206,7 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
                       />
                     ) : (
                       <div className="w-full h-full bg-[#1642D0] text-white text-[11px] sm:text-xs font-bold flex items-center justify-center uppercase">
-                        {user.name ? user.name.charAt(0) : 'U'}
+                        {(user.name || user.writerName || 'U').charAt(0)}
                       </div>
                     )}
                   </button>
@@ -215,7 +215,7 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
                   {showAccountDropdown && (
                     <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-2xl border border-slate-200 py-2 z-50 text-left animate-in fade-in zoom-in-95 duration-100">
                       <div className="px-4 py-2.5 border-b border-slate-100 bg-slate-50/80">
-                        <p className="text-xs font-bold text-slate-900 truncate">{user.name}</p>
+                        <p className="text-xs font-bold text-slate-900 truncate">{user.name || user.writerName}</p>
                         <p className="text-[11px] text-slate-500 truncate">{user.email || 'user@entrepreneur.com'}</p>
                         {user.role !== 'writer' && (
                           <span className="inline-block mt-1 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-50 text-[#1642D0] border border-blue-100">

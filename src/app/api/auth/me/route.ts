@@ -43,12 +43,12 @@ export async function GET() {
       authenticated: true,
       user: {
         id: u.id,
-        name: u.name || 'mishal',
+        name: u.name || 'Writer',
         email: u.email,
         role: u.role || 'writer',
         avatar: s.avatar || u.avatar || '/images/user-avatar-butterfly.png',
         bio: s.bio || u.bio || '',
-        writerName: s.writer_name || u.writer_name || u.name,
+        writerName: u.name || s.writer_name || u.writer_name || 'Writer',
         linkedinUrl: s.linkedin_url || u.linkedin_url || '',
       },
     });

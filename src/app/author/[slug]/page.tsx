@@ -637,7 +637,7 @@ export default function AuthorProfilePage() {
           ) {
             return {
               ...base,
-              name: u.writerName || u.name || base.name,
+              name: u.name || u.writerName || base.name,
               avatar: u.avatar || base.avatar,
               bio: u.bio && u.bio.trim() !== '' ? u.bio : base.bio,
             };
@@ -670,7 +670,7 @@ export default function AuthorProfilePage() {
       if (isCurrentAuthor) {
         setAuthor((prev) => ({
           ...prev,
-          name: user.writerName || user.name || prev.name,
+          name: user.name || user.writerName || prev.name,
           role: prev.role || 'Staff Writer',
           badge: prev.badge || 'Entrepreneur Staff',
           avatar: user.avatar || prev.avatar,
@@ -687,7 +687,7 @@ export default function AuthorProfilePage() {
           const p = data.profile;
           setAuthor((prev) => ({
             ...prev,
-            name: p.writerName || p.fullName || p.name || prev.name,
+            name: p.name || p.fullName || p.writerName || prev.name,
             role: prev.role || 'Staff Writer',
             badge: prev.badge || 'Entrepreneur Staff',
             avatar: p.avatar && p.avatar.trim() !== '' ? p.avatar : prev.avatar,

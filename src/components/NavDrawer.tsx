@@ -172,14 +172,25 @@ export const NavDrawer: React.FC<NavDrawerProps> = ({ isOpen, onClose }) => {
         {user ? (
           <div className="p-3.5 sm:p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between shrink-0">
             <Link
-              href="/dashboard"
+              href={user.role === 'writer' ? '/dashboard/writer' : '/dashboard'}
               onClick={onClose}
-              className="flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-800 hover:text-[#1642D0] transition-colors"
+              className="flex items-center gap-2.5 text-xs sm:text-sm font-bold text-slate-800 hover:text-[#1642D0] transition-colors"
             >
-              <div className="w-7 h-7 rounded-full bg-[#1642D0] text-white flex items-center justify-center text-[11px] font-extrabold uppercase">
-                {user.name.charAt(0)}
-              </div>
-              <span className="truncate max-w-[170px]">{user.name}</span>
+              {user.avatar ? (
+                <img
+                  src={user.avatar}
+                  alt={user.name || user.writerName || 'User'}
+                  className="w-7 h-7 rounded-full object-cover border border-slate-300"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLElement).style.display = 'none';
+                  }}
+                />
+              ) : (
+                <div className="w-7 h-7 rounded-full bg-[#1642D0] text-white flex items-center justify-center text-[11px] font-extrabold uppercase">
+                  {(user.name || user.writerName || 'U').charAt(0)}
+                </div>
+              )}
+              <span className="truncate max-w-[170px]">{user.name || user.writerName}</span>
             </Link>
             <button
               onClick={() => {

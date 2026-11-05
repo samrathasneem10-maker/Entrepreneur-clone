@@ -39,18 +39,17 @@ export default function ProfileSettingsModal({
     setErrorMessage(null);
     setSuccessMessage(null);
 
-    const initialEmail = user?.email || 'mishalzuhrie@gmail.com';
-    const initialName = user?.name || 'mishal';
+    const initialEmail = user?.email || 'writter@gmail.com';
+    const initialName = user?.name || '';
     const initialAvatar = user?.avatar || '/images/user-avatar-butterfly.png';
-    const initialBio = user?.bio || 'Writer User';
-    const initialWriterName = user?.writerName || initialName;
+    const initialBio = user?.bio || 'Executive business contributor.';
     const initialLinkedin = user?.linkedinUrl || 'https://www.linkedin.com/in/your-profile';
 
     setFullName(initialName);
     setEmail(initialEmail);
     setAvatar(initialAvatar);
     setBio(initialBio);
-    setWriterName(initialWriterName);
+    setWriterName(initialName);
     setLinkedinUrl(initialLinkedin);
 
     // Fetch latest profile from database to ensure fresh state
@@ -59,11 +58,14 @@ export default function ProfileSettingsModal({
       .then((data) => {
         if (data?.success && data?.profile) {
           const p = data.profile;
-          if (p.fullName || p.name) setFullName(p.fullName || p.name);
+          const freshName = p.name || p.fullName;
+          if (freshName) {
+            setFullName(freshName);
+            setWriterName(freshName);
+          }
           if (p.email) setEmail(p.email);
           if (p.avatar) setAvatar(p.avatar);
-          if (p.bio !== undefined) setBio(p.bio || 'Writer User');
-          if (p.writerName) setWriterName(p.writerName);
+          if (p.bio !== undefined) setBio(p.bio || '');
           if (p.linkedinUrl) setLinkedinUrl(p.linkedinUrl);
         }
       })
@@ -102,7 +104,7 @@ export default function ProfileSettingsModal({
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            currentEmail: email || user?.email || 'mishalzuhrie@gmail.com',
+            currentEmail: user?.email || email || 'writter@gmail.com',
             avatar: newAvatarUrl,
           }),
         });
@@ -141,6 +143,7 @@ export default function ProfileSettingsModal({
     setErrorMessage(null);
 
     const currentEmail = user?.email || email;
+    const updatedFullName = fullName.trim();
 
     try {
       const res = await fetch('/api/user/profile', {
@@ -148,10 +151,10 @@ export default function ProfileSettingsModal({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           currentEmail,
-          fullName: fullName.trim(),
+          fullName: updatedFullName,
           newEmail: email.trim(),
           bio: bio.trim(),
-          writerName: writerName.trim() || fullName.trim(),
+          writerName: updatedFullName,
           linkedinUrl: linkedinUrl.trim(),
           avatar,
         }),
@@ -162,11 +165,11 @@ export default function ProfileSettingsModal({
       if (data?.success) {
         // Update user session in AuthContext & localStorage
         const updatedData = {
-          name: fullName.trim(),
+          name: updatedFullName,
           email: email.trim(),
           avatar,
           bio: bio.trim(),
-          writerName: writerName.trim() || fullName.trim(),
+          writerName: updatedFullName,
           linkedinUrl: linkedinUrl.trim(),
         };
 
@@ -296,8 +299,11 @@ export default function ProfileSettingsModal({
               <input
                 type="text"
                 value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                placeholder="mishal"
+                onChange={(e) => {
+                  setFullName(e.target.value);
+                  setWriterName(e.target.value);
+                }}
+                placeholder="Full Name"
                 required
                 className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#003B64] focus:border-[#003B64] transition-colors"
               />

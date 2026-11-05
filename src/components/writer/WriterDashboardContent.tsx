@@ -419,7 +419,7 @@ function WriterDashboardInner() {
     });
   }, [articles, searchQuery]);
 
-  const writerDisplayName = user?.writerName || user?.name || 'Kalid Writer User';
+  const writerDisplayName = user?.name || user?.writerName || 'Writer';
 
   const tabsConfig: { key: WriterTab; label: string; count: number; icon: React.ComponentType<{ className?: string }> }[] = [
     { key: 'published', label: 'Published', count: statusCounts.published, icon: CheckCircle2 },

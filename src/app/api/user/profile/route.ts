@@ -83,7 +83,7 @@ export async function GET(request: Request) {
     );
 
     const s = settings?.[0] || {};
-    const effectiveWriterName = s.writer_name || u.writer_name || u.name || 'Writer Account';
+    const effectiveWriterName = u.name || s.writer_name || u.writer_name || 'Writer';
     const effectiveBio = s.bio || u.bio || '';
     const effectiveAvatar = s.avatar || u.avatar || '/images/user-avatar-butterfly.png';
 
@@ -93,13 +93,13 @@ export async function GET(request: Request) {
         id: u.id,
         firstName,
         lastName,
-        fullName: effectiveWriterName || u.name,
-        name: effectiveWriterName || u.name,
+        fullName: u.name || effectiveWriterName,
+        name: u.name || effectiveWriterName,
         email: u.email,
         role: u.role || 'writer',
         avatar: effectiveAvatar,
         bio: effectiveBio,
-        writerName: effectiveWriterName,
+        writerName: u.name || effectiveWriterName,
         linkedinUrl: s.linkedin_url || u.linkedin_url || '',
         phone: s.phone || '',
         facebookConnected: Boolean(s.facebook_connected),

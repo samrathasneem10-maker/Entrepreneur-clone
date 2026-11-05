@@ -559,7 +559,7 @@ function WriterEditorMain() {
       category: mainCategory || 'BUILDING A BUSINESS',
       subCategories: selectedSubCategories,
       author: {
-        name: authorName.trim() || user?.writerName || user?.name || 'Sherin Shibu',
+        name: user?.name || user?.writerName || authorName.trim() || 'Sherin Shibu',
         avatar: user?.avatar || '/images/user-avatar-butterfly.png',
         title: user?.title || 'Entrepreneur Staff',
         bio: user?.bio || 'Business news reporter and contributor at Entrepreneur.com, covering high-growth ventures, market trends, and modern workplace leadership.',
@@ -673,12 +673,14 @@ function WriterEditorMain() {
     }
   }, [searchParams]);
 
-  // Hydrate initial author name from logged in user if not set
+  // Hydrate initial author name from logged in user if not set or updated
   useEffect(() => {
-    if (!authorName && user) {
-      setAuthorName(user.writerName || user.name || '');
+    if (user?.name) {
+      setAuthorName(user.name);
+    } else if (user?.writerName) {
+      setAuthorName(user.writerName);
     }
-  }, [user, authorName]);
+  }, [user?.name, user?.writerName]);
 
   // Dynamic Category Loading from Database: Load ALL categories and subcategories
   useEffect(() => {
@@ -3716,7 +3718,7 @@ function WriterEditorMain() {
                 <div className="flex items-center gap-2.5 text-xs sm:text-[13px] font-sans font-bold uppercase tracking-wider text-slate-800 py-0.5">
                   <span className="text-slate-600 font-bold">BY</span>
                   <span className="text-[#1642D0] font-bold">
-                    {(authorName.trim() || user?.writerName || user?.name || 'SHERIN SHIBU').toUpperCase()}
+                    {(user?.name || user?.writerName || authorName.trim() || 'SHERIN SHIBU').toUpperCase()}
                   </span>
                   <a
                     href={user?.linkedinUrl || 'https://www.linkedin.com'}
@@ -3935,14 +3937,14 @@ function WriterEditorMain() {
                   <div className="w-14 h-14 rounded-full overflow-hidden shrink-0 border border-slate-200 shadow-2xs">
                     <img
                       src={user?.avatar || '/images/user-avatar-butterfly.png'}
-                      alt={authorName || user?.name || 'Author'}
+                      alt={user?.name || user?.writerName || authorName || 'Author'}
                       className="w-full h-full object-cover"
                     />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5">
                       <h4 className="font-serif font-bold text-base sm:text-lg text-[#020618] my-0 leading-tight">
-                        {authorName.trim() || user?.writerName || user?.name || 'Sherin Shibu'}
+                        {user?.name || user?.writerName || authorName.trim() || 'Sherin Shibu'}
                       </h4>
                       <a
                         href={user?.linkedinUrl || 'https://www.linkedin.com'}
@@ -4007,7 +4009,7 @@ function WriterEditorMain() {
                       <div className="text-xs text-slate-500 font-sans">
                         <span className="flex items-center gap-1.5 font-semibold text-slate-700">
                           <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                          Posting as {authorName.trim() || user?.name || 'Author'}
+                          Posting as {user?.name || user?.writerName || authorName.trim() || 'Author'}
                         </span>
                       </div>
                       <button

@@ -123,8 +123,8 @@ export default function ArticlePreviewPage() {
   const subtitle = previewData?.subtitle || 'Exclusive reporting and in-depth business analysis: How Top Founders Run High Stakes Board Meetings with Complete Clarity.';
   const category = previewData?.category || 'BUILDING A BUSINESS';
   const subCategories = previewData?.subCategories || [];
-  const authorName = previewData?.author?.name || user?.writerName || user?.name || 'SHERIN SHIBU';
-  const authorAvatar = previewData?.author?.avatar || user?.avatar || '/images/user-avatar-butterfly.png';
+  const authorName = user?.name || previewData?.author?.name || user?.writerName || 'SHERIN SHIBU';
+  const authorAvatar = user?.avatar || previewData?.author?.avatar || '/images/user-avatar-butterfly.png';
   const authorBio = previewData?.author?.bio || user?.bio || 'Business news reporter and contributor at Entrepreneur.com, covering high-growth ventures, market trends, and modern workplace leadership.';
   const authorLinkedin = previewData?.author?.linkedinUrl || user?.linkedinUrl || 'https://www.linkedin.com';
   const date = previewData?.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase();

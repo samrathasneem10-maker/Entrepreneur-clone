@@ -65,11 +65,11 @@ export default function WriterHeader({ backHref = '/' }: WriterHeaderProps) {
     router.push('/');
   };
 
-  const displayName = user?.name || 'mishal';
-  const displayEmail = user?.email || 'mishalzuhrie@gmail.com';
+  const displayName = user?.name || user?.writerName || 'Writer';
+  const displayEmail = user?.email || 'writter@gmail.com';
   const displayAvatar = user?.avatar || '/images/user-avatar-butterfly.png';
   const displayRole = user?.role ? user.role.toUpperCase() : 'WRITER';
-  const authorSlug = encodeURIComponent((user?.writerName || user?.name || 'fathima').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-'));
+  const authorSlug = encodeURIComponent((user?.name || user?.writerName || 'writer').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-'));
 
   return (
     <>
