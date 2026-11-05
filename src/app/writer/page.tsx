@@ -527,7 +527,7 @@ function WriterEditorMain() {
   const [imageCredit, setImageCredit] = useState('');
   const [activeImageCaption, setActiveImageCaption] = useState('');
   const [activeImageCredit, setActiveImageCredit] = useState('');
-  const [imageSize, setImageSize] = useState<'small' | 'medium' | 'full'>('medium');
+  const [imageSize, setImageSize] = useState<'small' | 'medium' | 'full'>('full');
   const [imageAlignment, setImageAlignment] = useState<'left' | 'center' | 'no_wrap' | 'right'>('center');
   const [sizeDropdownOpen, setSizeDropdownOpen] = useState(false);
   const [alignDropdownOpen, setAlignDropdownOpen] = useState(false);
@@ -2583,6 +2583,7 @@ function WriterEditorMain() {
                     setActiveImageCredit('');
                     setImageKeywords([]);
                     setImageKeywordInput('');
+                    setImageSize('full');
                     setShowImageModal(true);
                   }}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FFF7ED] border border-[#FFEDD5] hover:bg-[#FFEDD5] text-[#EA580C] text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer shadow-2xs"

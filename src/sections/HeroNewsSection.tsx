@@ -107,7 +107,7 @@ export const HeroNewsSection: React.FC = () => {
     <section className="bg-white pt-2.5 sm:pt-3.5 2xl:pt-4 pb-4 sm:pb-5 2xl:pb-12 2xl:mb-4 w-full">
       <div className="w-full">
         {/* Main 3-Column Layout: Laptop view preserves original design; Desktop/PC view (2xl) fits cleanly within initial open window */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_1.65fr_1.25fr] xl:grid-cols-[1.2fr_1.75fr_1.3fr] gap-4 sm:gap-5 xl:gap-6 items-stretch lg:h-[515px] xl:h-[535px] 2xl:h-[calc(100vh-190px)] 2xl:min-h-[660px] 2xl:max-h-[780px]">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_1.65fr_1.25fr] xl:grid-cols-[1.2fr_1.75fr_1.3fr] gap-4 sm:gap-5 xl:gap-6 items-stretch lg:h-[515px] xl:h-[535px] 2xl:h-[560px] 2xl:min-h-[540px] 2xl:max-h-[580px]">
           
           {/* ========================================================= */}
           {/* 1. LEFT COLUMN: Latest (Mobile: order-2, Desktop: order-1) */}
@@ -138,7 +138,7 @@ export const HeroNewsSection: React.FC = () => {
               {latestArticles.slice(0, 4).map((art) => (
                 <article
                   key={art.id}
-                  className="py-2.5 first:pt-1 last:pb-0 2xl:py-3.5 first:2xl:pt-1 last:2xl:pb-0 flex items-center justify-between gap-3 xl:gap-4 group"
+                  className="py-2.5 first:pt-1 last:pb-0 flex items-center justify-between gap-3 xl:gap-4 group"
                 >
                   <div className="flex-1 min-w-0 pr-1">
                     <span className="text-[9.5px] font-bold text-[#1642D0] uppercase tracking-wider block font-sans mb-0.5 no-underline hover:no-underline active:no-underline focus:no-underline">
@@ -156,7 +156,7 @@ export const HeroNewsSection: React.FC = () => {
 
                   <Link
                     href={`/article/${art.slug || art.id}`}
-                    className="w-[116px] h-[86px] sm:w-[124px] sm:h-[94px] lg:w-[124px] lg:h-[96px] xl:w-[128px] xl:h-[100px] 2xl:w-[172px] 2xl:h-[136px] shrink-0 rounded-none overflow-hidden bg-slate-100 block cursor-pointer"
+                    className="w-[116px] h-[86px] sm:w-[124px] sm:h-[94px] lg:w-[124px] lg:h-[96px] xl:w-[128px] xl:h-[100px] 2xl:w-[152px] 2xl:h-[108px] shrink-0 rounded-none overflow-hidden bg-slate-100 block cursor-pointer"
                   >
                     <img
                       src={art.imageUrl}
@@ -173,7 +173,7 @@ export const HeroNewsSection: React.FC = () => {
           {/* 2. CENTER COLUMN: Main Featured Hero Card (Mobile: order-1, Desktop: order-2) */}
           {/* ========================================================= */}
           <div className="order-1 lg:order-2 flex flex-col h-full">
-            <div className="relative h-full flex-1 w-full rounded-xs overflow-hidden bg-[#070b19] text-white flex flex-col justify-end min-h-[380px] xl:min-h-[400px] 2xl:min-h-[620px] shadow-sm group">
+            <div className="relative h-full flex-1 w-full rounded-xs overflow-hidden bg-[#070b19] text-white flex flex-col justify-end min-h-[380px] xl:min-h-[400px] 2xl:min-h-[520px] shadow-sm group">
               {/* Background Image */}
               <img
                 src={currentHero.imageUrl || '/images/home-hero/hero-growth-decision.png'}
@@ -275,10 +275,10 @@ export const HeroNewsSection: React.FC = () => {
           <div className="order-3 lg:order-3 flex flex-col justify-between h-full">
             
             {/* Top Featured Card: Uber Driver Bonuses */}
-            <article className="rounded-none overflow-hidden bg-[#070b19] text-white group cursor-pointer flex flex-col shadow-xs flex-shrink-0 mb-2 2xl:mb-3">
+            <article className="rounded-none overflow-hidden bg-[#070b19] text-white group cursor-pointer flex flex-col shadow-xs flex-shrink-0 mb-2">
               <Link
                 href={`/article/${UBER_DRIVER_BONUSES_ARTICLE.slug}`}
-                className="w-full aspect-[16/9] max-h-[145px] xl:max-h-[155px] 2xl:max-h-[265px] overflow-hidden bg-slate-900 block"
+                className="w-full aspect-[16/9] max-h-[145px] xl:max-h-[155px] 2xl:max-h-[185px] overflow-hidden bg-slate-900 block"
               >
                 <img
                   src={UBER_DRIVER_BONUSES_ARTICLE.imageUrl}
@@ -306,7 +306,7 @@ export const HeroNewsSection: React.FC = () => {
               {HOMEPAGE_RIGHT_STREAM.map((art) => (
                 <article
                   key={art.id}
-                  className="py-1.5 first:pt-0 last:pb-0 2xl:py-3.5 flex items-center justify-between gap-3 xl:gap-4 group"
+                  className="py-1.5 first:pt-0 last:pb-0 flex items-center justify-between gap-3 xl:gap-4 group"
                 >
                   <div className="flex-1 min-w-0 pr-1">
                     <span className="text-[9.5px] font-bold text-[#1642D0] uppercase tracking-wider block font-sans mb-0.5 no-underline hover:no-underline active:no-underline focus:no-underline">
@@ -324,7 +324,7 @@ export const HeroNewsSection: React.FC = () => {
 
                   <Link
                     href={`/article/${art.slug || art.id}`}
-                    className="w-[110px] h-[74px] sm:w-[118px] sm:h-[78px] xl:w-[118px] xl:h-[78px] 2xl:w-[165px] 2xl:h-[112px] shrink-0 rounded-none overflow-hidden bg-slate-100 block cursor-pointer"
+                    className="w-[110px] h-[74px] sm:w-[118px] sm:h-[78px] xl:w-[118px] xl:h-[78px] 2xl:w-[145px] 2xl:h-[90px] shrink-0 rounded-none overflow-hidden bg-slate-100 block cursor-pointer"
                   >
                     <img
                       src={art.imageUrl}
