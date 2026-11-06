@@ -78,16 +78,18 @@ export const NavDrawer: React.FC<NavDrawerProps> = ({ isOpen, onClose }) => {
         
         {/* Header inside Drawer: Centered Entrepreneur Logo, exactly centered, increased size, no 'W' symbol or extra marks */}
         <div className="relative px-4 py-3.5 border-b border-slate-200 flex items-center justify-center shrink-0 bg-white h-16">
-          {/* Centered Entrepreneur Logo - perfectly centered */}
+          {/* Centered Logo @3x - perfectly centered */}
           <Link
             href="/"
             onClick={onClose}
             className="flex items-center justify-center select-none hover:opacity-85 transition-opacity"
             aria-label="Entrepreneur Home"
           >
-            <span className="font-serif font-black text-[27px] sm:text-[29px] tracking-tight text-[#000000] whitespace-nowrap">
-              Entrepreneur
-            </span>
+            <img
+              src="/Logo @3x.png"
+              alt="Entrepreneur"
+              className="h-8 sm:h-9 w-auto object-contain"
+            />
           </Link>
 
           {/* Close Icon pinned to the far right */}

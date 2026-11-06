@@ -46,11 +46,12 @@ export const ModalOverlay: React.FC<ModalOverlayProps> = ({
         {/* Top Header Bar with Entrepreneur Logo centered and Close button with no vertical divider line */}
         <div className="relative flex items-center justify-center h-14 border-b border-slate-200 bg-white flex-shrink-0 px-4">
           {/* Logo Centered in Header */}
-          <div className="flex items-baseline select-none">
-            <span className="font-logo font-black text-2xl sm:text-[26px] tracking-[-0.04em] text-[#000000] leading-none">
-              Entrepreneur
-            </span>
-            
+          <div className="flex items-center justify-center select-none">
+            <img
+              src="/Logo @3x.png"
+              alt="Entrepreneur"
+              className="h-6 sm:h-7 w-auto object-contain"
+            />
           </div>
 
           {/* Close Button on Right (no vertical divider line) */}

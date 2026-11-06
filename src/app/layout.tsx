@@ -7,11 +7,12 @@ export const metadata: Metadata = {
   keywords: ['Entrepreneur', 'Business News', 'Small Business', 'Side Hustles', 'Franchises', 'Startup Funding', 'Leadership'],
   icons: {
     icon: [
+      { url: '/favicon.png', type: 'image/png' },
       { url: '/favicon.ico' },
       { url: '/icon.png', type: 'image/png' },
     ],
-    shortcut: '/favicon.ico',
-    apple: '/apple-icon.png',
+    shortcut: '/favicon.png',
+    apple: '/favicon.png',
   },
 };
 
@@ -28,6 +29,11 @@ export default function RootLayout({
       className="h-full antialiased"
       suppressHydrationWarning
     >
+      <head>
+        <link rel="icon" href="/favicon.png" type="image/png" />
+        <link rel="shortcut icon" href="/favicon.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/favicon.png" />
+      </head>
       <body
         className="min-h-full flex flex-col bg-white text-slate-900 font-sans tracking-normal leading-normal"
         suppressHydrationWarning
