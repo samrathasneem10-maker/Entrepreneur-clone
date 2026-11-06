@@ -914,11 +914,11 @@ export default function DynamicTopicPage() {
             </p>
           </article>
 
-          {/* Right Column: 2 Stacked Articles with equal taller images and centered text */}
+          {/* Right Column: 2 Stacked Articles with equal taller images and top-aligned text matching image top */}
           <div className="flex flex-col justify-start w-full gap-4 sm:gap-4.5 lg:gap-5 xl:gap-5.5 2xl:gap-6">
             
             {/* Right Column - Article 1 (Top Level) */}
-            <article className="group flex flex-col sm:flex-row gap-3.5 sm:gap-4 lg:gap-3.5 xl:gap-4 items-start lg:items-center text-left w-full">
+            <article className="group flex flex-col sm:flex-row gap-3.5 sm:gap-4 lg:gap-3.5 xl:gap-4 items-start text-left w-full">
               <div className="w-full sm:w-[280px] md:w-[290px] lg:w-[250px] xl:w-[270px] 2xl:w-[320px] aspect-[16/10] sm:aspect-[4/3] lg:aspect-[4/3] xl:aspect-[4/3] 2xl:aspect-[4/3] max-h-[220px] sm:max-h-none lg:max-h-[195px] xl:max-h-[212px] 2xl:max-h-[245px] shrink-0 overflow-hidden bg-slate-100 border border-slate-200/80 rounded-none shadow-2xs">
                 <Link href={heroSub1.link} className="block w-full h-full cursor-pointer">
                   <img
@@ -929,7 +929,7 @@ export default function DynamicTopicPage() {
                 </Link>
               </div>
               <div className="flex-1 min-w-0">
-                <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-0.5 lg:mb-1 block">
+                <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-0.5 lg:mb-1 block leading-tight">
                   {heroSub1.category}
                 </span>
                 <h3 className="font-serif font-bold text-[15px] sm:text-[16px] lg:text-[15px] xl:text-[16px] 2xl:text-[17px] tracking-tight text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-0.5 lg:my-1 line-clamp-2">
@@ -944,7 +944,7 @@ export default function DynamicTopicPage() {
             </article>
 
             {/* Right Column - Article 2 (Bottom Level) */}
-            <article className="group flex flex-col sm:flex-row gap-3.5 sm:gap-4 lg:gap-3.5 xl:gap-4 items-start lg:items-center text-left w-full">
+            <article className="group flex flex-col sm:flex-row gap-3.5 sm:gap-4 lg:gap-3.5 xl:gap-4 items-start text-left w-full">
               <div className="w-full sm:w-[280px] md:w-[290px] lg:w-[250px] xl:w-[270px] 2xl:w-[320px] aspect-[16/10] sm:aspect-[4/3] lg:aspect-[4/3] xl:aspect-[4/3] 2xl:aspect-[4/3] max-h-[220px] sm:max-h-none lg:max-h-[195px] xl:max-h-[212px] 2xl:max-h-[245px] shrink-0 overflow-hidden bg-slate-100 border border-slate-200/80 rounded-none shadow-2xs">
                 <Link href={heroSub2.link} className="block w-full h-full cursor-pointer">
                   <img
@@ -955,7 +955,7 @@ export default function DynamicTopicPage() {
                 </Link>
               </div>
               <div className="flex-1 min-w-0">
-                <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-0.5 lg:mb-1 block">
+                <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-0.5 lg:mb-1 block leading-tight">
                   {heroSub2.category}
                 </span>
                 <h3 className="font-serif font-bold text-[15px] sm:text-[16px] lg:text-[15px] xl:text-[16px] 2xl:text-[17px] tracking-tight text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-0.5 lg:my-1 line-clamp-2">
