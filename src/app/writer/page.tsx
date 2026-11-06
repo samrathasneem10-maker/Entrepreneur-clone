@@ -58,6 +58,7 @@ import { Header } from '@/layouts/Header';
 import { Footer } from '@/layouts/Footer';
 import ProfileSettingsModal from '@/components/writer/ProfileSettingsModal';
 import { MAIN_CATEGORIES, MAIN_CATEGORIES_20 } from '@/data/categoriesData';
+import { convertImageToWebP } from '@/lib/imageUtils';
 
 const WEBSITE_CATEGORIES = MAIN_CATEGORIES.map((c) => c.name);
 
@@ -1930,35 +1931,50 @@ function WriterEditorMain() {
     setImageKeywords((prev) => prev.filter((k) => k !== kwToRemove));
   };
 
-  const handleModalFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleModalFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      showToast('Please select a valid image file (JPG, PNG, WebP).', 'error');
+      showToast('Please select a valid image file (JPG, PNG, WebP, etc.).', 'error');
       return;
     }
-    if (file.size > 8 * 1024 * 1024) {
-      showToast('Image file size must be less than 8MB.', 'error');
+    if (file.size > 20 * 1024 * 1024) {
+      showToast('Image file size must be less than 20MB.', 'error');
       return;
     }
 
-    setUploadedFileName(file.name);
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      if (event.target?.result) {
-        setModalImageUrl(event.target.result as string);
-        showToast('Image file loaded successfully!');
-      }
-    };
-    reader.readAsDataURL(file);
+    try {
+      const { webpDataUrl, webpFileName } = await convertImageToWebP(file);
+      setUploadedFileName(webpFileName);
+      setModalImageUrl(webpDataUrl);
+      showToast('Image converted to WebP format successfully!', 'success');
+    } catch {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setModalImageUrl(event.target.result as string);
+          setUploadedFileName(file.name);
+          showToast('Image file loaded successfully!');
+        }
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
-  const handleInsertImageIntoEditor = () => {
-    const finalUrl = modalImageUrl.trim();
+  const handleInsertImageIntoEditor = async () => {
+    let finalUrl = modalImageUrl.trim();
     if (!finalUrl) {
       showToast('Please provide an image URL or choose a file.', 'error');
       return;
+    }
+
+    // Auto-convert non-webp data URLs into WebP
+    if (finalUrl.startsWith('data:image/') && !finalUrl.startsWith('data:image/webp')) {
+      try {
+        const { webpDataUrl } = await convertImageToWebP(finalUrl);
+        finalUrl = webpDataUrl;
+      } catch (_) {}
     }
 
     let sizeClass = 'max-w-[450px] w-fit';
@@ -2248,7 +2264,7 @@ function WriterEditorMain() {
     }
     const latestImage = contentImg || featuredImageUrl || '';
 
-    const hasDescription = plainText.length > 0;
+    const hasDescription = plainText.length > 0 || Boolean(subtitle && subtitle.trim().length > 0) || Boolean(cardSummary && cardSummary.trim().length > 0);
     const hasImage = Boolean(latestImage && latestImage.trim() !== '' && !latestImage.includes('placeholder'));
 
     if (!hasDescription && !hasImage) {
@@ -3870,27 +3886,6 @@ function WriterEditorMain() {
                     )}
                   </>
                 )}
-
-                {/* Key Takeaways Section */}
-                <div className="pt-2 pb-1">
-                  <h2 className="text-2xl sm:text-[26px] font-serif font-bold text-[#1642D0] my-0">
-                    Key Takeaways
-                  </h2>
-                  <ul className="mt-4 space-y-3 text-base sm:text-[16.5px] font-serif text-slate-800 leading-relaxed list-none p-0">
-                    <li className="flex items-start gap-3">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#1642D0] mt-2.5 shrink-0 block" />
-                      <span>
-                        Clear strategic focus and disciplined operational execution define market-leading businesses in 2026.
-                      </span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#1642D0] mt-2.5 shrink-0 block" />
-                      <span>
-                        Sustainable growth requires founders to adapt rapidly to evolving customer needs and market dynamics.
-                      </span>
-                    </li>
-                  </ul>
-                </div>
 
                 {/* Rendered HTML Content with exact editor formatting */}
                 <div

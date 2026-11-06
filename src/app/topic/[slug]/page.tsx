@@ -891,7 +891,7 @@ export default function DynamicTopicPage() {
           {/* Left Column: 1 Featured Article - taller image on Desktop matching laptop proportion */}
           <article className="group flex flex-col justify-start w-full text-left">
             <div className="flex flex-col">
-              <div className="w-full aspect-[16/10] sm:aspect-[16/9.5] lg:aspect-[16/9.5] xl:aspect-[16/9.5] 2xl:aspect-[16/9.5] max-h-[260px] sm:max-h-[300px] lg:max-h-[225px] xl:max-h-[245px] 2xl:max-h-[305px] overflow-hidden bg-slate-100 mb-2.5 lg:mb-3 border border-slate-200/80 rounded-none shadow-2xs flex-shrink-0">
+              <div className="w-full aspect-[16/10] sm:aspect-[16/9.5] lg:aspect-[16/9.5] xl:aspect-[16/9.5] 2xl:aspect-[16/9.5] max-h-[280px] sm:max-h-[320px] lg:max-h-[255px] xl:max-h-[275px] 2xl:max-h-[335px] overflow-hidden bg-slate-100 mb-2.5 lg:mb-3 border border-slate-200/80 rounded-none shadow-2xs flex-shrink-0">
                 <Link href={heroFeatured.link} className="block w-full h-full cursor-pointer">
                   <img
                     src={heroFeatured.image}
@@ -919,7 +919,7 @@ export default function DynamicTopicPage() {
             
             {/* Right Column - Article 1 (Top Level) */}
             <article className="group flex flex-col sm:flex-row gap-3.5 sm:gap-4 lg:gap-3.5 xl:gap-4 items-start text-left w-full">
-              <div className="w-full sm:w-[260px] md:w-[280px] lg:w-[220px] xl:w-[235px] 2xl:w-[285px] aspect-[16/10] sm:aspect-[4/3] lg:aspect-[4/3] xl:aspect-[4/3] 2xl:aspect-[4/3] max-h-[200px] sm:max-h-none lg:max-h-[165px] xl:max-h-[178px] 2xl:max-h-[215px] shrink-0 overflow-hidden bg-slate-100 border border-slate-200/80 rounded-none shadow-2xs">
+              <div className="w-full sm:w-[280px] md:w-[290px] lg:w-[240px] xl:w-[260px] 2xl:w-[310px] aspect-[16/10] sm:aspect-[4/3] lg:aspect-[4/3] xl:aspect-[4/3] 2xl:aspect-[4/3] max-h-[220px] sm:max-h-none lg:max-h-[185px] xl:max-h-[198px] 2xl:max-h-[235px] shrink-0 overflow-hidden bg-slate-100 border border-slate-200/80 rounded-none shadow-2xs">
                 <Link href={heroSub1.link} className="block w-full h-full cursor-pointer">
                   <img
                     src={heroSub1.image}
@@ -945,7 +945,7 @@ export default function DynamicTopicPage() {
 
             {/* Right Column - Article 2 (Bottom Level) */}
             <article className="group flex flex-col sm:flex-row gap-3.5 sm:gap-4 lg:gap-3.5 xl:gap-4 items-start text-left w-full">
-              <div className="w-full sm:w-[260px] md:w-[280px] lg:w-[220px] xl:w-[235px] 2xl:w-[285px] aspect-[16/10] sm:aspect-[4/3] lg:aspect-[4/3] xl:aspect-[4/3] 2xl:aspect-[4/3] max-h-[200px] sm:max-h-none lg:max-h-[165px] xl:max-h-[178px] 2xl:max-h-[215px] shrink-0 overflow-hidden bg-slate-100 border border-slate-200/80 rounded-none shadow-2xs">
+              <div className="w-full sm:w-[280px] md:w-[290px] lg:w-[240px] xl:w-[260px] 2xl:w-[310px] aspect-[16/10] sm:aspect-[4/3] lg:aspect-[4/3] xl:aspect-[4/3] 2xl:aspect-[4/3] max-h-[220px] sm:max-h-none lg:max-h-[185px] xl:max-h-[198px] 2xl:max-h-[235px] shrink-0 overflow-hidden bg-slate-100 border border-slate-200/80 rounded-none shadow-2xs">
                 <Link href={heroSub2.link} className="block w-full h-full cursor-pointer">
                   <img
                     src={heroSub2.image}

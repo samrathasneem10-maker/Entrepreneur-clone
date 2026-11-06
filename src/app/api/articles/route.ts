@@ -261,7 +261,7 @@ export async function POST(request: Request) {
         .replace(/&nbsp;/gi, ' ')
         .replace(/\u00a0/g, ' ')
         .trim();
-      const hasDescription = plainDescription.length > 0;
+      const hasDescription = plainDescription.length > 0 || Boolean(excerpt && excerpt.trim().length > 0) || Boolean(cardSummary && cardSummary.trim().length > 0);
 
       let extractedImg = (imageUrl || '').trim();
       if (!extractedImg || extractedImg.includes('placeholder')) {
@@ -433,7 +433,7 @@ export async function PUT(request: Request) {
         .replace(/&nbsp;/gi, ' ')
         .replace(/\u00a0/g, ' ')
         .trim();
-      const hasDescription = plainDescription.length > 0;
+      const hasDescription = plainDescription.length > 0 || Boolean(excerpt && excerpt.trim().length > 0) || Boolean(cardSummary && cardSummary.trim().length > 0) || Boolean(card_summary && card_summary.trim().length > 0);
 
       let extractedImg = imageToCheck;
       if (!extractedImg || extractedImg.trim() === '' || extractedImg.includes('placeholder')) {

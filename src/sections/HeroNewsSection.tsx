@@ -144,7 +144,7 @@ export const HeroNewsSection: React.FC = () => {
                     <span className="text-[9.5px] font-bold text-[#1642D0] uppercase tracking-wider block font-sans mb-0.5 no-underline hover:no-underline active:no-underline focus:no-underline">
                       {art.category}
                     </span>
-                    <h3 className="font-serif font-bold text-[13px] sm:text-[13.5px] 2xl:text-[15px] leading-snug text-[#020618] group-hover:underline line-clamp-3 my-0">
+                    <h3 className="font-serif font-bold text-[13px] sm:text-[13.5px] 2xl:text-[13.5px] leading-snug text-[#020618] group-hover:underline line-clamp-3 my-0">
                       <Link href={`/article/${art.slug || art.id}`}>
                         {art.title}
                       </Link>
@@ -156,7 +156,7 @@ export const HeroNewsSection: React.FC = () => {
 
                   <Link
                     href={`/article/${art.slug || art.id}`}
-                    className="w-[116px] h-[86px] sm:w-[124px] sm:h-[94px] lg:w-[124px] lg:h-[96px] xl:w-[128px] xl:h-[100px] 2xl:w-[152px] 2xl:h-[108px] shrink-0 rounded-none overflow-hidden bg-slate-100 block cursor-pointer"
+                    className="w-[116px] h-[86px] sm:w-[124px] sm:h-[94px] lg:w-[124px] lg:h-[96px] xl:w-[128px] xl:h-[100px] 2xl:w-[128px] 2xl:h-[100px] shrink-0 rounded-none overflow-hidden bg-slate-100 block cursor-pointer"
                   >
                     <img
                       src={art.imageUrl}

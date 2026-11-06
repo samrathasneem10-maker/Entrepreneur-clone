@@ -4,6 +4,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, Camera, Loader2, Check } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthContext';
 
+import { convertImageToWebP } from '@/lib/imageUtils';
+
 interface ProfileSettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -83,8 +85,22 @@ export default function ProfileSettingsModal({
     setErrorMessage(null);
 
     try {
+      let fileToUpload: File = file;
+      try {
+        const { webpDataUrl, webpFileName } = await convertImageToWebP(file, 800, 800);
+        const byteString = atob(webpDataUrl.split(',')[1]);
+        const mimeString = webpDataUrl.split(',')[0].split(':')[1].split(';')[0];
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
+        }
+        const webpBlob = new Blob([ab], { type: mimeString });
+        fileToUpload = new File([webpBlob], webpFileName, { type: 'image/webp' });
+      } catch (_) {}
+
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', fileToUpload);
 
       const res = await fetch('/api/upload', {
         method: 'POST',

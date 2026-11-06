@@ -14,10 +14,10 @@ export async function POST(request: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Generate safe unique filename
+    // Generate safe unique filename in webp format
     const timestamp = Date.now();
-    const cleanName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-    const filename = `avatar_${timestamp}_${cleanName}`;
+    const cleanName = file.name.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '_');
+    const filename = `upload_${timestamp}_${cleanName}.webp`;
     const uploadDir = path.join(process.cwd(), 'public', 'uploads');
     const filePath = path.join(uploadDir, filename);
 

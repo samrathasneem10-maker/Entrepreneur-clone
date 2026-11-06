@@ -377,27 +377,6 @@ export default function ArticlePreviewPage() {
               </>
             )}
 
-            {/* Key Takeaways */}
-            <div className="pt-2 pb-1">
-              <h2 className="text-2xl sm:text-[26px] font-serif font-bold text-[#1642D0] my-0">
-                Key Takeaways
-              </h2>
-              <ul className="mt-4 space-y-3 text-base sm:text-[16.5px] font-serif text-slate-800 leading-relaxed list-none p-0">
-                <li className="flex items-start gap-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#1642D0] mt-2.5 shrink-0 block" />
-                  <span>
-                    Clear strategic focus and disciplined operational execution define market-leading businesses in 2026.
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#1642D0] mt-2.5 shrink-0 block" />
-                  <span>
-                    Sustainable growth requires founders to adapt rapidly to evolving customer needs and market dynamics.
-                  </span>
-                </li>
-              </ul>
-            </div>
-
             {/* Rendered HTML Content with exact editor formatting */}
             <div
               className="article-editor-content prose prose-slate max-w-none text-slate-800 text-base leading-relaxed break-words font-serif pt-4 space-y-4"
