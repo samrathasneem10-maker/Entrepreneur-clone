@@ -855,8 +855,8 @@ export default function DynamicTopicPage() {
       {/* 1. Header Navigation */}
       <Header />
 
-      {/* Breadcrumb Bar */}
-      <div className="bg-white pt-3.5 sm:pt-4 pb-1.5 px-4 sm:px-6 lg:px-8 xl:px-10 text-xs text-slate-600 font-sans">
+      {/* Breadcrumb Bar - Left-aligned, positioned downward closer to the category heading level */}
+      <div className="bg-white pt-3.5 sm:pt-4 lg:pt-5 xl:pt-6 pb-0 px-4 sm:px-6 lg:px-8 xl:px-10 text-xs text-slate-600 font-sans">
         <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 flex items-center gap-2 overflow-x-auto no-scrollbar">
           <Link href="/" className="hover:text-[#1642D0] transition-colors shrink-0 inline-flex items-center gap-1.5 font-medium">
             <Home className="w-3.5 h-3.5 text-slate-500 hover:text-[#1642D0]" />
@@ -877,21 +877,21 @@ export default function DynamicTopicPage() {
         </div>
       </div>
 
-      {/* Category Header - Centered heading, compact spacing matching Reference Image 2 */}
-      <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pt-3 sm:pt-4 lg:pt-4 pb-2 sm:pb-3 lg:pb-3 text-center">
-        <h1 className="text-2xl sm:text-3xl lg:text-[30px] xl:text-[32px] font-serif font-black text-[#020618] tracking-tight my-0 text-center">
+      {/* Category Header - Centered heading with slightly increased prominent font size */}
+      <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pt-1.5 sm:pt-2 lg:pt-2 pb-2 sm:pb-2.5 lg:pb-3 text-center">
+        <h1 className="text-2xl sm:text-3xl lg:text-[35px] xl:text-[38px] 2xl:text-[42px] font-serif font-black text-[#020618] tracking-tight my-0 text-center">
           {displayTitle}
         </h1>
       </div>
 
-      {/* 2-Column Section: 1 Featured Article on Left & 2 Stacked Articles on Right (Applied across all categories with synchronized vertical alignment) */}
-      <section className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pt-5 sm:pt-6 lg:pt-7 xl:pt-8 pb-8 sm:pb-9 lg:pb-11 xl:pb-14 2xl:pb-16">
+      {/* 2-Column Section: 1 Featured Article on Left & 2 Stacked Articles on Right (Desktop & Laptop refined proportions) */}
+      <section className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pt-4 sm:pt-5 lg:pt-5 xl:pt-5.5 pb-6 sm:pb-7 lg:pb-7 xl:pb-8 2xl:pb-9">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-7 xl:gap-9 2xl:gap-10 items-start">
           
-          {/* Left Column: 1 Featured Article - taller image on Desktop matching laptop proportion */}
+          {/* Left Column: 1 Featured Article - taller image on Desktop and Laptop */}
           <article className="group flex flex-col justify-start w-full text-left">
             <div className="flex flex-col">
-              <div className="w-full aspect-[16/10] sm:aspect-[16/9.5] lg:aspect-[16/9.5] xl:aspect-[16/9.5] 2xl:aspect-[16/9.5] max-h-[280px] sm:max-h-[320px] lg:max-h-[255px] xl:max-h-[275px] 2xl:max-h-[335px] overflow-hidden bg-slate-100 mb-2.5 lg:mb-3 border border-slate-200/80 rounded-none shadow-2xs flex-shrink-0">
+              <div className="w-full aspect-[16/10] sm:aspect-[16/9.5] lg:aspect-[16/9.5] xl:aspect-[16/9.5] 2xl:aspect-[16/9.5] max-h-[280px] sm:max-h-[320px] lg:max-h-[285px] xl:max-h-[315px] 2xl:max-h-[365px] overflow-hidden bg-slate-100 mb-2.5 lg:mb-3 border border-slate-200/80 rounded-none shadow-2xs flex-shrink-0">
                 <Link href={heroFeatured.link} className="block w-full h-full cursor-pointer">
                   <img
                     src={heroFeatured.image}
@@ -914,12 +914,12 @@ export default function DynamicTopicPage() {
             </p>
           </article>
 
-          {/* Right Column: 2 Stacked Articles with taller images on Desktop View and tight laptop-like spacing */}
-          <div className="flex flex-col justify-start w-full gap-4 sm:gap-4.5 lg:gap-4 xl:gap-4.5 2xl:gap-4.5">
+          {/* Right Column: 2 Stacked Articles with equal taller images and centered text */}
+          <div className="flex flex-col justify-start w-full gap-4 sm:gap-4.5 lg:gap-5 xl:gap-5.5 2xl:gap-6">
             
             {/* Right Column - Article 1 (Top Level) */}
-            <article className="group flex flex-col sm:flex-row gap-3.5 sm:gap-4 lg:gap-3.5 xl:gap-4 items-start text-left w-full">
-              <div className="w-full sm:w-[280px] md:w-[290px] lg:w-[240px] xl:w-[260px] 2xl:w-[310px] aspect-[16/10] sm:aspect-[4/3] lg:aspect-[4/3] xl:aspect-[4/3] 2xl:aspect-[4/3] max-h-[220px] sm:max-h-none lg:max-h-[185px] xl:max-h-[198px] 2xl:max-h-[235px] shrink-0 overflow-hidden bg-slate-100 border border-slate-200/80 rounded-none shadow-2xs">
+            <article className="group flex flex-col sm:flex-row gap-3.5 sm:gap-4 lg:gap-3.5 xl:gap-4 items-start lg:items-center text-left w-full">
+              <div className="w-full sm:w-[280px] md:w-[290px] lg:w-[250px] xl:w-[270px] 2xl:w-[320px] aspect-[16/10] sm:aspect-[4/3] lg:aspect-[4/3] xl:aspect-[4/3] 2xl:aspect-[4/3] max-h-[220px] sm:max-h-none lg:max-h-[195px] xl:max-h-[212px] 2xl:max-h-[245px] shrink-0 overflow-hidden bg-slate-100 border border-slate-200/80 rounded-none shadow-2xs">
                 <Link href={heroSub1.link} className="block w-full h-full cursor-pointer">
                   <img
                     src={heroSub1.image}
@@ -944,8 +944,8 @@ export default function DynamicTopicPage() {
             </article>
 
             {/* Right Column - Article 2 (Bottom Level) */}
-            <article className="group flex flex-col sm:flex-row gap-3.5 sm:gap-4 lg:gap-3.5 xl:gap-4 items-start text-left w-full">
-              <div className="w-full sm:w-[280px] md:w-[290px] lg:w-[240px] xl:w-[260px] 2xl:w-[310px] aspect-[16/10] sm:aspect-[4/3] lg:aspect-[4/3] xl:aspect-[4/3] 2xl:aspect-[4/3] max-h-[220px] sm:max-h-none lg:max-h-[185px] xl:max-h-[198px] 2xl:max-h-[235px] shrink-0 overflow-hidden bg-slate-100 border border-slate-200/80 rounded-none shadow-2xs">
+            <article className="group flex flex-col sm:flex-row gap-3.5 sm:gap-4 lg:gap-3.5 xl:gap-4 items-start lg:items-center text-left w-full">
+              <div className="w-full sm:w-[280px] md:w-[290px] lg:w-[250px] xl:w-[270px] 2xl:w-[320px] aspect-[16/10] sm:aspect-[4/3] lg:aspect-[4/3] xl:aspect-[4/3] 2xl:aspect-[4/3] max-h-[220px] sm:max-h-none lg:max-h-[195px] xl:max-h-[212px] 2xl:max-h-[245px] shrink-0 overflow-hidden bg-slate-100 border border-slate-200/80 rounded-none shadow-2xs">
                 <Link href={heroSub2.link} className="block w-full h-full cursor-pointer">
                   <img
                     src={heroSub2.image}
