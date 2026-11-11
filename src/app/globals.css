@@ -324,3 +324,14 @@ main span[class*="uppercase"][class*="text-white"]:hover,
 main span[class*="uppercase"][class*="text-white"]:active {
   text-decoration: none !important;
 }
+
+
+/* Ensure writer editor text maintains comfortable clearance below the sticky formatting toolbar */
+.article-editor-canvas,
+.article-editor-content {
+  scroll-margin-top: 140px !important;
+}
+.article-editor-canvas > *,
+.article-editor-content > * {
+  scroll-margin-top: 140px !important;
+}

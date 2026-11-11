@@ -2450,8 +2450,9 @@ function WriterEditorMain() {
                 )}
               </button>
 
-              {/* HORIZONTAL RICH TEXT TOOLBAR matching Reference Image 1 & 2 */}
-              <div className="sticky top-[58px] z-20 flex flex-wrap items-center gap-1 sm:gap-1.5 p-2 bg-slate-50/98 backdrop-blur-xs border border-slate-200/90 rounded-xl text-slate-600 shadow-xs">
+              {/* HORIZONTAL RICH TEXT TOOLBAR - Sticky with dedicated top spacing & solid backdrop to prevent text overlap */}
+              <div className="sticky top-[57px] sm:top-[61px] z-20 bg-white -mx-6 sm:-mx-8 px-6 sm:px-8 pt-3 sm:pt-4 pb-3 sm:pb-3.5 border-b border-slate-100 shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)]">
+                <div className="flex flex-wrap items-center gap-1 sm:gap-1.5 p-2 bg-slate-50 border border-slate-200/90 rounded-xl text-slate-600 shadow-xs">
                 
                 {/* Group 1: Undo & Redo */}
                 <button
@@ -2608,6 +2609,7 @@ function WriterEditorMain() {
                   <span>Insert Image</span>
                 </button>
 
+                </div>
               </div>
 
               {/* Title Field: "Add Title..." in large bold serif font with automatic word-wrapping */}
