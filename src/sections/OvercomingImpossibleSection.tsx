@@ -102,7 +102,7 @@ export const OvercomingImpossibleSection: React.FC = () => {
             >
               <img
                 src="/images/overcoming-impossible-live.png"
-                alt="Overcoming Impossible Live - An Entrepreneur Level Up Event"
+                alt="Overcoming Impossible Live - A United States Today Level Up Event"
                 className="w-full h-full object-cover block group-hover:scale-[1.01] transition-transform duration-300"
               />
             </a>

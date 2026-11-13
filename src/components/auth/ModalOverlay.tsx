@@ -43,13 +43,13 @@ export const ModalOverlay: React.FC<ModalOverlayProps> = ({
         className="relative bg-white w-full max-w-[440px] max-h-[92vh] flex flex-col rounded-none shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Top Header Bar with Entrepreneur Logo centered and Close button with no vertical divider line */}
+        {/* Top Header Bar with United States Today Logo centered and Close button with no vertical divider line */}
         <div className="relative flex items-center justify-center h-14 border-b border-slate-200 bg-white flex-shrink-0 px-4">
           {/* Logo Centered in Header */}
           <div className="flex items-center justify-center select-none">
             <img
               src="/Logo @3x.png"
-              alt="Entrepreneur"
+              alt="United States Today"
               className="h-6 sm:h-7 w-auto object-contain"
             />
           </div>

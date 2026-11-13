@@ -1,6 +1,6 @@
-# Entrepreneur.com Clone
+# United States Today
 
-A modern, high-fidelity web platform inspired by [Entrepreneur.com](https://www.entrepreneur.com) — built for entrepreneurs, founders, and small business leaders.
+A modern, high-fidelity digital news and business publication platform for **United States Today** — delivering breaking U.S. news, markets, economy, technology, startups, and leadership coverage.
 
 This application is powered by **Next.js 16 (App Router)**, **React 19**, **Tailwind CSS v4**, and **TypeScript**, featuring editorial layouts, full-text live search, dynamic category archives, interactive newsletter subscriptions, and smooth shimmer skeleton loading.
 

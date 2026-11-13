@@ -1,9 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Camera, Loader2, Check } from 'lucide-react';
+import { X, Loader2, Check, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthContext';
-
 import { convertImageToWebP } from '@/lib/imageUtils';
 
 interface ProfileSettingsModalProps {
@@ -23,8 +22,7 @@ export default function ProfileSettingsModal({
   // Form states
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
-  const [bio, setBio] = useState('Writer User');
-  const [writerName, setWriterName] = useState('');
+  const [bio, setBio] = useState('');
   const [linkedinUrl, setLinkedinUrl] = useState('');
   const [avatar, setAvatar] = useState('/images/user-avatar-butterfly.png');
 
@@ -41,34 +39,44 @@ export default function ProfileSettingsModal({
     setErrorMessage(null);
     setSuccessMessage(null);
 
-    const initialEmail = user?.email || 'writter@gmail.com';
-    const initialName = user?.name || '';
-    const initialAvatar = user?.avatar || '/images/user-avatar-butterfly.png';
-    const initialBio = user?.bio || 'Executive business contributor.';
-    const initialLinkedin = user?.linkedinUrl || 'https://www.linkedin.com/in/your-profile';
+    // Determine target email for active user
+    let targetEmail = user?.email || '';
+    if (!targetEmail) {
+      try {
+        const stored = localStorage.getItem('entrepreneur_user');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          targetEmail = parsed?.email || '';
+        }
+      } catch {}
+    }
+    if (!targetEmail) {
+      targetEmail = 'writter@gmail.com';
+    }
 
-    setFullName(initialName);
-    setEmail(initialEmail);
-    setAvatar(initialAvatar);
-    setBio(initialBio);
-    setWriterName(initialName);
-    setLinkedinUrl(initialLinkedin);
+    const currentName = user?.name || user?.writerName || '';
+    const currentAvatar = user?.avatar || '/images/user-avatar-butterfly.png';
+    const currentBio = user?.bio || '';
+    const currentLinkedin = user?.linkedinUrl || '';
+
+    setFullName(currentName);
+    setEmail(targetEmail);
+    setAvatar(currentAvatar);
+    setBio(currentBio);
+    setLinkedinUrl(currentLinkedin);
 
     // Fetch latest profile from database to ensure fresh state
-    fetch(`/api/user/profile?email=${encodeURIComponent(initialEmail)}`)
+    fetch(`/api/user/profile?email=${encodeURIComponent(targetEmail)}`)
       .then((res) => res.json())
       .then((data) => {
         if (data?.success && data?.profile) {
           const p = data.profile;
           const freshName = p.name || p.fullName;
-          if (freshName) {
-            setFullName(freshName);
-            setWriterName(freshName);
-          }
+          if (freshName) setFullName(freshName);
           if (p.email) setEmail(p.email);
           if (p.avatar) setAvatar(p.avatar);
           if (p.bio !== undefined) setBio(p.bio || '');
-          if (p.linkedinUrl) setLinkedinUrl(p.linkedinUrl);
+          if (p.linkedinUrl !== undefined) setLinkedinUrl(p.linkedinUrl || '');
         }
       })
       .catch(() => {});
@@ -128,7 +136,7 @@ export default function ProfileSettingsModal({
         if (onProfileUpdated) {
           onProfileUpdated({ avatar: newAvatarUrl });
         }
-        setSuccessMessage('Photo updated successfully.');
+        setSuccessMessage('Profile photo updated successfully.');
         setTimeout(() => setSuccessMessage(null), 3000);
       } else {
         setErrorMessage(data?.error || 'Failed to upload photo.');
@@ -146,20 +154,47 @@ export default function ProfileSettingsModal({
   // Handle Save Changes
   const handleSaveChanges = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (!fullName.trim()) {
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    const trimmedName = fullName.trim();
+    const trimmedEmail = email.trim();
+    let trimmedLinkedin = linkedinUrl.trim();
+    const trimmedBio = bio.trim();
+
+    if (!trimmedName) {
       setErrorMessage('Full name is required.');
       return;
     }
-    if (!email.trim()) {
-      setErrorMessage('Email address is required.');
+    if (trimmedName.length < 2) {
+      setErrorMessage('Full name must be at least 2 characters long.');
       return;
     }
 
-    setIsSaving(true);
-    setErrorMessage(null);
+    if (!trimmedEmail) {
+      setErrorMessage('Email address is required.');
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      setErrorMessage('Please enter a valid email address.');
+      return;
+    }
 
+    // Validate LinkedIn URL if provided
+    if (trimmedLinkedin) {
+      if (!/^https?:\/\//i.test(trimmedLinkedin)) {
+        trimmedLinkedin = `https://${trimmedLinkedin}`;
+      }
+      const isLinkedinUrl = /linkedin\.com\//i.test(trimmedLinkedin);
+      if (!isLinkedinUrl) {
+        setErrorMessage('Please enter a valid LinkedIn URL (e.g. https://www.linkedin.com/in/username).');
+        return;
+      }
+    }
+
+    setIsSaving(true);
     const currentEmail = user?.email || email;
-    const updatedFullName = fullName.trim();
 
     try {
       const res = await fetch('/api/user/profile', {
@@ -167,11 +202,11 @@ export default function ProfileSettingsModal({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           currentEmail,
-          fullName: updatedFullName,
-          newEmail: email.trim(),
-          bio: bio.trim(),
-          writerName: updatedFullName,
-          linkedinUrl: linkedinUrl.trim(),
+          fullName: trimmedName,
+          newEmail: trimmedEmail,
+          bio: trimmedBio,
+          writerName: trimmedName,
+          linkedinUrl: trimmedLinkedin,
           avatar,
         }),
       });
@@ -179,16 +214,16 @@ export default function ProfileSettingsModal({
       const data = await res.json();
 
       if (data?.success) {
-        // Update user session in AuthContext & localStorage
         const updatedData = {
-          name: updatedFullName,
-          email: email.trim(),
+          name: trimmedName,
+          email: trimmedEmail,
           avatar,
-          bio: bio.trim(),
-          writerName: updatedFullName,
-          linkedinUrl: linkedinUrl.trim(),
+          bio: trimmedBio,
+          writerName: trimmedName,
+          linkedinUrl: trimmedLinkedin,
         };
 
+        // Update user session in AuthContext & localStorage
         updateUser(updatedData);
 
         if (onProfileUpdated) {
@@ -198,9 +233,9 @@ export default function ProfileSettingsModal({
         setSuccessMessage('Profile settings saved successfully!');
         setTimeout(() => {
           onClose();
-        }, 600);
+        }, 700);
       } else {
-        setErrorMessage(data?.error || 'Failed to save changes.');
+        setErrorMessage(data?.error || 'Failed to save profile changes.');
       }
     } catch {
       setErrorMessage('Network error while saving profile settings.');
@@ -223,7 +258,7 @@ export default function ProfileSettingsModal({
 
       <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden my-8 animate-in zoom-in-95 duration-150">
         
-        {/* Top Decorative Gradient Accent Bar matching Reference Image 2 */}
+        {/* Top Decorative Gradient Accent Bar */}
         <div className="h-1.5 w-full bg-gradient-to-r from-[#D01E1E] via-[#EA580C] to-[#F59E0B]" />
 
         {/* Modal Header */}
@@ -249,19 +284,20 @@ export default function ProfileSettingsModal({
 
         {/* Notifications */}
         {errorMessage && (
-          <div className="mx-6 sm:mx-7 mt-3 px-3.5 py-2 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-lg font-medium">
-            {errorMessage}
+          <div className="mx-6 sm:mx-7 mt-3 px-3.5 py-2.5 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-lg font-medium flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
+            <span>{errorMessage}</span>
           </div>
         )}
         {successMessage && (
-          <div className="mx-6 sm:mx-7 mt-3 px-3.5 py-2 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs rounded-lg font-medium flex items-center gap-1.5">
-            <Check className="w-4 h-4 text-emerald-600" />
+          <div className="mx-6 sm:mx-7 mt-3 px-3.5 py-2.5 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs rounded-lg font-medium flex items-center gap-2">
+            <Check className="w-4 h-4 shrink-0 text-emerald-600" />
             <span>{successMessage}</span>
           </div>
         )}
 
         <form onSubmit={handleSaveChanges}>
-          {/* Avatar & User Summary Row matching Reference Image 2 */}
+          {/* Avatar & User Summary Row */}
           <div className="px-6 sm:px-7 py-5 flex items-center gap-4">
             
             {/* Square-rounded Avatar */}
@@ -293,18 +329,18 @@ export default function ProfileSettingsModal({
               </button>
               
               <div className="text-xs text-slate-500 font-mono mt-1 truncate">
-                {email || user?.email || 'mishalzuhrie@gmail.com'}
+                {email || user?.email || 'user@unitedstatestoday.com'}
               </div>
 
               <div className="mt-1.5">
                 <span className="inline-block px-2 py-0.5 bg-[#EFF6FF] text-[#2563EB] text-[10px] font-bold tracking-wider uppercase rounded border border-blue-200/60">
-                  {user?.role ? user.role.toUpperCase() : 'WRITER'}
+                  {user?.role ? user.role.toUpperCase() : 'USER'}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Form Fields matching Reference Image 2 */}
+          {/* Form Fields */}
           <div className="px-6 sm:px-7 space-y-4">
             
             {/* FULL NAME */}
@@ -315,10 +351,7 @@ export default function ProfileSettingsModal({
               <input
                 type="text"
                 value={fullName}
-                onChange={(e) => {
-                  setFullName(e.target.value);
-                  setWriterName(e.target.value);
-                }}
+                onChange={(e) => setFullName(e.target.value)}
                 placeholder="Full Name"
                 required
                 className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#003B64] focus:border-[#003B64] transition-colors"
@@ -334,13 +367,13 @@ export default function ProfileSettingsModal({
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="mishalzuhrie@gmail.com"
+                placeholder="user@unitedstatestoday.com"
                 required
                 className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#003B64] focus:border-[#003B64] transition-colors"
               />
             </div>
 
-            {/* BIO / AUTHOR NAME */}
+            {/* BIO */}
             <div>
               <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1.5 font-sans">
                 BIO
@@ -349,7 +382,7 @@ export default function ProfileSettingsModal({
                 rows={3}
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
-                placeholder="Writer User"
+                placeholder="Share a short bio or summary about your professional background..."
                 className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#003B64] focus:border-[#003B64] transition-colors resize-none"
               />
             </div>
@@ -372,12 +405,12 @@ export default function ProfileSettingsModal({
                 />
               </div>
               <p className="text-[11px] text-slate-400 font-sans mt-1.5 my-0">
-                Shown on your article bylines so readers can connect with you.
+                Shown on your profile and article bylines so colleagues and readers can connect with you.
               </p>
             </div>
           </div>
 
-          {/* Modal Actions Footer matching Reference Image 2 */}
+          {/* Modal Actions Footer */}
           <div className="px-6 sm:px-7 py-5 flex items-center justify-between gap-3 border-t border-slate-100 mt-6 bg-slate-50/50">
             <button
               type="button"

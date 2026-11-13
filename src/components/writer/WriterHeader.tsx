@@ -83,7 +83,7 @@ export default function WriterHeader({ backHref = '/' }: WriterHeaderProps) {
       <header className="w-full bg-white border-b border-slate-200/90 sticky top-0 z-40">
         <div className="max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           
-          {/* Left: Back button + Washington Global Times Brand Logo + WRITER PORTAL Pill */}
+          {/* Left: Back button + United States Today Brand Logo + WRITER PORTAL Pill */}
           <div className="flex items-center gap-3 sm:gap-5">
             <button
               type="button"
@@ -96,10 +96,10 @@ export default function WriterHeader({ backHref = '/' }: WriterHeaderProps) {
             </button>
 
             {/* Logo - Logo @3x */}
-            <Link href="/" className="flex items-center group py-0.5 select-none" aria-label="Entrepreneur">
+            <Link href="/" className="flex items-center group py-0.5 select-none" aria-label="United States Today">
               <img
                 src="/Logo @3x.png"
-                alt="Entrepreneur"
+                alt="United States Today"
                 className="h-6 sm:h-7 md:h-7.5 w-auto object-contain"
               />
             </Link>

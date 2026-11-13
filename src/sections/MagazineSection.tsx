@@ -7,23 +7,23 @@ export const MagazineSection: React.FC = () => {
     {
       id: 'issue-sep-oct-2026',
       title: 'Sept/Oct 2026',
-      subtitle: 'Entrepreneur Magazine',
+      subtitle: 'United States Today Magazine',
       imageUrl: '/images/magazine-cover-sep-oct-2026.png',
-      alt: 'Entrepreneur Magazine Sept/Oct 2026 - Codie Sanchez',
+      alt: 'United States Today Magazine Sept/Oct 2026 - Codie Sanchez',
     },
     {
       id: 'issue-july-aug-2026',
       title: 'July/August 2026',
-      subtitle: 'Entrepreneur Magazine',
+      subtitle: 'United States Today Magazine',
       imageUrl: '/images/magazine-cover-jul-aug-2026.png',
-      alt: 'Entrepreneur Magazine July/August 2026 - Gary Vaynerchuk',
+      alt: 'United States Today Magazine July/August 2026 - Gary Vaynerchuk',
     },
     {
       id: 'issue-may-june-2026',
       title: 'May/June 2026',
-      subtitle: 'Entrepreneur Magazine',
+      subtitle: 'United States Today Magazine',
       imageUrl: '/images/magazine-cover-may-jun-2026.png',
-      alt: 'Entrepreneur Magazine May/June 2026 - Megan Thee Stallion',
+      alt: 'United States Today Magazine May/June 2026 - Megan Thee Stallion',
     },
   ];
 
@@ -33,7 +33,7 @@ export const MagazineSection: React.FC = () => {
         {/* Section Header: Title (Left) + See All (Right) */}
         <div className="mb-6 sm:mb-8 flex items-center justify-between">
           <h2 className="my-0 text-[#020618] font-bold text-2xl sm:text-3xl font-serif tracking-tight">
-            Entrepreneur Magazine
+            United States Today Magazine
           </h2>
 
           <Link

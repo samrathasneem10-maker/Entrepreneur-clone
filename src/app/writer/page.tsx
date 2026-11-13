@@ -562,8 +562,8 @@ function WriterEditorMain() {
       author: {
         name: user?.name || user?.writerName || authorName.trim() || 'Sherin Shibu',
         avatar: user?.avatar || '/images/user-avatar-butterfly.png',
-        title: user?.title || 'Entrepreneur Staff',
-        bio: user?.bio || 'Business news reporter and contributor at Entrepreneur.com, covering high-growth ventures, market trends, and modern workplace leadership.',
+        title: user?.title || 'United States Today Staff',
+        bio: user?.bio || 'Business news reporter and contributor at United States Today, covering high-growth ventures, market trends, and modern workplace leadership.',
         linkedinUrl: user?.linkedinUrl || 'https://www.linkedin.com',
       },
       date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase(),
@@ -745,7 +745,7 @@ function WriterEditorMain() {
       setSuggestedKeywords(generateFocusKeywordsList(title, descriptionSource));
     }
     if (title.trim()) {
-      setMetaTitle(`${title.trim()} | Washington Times`);
+      setMetaTitle(`${title.trim()} | United States Today`);
     }
   }, [title, subtitle, htmlContent, mounted, isCardSummaryEdited, isFocusKeywordEdited, isMetaDescriptionEdited]);
 
@@ -2142,7 +2142,7 @@ function WriterEditorMain() {
     setCardSummary(generatedSummary);
     setMetaDescription(generatedMetaDesc);
     setSuggestedKeywords(generateFocusKeywordsList(title, descriptionSource));
-    setMetaTitle(title.trim() ? `${title.trim()} | Washington Times` : 'Article | Washington Times');
+    setMetaTitle(title.trim() ? `${title.trim()} | United States Today` : 'Article | United States Today');
 
     // Reset manual edit tracking so user gets fresh auto-synced values
     setIsCardSummaryEdited(false);
@@ -3268,15 +3268,15 @@ function WriterEditorMain() {
 
                     <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex flex-col gap-2">
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-[#0B132B] text-white text-[9px] font-bold flex items-center justify-center shrink-0">
-                          WT
+                        <div className="w-6 h-6 rounded-full bg-[#0B132B] text-white text-[8px] font-bold flex items-center justify-center shrink-0">
+                          UST
                         </div>
                         <div className="flex flex-col min-w-0">
                           <span className="text-xs font-semibold text-slate-900 leading-none">
-                            Washington Times
+                            United States Today
                           </span>
                           <span className="text-[10px] text-slate-400 truncate leading-none mt-1">
-                            washington-times.com &gt; article &gt; y...
+                            unitedstatestoday.com &gt; article &gt; y...
                           </span>
                         </div>
                       </div>
@@ -3958,10 +3958,10 @@ function WriterEditorMain() {
                       <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                       </svg>
-                      <span>Entrepreneur Staff &bull; Verified Contributor</span>
+                      <span>United States Today Staff &bull; Verified Contributor</span>
                     </div>
                     <p className="text-xs sm:text-[13.5px] font-serif text-slate-600 leading-relaxed my-0 pt-1.5">
-                      {user?.bio || 'Business news reporter and contributor at Entrepreneur.com, covering high-growth ventures, market trends, and modern workplace leadership.'}
+                      {user?.bio || 'Business news reporter and contributor at United States Today, covering high-growth ventures, market trends, and modern workplace leadership.'}
                     </p>
                   </div>
                 </div>
@@ -4129,7 +4129,7 @@ function WriterEditorMain() {
             className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-[460px] p-6 text-slate-800 animate-in zoom-in-95 duration-150"
           >
             <div className="text-sm font-semibold text-slate-800 mb-2 select-none">
-              {typeof window !== 'undefined' ? `${window.location.host} says` : 'entrepreneur.com says'}
+              {typeof window !== 'undefined' ? `${window.location.host} says` : 'unitedstatestoday.com says'}
             </div>
             
             <div className="text-xs sm:text-[13px] text-slate-700 mb-3 font-normal">

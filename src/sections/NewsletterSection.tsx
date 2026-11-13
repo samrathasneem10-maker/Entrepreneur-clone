@@ -7,7 +7,7 @@ export const NewsletterSection: React.FC = () => {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
   const [selectedTopics, setSelectedTopics] = useState<string[]>([
-    'Entrepreneur Daily',
+    'United States Today Daily',
     'Money Makers',
   ]);
 
@@ -65,7 +65,7 @@ export const NewsletterSection: React.FC = () => {
             
             {/* Topic Selection Pill Checkboxes */}
             <div className="flex flex-wrap justify-center gap-2.5">
-              {['Entrepreneur Daily', 'Money Makers', 'Franchise Weekly', 'AI Pulse'].map((topic) => (
+              {['United States Today Daily', 'Money Makers', 'Franchise Weekly', 'AI Pulse'].map((topic) => (
                 <button
                   type="button"
                   key={topic}

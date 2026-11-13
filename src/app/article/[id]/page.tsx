@@ -209,13 +209,13 @@ export default function ArticleDetailPage() {
       title: isBossArticle
         ? 'Executive Contributor'
         : is53SideHustle
-        ? 'Entrepreneur Staff'
-        : (rawArticle.author?.title || 'Entrepreneur Staff'),
+        ? 'United States Today Staff'
+        : (rawArticle.author?.title || 'United States Today Staff'),
       bio: isBossArticle
         ? 'Mita Mallick is a corporate change-maker and author of the Wall Street Journal and USA Today bestseller, Reimagine Inclusion: Debunking 13 Myths to Transform Your Workplace.'
         : is53SideHustle
-        ? 'Sherin Shibu is a business news reporter at Entrepreneur.com. She previously worked for PCMag, Business Insider, and specializes in business trends, consumer technology, and entrepreneurship.'
-        : (rawArticle.author?.bio || 'Business news reporter and contributor at Entrepreneur.com, covering high-growth ventures, market trends, and modern workplace leadership.'),
+        ? 'Sherin Shibu is a business news reporter at United States Today. She previously worked for PCMag, Business Insider, and specializes in business trends, consumer technology, and entrepreneurship.'
+        : (rawArticle.author?.bio || 'Business news reporter and contributor at United States Today, covering high-growth ventures, market trends, and modern workplace leadership.'),
     },
     editor: isBossArticle ? 'KARA MCINTYRE' : is53SideHustle ? 'AMANDA BREEN' : (rawArticle.editor || 'AMANDA BREEN'),
     date: isBossArticle ? 'OCT 14, 2026' : is53SideHustle ? 'JAN 26, 2026' : (rawArticle.date || 'JAN 26, 2026'),
@@ -462,7 +462,7 @@ export default function ArticleDetailPage() {
       ? 'Today we examine actionable ideas to make extra income in 2026. From freelance remote services to e-commerce and digital products. Key takeaway: Side hustles help accelerate debt payoff and build financial security.'
       : isBossArticle
       ? 'Not every boss deserves a thank you card. When your boss is a bully, do not normalize the behavior, document everything, and know your workplace rights.'
-      : `${article.excerpt || article.title}. Reported by ${article.author?.name || 'Entrepreneur Staff'}.`;
+      : `${article.excerpt || article.title}. Reported by ${article.author?.name || 'United States Today Staff'}.`;
 
     const textToSpeak = `${spokenIntro} ${spokenBody}`;
     const utterance = new SpeechSynthesisUtterance(textToSpeak);
@@ -819,7 +819,7 @@ export default function ArticleDetailPage() {
 
             {/* Image caption and opinions disclaimer matching screenshot */}
             <div className="flex items-center justify-between text-xs text-slate-500 font-sans pt-1 pb-2">
-              <span className="italic">Opinions expressed by Entrepreneur contributors are their own.</span>
+              <span className="italic">Opinions expressed by United States Today contributors are their own.</span>
               <span className="text-slate-400 font-sans text-[11px]">kundoy | Getty Images</span>
             </div>
 
@@ -1154,10 +1154,10 @@ export default function ArticleDetailPage() {
                     <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
                       <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                     </svg>
-                    <span>{article.author?.title || 'Entrepreneur Staff'}</span>
+                    <span>{article.author?.title || 'United States Today Staff'}</span>
                   </div>
                   <p className="text-xs sm:text-[13.5px] font-serif text-slate-600 leading-relaxed my-0 pt-1.5">
-                    {article.author?.bio || 'Business news reporter at Entrepreneur.com, covering trends in business, tech, and enterprise.'}{' '}
+                    {article.author?.bio || 'Business news reporter at United States Today, covering trends in business, tech, and enterprise.'}{' '}
                     <Link
                       href={`/author/${(article.author?.name || 'sherin-shibu').toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
                       className="text-[#1642D0] underline underline-offset-2 hover:text-[#0d2d8d]"

@@ -90,13 +90,13 @@ export default function StartLlcPage() {
           <div className="text-center max-w-3xl mx-auto mb-12">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-[#1642D0] text-xs font-bold uppercase tracking-wider mb-4">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Official Entrepreneur Business Formation</span>
+              <span>Official United States Today Business Formation</span>
             </div>
             <h1 className="text-3xl sm:text-5xl font-serif font-bold text-slate-900 tracking-tight leading-tight">
               Start Your LLC with Confidence
             </h1>
             <p className="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed font-sans">
-              Form your Limited Liability Company in any of the 50 US states. Fast legal filings, registered agent service, and complete compliance backed by Entrepreneur.
+              Form your Limited Liability Company in any of the 50 US states. Fast legal filings, registered agent service, and complete compliance backed by United States Today.
             </p>
           </div>
 
@@ -300,7 +300,7 @@ export default function StartLlcPage() {
                         <ul className="text-xs text-slate-600 space-y-2 mt-4">
                           <li className="flex items-center gap-2 font-semibold text-slate-900">✓ All Pro features</li>
                           <li className="flex items-center gap-2">✓ 24-Hour Expedited Filing</li>
-                          <li className="flex items-center gap-2">✓ 1-Yr Entrepreneur All-Access</li>
+                          <li className="flex items-center gap-2">✓ 1-Yr United States Today All-Access</li>
                           <li className="flex items-center gap-2">✓ 150+ Contract Templates</li>
                         </ul>
                       </div>
@@ -382,7 +382,7 @@ export default function StartLlcPage() {
                       <span className="font-semibold text-slate-800">${selectedState.fee}</span>
                     </div>
                     <div className="py-2.5 flex justify-between">
-                      <span className="text-slate-600">Entrepreneur Package ({selectedPackage}):</span>
+                      <span className="text-slate-600">United States Today Package ({selectedPackage}):</span>
                       <span className="font-semibold text-slate-800">${packagePrices[selectedPackage]}</span>
                     </div>
                   </div>
@@ -410,7 +410,7 @@ export default function StartLlcPage() {
                 <div className="bg-slate-50 rounded-2xl border border-slate-200 p-5 text-xs text-slate-600 space-y-3">
                   <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-xs uppercase tracking-wider">
                     <HelpCircle className="w-4 h-4 text-[#1642D0]" />
-                    <span>Why Form With Entrepreneur?</span>
+                    <span>Why Form With United States Today?</span>
                   </h5>
                   <p>
                     Over 45 years of business leadership. We partner directly with state filing departments to guarantee accurate, expedited LLC formation.

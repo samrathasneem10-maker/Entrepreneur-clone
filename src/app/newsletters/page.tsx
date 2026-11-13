@@ -159,11 +159,11 @@ export default function NewslettersPage() {
         {/* INTRO TEXT BLOCK */}
         <div className="text-center max-w-2xl mx-auto space-y-3 mb-8">
           <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#020618] leading-tight my-0">
-            Let the best of Entrepreneur news come to you.
+            Let the best of United States Today news come to you.
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 font-sans leading-relaxed my-0">
             Select any of the free newsletters below. Then, enter your email address and click &quot;Sign Up Now&quot;.
-            Your newsletter subscriptions with us are subject to Entrepreneur&apos;s{' '}
+            Your newsletter subscriptions with us are subject to United States Today&apos;s{' '}
             <a href="#" className="underline text-slate-800 hover:text-[#1642D0]">
               Terms and Conditions
             </a>{' '}

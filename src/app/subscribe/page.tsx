@@ -42,7 +42,7 @@ export default function SubscribePage() {
                 <Check className="w-10 h-10 stroke-[3]" />
               </div>
               <h2 className="text-2xl font-serif font-bold text-slate-900">
-                Welcome to Entrepreneur All Access!
+                Welcome to United States Today All Access!
               </h2>
               <p className="text-sm text-slate-600 mt-2 mb-6">
                 Your subscription has been activated with 33% discount applied. Enjoy unlimited reading on web, iOS, and Android.
@@ -84,7 +84,7 @@ export default function SubscribePage() {
                   <ul className="text-xs sm:text-sm text-slate-700 space-y-3">
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-emerald-600" />
-                      <span>Unlimited digital articles on Entrepreneur.com</span>
+                      <span>Unlimited digital articles on United States Today</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-emerald-600" />
@@ -146,7 +146,7 @@ export default function SubscribePage() {
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-emerald-600" />
-                      <span>Entrepreneur Leadership Network digital badge</span>
+                      <span>United States Today Leadership Network digital badge</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-emerald-600" />

@@ -88,7 +88,7 @@ export const SignupForm: React.FC = () => {
           Create an Account
         </h2>
         <p className="text-xs sm:text-[13px] text-slate-500 my-0">
-          Join Entrepreneur for exclusive access and daily insights
+          Join United States Today for exclusive access and daily insights
         </p>
       </div>
 

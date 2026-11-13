@@ -146,10 +146,10 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
               </button>
 
               {/* Logo - Logo @3x */}
-              <Link href="/" className="flex items-center group py-0.5 select-none" aria-label="Entrepreneur">
+              <Link href="/" className="flex items-center group py-0.5 select-none" aria-label="United States Today">
                 <img
                   src="/Logo @3x.png"
-                  alt="Entrepreneur"
+                  alt="United States Today"
                   className="h-7 sm:h-8 md:h-9 lg:h-10 xl:h-10.5 w-auto object-contain"
                 />
               </Link>
@@ -159,14 +159,14 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
             <div className="flex items-center gap-4 sm:gap-6 font-sans">
               
               {/* 1. SEARCH Icon & Label */}
-              <button
-                onClick={() => setIsSearchOpen(true)}
+              <Link
+                href="/search"
                 className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-900 hover:text-[#1642D0] transition-colors cursor-pointer py-1"
                 aria-label="Search"
               >
                 <Search className="w-4 h-4 stroke-[2.2]" />
                 <span className="hidden sm:inline">Search</span>
-              </button>
+              </Link>
 
               {/* 2. USER PROFILE CARD (when signed in) OR SIGN IN (when guest) matching Reference Image 2 */}
               {mounted && user ? (
@@ -201,10 +201,10 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
                     <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-2xl border border-slate-200 py-2 z-50 text-left animate-in fade-in zoom-in-95 duration-100">
                       <div className="px-4 py-2.5 border-b border-slate-100 bg-slate-50/80">
                         <p className="text-xs font-bold text-slate-900 truncate">{user.name || user.writerName}</p>
-                        <p className="text-[11px] text-slate-500 truncate">{user.email || 'user@entrepreneur.com'}</p>
+                        <p className="text-[11px] text-slate-500 truncate">{user.email || 'user@unitedstatestoday.com'}</p>
                         {user.role !== 'writer' && (
                           <span className="inline-block mt-1 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-50 text-[#1642D0] border border-blue-100">
-                            Reader Member
+                            {user.role === 'admin' ? 'Administrator' : 'Reader Member'}
                           </span>
                         )}
                       </div>
@@ -244,6 +244,18 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
                               <Settings className="w-3.5 h-3.5 text-slate-400" />
                               <span>Profile Settings</span>
                             </button>
+                          </>
+                        ) : user.role === 'admin' ? (
+                          <>
+                            {/* 1. Admin Dashboard */}
+                            <Link
+                              href="/admin"
+                              onClick={() => setShowAccountDropdown(false)}
+                              className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
+                            >
+                              <LayoutDashboard className="w-3.5 h-3.5 text-slate-400" />
+                              <span>Admin Dashboard</span>
+                            </Link>
                           </>
                         ) : (
                           <>

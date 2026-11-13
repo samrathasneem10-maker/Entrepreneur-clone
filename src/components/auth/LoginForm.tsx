@@ -103,7 +103,7 @@ export const LoginForm: React.FC = () => {
     <div className="w-full flex flex-col pt-1">
       {/* 1. Title */}
       <h2 className="text-2xl sm:text-[25px] font-sans font-bold text-slate-800 text-center tracking-tight my-0">
-        Login to Entrepreneur
+        Login to United States Today
       </h2>
 
       {/* 2. Subtitle */}

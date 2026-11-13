@@ -19,7 +19,7 @@ export const TrendingSection: React.FC = () => {
               <h2 className="text-2xl font-bold font-serif text-white tracking-tight">
                 Trending Stories
               </h2>
-              <p className="text-xs text-slate-400 font-sans">Most read articles across Entrepreneur today</p>
+              <p className="text-xs text-slate-400 font-sans">Most read articles across United States Today</p>
             </div>
           </div>
         </div>

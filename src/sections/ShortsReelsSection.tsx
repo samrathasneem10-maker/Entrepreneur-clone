@@ -21,7 +21,7 @@ const REELS: ReelItem[] = [
   },
   {
     id: 'reel-2-rayner-labour-visa',
-    title: 'Rayner Challenges Labour Visa Plans | Washington Global Times',
+    title: 'Rayner Challenges Labour Visa Plans | United States Today',
     duration: '0:19',
     imageUrl: '/images/shorts-reels/reel_2.png',
   },
@@ -33,7 +33,7 @@ const REELS: ReelItem[] = [
   },
   {
     id: 'reel-4-stormont-budget-ultimatum',
-    title: 'Stormont Faces £1.5bn Budget Ultimatum | Washington Global Times',
+    title: 'Stormont Faces £1.5bn Budget Ultimatum | United States Today',
     duration: '0:24',
     imageUrl: '/images/shorts-reels/reel_4.png',
   },

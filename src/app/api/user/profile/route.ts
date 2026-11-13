@@ -104,7 +104,7 @@ export async function GET(request: Request) {
         phone: s.phone || '',
         facebookConnected: Boolean(s.facebook_connected),
         googleConnected: s.google_connected !== undefined ? Boolean(s.google_connected) : true,
-        planName: s.plan_name || 'Entrepreneur Digital All-Access',
+        planName: s.plan_name || 'United States Today Digital All-Access',
         planStatus: s.plan_status || 'active',
         planRenewal: s.plan_renewal || null,
       },
@@ -276,7 +276,7 @@ export async function PUT(request: Request) {
     } else {
       await query(
         `INSERT INTO user_settings (user_email, bio, writer_name, linkedin_url, avatar, phone, facebook_connected, google_connected, plan_name, plan_status)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Entrepreneur Digital All-Access', 'active')`,
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'United States Today Digital All-Access', 'active')`,
         [
           targetEmail,
           updatedBio,

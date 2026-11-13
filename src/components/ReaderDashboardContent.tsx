@@ -46,6 +46,7 @@ interface UserProfileData {
   role: string;
   avatar?: string;
   bio: string;
+  linkedinUrl?: string;
   phone: string;
   facebookConnected: boolean;
   googleConnected: boolean;
@@ -105,6 +106,7 @@ export function ReaderDashboardContent() {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [bio, setBio] = useState('');
+  const [linkedinUrl, setLinkedinUrl] = useState('');
 
   // Password change form
   const [showPasswordSection, setShowPasswordSection] = useState(false);
@@ -118,7 +120,7 @@ export function ReaderDashboardContent() {
   const [loadingArticles, setLoadingArticles] = useState(false);
 
   // Subscription state
-  const [subscriptionPlan, setSubscriptionPlan] = useState('Entrepreneur Digital All-Access');
+  const [subscriptionPlan, setSubscriptionPlan] = useState('United States Today Digital All-Access');
   const [subscriptionStatus, setSubscriptionStatus] = useState('active');
   const [showChangePlanModal, setShowChangePlanModal] = useState(false);
 
@@ -153,7 +155,8 @@ export function ReaderDashboardContent() {
         setEmail(data.profile.email || 'samrathasneem20@gmail.com');
         setPhone(data.profile.phone || '+1 (555) 234-5678');
         setBio(data.profile.bio || '');
-        setSubscriptionPlan(data.profile.planName || 'Entrepreneur Digital All-Access');
+        setLinkedinUrl(data.profile.linkedinUrl || '');
+        setSubscriptionPlan(data.profile.planName || 'United States Today Digital All-Access');
         setSubscriptionStatus(data.profile.planStatus || 'active');
 
         // Sync with AuthContext
@@ -423,6 +426,17 @@ export function ReaderDashboardContent() {
   // Handle Save Bio / Profile info
   const handleSaveBio = async () => {
     if (!profile) return;
+    let trimmedLinkedin = linkedinUrl.trim();
+    if (trimmedLinkedin) {
+      if (!/^https?:\/\//i.test(trimmedLinkedin)) {
+        trimmedLinkedin = `https://${trimmedLinkedin}`;
+      }
+      if (!/linkedin\.com\//i.test(trimmedLinkedin)) {
+        showToast('Please enter a valid LinkedIn URL (e.g. https://www.linkedin.com/in/username).', 'error');
+        return;
+      }
+    }
+
     try {
       setSavingField('bio');
       const res = await fetch('/api/user/profile', {
@@ -430,12 +444,14 @@ export function ReaderDashboardContent() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           currentEmail: profile.email,
-          bio,
+          bio: bio.trim(),
+          linkedinUrl: trimmedLinkedin,
         }),
       });
       const data = await res.json();
       if (data?.success) {
         showToast('Profile information saved!');
+        updateUser({ bio: bio.trim(), linkedinUrl: trimmedLinkedin });
         fetchProfile(profile.email);
       } else {
         showToast(data?.error || 'Failed to update profile info.', 'error');
@@ -615,15 +631,15 @@ export function ReaderDashboardContent() {
         </div>
       )}
 
-      {/* TOP HEADER - Exact authentic Entrepreneur header matching Reference Image 2 */}
+      {/* TOP HEADER - United States Today header */}
       <header className="w-full bg-white border-b border-slate-200/90 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           
           {/* Logo - Logo @3x */}
-          <Link href="/" className="flex items-center group py-0.5 select-none" aria-label="Entrepreneur">
+          <Link href="/" className="flex items-center group py-0.5 select-none" aria-label="United States Today">
             <img
               src="/Logo @3x.png"
-              alt="Entrepreneur"
+              alt="United States Today"
               className="h-7 sm:h-8 md:h-9 w-auto object-contain"
             />
           </Link>
@@ -968,14 +984,44 @@ export function ReaderDashboardContent() {
 
                 <hr className="border-slate-200 my-8" />
 
-                {/* 4. PROFILE INFORMATION SECTION (Only Save & Cancel buttons directly below heading, no textarea) */}
+                {/* 4. PROFILE INFORMATION SECTION (Bio & LinkedIn URL editable) */}
                 <section>
                   <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-4 my-0">
                     Profile information
                   </h3>
 
-                  {/* Save & Cancel buttons directly below section heading */}
-                  <div className="flex items-center">
+                  <div className="space-y-4 max-w-2xl">
+                    {/* Bio */}
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+                        Bio
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={bio}
+                        onChange={(e) => setBio(e.target.value)}
+                        placeholder="Tell us a little about yourself or your professional background..."
+                        className="w-full p-3.5 text-sm sm:text-base text-slate-900 border border-slate-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#1642D0] focus:border-[#1642D0] transition-colors bg-white shadow-2xs resize-none"
+                      />
+                    </div>
+
+                    {/* LinkedIn URL */}
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+                        LinkedIn Profile URL
+                      </label>
+                      <input
+                        type="url"
+                        value={linkedinUrl}
+                        onChange={(e) => setLinkedinUrl(e.target.value)}
+                        placeholder="https://www.linkedin.com/in/your-profile"
+                        className="w-full h-11 sm:h-12 px-4 text-sm sm:text-base text-slate-900 border border-slate-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#1642D0] focus:border-[#1642D0] transition-colors bg-white shadow-2xs"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Save & Cancel buttons */}
+                  <div className="flex items-center mt-5">
                     <button
                       type="button"
                       onClick={handleSaveBio}
@@ -986,7 +1032,10 @@ export function ReaderDashboardContent() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setBio(profile?.bio || '')}
+                      onClick={() => {
+                        setBio(profile?.bio || '');
+                        setLinkedinUrl(profile?.linkedinUrl || '');
+                      }}
                       className="px-7 py-2.5 text-sm sm:text-base font-semibold rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer ml-3"
                     >
                       Cancel
@@ -1207,7 +1256,7 @@ export function ReaderDashboardContent() {
                     Subscriptions
                   </h2>
                   <p className="text-sm text-slate-500 mt-1 my-0">
-                    Manage your Entrepreneur.com membership, benefits, and billing options.
+                    Manage your United States Today membership, benefits, and billing options.
                   </p>
                   <hr className="border-slate-200 mt-4 mb-6" />
                 </div>
@@ -1267,7 +1316,7 @@ export function ReaderDashboardContent() {
                       </div>
                       <div className="flex items-center gap-2.5">
                         <Check className="w-5 h-5 text-emerald-600 shrink-0" />
-                        <span>Monthly digital edition of Entrepreneur Magazine</span>
+                        <span>Monthly digital edition of United States Today Magazine</span>
                       </div>
                       <div className="flex items-center gap-2.5">
                         <Check className="w-5 h-5 text-emerald-600 shrink-0" />
@@ -1458,7 +1507,7 @@ export function ReaderDashboardContent() {
                     Help & Support
                   </h2>
                   <p className="text-sm text-slate-500 mt-1 my-0">
-                    Get assistance with your Entrepreneur account, subscriptions, billing, and access.
+                    Get assistance with your United States Today account, subscriptions, billing, and access.
                   </p>
                   <hr className="border-slate-200 mt-4 mb-6" />
                 </div>
@@ -1470,10 +1519,10 @@ export function ReaderDashboardContent() {
                     <h3 className="text-base font-bold text-slate-900 mb-1">Email Support</h3>
                     <p className="text-xs text-slate-500 mb-3">Reach our dedicated support team 24/7.</p>
                     <a
-                      href="mailto:help@entrepreneur.com"
+                      href="mailto:help@unitedstatestoday.com"
                       className="text-sm font-bold text-[#1642D0] hover:underline"
                     >
-                      help@entrepreneur.com
+                      help@unitedstatestoday.com
                     </a>
                   </div>
 
@@ -1495,7 +1544,7 @@ export function ReaderDashboardContent() {
                     <p className="text-xs text-slate-500 mb-3">Search tutorials, guides, and solutions.</p>
                     <button
                       type="button"
-                      onClick={() => showToast('Opening Entrepreneur Knowledge Center...')}
+                      onClick={() => showToast('Opening United States Today Knowledge Center...')}
                       className="text-sm font-bold text-[#1642D0] hover:underline cursor-pointer"
                     >
                       Visit Help Center ↗
@@ -1549,7 +1598,7 @@ export function ReaderDashboardContent() {
 
             <div className="space-y-3.5 mb-6">
               <div
-                onClick={() => handleChangeSubscription('Entrepreneur Digital All-Access (Annual)')}
+                onClick={() => handleChangeSubscription('United States Today Digital All-Access (Annual)')}
                 className="p-4 border-2 border-[#1642D0] rounded-xl bg-blue-50/50 cursor-pointer flex items-center justify-between"
               >
                 <div>
@@ -1565,7 +1614,7 @@ export function ReaderDashboardContent() {
               </div>
 
               <div
-                onClick={() => handleChangeSubscription('Entrepreneur Digital All-Access (Monthly)')}
+                onClick={() => handleChangeSubscription('United States Today Digital All-Access (Monthly)')}
                 className="p-4 border border-slate-300 rounded-xl hover:border-slate-400 cursor-pointer flex items-center justify-between"
               >
                 <div>
@@ -1605,7 +1654,7 @@ export function ReaderDashboardContent() {
                   className="w-5 h-5 text-[#1642D0] rounded border-slate-300 mt-0.5"
                 />
                 <div>
-                  <strong className="text-slate-900 block text-sm">Entrepreneur Daily</strong>
+                  <strong className="text-slate-900 block text-sm">United States Today Daily</strong>
                   <span className="text-slate-500 text-xs">
                     Top stories, founder features, and daily strategy guide.
                   </span>
@@ -1699,7 +1748,7 @@ export function ReaderDashboardContent() {
       <footer className="w-full bg-[#0a0a0a] border-t border-neutral-800 text-slate-400 py-8 sm:py-9 mt-auto">
         <div className="max-w-6xl mx-auto px-6 sm:px-8 flex flex-col sm:flex-row items-center justify-between text-xs sm:text-sm gap-4">
           <p className="my-0 text-slate-400 font-normal">
-            © 2026 Entrepreneur Media, LLC. All rights reserved.
+            © 2026 United States Today Media, LLC. All rights reserved.
           </p>
           <div className="flex items-center gap-6 sm:gap-8 font-medium text-slate-400">
             <Link href="/" className="hover:text-white transition-colors">Privacy Policy</Link>

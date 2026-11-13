@@ -125,7 +125,7 @@ export default function ArticlePreviewPage() {
   const subCategories = previewData?.subCategories || [];
   const authorName = user?.name || previewData?.author?.name || user?.writerName || 'SHERIN SHIBU';
   const authorAvatar = user?.avatar || previewData?.author?.avatar || '/images/user-avatar-butterfly.png';
-  const authorBio = previewData?.author?.bio || user?.bio || 'Business news reporter and contributor at Entrepreneur.com, covering high-growth ventures, market trends, and modern workplace leadership.';
+  const authorBio = previewData?.author?.bio || user?.bio || 'Business news reporter and contributor at United States Today, covering high-growth ventures, market trends, and modern workplace leadership.';
   const authorLinkedin = previewData?.author?.linkedinUrl || user?.linkedinUrl || 'https://www.linkedin.com';
   const date = previewData?.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase();
   const imageUrl = previewData?.imageUrl || '';
@@ -441,7 +441,7 @@ export default function ArticlePreviewPage() {
                   <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                   </svg>
-                  <span>Entrepreneur Staff &bull; Verified Contributor</span>
+                  <span>United States Today Staff &bull; Verified Contributor</span>
                 </div>
                 <p className="text-xs sm:text-[13.5px] font-serif text-slate-600 leading-relaxed my-0 pt-1.5">
                   {authorBio}

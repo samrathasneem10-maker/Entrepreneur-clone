@@ -23,7 +23,7 @@ export async function GET(request: Request) {
     );
 
     const s = settings?.[0] || {
-      plan_name: 'Entrepreneur Digital All-Access',
+      plan_name: 'United States Today Digital All-Access',
       plan_status: 'active',
       plan_renewal: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     };
@@ -31,7 +31,7 @@ export async function GET(request: Request) {
     return NextResponse.json({
       success: true,
       subscription: {
-        planName: s.plan_name || 'Entrepreneur Digital All-Access',
+        planName: s.plan_name || 'United States Today Digital All-Access',
         planStatus: s.plan_status || 'active',
         planRenewal: s.plan_renewal || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
         price: s.plan_name?.includes('Annual') ? '$79.99 / year' : '$9.99 / month',
@@ -78,7 +78,7 @@ export async function PUT(request: Request) {
       await query(
         `INSERT INTO user_settings (user_email, plan_name, plan_status)
          VALUES (?, ?, ?)`,
-        [email, planName || 'Entrepreneur Digital All-Access', planStatus || 'active']
+        [email, planName || 'United States Today Digital All-Access', planStatus || 'active']
       );
     }
 
@@ -86,7 +86,7 @@ export async function PUT(request: Request) {
       success: true,
       message: 'Subscription updated successfully.',
       subscription: {
-        planName: planName || 'Entrepreneur Digital All-Access',
+        planName: planName || 'United States Today Digital All-Access',
         planStatus: planStatus || 'active',
       },
     });

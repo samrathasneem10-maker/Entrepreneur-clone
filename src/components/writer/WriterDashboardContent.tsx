@@ -21,6 +21,7 @@ import {
   LogOut,
   Settings,
   User,
+  ChevronLeft,
   ChevronRight,
   Menu,
   ImageIcon,
@@ -185,6 +186,21 @@ const FALLBACK_WRITER_ARTICLES: Record<WriterTab, ArticleItem[]> = {
   ],
 };
 
+const WRITER_PAGE_SIZE = 10;
+
+function getPageNumbers(current: number, total: number): (number | string)[] {
+  if (total <= 7) {
+    return Array.from({ length: total }, (_, i) => i + 1);
+  }
+  if (current <= 4) {
+    return [1, 2, 3, 4, 5, '...', total];
+  }
+  if (current >= total - 3) {
+    return [1, '...', total - 4, total - 3, total - 2, total - 1, total];
+  }
+  return [1, '...', current - 1, current, current + 1, '...', total];
+}
+
 function WriterDashboardInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -200,6 +216,7 @@ function WriterDashboardInner() {
 
   const [activeTab, setActiveTab] = useState<WriterTab>(initialTab);
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // Articles & counts state
@@ -280,7 +297,7 @@ function WriterDashboardInner() {
   const fetchArticles = async (status: WriterTab) => {
     setLoadingArticles(true);
     try {
-      const res = await fetch(`/api/articles?status=${status}&limit=100`);
+      const res = await fetch(`/api/articles?status=${status}&limit=200`);
       const data = await res.json();
       if (data?.success && Array.isArray(data.data)) {
         const mapped: ArticleItem[] = data.data.map((item: any) => {
@@ -322,9 +339,15 @@ function WriterDashboardInner() {
     }
   };
 
+  // Reset page when search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
   const handleTabChange = (tab: WriterTab) => {
     setActiveTab(tab);
     setSearchQuery('');
+    setCurrentPage(1);
     setMobileSidebarOpen(false);
     router.replace(`/writer/dashboard?tab=${tab}`);
     fetchArticles(tab);
@@ -418,6 +441,15 @@ function WriterDashboardInner() {
       return titleMatch || catMatch || excerptMatch;
     });
   }, [articles, searchQuery]);
+
+  // Pagination for articles
+  const totalPages = Math.max(1, Math.ceil(filteredArticles.length / WRITER_PAGE_SIZE));
+  const safePage = Math.min(Math.max(1, currentPage), totalPages);
+
+  const displayedArticles = useMemo(() => {
+    const startIndex = (safePage - 1) * WRITER_PAGE_SIZE;
+    return filteredArticles.slice(startIndex, startIndex + WRITER_PAGE_SIZE);
+  }, [filteredArticles, safePage]);
 
   const writerDisplayName = user?.name || user?.writerName || 'Writer';
 
@@ -537,15 +569,15 @@ function WriterDashboardInner() {
         </div>
       )}
 
-      {/* TOP HEADER - Exact authentic Entrepreneur header matching Reader Dashboard */}
+      {/* TOP HEADER - United States Today header matching Reader Dashboard */}
       <header className="w-full bg-white border-b border-slate-200/90 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           
           {/* Logo - Logo @3x */}
-          <Link href="/" className="flex items-center group py-0.5 select-none" aria-label="Entrepreneur">
+          <Link href="/" className="flex items-center group py-0.5 select-none" aria-label="United States Today">
             <img
               src="/Logo @3x.png"
-              alt="Entrepreneur"
+              alt="United States Today"
               className="h-7 sm:h-8 md:h-9 w-auto object-contain"
             />
           </Link>
@@ -575,7 +607,7 @@ function WriterDashboardInner() {
               <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-xl border border-slate-200 py-2 z-50 text-left animate-in fade-in duration-100">
                 <div className="px-4 py-2 border-b border-slate-100">
                   <p className="text-xs font-bold text-slate-900 truncate">{writerDisplayName}</p>
-                  <p className="text-[11px] text-slate-500 truncate">{user?.email || 'writer@entrepreneur.com'}</p>
+                  <p className="text-[11px] text-slate-500 truncate">{user?.email || 'writer@unitedstatestoday.com'}</p>
                 </div>
                 <div className="py-1">
                   <button
@@ -741,7 +773,7 @@ function WriterDashboardInner() {
                       </td>
                     </tr>
                   ) : (
-                    filteredArticles.map((art) => {
+                    displayedArticles.map((art) => {
                       const articleUrl = `/article/${art.dbId || art.slug || art.id}`;
                       const editUrl = `/writer?id=${art.dbId || art.slug || art.id}`;
 
@@ -961,14 +993,74 @@ function WriterDashboardInner() {
               </table>
             </div>
 
-            {/* Bottom summary row */}
-            <div className="px-6 sm:px-8 py-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
-              <span>
-                Showing <strong className="text-slate-700">{filteredArticles.length}</strong> {activeTab.replace('_', ' ')} articles
-              </span>
-              <span>
-                Page 1 of 1
-              </span>
+            {/* Bottom summary and pagination controls */}
+            <div className="px-6 sm:px-8 py-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 bg-white">
+              <div>
+                Showing <strong className="text-slate-700">{filteredArticles.length === 0 ? 0 : (safePage - 1) * WRITER_PAGE_SIZE + 1}</strong> to{' '}
+                <strong className="text-slate-700">{Math.min(safePage * WRITER_PAGE_SIZE, filteredArticles.length)}</strong> of{' '}
+                <strong className="text-slate-700">{filteredArticles.length}</strong> {activeTab.replace('_', ' ')} articles
+              </div>
+
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <button
+                  type="button"
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={safePage <= 1}
+                  className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${
+                    safePage <= 1
+                      ? 'border-slate-200 text-slate-300 bg-slate-50 cursor-not-allowed'
+                      : 'border-slate-200 text-slate-700 bg-white hover:bg-slate-50 hover:border-slate-300 shadow-2xs cursor-pointer'
+                  }`}
+                  aria-label="Previous Page"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                  <span>Previous</span>
+                </button>
+
+                <div className="flex items-center gap-1">
+                  {getPageNumbers(safePage, totalPages).map((p, idx) => {
+                    if (p === '...') {
+                      return (
+                        <span key={`ellipsis-${idx}`} className="px-2 py-1 text-slate-400 select-none text-xs">
+                          ...
+                        </span>
+                      );
+                    }
+                    const pageNum = Number(p);
+                    const isActive = pageNum === safePage;
+                    return (
+                      <button
+                        key={`page-${pageNum}`}
+                        type="button"
+                        onClick={() => setCurrentPage(pageNum)}
+                        className={`min-w-8 h-8 px-2 flex items-center justify-center rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                          isActive
+                            ? 'bg-[#1642D0] text-white shadow-2xs'
+                            : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
+                        }`}
+                        aria-label={`Page ${pageNum}`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={safePage >= totalPages}
+                  className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${
+                    safePage >= totalPages
+                      ? 'border-slate-200 text-slate-300 bg-slate-50 cursor-not-allowed'
+                      : 'border-slate-200 text-slate-700 bg-white hover:bg-slate-50 hover:border-slate-300 shadow-2xs cursor-pointer'
+                  }`}
+                  aria-label="Next Page"
+                >
+                  <span>Next</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
           </div>
         </main>

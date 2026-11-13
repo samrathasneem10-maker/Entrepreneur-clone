@@ -186,7 +186,7 @@ export const FranchiseSection: React.FC = () => {
               <div className="w-full max-w-[270px] sm:max-w-[290px] mx-auto mb-2 flex items-center justify-center">
                 <img
                   src="/images/top-franchise-suppliers-logo.png"
-                  alt="Entrepreneur Top Franchise Suppliers 2026"
+                  alt="United States Today Top Franchise Suppliers 2026"
                   className="w-full h-auto object-contain block select-none pointer-events-none"
                 />
               </div>

@@ -1,15 +1,14 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { SITE_NAME, getSiteUrl } from '@/lib/siteConfig';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : '') ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://entrepreneur-clone.vercel.app');
+const siteUrl = getSiteUrl();
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: 'Entrepreneur - Small Business News, Ideas, & Growth Strategies',
-  description: 'Your ultimate resource for small business news, entrepreneurship, business management, side hustle ideas, franchise opportunities, and leadership.',
-  keywords: ['Entrepreneur', 'Business News', 'Small Business', 'Side Hustles', 'Franchises', 'Startup Funding', 'Leadership'],
+  title: SITE_NAME,
+  description: `Your ultimate resource for U.S. and global business news, markets, economy, technology, entrepreneurship, franchises, and leadership from ${SITE_NAME}.`,
+  keywords: [SITE_NAME, 'Business News', 'US News', 'Markets', 'Economy', 'Technology', 'Startups', 'Leadership'],
   icons: {
     icon: [
       { url: '/favicon.png', type: 'image/png' },
@@ -20,16 +19,16 @@ export const metadata: Metadata = {
     apple: '/favicon.png',
   },
   openGraph: {
-    title: 'Entrepreneur - Small Business News, Ideas, & Growth Strategies',
-    description: 'Your ultimate resource for small business news, entrepreneurship, business management, side hustle ideas, franchise opportunities, and leadership.',
+    title: SITE_NAME,
+    description: `Your ultimate resource for U.S. and global business news, markets, economy, technology, entrepreneurship, franchises, and leadership from ${SITE_NAME}.`,
     url: '/',
-    siteName: 'United States Today',
+    siteName: SITE_NAME,
     images: [
       {
         url: '/Thumbail.jpg',
         width: 1200,
         height: 630,
-        alt: 'United States Today',
+        alt: SITE_NAME,
       },
     ],
     locale: 'en_US',
@@ -37,8 +36,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Entrepreneur - Small Business News, Ideas, & Growth Strategies',
-    description: 'Your ultimate resource for small business news, entrepreneurship, business management, side hustle ideas, franchise opportunities, and leadership.',
+    title: SITE_NAME,
+    description: `Your ultimate resource for U.S. and global business news, markets, economy, technology, entrepreneurship, franchises, and leadership from ${SITE_NAME}.`,
     images: ['/Thumbail.jpg'],
   },
 };

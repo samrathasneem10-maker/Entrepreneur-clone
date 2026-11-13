@@ -115,16 +115,14 @@ export const SideHustleSection: React.FC = () => {
             ))}
           </div>
 
-          {/* Sidebar: Entrepreneur Newsletters Widget (5 of 12 - Matching Screenshots 1, 2, 3) */}
+          {/* Sidebar: United States Today Newsletters Widget (5 of 12 - Matching Screenshots 1, 2, 3) */}
           <div className="lg:col-span-5 bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-7 shadow-xs">
-            {/* Header: 'E' Logo + ENTREPRENEUR NEWSLETTERS + Dark Underline */}
+            {/* Header: Logo + UNITED STATES TODAY NEWSLETTERS + Dark Underline */}
             <div className="mb-4">
               <div className="flex items-center gap-2 mb-2">
-                <span className="w-5 h-5 bg-[#020618] text-white flex items-center justify-center font-serif font-black text-xs rounded-xs">
-                  E
-                </span>
+                <img src="/favicon.png" alt="United States Today" className="w-5 h-5 object-contain shrink-0" />
                 <span className="text-[11px] font-sans font-bold uppercase tracking-widest text-slate-500">
-                  ENTREPRENEUR NEWSLETTERS
+                  UNITED STATES TODAY NEWSLETTERS
                 </span>
               </div>
               <div className="h-[1.5px] bg-slate-900 w-full" />

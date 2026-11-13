@@ -72,7 +72,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
         <div className="mb-4">
           <span className="text-xs font-bold uppercase tracking-widest text-blue-700 flex items-center gap-1.5">
             <Sparkles className="w-4 h-4 text-blue-600" />
-            Search Entrepreneur Library
+            Search United States Today Library
           </span>
         </div>
 

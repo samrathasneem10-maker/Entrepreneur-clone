@@ -76,18 +76,18 @@ export const NavDrawer: React.FC<NavDrawerProps> = ({ isOpen, onClose }) => {
       {/* Drawer Container: pinned to full viewport height, non-scrolling shell */}
       <div className="relative bg-white w-full max-w-sm sm:max-w-md h-full max-h-screen flex flex-col shadow-2xl border-r border-slate-200 z-10 animate-in slide-in-from-left duration-300">
         
-        {/* Header inside Drawer: Centered Entrepreneur Logo, exactly centered, increased size, no 'W' symbol or extra marks */}
+        {/* Header inside Drawer: Centered United States Today Logo, exactly centered, increased size, no 'W' symbol or extra marks */}
         <div className="relative px-4 py-3.5 border-b border-slate-200 flex items-center justify-center shrink-0 bg-white h-16">
           {/* Centered Logo @3x - perfectly centered */}
           <Link
             href="/"
             onClick={onClose}
             className="flex items-center justify-center select-none hover:opacity-85 transition-opacity"
-            aria-label="Entrepreneur Home"
+            aria-label="United States Today Home"
           >
             <img
               src="/Logo @3x.png"
-              alt="Entrepreneur"
+              alt="United States Today"
               className="h-8 sm:h-9 w-auto object-contain"
             />
           </Link>
@@ -217,7 +217,7 @@ export const NavDrawer: React.FC<NavDrawerProps> = ({ isOpen, onClose }) => {
               className="flex items-center gap-2 text-xs sm:text-sm font-bold text-[#1642D0] hover:underline cursor-pointer"
             >
               <User className="w-4 h-4" />
-              <span>Sign In to Entrepreneur</span>
+              <span>Sign In to United States Today</span>
             </button>
           </div>
         )}
