@@ -49,6 +49,9 @@ import {
   PanelRightOpen,
   Sparkles,
   Info,
+  Bookmark,
+  Copy,
+  Pause,
 } from 'lucide-react';
 import ProfileSettingsModal from '@/components/writer/ProfileSettingsModal';
 import { MAIN_CATEGORIES } from '@/data/categoriesData';
@@ -104,6 +107,90 @@ export interface SubscriberItem {
 }
 
 const ADMIN_TABLE_PAGE_SIZE = 20;
+
+const PREVIEW_SIDEBAR_ARTICLES = [
+  {
+    id: 'preview-side-1',
+    title: 'Apple, Amazon and Microsoft Want These New AI Gadgets on Your Holiday Wish List',
+    category: 'Breaking Business News',
+    time: '3 hours ago',
+  },
+  {
+    id: 'preview-side-2',
+    title: 'America Finally Got a New Sunscreen. Europeans Have Been Sporting It Since 1999.',
+    category: 'Research and Insights',
+    time: '4 hours ago',
+  },
+  {
+    id: 'preview-side-3',
+    title: "This Popular Pickleball Franchisor Filed for Bankruptcy. Its Founder Says, 'I Own It'",
+    category: 'Startups and Entrepreneurship',
+    time: '4 hours ago',
+  },
+  {
+    id: 'preview-side-4',
+    title: 'AI Is Changing Your Company Culture Whether You Planned for It or Not.',
+    category: 'Leadership',
+    time: '5 hours ago',
+  },
+  {
+    id: 'preview-side-5',
+    title: "Creators Are Handing Their Video Edits to AI. Here's Where It Starts to Backfire.",
+    category: 'Technology and AI',
+    time: '6 hours ago',
+  },
+  {
+    id: 'preview-side-6',
+    title: "He Leads a $240 Billion Food Giant. Here's the Difficult Management Rule He Follows.",
+    category: 'Markets and Investing',
+    time: '7 hours ago',
+  },
+];
+
+const PREVIEW_RELATED_CONTENT = [
+  {
+    id: 'prev-rel-1',
+    category: 'BUILDING A BUSINESS',
+    title: "An Introvert's Case for Skipping Small Talk and Building Real Connections",
+    author: 'AYTEKIN TANK',
+    imageUrl: '/images/related-introvert.png',
+  },
+  {
+    id: 'prev-rel-2',
+    category: 'BUILDING A BUSINESS',
+    title: 'Autonomous Enterprise AI: How Small Teams Build Billion-Dollar Products',
+    author: 'STAFF CONTRIBUTOR',
+    imageUrl: '/images/coding-agents.jpg',
+  },
+  {
+    id: 'prev-rel-3',
+    category: 'BUSINESS NEWS',
+    title: "He Leads a $240 Billion Food Giant. Here’s the Difficult Management Rule He Follows.",
+    author: 'SHERIN SHIBU',
+    imageUrl: '/images/related-food-giant.png',
+  },
+  {
+    id: 'prev-rel-4',
+    category: 'BUILDING A BUSINESS',
+    title: 'How This Trio Built a Multi-Million Dollar Supply Chain Powerhouse From a Garage',
+    author: 'JASON FEIFER',
+    imageUrl: '/images/related-founders-warehouse.png',
+  },
+  {
+    id: 'prev-rel-5',
+    category: 'LEADERSHIP',
+    title: "Taking the Leap: What Great Leaders Do When the Path Ahead Isn't Clear",
+    author: 'TERRY RICE',
+    imageUrl: '/images/related-jumping-cliff.png',
+  },
+  {
+    id: 'prev-rel-6',
+    category: 'TECHNOLOGY',
+    title: 'AI Is Changing Your Company Culture Whether You Planned for It or Not',
+    author: 'AMANDA BREEN',
+    imageUrl: '/images/related-robot-hands.png',
+  },
+];
 
 const CORE_PENDING_ARTICLES: PendingArticle[] = [
   {
@@ -433,6 +520,8 @@ export default function AdminDashboardContent() {
   const [reviewSettingsTab, setReviewSettingsTab] = useState<'details' | 'seo'>('details');
   const [reviewSidebarCollapsed, setReviewSidebarCollapsed] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [previewAudioPlaying, setPreviewAudioPlaying] = useState(false);
+  const [previewBookmarked, setPreviewBookmarked] = useState(false);
   const [showInsertImageModal, setShowInsertImageModal] = useState(false);
   const [tempImageUrl, setTempImageUrl] = useState('');
   const [reviewImageCaption, setReviewImageCaption] = useState('');
@@ -498,6 +587,57 @@ export default function AdminDashboardContent() {
       setToastMessage(null);
     }, 3500);
   };
+
+  const handleTogglePreviewAudio = () => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    if (previewAudioPlaying) {
+      window.speechSynthesis.cancel();
+      setPreviewAudioPlaying(false);
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const textToSpeak = `${reviewTitle.trim() || 'Untitled Article Headline'}. ${reviewExcerpt.trim() || reviewCardSummary.trim() || ''}. Reported by ${selectedReviewArticle?.author || user?.name || 'Staff Contributor'}.`;
+    const utterance = new SpeechSynthesisUtterance(textToSpeak);
+    utterance.rate = 1.0;
+    utterance.lang = 'en-US';
+    utterance.onend = () => setPreviewAudioPlaying(false);
+    utterance.onerror = () => setPreviewAudioPlaying(false);
+    window.speechSynthesis.speak(utterance);
+    setPreviewAudioPlaying(true);
+  };
+
+  const handleClosePreview = () => {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    setPreviewAudioPlaying(false);
+    setShowPreviewModal(false);
+  };
+
+  const formattedReviewContent = useMemo(() => {
+    if (!reviewContent || !reviewContent.trim()) {
+      return '<p class="text-slate-400 italic">No article body written yet.</p>';
+    }
+    if (/<[a-z][\s\S]*>/i.test(reviewContent)) {
+      return reviewContent;
+    }
+    return reviewContent
+      .split(/\n\s*\n|\n/)
+      .map((p) => p.trim())
+      .filter(Boolean)
+      .map((p) => `<p>${p}</p>`)
+      .join('');
+  }, [reviewContent]);
+
+  const previewDateFormatted = useMemo(() => {
+    if (selectedReviewArticle?.submittedDate) {
+      const d = new Date(selectedReviewArticle.submittedDate);
+      if (!isNaN(d.getTime())) {
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase();
+      }
+    }
+    return new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase();
+  }, [selectedReviewArticle?.submittedDate]);
 
   // Close profile dropdown on click outside
   useEffect(() => {
@@ -1772,7 +1912,7 @@ export default function AdminDashboardContent() {
           </div>
         </div>
 
-        {/* Live Preview Modal */}
+        {/* Full Article Preview (Matching Writer Dashboard Preview & Live Article Page) */}
         {showPreviewModal && (
           <div className="fixed inset-0 z-50 bg-white overflow-y-auto text-slate-900 animate-in fade-in duration-150">
             {/* Top Sticky Preview Banner */}
@@ -1781,51 +1921,438 @@ export default function AdminDashboardContent() {
                 <span className="bg-[#EA580C] text-slate-950 text-[10px] sm:text-[11px] font-black uppercase tracking-wider px-2 py-0.5 rounded-sm select-none shadow-xs">
                   PREVIEW MODE
                 </span>
-                <span className="text-xs text-slate-300 truncate max-w-[400px] hidden sm:inline">
-                  {reviewTitle}
-                </span>
               </div>
+
               <button
                 type="button"
-                onClick={() => setShowPreviewModal(false)}
-                className="px-3 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 uppercase tracking-wider transition-colors cursor-pointer"
+                onClick={handleClosePreview}
+                className="text-white hover:text-slate-300 text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 cursor-pointer select-none"
               >
-                Close Preview
+                <X className="w-3.5 h-3.5" />
+                <span>EXIT PREVIEW</span>
               </button>
             </div>
 
-            <article className="max-w-3xl mx-auto px-4 py-8">
-              <div className="mb-3">
-                <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200">
-                  {reviewCategory}
-                </span>
+            {/* Main Article Container */}
+            <main className="max-w-[1340px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+              {/* Top Navigation Breadcrumb */}
+              <div className="mb-4">
+                <button
+                  type="button"
+                  onClick={handleClosePreview}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-slate-800 transition-colors font-sans cursor-pointer"
+                >
+                  <span className="text-sm font-semibold select-none">&lt;</span>
+                  <span>BACK TO HOME</span>
+                </button>
+                <div className="border-b border-slate-200 mt-2.5" />
               </div>
-              <h1 className="font-serif font-bold text-3xl sm:text-4xl text-slate-900 leading-tight mb-4">
-                {reviewTitle}
-              </h1>
-              {reviewExcerpt && (
-                <p className="font-serif italic text-lg text-slate-600 leading-relaxed mb-6">
-                  {reviewExcerpt}
-                </p>
-              )}
-              {reviewImageUrl && (
-                <figure className="my-6">
-                  <img
-                    src={reviewImageUrl}
-                    alt={reviewTitle}
-                    className="w-full rounded-xl object-contain max-h-[500px]"
-                  />
-                  {reviewImageCaption && (
-                    <figcaption className="text-xs text-slate-500 italic text-center mt-2">
-                      {reviewImageCaption}
-                    </figcaption>
+
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+                {/* LEFT/MAIN CONTENT (8 columns on large screens) */}
+                <article className="lg:col-span-8 space-y-4">
+                  {/* Category Heading matching reference image */}
+                  <div className="mb-2">
+                    <span className="text-xs sm:text-[13px] font-sans font-bold uppercase tracking-wider text-[#1642D0]">
+                      {reviewCategory || 'BUILDING A BUSINESS'}
+                      {reviewSubCategories.length > 0 && (
+                        <span className="text-slate-400 font-normal"> &bull; {reviewSubCategories.join(', ')}</span>
+                      )}
+                    </span>
+                  </div>
+
+                  {/* Main Headline (H1): Bold, Colored Serif Text */}
+                  <h1 className="text-3xl sm:text-4xl lg:text-[42px] xl:text-[46px] font-serif font-bold text-[#1642D0] leading-[1.14] tracking-tight my-0">
+                    {reviewTitle.trim() || 'Untitled Article Headline'}
+                  </h1>
+
+                  {/* Subtitle / Excerpt: Bold, Colored Serif Text */}
+                  {(reviewExcerpt.trim() || reviewCardSummary.trim()) && (
+                    <p className="text-[#0f2b82] text-base sm:text-lg lg:text-[18.5px] font-serif font-bold leading-relaxed my-0 pt-1">
+                      {reviewExcerpt.trim() || reviewCardSummary.trim()}
+                    </p>
                   )}
-                </figure>
-              )}
-              <div className="prose prose-slate max-w-none text-base leading-relaxed whitespace-pre-line text-slate-800">
-                {reviewContent}
+
+                  {/* Horizontal Line ABOVE Byline matching Article Page */}
+                  <div className="border-t border-slate-200 mt-4 mb-3" />
+
+                  {/* Author Byline with LinkedIn and Bookmark right next to date */}
+                  <div className="flex items-center gap-2.5 text-xs sm:text-[13px] font-sans font-bold uppercase tracking-wider text-slate-800 py-0.5">
+                    <span className="text-slate-600 font-bold">BY</span>
+                    <span className="text-[#1642D0] font-bold">
+                      {(selectedReviewArticle?.author || user?.name || 'SHERIN SHIBU').toUpperCase()}
+                    </span>
+                    <a
+                      href="https://www.linkedin.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center w-3.5 h-3.5 bg-[#0A66C2] rounded-[2px] text-white text-[9px] font-bold leading-none hover:opacity-90 transition-opacity"
+                      aria-label="Author LinkedIn Profile"
+                    >
+                      in
+                    </a>
+                    <span className="text-slate-300 font-normal">|</span>
+                    <span className="text-slate-500 font-normal">
+                      {previewDateFormatted}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setPreviewBookmarked(!previewBookmarked)}
+                      className="text-slate-700 hover:text-[#1642D0] transition-colors cursor-pointer p-0.5 ml-1 flex items-center"
+                      title={previewBookmarked ? 'Saved to bookmarks' : 'Bookmark article'}
+                      aria-label="Bookmark article"
+                    >
+                      <Bookmark className={`w-4 h-4 ${previewBookmarked ? 'fill-[#1642D0] text-[#1642D0]' : 'text-slate-700'}`} />
+                    </button>
+                  </div>
+
+                  {/* Action Bar (Listen to this post, SHARE button, COMMENT) */}
+                  <div className="pt-3 pb-1 mb-6">
+                    <div className="flex items-center justify-between">
+                      {/* Left: Listen to this post & SHARE button */}
+                      <div className="flex items-center gap-4">
+                        {/* Listen to this post Pill Button */}
+                        <div className="inline-flex items-center border border-slate-200 rounded-full bg-white px-3.5 py-1.5 shadow-xs hover:border-slate-300 transition-colors">
+                          <button
+                            type="button"
+                            onClick={handleTogglePreviewAudio}
+                            className="flex items-center gap-2.5 group cursor-pointer text-left focus:outline-hidden"
+                            aria-label={previewAudioPlaying ? 'Pause audio' : 'Listen to this post'}
+                          >
+                            <div className="w-5.5 h-5.5 rounded-full bg-[#10182b] group-hover:bg-[#1642D0] transition-colors flex items-center justify-center shrink-0">
+                              {previewAudioPlaying ? (
+                                <Pause className="w-2.5 h-2.5 fill-white text-white" />
+                              ) : (
+                                <Play className="w-2.5 h-2.5 fill-white text-white ml-0.5" />
+                              )}
+                            </div>
+                            <span className="font-sans font-semibold text-xs sm:text-[13px] text-[#10182b] group-hover:text-[#1642D0] transition-colors">
+                              {previewAudioPlaying ? 'Pause listening' : 'Listen to this post'}
+                            </span>
+                          </button>
+                        </div>
+
+                        {/* SHARE Button */}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (typeof window !== 'undefined') {
+                              navigator.clipboard.writeText(window.location.href);
+                            }
+                            showToast('Article link copied to clipboard!', 'success');
+                          }}
+                          className="flex items-center gap-1.5 text-xs sm:text-[13px] font-bold text-slate-700 hover:text-[#1642D0] tracking-wider font-sans uppercase transition-colors cursor-pointer py-1.5 px-2.5 rounded-md hover:bg-slate-100"
+                          aria-label="Share article"
+                        >
+                          <span>SHARE</span>
+                          <Copy className="w-3.5 h-3.5 text-slate-700 hover:text-[#1642D0]" />
+                        </button>
+                      </div>
+
+                      {/* Right: COMMENT */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const el = document.getElementById('preview-comments-section');
+                          if (el) el.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                        className="flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-[#1642D0] tracking-wider font-sans uppercase transition-colors cursor-pointer"
+                        aria-label="Comment"
+                      >
+                        <svg className="w-3.5 h-3.5 fill-slate-600 hover:fill-[#1642D0] shrink-0" viewBox="0 0 24 24">
+                          <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+                        </svg>
+                        <span>COMMENT</span>
+                      </button>
+                    </div>
+
+                    {/* Active Audio Player Bar */}
+                    {previewAudioPlaying && (
+                      <div className="w-full bg-[#f0f4f9] border border-[#dbe4ef] rounded-lg p-3 sm:p-3.5 mt-3 flex items-center justify-between gap-3 animate-in fade-in duration-200">
+                        <div className="flex items-center gap-3">
+                          <button
+                            type="button"
+                            onClick={handleTogglePreviewAudio}
+                            className="w-8 h-8 rounded-full bg-[#1642D0] hover:bg-blue-800 text-white flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                          >
+                            <Pause className="w-3.5 h-3.5 fill-white" />
+                          </button>
+                          <div className="flex flex-col">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans">
+                                Playing Article Audio
+                              </span>
+                              <span className="flex items-center gap-0.5 h-3">
+                                <span className="w-0.5 h-2.5 bg-[#1642D0] animate-bounce" />
+                                <span className="w-0.5 h-1.5 bg-[#1642D0] animate-pulse" />
+                                <span className="w-0.5 h-3 bg-[#1642D0] animate-bounce delay-75" />
+                              </span>
+                            </div>
+                            <span className="text-xs text-slate-500 font-sans mt-0.5">
+                              Reading aloud headline & excerpt
+                            </span>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+                              window.speechSynthesis.cancel();
+                            }
+                            setPreviewAudioPlaying(false);
+                          }}
+                          className="text-xs font-semibold font-sans px-2.5 py-1 rounded bg-white border border-slate-200 text-slate-600 hover:text-red-600 hover:border-red-200 transition-colors cursor-pointer"
+                        >
+                          Stop
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Main Featured Article Image */}
+                  {Boolean(reviewImageUrl && !reviewImageUrl.includes('placeholder')) && (
+                    <>
+                      <div className="w-full my-4 overflow-hidden border border-slate-200">
+                        <img
+                          src={reviewImageUrl}
+                          alt={reviewTitle || 'Featured Article Image'}
+                          className="w-full h-auto max-h-[580px] object-cover"
+                          onError={(e) => {
+                            (e.currentTarget as HTMLImageElement).src = '/images/topic-hero-leaders.jpg';
+                          }}
+                        />
+                      </div>
+
+                      {/* Image caption directly below image */}
+                      {reviewImageCaption && (
+                        <div className="flex items-center justify-between text-xs text-slate-500 font-sans pt-1 pb-2">
+                          <span className="italic">
+                            {reviewImageCaption}
+                          </span>
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {/* Rendered HTML Content with exact editor formatting */}
+                  <div
+                    className="article-editor-content prose prose-slate max-w-none text-slate-800 text-base leading-relaxed break-words font-serif pt-4 space-y-4"
+                    dangerouslySetInnerHTML={{
+                      __html: formattedReviewContent,
+                    }}
+                  />
+
+                  {/* Subscription Callout Bar */}
+                  <div className="border-l-[3.5px] border-[#1642D0] pl-4 py-1 my-8">
+                    <p className="text-[15px] sm:text-[16px] italic font-['Georgia',serif] text-slate-700 m-0 leading-normal">
+                      Get unlimited access to our tools, playbooks and insights built to grow your business.{' '}
+                      <a href="#" className="text-[#1642D0] underline underline-offset-[3px] not-italic font-sans font-semibold hover:text-[#0d2d8d]">
+                        Subscribe now.
+                      </a>
+                    </p>
+                  </div>
+
+                  {/* Article Tags */}
+                  {reviewTags.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-2 pt-6 pb-2">
+                      <span className="text-xs font-bold uppercase tracking-wider text-slate-400 select-none mr-1">
+                        Tags:
+                      </span>
+                      {reviewTags.map((t) => (
+                        <span
+                          key={t}
+                          className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors uppercase tracking-wide select-none"
+                        >
+                          #{t.replace(/^#/, '')}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Divider line before Author Bio */}
+                  <div className="border-b border-slate-200 mt-8 mb-8" />
+
+                  {/* Author Bio Card */}
+                  <div className="flex items-start gap-4 sm:gap-5 pb-6 mb-6">
+                    <div className="w-14 h-14 rounded-full overflow-hidden shrink-0 border border-slate-200 shadow-2xs">
+                      <img
+                        src="/images/user-avatar-butterfly.png"
+                        alt={selectedReviewArticle?.author || user?.name || 'Author'}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <h4 className="font-serif font-bold text-base sm:text-lg text-[#020618] my-0 leading-tight">
+                          {selectedReviewArticle?.author || user?.name || 'Sherin Shibu'}
+                        </h4>
+                        <a
+                          href="https://www.linkedin.com"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center w-3.5 h-3.5 bg-[#0A66C2] rounded-[2px] text-white text-[9px] font-bold ml-0.5 leading-none hover:opacity-90 transition-opacity"
+                          aria-label="Author LinkedIn Profile"
+                        >
+                          in
+                        </a>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs font-sans font-semibold text-[#15803d] mt-1">
+                        <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
+                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                        </svg>
+                        <span>United States Today Staff &bull; Verified Contributor</span>
+                      </div>
+                      <p className="text-xs sm:text-[13.5px] font-serif text-slate-600 leading-relaxed my-0 pt-1.5">
+                        Business news reporter and contributor at United States Today, covering high-growth ventures, market trends, and modern workplace leadership.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Horizontal In-Article Advertisement */}
+                  <div className="my-8 max-w-[760px] mx-auto w-full">
+                    <p className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-400 text-center mb-2 my-0 select-none">
+                      ADVERTISEMENT
+                    </p>
+                    <div className="w-full h-32 sm:h-36 bg-[#edf2f7] border border-slate-300 flex flex-col items-center justify-center p-5 text-center shadow-2xs rounded-none">
+                      <span className="text-xs sm:text-[13px] font-semibold text-slate-600 font-sans tracking-wide">
+                        300 × 400 Banner
+                      </span>
+                      <span className="text-[11px] text-slate-400 font-sans mt-0.5">
+                        Your Advertisement Here
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Join the Conversation Section */}
+                  <section id="preview-comments-section" className="pt-4 mb-10 scroll-mt-24">
+                    <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#020618] my-0">
+                      Join the Conversation
+                    </h3>
+                    <div className="border-b border-slate-200 mt-4 mb-4" />
+                    <p className="text-xs sm:text-sm font-serif text-slate-600 mt-2 mb-1">
+                      Leave a comment. Be kind. Critique ideas, not people.
+                    </p>
+                    <p className="text-xs sm:text-sm font-serif text-slate-600 m-0">
+                      Read our{' '}
+                      <a href="#" className="text-[#1642D0] underline underline-offset-2 hover:text-[#0d2d8d]">
+                        community guidelines
+                      </a>
+                    </p>
+
+                    <div className="mt-5">
+                      <textarea
+                        rows={4}
+                        placeholder="What do you think?"
+                        className="w-full bg-[#f9fafb] border border-slate-200 rounded-md p-3 text-sm font-sans placeholder-slate-400 focus:outline-hidden focus:ring-1 focus:ring-[#1642D0] focus:border-[#1642D0] resize-y transition-all"
+                      />
+                      <div className="flex items-center justify-between mt-3">
+                        <div className="text-xs text-slate-500 font-sans">
+                          <span className="flex items-center gap-1.5 font-semibold text-slate-700">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                            Posting as {user?.name || 'Administrator'}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => showToast('Comment submitted!', 'success')}
+                          className="bg-[#1642D0] hover:bg-[#0d2d8d] text-white font-sans text-xs sm:text-[13px] font-bold px-6 py-2.5 rounded-md transition-colors cursor-pointer shadow-xs hover:shadow-sm"
+                        >
+                          Post Comment
+                        </button>
+                      </div>
+                    </div>
+                  </section>
+                </article>
+
+                {/* RIGHT SIDEBAR */}
+                <aside className="lg:col-span-4 space-y-6 sticky top-24">
+                  {/* Top Right Sidebar Advertisement */}
+                  <div className="w-full max-w-[340px] mx-auto">
+                    <p className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-400 text-center mb-2 my-0 select-none">
+                      ADVERTISEMENT
+                    </p>
+                    <div className="w-full h-44 sm:h-48 bg-[#edf2f7] border border-slate-300 flex flex-col items-center justify-center p-5 text-center shadow-2xs rounded-none">
+                      <span className="text-xs sm:text-[13px] font-semibold text-slate-600 font-sans tracking-wide">
+                        300 × 400 Banner
+                      </span>
+                      <span className="text-[11px] text-slate-400 font-sans mt-0.5">
+                        Your Advertisement Here
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Horizontal Line before Latest Article */}
+                  <div className="border-t border-slate-200 pt-5 mt-6">
+                    <div className="mb-5">
+                      <h3 className="text-2xl sm:text-[26px] font-serif font-bold text-[#020618] my-0 tracking-tight">
+                        Latest Article
+                      </h3>
+                    </div>
+
+                    {/* 6 Latest Articles */}
+                    <div className="space-y-6 sm:space-y-7">
+                      {PREVIEW_SIDEBAR_ARTICLES.map((art) => (
+                        <article key={art.id} className="relative group cursor-pointer">
+                          <h4 className="text-[16px] sm:text-[17px] font-serif font-bold text-[#020618] leading-[1.3] my-0">
+                            <span className="text-[#020618] group-hover:text-[#1642D0] group-hover:underline transition-colors">
+                              {art.title}
+                            </span>
+                          </h4>
+                          <div className="flex items-center justify-between gap-3 text-xs sm:text-[12px] font-sans mt-2.5">
+                            <span className="font-bold text-[#1642D0] tracking-wide truncate">
+                              {art.category}
+                            </span>
+                            <span className="text-slate-500 font-medium text-[11px] sm:text-[11.5px] whitespace-nowrap shrink-0">
+                              {art.time}
+                            </span>
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  </div>
+                </aside>
               </div>
-            </article>
+
+              {/* RELATED CONTENT GRID SECTION */}
+              <section className="mt-14 pt-8 border-t border-slate-200">
+                <div className="mb-8">
+                  <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#020618] my-0">
+                    Related Content
+                  </h2>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
+                  {PREVIEW_RELATED_CONTENT.map((item) => (
+                    <article key={item.id} className="relative group flex flex-col cursor-pointer">
+                      <div className="block overflow-hidden rounded-xl border border-slate-200/60 shadow-2xs aspect-[16/9.5] bg-slate-100">
+                        <img
+                          src={item.imageUrl}
+                          alt={item.title}
+                          className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
+                        />
+                      </div>
+
+                      <div className="pt-3.5 flex flex-col flex-1">
+                        <span className="text-xs font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-2 block w-fit">
+                          {item.category}
+                        </span>
+
+                        <h3 className="text-[17.5px] sm:text-[18.5px] font-serif font-bold text-[#020618] leading-[1.3] group-hover:text-[#1642D0] group-hover:underline transition-colors mb-2.5">
+                          {item.title}
+                        </h3>
+
+                        <div className="mt-auto text-xs font-sans uppercase tracking-wider text-slate-500 font-medium">
+                          <span className="text-slate-400 font-semibold">BY </span>
+                          <span className="text-[#1642D0] font-bold">
+                            {item.author}
+                          </span>
+                        </div>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            </main>
           </div>
         )}
 
