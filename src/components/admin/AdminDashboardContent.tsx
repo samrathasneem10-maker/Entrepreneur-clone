@@ -60,7 +60,7 @@ import {
   Pause,
 } from 'lucide-react';
 import ProfileSettingsModal from '@/components/writer/ProfileSettingsModal';
-import { MAIN_CATEGORIES } from '@/data/categoriesData';
+import { MAIN_CATEGORIES, MAIN_CATEGORIES_20 } from '@/data/categoriesData';
 import { convertImageToWebP } from '@/lib/imageUtils';
 
 export type AdminTab =
@@ -83,6 +83,17 @@ export interface PendingArticle {
   title: string;
   category: string;
   author: string;
+  authorAvatar?: string;
+  authorTitle?: string;
+  authorBio?: string;
+  authorLinkedinUrl?: string;
+  authorObj?: {
+    name?: string;
+    avatar?: string;
+    title?: string;
+    bio?: string;
+    linkedinUrl?: string;
+  };
   submittedDate: string;
   status: 'PENDING' | 'PUBLISHED' | 'REJECTED';
   excerpt?: string;
@@ -95,6 +106,157 @@ export interface PendingArticle {
   metaDescription?: string;
   cardSummary?: string;
 }
+
+export interface AdminAuthorProfile {
+  name: string;
+  role: string;
+  avatar: string;
+  bio: string;
+  linkedinUrl: string;
+}
+
+export const ADMIN_AUTHORS_REGISTRY: Record<string, AdminAuthorProfile> = {
+  'dylan-candice-odulio': {
+    name: 'Dylan Candice Odulio',
+    role: 'News Reporter, United States Today',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop',
+    bio: 'Dylan Candice Odulio is a culture, consumer retail, and breaking news reporter at United States Today, covering viral retail trends, corporate strategy, and modern brand controversies.',
+    linkedinUrl: 'https://www.linkedin.com/in/dylan-candice-odulio',
+  },
+  'sherin-shibu': {
+    name: 'Sherin Shibu',
+    role: 'News Reporter',
+    avatar: '/images/sherin-shibu.jpg',
+    bio: 'Sherin Shibu is a business news reporter at United States Today. She previously worked for PCMag, Business Insider, The Messenger, and ZDNET as a reporter and copyeditor. Her areas of coverage encompass tech, business, strategy, finance, and even space. She is a Columbia University graduate.',
+    linkedinUrl: 'https://www.linkedin.com/in/sherin-shibu',
+  },
+  'amanda-breen': {
+    name: 'Amanda Breen',
+    role: 'Senior Features Editor',
+    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop',
+    bio: 'Amanda Breen is a senior features editor at United States Today covering wellness, workplace culture, and consumer innovation.',
+    linkedinUrl: 'https://www.linkedin.com/in/amanda-breen',
+  },
+  'scott-smrkovski': {
+    name: 'Scott Smrkovski',
+    role: 'Executive Contributor',
+    avatar: '/images/home-hero/author-scott.png',
+    bio: 'Scott Smrkovski is a serial founder, angel investor, and executive contributor specializing in capital efficiency, venture scaling, and founder operational frameworks.',
+    linkedinUrl: 'https://www.linkedin.com/in/scott-smrkovski',
+  },
+  'benjamin-ahmed': {
+    name: 'Benjamin Ahmed',
+    role: 'Consumer Tech Reporter',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop',
+    bio: 'Benjamin Ahmed is a technology journalist covering consumer hardware, smart home ecosystems, AI assistants, and enterprise product roadmaps at United States Today.',
+    linkedinUrl: 'https://www.linkedin.com/in/benjamin-ahmed',
+  },
+  'jason-feifer': {
+    name: 'Jason Feifer',
+    role: 'Editor in Chief',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop',
+    bio: 'Jason Feifer is the Editor in Chief of United States Today magazine, podcast host, and author of Build for Tomorrow. He helps entrepreneurs and modern professionals adapt to change and build future-proof businesses.',
+    linkedinUrl: 'https://www.linkedin.com/in/jasonfeifer',
+  },
+  'michael-andrews-cooper': {
+    name: 'Michael Andrews Cooper',
+    role: 'Executive Leadership Strategist',
+    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop',
+    bio: 'Michael Andrews Cooper is an executive coach and innovation strategist who advises fast-growing startups and Fortune 500 leadership teams on turning early concepts into scalable enterprises.',
+    linkedinUrl: 'https://www.linkedin.com',
+  },
+  'michael-andrusko': {
+    name: 'Michael Andrews Cooper',
+    role: 'Executive Leadership Strategist',
+    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop',
+    bio: 'Michael Andrews Cooper is an executive coach and innovation strategist who advises fast-growing startups and Fortune 500 leadership teams on turning early concepts into scalable enterprises.',
+    linkedinUrl: 'https://www.linkedin.com',
+  },
+  'brandon-morgan': {
+    name: 'Brandon Morgan',
+    role: 'Career & Growth Advisor',
+    avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=400&auto=format&fit=crop',
+    bio: 'Brandon Morgan writes about professional decision-making frameworks, executive habits, and long-term career resilience for entrepreneurs and modern professionals.',
+    linkedinUrl: 'https://www.linkedin.com',
+  },
+  'terry-rice': {
+    name: 'Terry Rice',
+    role: 'Business Consultant & Speaker',
+    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop',
+    bio: 'Terry Rice is a business development consultant, digital strategist, and podcast host helping solopreneurs build thriving digital enterprises.',
+    linkedinUrl: 'https://www.linkedin.com',
+  },
+  'aytekin-tank': {
+    name: 'Aytekin Tank',
+    role: 'Founder & CEO of Jotform',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop',
+    bio: 'Aytekin Tank is the founder and CEO of Jotform and author of Automate Your Busywork. He writes about productivity, tech, and entrepreneurship.',
+    linkedinUrl: 'https://www.linkedin.com',
+  },
+  'samra': {
+    name: 'Samra',
+    role: 'Executive Business Contributor',
+    avatar: '/uploads/upload_1794590868177_images__1_.webp',
+    bio: 'Executive business contributor covering markets, entrepreneurship, and global enterprise strategy.',
+    linkedinUrl: 'https://www.linkedin.com/in/fathima-samra',
+  },
+  'fathima': {
+    name: 'Fathima',
+    role: 'Staff Writer',
+    avatar: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?q=80&w=400&auto=format&fit=crop',
+    bio: 'Fathima is a staff writer at United States Today covering business, innovation, and leadership.',
+    linkedinUrl: 'https://www.linkedin.com',
+  },
+  'kalid-mishal': {
+    name: 'Kalid Mishal',
+    role: 'Staff Writer',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop',
+    bio: 'Kalid Mishal is a staff writer at United States Today covering startup growth, leadership principles, and emerging market dynamics.',
+    linkedinUrl: 'https://www.linkedin.com',
+  },
+  'dean-guida': {
+    name: 'Dean Guida',
+    role: 'Contributor & Tech CEO',
+    avatar: '/images/more-author-1.jpg',
+    bio: "Dean Guida is the founder and CEO of Infragistics, a global software company providing tools and solutions to accelerate application design and development. He is the author of 'When Grit Is Not Enough'.",
+    linkedinUrl: 'https://www.linkedin.com',
+  },
+  'ben-angel': {
+    name: 'Ben Angel',
+    role: 'Bestselling Author & Contributor',
+    avatar: '/images/more-author-2.jpg',
+    bio: "Ben Angel is the author of 'Unstoppable: A 90-Day Plan to Biohack Your Mind and Body for Success'. He has helped thousands of entrepreneurs maximize their cognitive performance and productivity.",
+    linkedinUrl: 'https://www.linkedin.com',
+  },
+  'rob-aquino': {
+    name: 'Rob Aquino',
+    role: 'CEO & Business Strategist',
+    avatar: '/images/more-author-3.jpg',
+    bio: 'Rob Aquino is the CEO of JBS Corp, specializing in corporate strategy, organizational scaling, and executive leadership development across growth-stage enterprises.',
+    linkedinUrl: 'https://www.linkedin.com',
+  },
+  'molly-cavanah': {
+    name: 'Molly Cavanah',
+    role: 'Growth Executive & Analyst',
+    avatar: '/images/more-author-4.jpg',
+    bio: 'Molly Cavanah is a seasoned growth executive with extensive experience leading revenue operations, user acquisition, and predictive data analytics for venture-backed tech companies.',
+    linkedinUrl: 'https://www.linkedin.com',
+  },
+  'merilee-kern': {
+    name: 'Merilee Kern, MBA',
+    role: 'Senior Business Strategist',
+    avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=400&auto=format&fit=crop',
+    bio: 'Merilee Kern, MBA is an internationally-regarded brand strategist, consumer trends analyst, and senior business journalist covering industry leaders, luxury assets, and venture growth.',
+    linkedinUrl: 'https://www.linkedin.com',
+  },
+  'rl-adams': {
+    name: 'R.L. Adams',
+    role: 'Contributing Writer',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop',
+    bio: 'R.L. Adams is a software engineer, serial entrepreneur, and bestselling author of dozens of books on online business, search engine optimization, and passive income generation.',
+    linkedinUrl: 'https://www.linkedin.com',
+  },
+};
 
 export interface UserItem {
   id: string | number;
@@ -206,6 +368,10 @@ const CORE_PENDING_ARTICLES: PendingArticle[] = [
     title: "Kim Kardashian’s SKIMS Offers Full Refunds After Advent Calendar Backlash",
     category: 'World',
     author: 'Dylan Candice Odulio',
+    authorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop',
+    authorTitle: 'News Reporter, United States Today',
+    authorBio: 'Dylan Candice Odulio is a culture, consumer retail, and breaking news reporter at United States Today, covering viral retail trends, corporate strategy, and modern brand controversies.',
+    authorLinkedinUrl: 'https://www.linkedin.com/in/dylan-candice-odulio',
     submittedDate: '2026-11-10T12:06:53.081Z',
     status: 'PENDING',
     excerpt: 'The Kim Kardashian-founded brand contacted every buyer of its $148 accessories calendar, offering full refunds or store credit after viral unboxing videos sparked criticism over the product\'s value.',
@@ -660,13 +826,106 @@ export default function AdminDashboardContent() {
   const [publishedPage, setPublishedPage] = useState(1);
 
   // Toast Notification
-  const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+  const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'error' | 'warning' } | null>(null);
 
-  const showToast = (text: string, type: 'success' | 'error' = 'success') => {
+  const showToast = (text: string, type: 'success' | 'error' | 'warning' = 'success') => {
     setToastMessage({ text, type });
     setTimeout(() => {
       setToastMessage(null);
     }, 3500);
+  };
+
+  // Dynamic Author Resolution for Preview Modal (Loads actual article author, never a default butterfly avatar)
+  const resolvedReviewAuthor = useMemo(() => {
+    const art = selectedReviewArticle;
+    const authorName = (art?.author || '').trim();
+    if (!authorName) {
+      return {
+        name: 'Staff Contributor',
+        avatar: '/images/author-sherin.png',
+        title: 'United States Today Staff',
+        bio: 'Business news reporter and contributor at United States Today, covering high-growth ventures, market trends, and modern workplace leadership.',
+        linkedinUrl: 'https://www.linkedin.com',
+      };
+    }
+
+    // 1. Check article-specific author fields
+    const rawAvatar = art?.authorAvatar || art?.authorObj?.avatar;
+    const rawTitle = art?.authorTitle || art?.authorObj?.title;
+    const rawBio = art?.authorBio || art?.authorObj?.bio;
+    const rawLinkedin = art?.authorLinkedinUrl || art?.authorObj?.linkedinUrl;
+
+    // 2. Check registered users list
+    const matchedUser = usersList.find(
+      (u) =>
+        u.name?.toLowerCase().trim() === authorName.toLowerCase() ||
+        (u as any).writer_name?.toLowerCase().trim() === authorName.toLowerCase() ||
+        (u as any).writerName?.toLowerCase().trim() === authorName.toLowerCase()
+    );
+
+    // 3. Check known author profiles registry
+    const slugKey = authorName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const knownProfile = ADMIN_AUTHORS_REGISTRY[slugKey] || null;
+
+    const finalName = authorName;
+    const finalAvatar =
+      (rawAvatar && !rawAvatar.includes('butterfly') ? rawAvatar : null) ||
+      (matchedUser?.avatar && !matchedUser.avatar.includes('butterfly') ? matchedUser.avatar : null) ||
+      knownProfile?.avatar ||
+      `https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop`;
+
+    const finalTitle =
+      rawTitle ||
+      (matchedUser as any)?.title ||
+      knownProfile?.role ||
+      (matchedUser?.role === 'writer' ? 'United States Today Staff Contributor' : 'United States Today Staff');
+
+    const finalBio =
+      rawBio ||
+      (matchedUser as any)?.bio ||
+      knownProfile?.bio ||
+      `${finalName} is a journalist and contributor at United States Today covering high-growth ventures, markets, technology, and leadership.`;
+
+    const finalLinkedin =
+      rawLinkedin ||
+      (matchedUser as any)?.linkedin_url ||
+      (matchedUser as any)?.linkedinUrl ||
+      knownProfile?.linkedinUrl ||
+      `https://www.linkedin.com/in/${slugKey}`;
+
+    return {
+      name: finalName,
+      avatar: finalAvatar,
+      title: finalTitle,
+      bio: finalBio,
+      linkedinUrl: finalLinkedin,
+    };
+  }, [selectedReviewArticle, usersList]);
+
+  // Preview Instant Open (Synchronizes latest contentEditable canvas before displaying full preview)
+  const handleOpenReviewPreview = () => {
+    if (reviewEditorRef.current) {
+      const liveHtml = reviewEditorRef.current.innerHTML;
+      setReviewContent(liveHtml);
+      const firstImg = reviewEditorRef.current.querySelector('img')?.getAttribute('src');
+      if (firstImg && firstImg !== reviewImageUrl) {
+        setReviewImageUrl(firstImg);
+      }
+    }
+    setShowPreviewModal(true);
+  };
+
+  // Subcategory Toggle matching Writer Dashboard (Max 5, Toast warning on exceeding)
+  const handleToggleReviewSubCategory = (sub: string) => {
+    if (reviewSubCategories.includes(sub)) {
+      setReviewSubCategories((prev) => prev.filter((s) => s !== sub));
+    } else {
+      if (reviewSubCategories.length >= 5) {
+        showToast('You can select a maximum of 5 sub-categories.', 'warning');
+        return;
+      }
+      setReviewSubCategories((prev) => [...prev, sub]);
+    }
   };
 
   const handleTogglePreviewAudio = () => {
@@ -677,7 +936,7 @@ export default function AdminDashboardContent() {
       return;
     }
     window.speechSynthesis.cancel();
-    const textToSpeak = `${reviewTitle.trim() || 'Untitled Article Headline'}. ${reviewExcerpt.trim() || reviewCardSummary.trim() || ''}. Reported by ${selectedReviewArticle?.author || user?.name || 'Staff Contributor'}.`;
+    const textToSpeak = `${reviewTitle.trim() || 'Untitled Article Headline'}. ${reviewExcerpt.trim() || reviewCardSummary.trim() || ''}. Reported by ${resolvedReviewAuthor.name}.`;
     const utterance = new SpeechSynthesisUtterance(textToSpeak);
     utterance.rate = 1.0;
     utterance.lang = 'en-US';
@@ -1715,28 +1974,37 @@ export default function AdminDashboardContent() {
       const resArticles = await fetch('/api/articles?status=pending_review&limit=200');
       const dataArticles = await resArticles.json();
       if (dataArticles?.success && Array.isArray(dataArticles.data)) {
-        const mapped: PendingArticle[] = dataArticles.data.map((a: any) => ({
-          id: a.slug || a.id,
-          dbId: a.dbId || a.id,
-          slug: a.slug,
-          title: a.title,
-          category: (a.category || 'WORLD').toUpperCase(),
-          author:
+        const mapped: PendingArticle[] = dataArticles.data.map((a: any) => {
+          const authName =
             a.authorName ||
             (typeof a.author === 'object' ? a.author?.name : a.author) ||
-            'Staff Contributor',
-          submittedDate: a.createdAt || a.date || new Date().toISOString(),
-          status: 'PENDING',
-          excerpt: a.excerpt || '',
-          readTime: a.readTime || '5 min read',
-          imageUrl: a.imageUrl || '/images/topic-hero-leaders.jpg',
-          content: a.content || a.excerpt || '',
-          tags: a.tags,
-          subCategories: a.subCategories,
-          focusKeyword: a.focusKeyword,
-          metaDescription: a.metaDescription,
-          cardSummary: a.cardSummary,
-        }));
+            'Staff Contributor';
+          const authObj = typeof a.author === 'object' ? a.author : null;
+          return {
+            id: a.slug || a.id,
+            dbId: a.dbId || a.id,
+            slug: a.slug,
+            title: a.title,
+            category: (a.category || 'WORLD').toUpperCase(),
+            author: authName,
+            authorAvatar: a.authorAvatar || authObj?.avatar,
+            authorTitle: a.authorTitle || authObj?.title,
+            authorBio: a.authorBio || authObj?.bio,
+            authorLinkedinUrl: a.authorLinkedinUrl || authObj?.linkedinUrl,
+            authorObj: authObj || undefined,
+            submittedDate: a.createdAt || a.date || new Date().toISOString(),
+            status: 'PENDING',
+            excerpt: a.excerpt || '',
+            readTime: a.readTime || '5 min read',
+            imageUrl: a.imageUrl || '/images/topic-hero-leaders.jpg',
+            content: a.content || a.excerpt || '',
+            tags: a.tags,
+            subCategories: a.subCategories,
+            focusKeyword: a.focusKeyword,
+            metaDescription: a.metaDescription,
+            cardSummary: a.cardSummary,
+          };
+        });
         setPendingArticles(mapped);
       }
     } catch {}
@@ -1902,7 +2170,15 @@ export default function AdminDashboardContent() {
 
     setReviewTitle(resolvedTitle);
     setReviewExcerpt(resolvedExcerpt);
-    const catName = art.category ? art.category.charAt(0).toUpperCase() + art.category.slice(1).toLowerCase() : 'World';
+
+    // Resolve Main Category using MAIN_CATEGORIES_20 as Single Source of Truth
+    const matchedMain = MAIN_CATEGORIES_20.find(
+      (c) =>
+        c.name.toLowerCase() === (art.category || '').trim().toLowerCase() ||
+        c.aliases?.some((a) => a.toLowerCase() === (art.category || '').trim().toLowerCase()) ||
+        c.slug.toLowerCase() === (art.category || '').trim().toLowerCase()
+    );
+    const catName = matchedMain ? matchedMain.name : (art.category || 'World');
     setReviewCategory(catName);
 
     const resolvedImg = isSkims
@@ -1949,7 +2225,7 @@ export default function AdminDashboardContent() {
       }
       setReviewTags(parsedTags);
 
-      // Parse Sub-categories
+      // Parse Sub-categories and ensure selected main category is excluded
       let parsedSubCats: string[] = [];
       if (Array.isArray(art.subCategories)) {
         parsedSubCats = art.subCategories;
@@ -1961,6 +2237,9 @@ export default function AdminDashboardContent() {
           parsedSubCats = art.subCategories.split(',').map((s) => s.trim()).filter(Boolean);
         }
       }
+      parsedSubCats = parsedSubCats.filter(
+        (s) => s.trim().toLowerCase() !== catName.trim().toLowerCase()
+      );
       setReviewSubCategories(parsedSubCats);
 
       setReviewFocusKeyword(art.focusKeyword || (art.title || '').split(' ').slice(0, 2).join(' '));
@@ -1968,8 +2247,11 @@ export default function AdminDashboardContent() {
       setReviewCardSummary(art.cardSummary || art.excerpt || '');
     }
 
-    // Build initial editor HTML
+    // Build initial editor HTML (unescape any stored HTML entities)
     let initialHtml = art.content || '';
+    if (initialHtml.includes('&lt;p') || initialHtml.includes('&lt;figure') || initialHtml.includes('&lt;div')) {
+      initialHtml = initialHtml.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+    }
     if (!initialHtml && art.excerpt) {
       initialHtml = `<p class="my-3">${art.excerpt}</p>`;
     }
@@ -2394,11 +2676,15 @@ export default function AdminDashboardContent() {
         {toastMessage && (
           <div
             className={`fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-2xl text-xs font-bold text-white transition-all animate-in slide-in-from-bottom-3 ${
-              toastMessage.type === 'error' ? 'bg-red-600' : 'bg-slate-900 border border-slate-700'
+              toastMessage.type === 'error'
+                ? 'bg-red-600'
+                : toastMessage.type === 'warning'
+                ? 'bg-amber-600'
+                : 'bg-slate-900 border border-slate-700'
             }`}
           >
-            {toastMessage.type === 'error' ? (
-              <AlertCircle className="w-4 h-4 text-red-300" />
+            {toastMessage.type === 'error' || toastMessage.type === 'warning' ? (
+              <AlertCircle className="w-4 h-4 text-white" />
             ) : (
               <CheckCircle className="w-4 h-4 text-emerald-400" />
             )}
@@ -2428,7 +2714,7 @@ export default function AdminDashboardContent() {
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <button
               type="button"
-              onClick={() => setShowPreviewModal(true)}
+              onClick={handleOpenReviewPreview}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
             >
               <Eye className="w-3.5 h-3.5" />
@@ -2933,64 +3219,160 @@ export default function AdminDashboardContent() {
 
                 {reviewSettingsTab === 'details' ? (
                   <div className="flex flex-col gap-4">
-                    {/* SELECT CATEGORY (MAIN) */}
-                    <div>
-                      <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">
-                        SELECT CATEGORY (MAIN)
+                    {/* 1. SELECT CATEGORY (MAIN) */}
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[11px] font-bold uppercase tracking-wider text-slate-600">
+                        Select Category (Main)
                       </label>
-                      <select
-                        value={reviewCategory}
-                        onChange={(e) => setReviewCategory(e.target.value)}
-                        className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-hidden focus:border-[#1642D0]"
-                      >
-                        {['World', 'Breaking News', 'US', 'Politics', 'Business', 'Technology', 'Economy & Markets', 'Entertainment', 'Sports', 'Health', 'Travel', 'Science', 'Lifestyle'].map((cat) => (
-                          <option key={cat} value={cat}>
-                            {cat}
-                          </option>
-                        ))}
-                      </select>
+                      <div className="relative">
+                        <select
+                          value={reviewCategory}
+                          onChange={(e) => {
+                            const newCat = e.target.value;
+                            setReviewCategory(newCat);
+                            // Selected main category must not appear as a selectable subcategory option in Select Subcategories (Optional)
+                            setReviewSubCategories((prev) =>
+                              prev.filter((s) => s.trim().toLowerCase() !== newCat.trim().toLowerCase())
+                            );
+                          }}
+                          className="w-full appearance-none px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-hidden focus:border-[#1642D0] cursor-pointer"
+                        >
+                          <option value="">Select Main Category</option>
+                          {reviewCategory && !MAIN_CATEGORIES_20.some(c => c.name.toLowerCase() === reviewCategory.toLowerCase() || c.subcategories.some(s => s.name.toLowerCase() === reviewCategory.toLowerCase())) && (
+                            <option value={reviewCategory} className="text-xs font-medium text-slate-900 bg-white">
+                              {reviewCategory}
+                            </option>
+                          )}
+                          {MAIN_CATEGORIES_20.map((cat) => (
+                            <React.Fragment key={cat.id}>
+                              {/* Main Category */}
+                              <option value={cat.name} className="text-xs font-medium text-slate-900 bg-white">
+                                {cat.name}
+                              </option>
+                              {/* Subcategories directly underneath: plain text without arrow icons, aligned consistently */}
+                              {cat.subcategories.map((sub) => (
+                                <option
+                                  key={`${cat.id}-${sub.name}`}
+                                  value={sub.name}
+                                  className="text-xs font-medium text-slate-900 bg-white"
+                                >
+                                  {sub.name}
+                                </option>
+                              ))}
+                            </React.Fragment>
+                          ))}
+                        </select>
+                        <ChevronDown className="w-4 h-4 text-slate-500 absolute right-3 top-3 pointer-events-none" />
+                      </div>
                     </div>
 
-                    {/* SELECT SUB-CATEGORIES (OPTIONAL, MAX 5) */}
-                    <div>
-                      <div className="flex items-center justify-between mb-1.5">
-                        <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                          SELECT SUB-CATEGORIES (OPTIONAL, MAX 5)
+                    {/* 2. SELECT SUB-CATEGORIES (OPTIONAL, MAX 5) - Scrollable Panel Matching Writer Dashboard */}
+                    <div className="flex flex-col gap-1.5">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[11px] font-bold uppercase tracking-wider text-slate-600">
+                          Select Sub-Categories (Optional, Max 5)
                         </label>
+                        {reviewSubCategories.length > 0 && (
+                          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-[#1642D0]">
+                            {reviewSubCategories.length}/5
+                          </span>
+                        )}
                       </div>
-                      <div className="max-h-44 overflow-y-auto border border-slate-200 rounded-xl p-2.5 grid grid-cols-2 gap-2 bg-slate-50/50">
-                        {[
-                          'US', 'Politics', 'Economy & Markets', 'Business', 'Crypto', 'Technology',
-                          'Travel', 'Opinion', 'CEO Spotlight', 'Sports', 'Breaking News', 'Breaking Headlines',
-                          'Business Alerts', 'Major Announcements', 'Stock Market', 'Global Market Index',
-                          'Bonds & Fixed Income', 'Forex & Currency', 'Cryptocurrency', 'Investment Strategy'
-                        ].map((sub) => {
-                          const isChecked = reviewSubCategories.includes(sub);
-                          return (
-                            <label key={sub} className="flex items-center gap-2 text-xs text-slate-700 cursor-pointer hover:text-slate-900 truncate">
-                              <input
-                                type="checkbox"
-                                checked={isChecked}
-                                onChange={(e) => {
-                                  if (e.target.checked) {
-                                    if (reviewSubCategories.length < 5) {
-                                      setReviewSubCategories([...reviewSubCategories, sub]);
-                                    }
-                                  } else {
-                                    setReviewSubCategories(reviewSubCategories.filter((s) => s !== sub));
+
+                      {/* Bordered Vertically Scrollable Panel with Square Checkboxes */}
+                      <div className="border border-slate-300 rounded-xl bg-white p-3 max-h-56 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-400">
+                        <div className="grid grid-cols-2 gap-x-2.5 gap-y-2">
+                          {MAIN_CATEGORIES_20.map((cat) => {
+                            const isCatSelectedInMain = cat.name.trim().toLowerCase() === reviewCategory.trim().toLowerCase();
+
+                            return (
+                              <React.Fragment key={cat.id}>
+                                {/* Main Category */}
+                                {!isCatSelectedInMain ? (
+                                  <label
+                                    className="flex items-center gap-2 text-xs font-medium text-slate-800 cursor-pointer select-none hover:text-[#1642D0] min-w-0"
+                                    title={cat.name}
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={reviewSubCategories.includes(cat.name)}
+                                      onChange={() => handleToggleReviewSubCategory(cat.name)}
+                                      className="w-4 h-4 rounded border-slate-300 text-[#1642D0] focus:ring-[#1642D0]/30 cursor-pointer shrink-0"
+                                    />
+                                    <span className="truncate text-xs font-medium text-slate-800">
+                                      {cat.name}
+                                    </span>
+                                  </label>
+                                ) : (
+                                  <label
+                                    className="flex items-center gap-2 text-xs font-medium text-slate-400 cursor-not-allowed select-none min-w-0"
+                                    title={`${cat.name} (Selected as Main Category)`}
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      disabled
+                                      checked={false}
+                                      className="w-4 h-4 rounded border-slate-300 text-slate-300 cursor-not-allowed shrink-0"
+                                    />
+                                    <span className="truncate text-xs font-medium text-slate-400">
+                                      {cat.name}
+                                    </span>
+                                  </label>
+                                )}
+
+                                {/* Subcategories */}
+                                {cat.subcategories.map((sub) => {
+                                  const isSubSelectedInMain = sub.name.trim().toLowerCase() === reviewCategory.trim().toLowerCase();
+                                  const isChecked = reviewSubCategories.includes(sub.name);
+
+                                  if (isSubSelectedInMain) {
+                                    return (
+                                      <label
+                                        key={`${cat.id}-${sub.name}`}
+                                        className="flex items-center gap-2 text-xs font-medium text-slate-400 cursor-not-allowed select-none min-w-0"
+                                        title={`${sub.name} (Selected as Main Category)`}
+                                      >
+                                        <input
+                                          type="checkbox"
+                                          disabled
+                                          checked={false}
+                                          className="w-4 h-4 rounded border-slate-300 text-slate-300 cursor-not-allowed shrink-0"
+                                        />
+                                        <span className="truncate text-xs font-medium text-slate-400">
+                                          {sub.name}
+                                        </span>
+                                      </label>
+                                    );
                                   }
-                                }}
-                                disabled={!isChecked && reviewSubCategories.length >= 5}
-                                className="w-3.5 h-3.5 rounded border-slate-300 text-[#1642D0] focus:ring-[#1642D0]"
-                              />
-                              <span className="truncate">{sub}</span>
-                            </label>
-                          );
-                        })}
+
+                                  return (
+                                    <label
+                                      key={`${cat.id}-${sub.name}`}
+                                      className="flex items-center gap-2 text-xs font-medium text-slate-800 cursor-pointer select-none hover:text-[#1642D0] min-w-0"
+                                      title={sub.name}
+                                    >
+                                      <input
+                                        type="checkbox"
+                                        checked={isChecked}
+                                        onChange={() => handleToggleReviewSubCategory(sub.name)}
+                                        className="w-4 h-4 rounded border-slate-300 text-[#1642D0] focus:ring-[#1642D0]/30 cursor-pointer shrink-0"
+                                      />
+                                      <span className="truncate text-xs font-medium text-slate-800">
+                                        {sub.name}
+                                      </span>
+                                    </label>
+                                  );
+                                })}
+                              </React.Fragment>
+                            );
+                          })}
+                        </div>
                       </div>
-                      <span className="text-[10px] text-slate-400 font-sans block mt-1 uppercase font-bold tracking-wider">
-                        SELECTED: {reviewSubCategories.length} / 5
-                      </span>
+
+                      {/* Counter matching Reference Image */}
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                        Selected: {reviewSubCategories.length} / 5
+                      </div>
                     </div>
 
                     {/* TAGS */}
@@ -3318,10 +3700,10 @@ export default function AdminDashboardContent() {
                   <div className="flex items-center gap-2.5 text-xs sm:text-[13px] font-sans font-bold uppercase tracking-wider text-slate-800 py-0.5">
                     <span className="text-slate-600 font-bold">BY</span>
                     <span className="text-[#1642D0] font-bold">
-                      {(selectedReviewArticle?.author || user?.name || 'SHERIN SHIBU').toUpperCase()}
+                      {resolvedReviewAuthor.name.toUpperCase()}
                     </span>
                     <a
-                      href="https://www.linkedin.com"
+                      href={resolvedReviewAuthor.linkedinUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center justify-center w-3.5 h-3.5 bg-[#0A66C2] rounded-[2px] text-white text-[9px] font-bold leading-none hover:opacity-90 transition-opacity"
@@ -3476,7 +3858,7 @@ export default function AdminDashboardContent() {
                   <div
                     className="article-editor-content prose prose-slate max-w-none text-slate-800 text-base leading-relaxed break-words font-serif pt-4 space-y-4"
                     dangerouslySetInnerHTML={{
-                      __html: formattedReviewContent,
+                      __html: reviewEditorRef.current?.innerHTML || formattedReviewContent,
                     }}
                   />
 
@@ -3510,22 +3892,22 @@ export default function AdminDashboardContent() {
                   {/* Divider line before Author Bio */}
                   <div className="border-b border-slate-200 mt-8 mb-8" />
 
-                  {/* Author Bio Card */}
+                  {/* Author Bio Card (Dynamically Loaded for Selected Article's Author) */}
                   <div className="flex items-start gap-4 sm:gap-5 pb-6 mb-6">
                     <div className="w-14 h-14 rounded-full overflow-hidden shrink-0 border border-slate-200 shadow-2xs">
                       <img
-                        src="/images/user-avatar-butterfly.png"
-                        alt={selectedReviewArticle?.author || user?.name || 'Author'}
+                        src={resolvedReviewAuthor.avatar}
+                        alt={resolvedReviewAuthor.name}
                         className="w-full h-full object-cover"
                       />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5">
                         <h4 className="font-serif font-bold text-base sm:text-lg text-[#020618] my-0 leading-tight">
-                          {selectedReviewArticle?.author || user?.name || 'Sherin Shibu'}
+                          {resolvedReviewAuthor.name}
                         </h4>
                         <a
-                          href="https://www.linkedin.com"
+                          href={resolvedReviewAuthor.linkedinUrl}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center justify-center w-3.5 h-3.5 bg-[#0A66C2] rounded-[2px] text-white text-[9px] font-bold ml-0.5 leading-none hover:opacity-90 transition-opacity"
@@ -3538,10 +3920,10 @@ export default function AdminDashboardContent() {
                         <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
                           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                         </svg>
-                        <span>United States Today Staff &bull; Verified Contributor</span>
+                        <span>{resolvedReviewAuthor.title} &bull; Verified Contributor</span>
                       </div>
                       <p className="text-xs sm:text-[13.5px] font-serif text-slate-600 leading-relaxed my-0 pt-1.5">
-                        Business news reporter and contributor at United States Today, covering high-growth ventures, market trends, and modern workplace leadership.
+                        {resolvedReviewAuthor.bio}
                       </p>
                     </div>
                   </div>
@@ -4231,11 +4613,15 @@ export default function AdminDashboardContent() {
       {toastMessage && (
         <div
           className={`fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-2xl text-xs font-bold text-white transition-all animate-in slide-in-from-bottom-3 ${
-            toastMessage.type === 'error' ? 'bg-red-600' : 'bg-slate-900 border border-slate-700'
+            toastMessage.type === 'error'
+              ? 'bg-red-600'
+              : toastMessage.type === 'warning'
+              ? 'bg-amber-600'
+              : 'bg-slate-900 border border-slate-700'
           }`}
         >
-          {toastMessage.type === 'error' ? (
-            <AlertCircle className="w-4 h-4 text-red-300" />
+          {toastMessage.type === 'error' || toastMessage.type === 'warning' ? (
+            <AlertCircle className="w-4 h-4 text-white" />
           ) : (
             <CheckCircle className="w-4 h-4 text-emerald-400" />
           )}

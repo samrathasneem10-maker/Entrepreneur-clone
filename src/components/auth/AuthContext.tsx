@@ -9,6 +9,7 @@ export interface UserProfile {
   role: 'reader' | 'writer' | 'admin' | string;
   avatar?: string;
   bio?: string;
+  title?: string;
   writerName?: string;
   linkedinUrl?: string;
 }
