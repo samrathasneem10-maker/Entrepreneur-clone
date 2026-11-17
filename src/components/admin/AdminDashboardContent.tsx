@@ -793,10 +793,26 @@ export default function AdminDashboardContent() {
     if (!reviewEditorRef.current) return;
     const content = reviewEditorRef.current.innerHTML;
     setReviewContent(content);
+
+    // Live Read Duration calculation
+    const text = (reviewEditorRef.current.innerText || '')
+      .replace(/\u00a0/g, ' ')
+      .replace(/\n/g, '')
+      .replace(/\r/g, '')
+      .trim();
+    const fullText = (reviewTitle + ' ' + reviewExcerpt + ' ' + text).trim();
+    const wordCount = fullText.split(/\s+/).filter(Boolean).length;
+    const minutes = Math.max(1, Math.ceil(wordCount / 180));
+    setReviewReadDuration(`${minutes} min read`);
+
     const firstImg = reviewEditorRef.current.querySelector('img');
     if (firstImg) {
       const src = firstImg.getAttribute('src');
       if (src) setReviewImageUrl(src);
+    }
+
+    if (selectedImageFigure && reviewEditorRef.current.contains(selectedImageFigure)) {
+      updateImageSelectionBounds(selectedImageFigure);
     }
   };
 
@@ -822,8 +838,9 @@ export default function AdminDashboardContent() {
     };
     setImageBounds(bounds);
 
+    // Positioned slightly upward to sit cleanly above image without overlapping, closer to toolbar area above
     setToolbarPosition({
-      top: Math.max(8, bounds.top - 46),
+      top: Math.max(-50, bounds.top - 48),
       left: Math.max(8, Math.min(bounds.left, containerRect.width - 340)),
     });
   };
@@ -2616,6 +2633,11 @@ export default function AdminDashboardContent() {
                     onChange={(e) => {
                       setReviewTitle(e.target.value);
                       autoResizeTextarea(e.target);
+                      const text = (reviewEditorRef.current?.innerText || '').trim();
+                      const fullText = (e.target.value + ' ' + reviewExcerpt + ' ' + text).trim();
+                      const wordCount = fullText.split(/\s+/).filter(Boolean).length;
+                      const minutes = Math.max(1, Math.ceil(wordCount / 180));
+                      setReviewReadDuration(`${minutes} min read`);
                     }}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
@@ -2644,6 +2666,11 @@ export default function AdminDashboardContent() {
                     onChange={(e) => {
                       setReviewExcerpt(e.target.value);
                       autoResizeTextarea(e.target);
+                      const text = (reviewEditorRef.current?.innerText || '').trim();
+                      const fullText = (reviewTitle + ' ' + e.target.value + ' ' + text).trim();
+                      const wordCount = fullText.split(/\s+/).filter(Boolean).length;
+                      const minutes = Math.max(1, Math.ceil(wordCount / 180));
+                      setReviewReadDuration(`${minutes} min read`);
                     }}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
@@ -2844,6 +2871,26 @@ export default function AdminDashboardContent() {
                     }}
                   />
                 </div>
+
+                {/* Bottom Tags Bar matching Reference Image 2 & Writer Dashboard */}
+                {reviewTags.length > 0 && (
+                  <div
+                    data-testid="editor-bottom-tags-bar"
+                    className="pt-4 border-t border-slate-100 flex items-center flex-wrap gap-2 mt-auto select-none"
+                  >
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 select-none mr-0.5">
+                      TAGS:
+                    </span>
+                    {reviewTags.map((t) => (
+                      <span
+                        key={t}
+                        className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors uppercase tracking-wide select-none"
+                      >
+                        #{t.replace(/^#/, '')}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
