@@ -78,18 +78,23 @@ export const NavDrawer: React.FC<NavDrawerProps> = ({ isOpen, onClose }) => {
         
         {/* Header inside Drawer: Centered United States Today Logo, exactly centered, increased size, no 'W' symbol or extra marks */}
         <div className="relative px-4 py-3.5 border-b border-slate-200 flex items-center justify-center shrink-0 bg-white h-16">
-          {/* Centered Logo @3x - perfectly centered */}
+          {/* Centered Logo & Brand Name */}
           <Link
             href="/"
             onClick={onClose}
-            className="flex items-center justify-center select-none hover:opacity-85 transition-opacity"
+            className="flex items-center justify-center gap-2.5 select-none hover:opacity-85 transition-opacity"
             aria-label="United States Today Home"
           >
             <img
-              src="/Logo @3x.png"
+              src="/favicon.png"
               alt="United States Today"
-              className="h-8 sm:h-9 w-auto object-contain"
+              className="w-7 h-7 sm:w-8 sm:h-8 object-contain shrink-0 rounded-[2px]"
             />
+            <span className="font-sans font-extrabold text-[14px] sm:text-[15px] tracking-tight text-[#020618] leading-[1.08] select-none text-left">
+              United States
+              <br />
+              Today
+            </span>
           </Link>
 
           {/* Close Icon pinned to the far right */}

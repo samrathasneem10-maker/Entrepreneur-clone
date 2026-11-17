@@ -635,13 +635,18 @@ export function ReaderDashboardContent() {
       <header className="w-full bg-white border-b border-slate-200/90 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           
-          {/* Logo - Logo @3x */}
-          <Link href="/" className="flex items-center group py-0.5 select-none" aria-label="United States Today">
+          {/* Logo - Standalone Logo icon alongside text 'United States Today' */}
+          <Link href="/" className="flex items-center gap-2 sm:gap-2.5 group py-0.5 select-none" aria-label="United States Today">
             <img
-              src="/Logo @3x.png"
+              src="/favicon.png"
               alt="United States Today"
-              className="h-7 sm:h-8 md:h-9 w-auto object-contain"
+              className="w-7 h-7 sm:w-8 sm:h-8 md:w-8.5 md:h-8.5 object-contain shrink-0 rounded-[2px]"
             />
+            <span className="font-sans font-extrabold text-[13px] sm:text-[14px] md:text-[15px] tracking-tight text-[#020618] leading-[1.08] select-none text-left">
+              United States
+              <br />
+              Today
+            </span>
           </Link>
 
           {/* Right User Avatar */}

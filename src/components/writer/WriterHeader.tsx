@@ -95,13 +95,18 @@ export default function WriterHeader({ backHref = '/' }: WriterHeaderProps) {
               <ArrowLeft className="w-5 h-5 stroke-[2]" />
             </button>
 
-            {/* Logo - Logo @3x */}
-            <Link href="/" className="flex items-center group py-0.5 select-none" aria-label="United States Today">
+            {/* Logo - Standalone Logo icon alongside text 'United States Today' */}
+            <Link href="/" className="flex items-center gap-2 group py-0.5 select-none" aria-label="United States Today">
               <img
-                src="/Logo @3x.png"
+                src="/favicon.png"
                 alt="United States Today"
-                className="h-6 sm:h-7 md:h-7.5 w-auto object-contain"
+                className="w-7 h-7 sm:w-8 sm:h-8 object-contain shrink-0 rounded-[2px]"
               />
+              <span className="font-sans font-extrabold text-[13px] sm:text-[14px] tracking-tight text-[#020618] leading-[1.08] select-none text-left">
+                United States
+                <br />
+                Today
+              </span>
             </Link>
 
             {/* WRITER PORTAL Badge */}

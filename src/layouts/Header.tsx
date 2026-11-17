@@ -145,13 +145,18 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
                 </svg>
               </button>
 
-              {/* Logo - Logo @3x */}
-              <Link href="/" className="flex items-center group py-0.5 select-none" aria-label="United States Today">
+              {/* Logo - Standalone Logo icon (red square mark) alongside text 'United States Today' */}
+              <Link href="/" className="flex items-center gap-2 sm:gap-2.5 group py-0.5 select-none" aria-label="United States Today">
                 <img
-                  src="/Logo @3x.png"
+                  src="/favicon.png"
                   alt="United States Today"
-                  className="h-7 sm:h-8 md:h-9 lg:h-10 xl:h-10.5 w-auto object-contain"
+                  className="w-7 h-7 sm:w-8 sm:h-8 md:w-8.5 md:h-8.5 lg:w-9 lg:h-9 object-contain shrink-0 rounded-[2px]"
                 />
+                <span className="font-sans font-extrabold text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] tracking-tight text-[#020618] leading-[1.08] select-none text-left">
+                  United States
+                  <br />
+                  Today
+                </span>
               </Link>
             </div>
 

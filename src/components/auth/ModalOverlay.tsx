@@ -46,12 +46,17 @@ export const ModalOverlay: React.FC<ModalOverlayProps> = ({
         {/* Top Header Bar with United States Today Logo centered and Close button with no vertical divider line */}
         <div className="relative flex items-center justify-center h-14 border-b border-slate-200 bg-white flex-shrink-0 px-4">
           {/* Logo Centered in Header */}
-          <div className="flex items-center justify-center select-none">
+          <div className="flex items-center justify-center select-none gap-2">
             <img
-              src="/Logo @3x.png"
+              src="/favicon.png"
               alt="United States Today"
-              className="h-6 sm:h-7 w-auto object-contain"
+              className="w-6 h-6 sm:w-7 sm:h-7 object-contain shrink-0 rounded-[2px]"
             />
+            <span className="font-sans font-extrabold text-[13px] sm:text-[14px] tracking-tight text-[#020618] leading-[1.08] select-none text-left">
+              United States
+              <br />
+              Today
+            </span>
           </div>
 
           {/* Close Button on Right (no vertical divider line) */}
