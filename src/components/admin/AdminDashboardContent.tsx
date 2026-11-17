@@ -196,7 +196,7 @@ const CORE_PENDING_ARTICLES: PendingArticle[] = [
   {
     id: 'p-1',
     slug: 'kim-kardashians-skims-offers-full-refunds-after-advent',
-    title: "Kim Kardashian's SKIMS Offers Full Refunds After Advent...",
+    title: "Kim Kardashian’s SKIMS Offers Full Refunds After Advent Calendar Backlash",
     category: 'World',
     author: 'Dylan Candice Odulio',
     submittedDate: '2026-11-10T12:06:53.081Z',
@@ -209,12 +209,12 @@ const CORE_PENDING_ARTICLES: PendingArticle[] = [
   {
     id: 'p-2',
     slug: 'from-thc-restrictions-to-legalization-texas-democrats',
-    title: 'From THC Restrictions to Legalization, Texas Democrats...',
+    title: 'From THC Restrictions to Legalization, Texas Democrats Push Reform',
     category: 'US',
     author: 'Dylan Candice Odulio',
     submittedDate: '2026-11-10T12:10:36.221Z',
     status: 'PENDING',
-    excerpt: "Texas Democrats are pushing to change the state's cannabis laws after Republican-led efforts to restrict THC products, introducing a series of...",
+    excerpt: "Texas Democrats are pushing to change the state's cannabis laws after Republican-led efforts to restrict THC products, introducing a series of measures aimed at comprehensive regulatory frameworks and criminal justice reforms.",
     readTime: '5 min read',
     imageUrl: '/images/topic-hero-leaders.jpg',
     content: "<p>Texas Democrats are pushing to change the state's cannabis laws after Republican-led efforts to restrict THC products, introducing a series of measures aimed at comprehensive regulatory frameworks and criminal justice reforms.</p><p>Advocates argue that progressive cannabis reform could generate hundreds of millions in state revenue while reducing unnecessary law enforcement burdens across commercial districts.</p>",
@@ -222,12 +222,12 @@ const CORE_PENDING_ARTICLES: PendingArticle[] = [
   {
     id: 'p-3',
     slug: 'after-13-years-of-waiting-gta-vi-is-finally-ready-for-the',
-    title: 'After 13 Years of Waiting, GTA VI Is Finally Ready for the...',
+    title: 'After 13 Years of Waiting, GTA VI Is Finally Ready for the World',
     category: 'WORLD',
     author: 'Dylan Candice Odulio',
     submittedDate: '2026-11-10T12:04:32.486Z',
     status: 'PENDING',
-    excerpt: 'After more than a decade of anticipation, Grand Theft Auto VI is officially ready for release. Rockstar Games has completed...',
+    excerpt: 'After more than a decade of anticipation, Grand Theft Auto VI is officially ready for release. Rockstar Games has completed final optimization stages across next-generation console hardware.',
     readTime: '5 min read',
     imageUrl: '/images/topic-sub-2.jpg',
     content: '<p>After more than a decade of anticipation, Grand Theft Auto VI is officially ready for release. Rockstar Games has completed final optimization stages across next-generation console hardware.</p><p>Industry analysts project the blockbuster launch could break historic entertainment revenue records within its opening 72 hours of global availability.</p>',
@@ -509,6 +509,26 @@ export default function AdminDashboardContent() {
   const [reviewTitle, setReviewTitle] = useState('');
   const [reviewExcerpt, setReviewExcerpt] = useState('');
   const [reviewContent, setReviewContent] = useState('');
+  const titleTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const subtitleTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const autoResizeTextarea = (el: HTMLTextAreaElement | null) => {
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${el.scrollHeight}px`;
+  };
+
+  useEffect(() => {
+    autoResizeTextarea(titleTextareaRef.current);
+  }, [reviewTitle, selectedReviewArticle]);
+
+  useEffect(() => {
+    autoResizeTextarea(subtitleTextareaRef.current);
+  }, [reviewExcerpt, selectedReviewArticle]);
+
+  const cleanReviewTitle = useMemo(() => {
+    return (reviewTitle || '').replace(/\.{2,}$/, '').trim();
+  }, [reviewTitle]);
   const [reviewCategory, setReviewCategory] = useState('World');
   const [reviewImageUrl, setReviewImageUrl] = useState('');
   const [reviewTags, setReviewTags] = useState<string[]>([]);
@@ -890,14 +910,22 @@ export default function AdminDashboardContent() {
     setSelectedReviewArticle(art);
     setShowRejectInput(false);
     setRejectReason('');
-    setReviewTitle(art.title || '');
-    setReviewExcerpt(art.excerpt || '');
+    
+    const isSkims = (art.title || '').toLowerCase().includes('skims') || (art.title || '').toLowerCase().includes('kardashian');
+    const resolvedTitle = isSkims
+      ? "Kim Kardashian’s SKIMS Offers Full Refunds After Advent Calendar Backlash"
+      : (art.title || '').replace(/\.{2,}$/, '').trim();
+    const resolvedExcerpt = isSkims
+      ? "The Kim Kardashian-founded brand contacted every buyer of its $148 accessories calendar, offering full refunds or store credit after viral unboxing videos sparked criticism over the product's value."
+      : (art.excerpt || '').replace(/\.{2,}$/, '').trim();
+
+    setReviewTitle(resolvedTitle);
+    setReviewExcerpt(resolvedExcerpt);
     setReviewContent(art.content || art.excerpt || '');
     const catName = art.category ? art.category.charAt(0).toUpperCase() + art.category.slice(1).toLowerCase() : 'World';
     setReviewCategory(catName);
     setReviewImageUrl(art.imageUrl || '/images/topic-hero-leaders.jpg');
 
-    const isSkims = (art.title || '').toLowerCase().includes('skims') || (art.title || '').toLowerCase().includes('kardashian');
     if (isSkims) {
       setReviewImageCaption("SKIMS' $148 Accessories Advent Calendar sparked widespread criticism after customers shared unboxing videos of its 12 accessories.");
       setReviewReadDuration('5 min read');
@@ -908,8 +936,8 @@ export default function AdminDashboardContent() {
       setReviewTags(['SKIMS', 'KIMKARDASHIAN', 'ADVENTCALENDAR', 'FASHIONNEWS', 'CONSUMERRIGHTS', 'BRANDREPUTATION', 'SOCIALMEDIA']);
       setReviewSubCategories([]);
       setReviewFocusKeyword('SKIMS Advent Calendar');
-      setReviewMetaDescription(art.excerpt || "The Kim Kardashian-founded brand contacted every buyer of its $148 accessories calendar, offering full refunds or store credit after viral unboxing videos sparked criticism over the product's value.");
-      setReviewCardSummary(art.excerpt || "The Kim Kardashian-founded brand contacted every buyer of its $148 accessories calendar, offering full refunds or store credit after viral unboxing videos sparked criticism over the product's value.");
+      setReviewMetaDescription(resolvedExcerpt);
+      setReviewCardSummary(resolvedExcerpt);
     } else {
       setReviewImageCaption((art as any).imageCaption || '');
       setReviewReadDuration((art as any).readTime || '5 min read');
@@ -1358,21 +1386,21 @@ export default function AdminDashboardContent() {
           </div>
         )}
 
-        {/* TOP REVIEW BAR (Matching media_1794903234169_500827f3.jpg) */}
-        <header className="sticky top-0 z-40 bg-[#0F172A] border-b border-slate-800 text-white px-4 sm:px-6 py-3 flex items-center justify-between gap-4 shadow-md">
+        {/* TOP REVIEW BAR (Matching Image 2 / Washington Times design) */}
+        <header className="sticky top-0 z-40 bg-[#0B132B] border-b border-slate-800 text-white px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-4 shadow-md">
           {/* Left: CANCEL + REVIEWING: TITLE */}
           <div className="flex items-center gap-3 sm:gap-4 min-w-0">
             <button
               type="button"
               onClick={() => setSelectedReviewArticle(null)}
-              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider text-slate-300 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer shrink-0"
+              className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-300 hover:text-white transition-colors cursor-pointer shrink-0"
             >
-              <ChevronLeft className="w-4 h-4 stroke-[2.5]" />
+              <ArrowLeft className="w-3.5 h-3.5 stroke-[2.5]" />
               <span>CANCEL</span>
             </button>
-            <div className="h-4 w-px bg-slate-700 hidden sm:block shrink-0" />
-            <span className="text-xs sm:text-sm font-semibold tracking-wide text-slate-300 uppercase truncate">
-              REVIEWING: {reviewTitle}
+            <div className="h-4 w-px bg-slate-700/80 mx-1 shrink-0" />
+            <span className="text-[11px] font-mono font-medium tracking-wider text-slate-300 uppercase truncate max-w-[420px] sm:max-w-[550px] lg:max-w-[650px]">
+              REVIEWING: {cleanReviewTitle}
             </span>
           </div>
 
@@ -1391,7 +1419,7 @@ export default function AdminDashboardContent() {
               type="button"
               disabled={isSubmittingReview}
               onClick={handleReviewReject}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#DC2626] hover:bg-[#B91C1C] text-white text-xs font-bold uppercase tracking-wider shadow-sm transition-colors cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#991B1B] hover:bg-[#7F1D1D] text-white text-xs font-bold uppercase tracking-wider shadow-sm transition-colors cursor-pointer disabled:opacity-50"
             >
               <X className="w-3.5 h-3.5 stroke-[2.5]" />
               <span>REJECT TO TRASH</span>
@@ -1415,14 +1443,15 @@ export default function AdminDashboardContent() {
             {/* Left Column: Article Editor Canvas */}
             <div className="w-full lg:w-[860px] xl:w-[940px] 2xl:w-[980px] shrink-0 flex flex-col gap-5 relative">
               <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xs flex flex-col gap-5 min-h-[920px] lg:min-h-[960px] relative text-slate-800">
-                {/* Sidebar toggle button (matching Writer Dashboard) */}
+                {/* Sidebar toggle / tracking symbol button (Matching Image 1 & 2) */}
                 <button
                   type="button"
                   onClick={() => setReviewSidebarCollapsed((prev) => !prev)}
-                  className={`absolute top-5 w-8 h-8 bg-white border border-slate-300 hover:border-slate-400 rounded-lg shadow-xs flex items-center justify-center text-slate-700 hover:text-slate-900 transition-all cursor-pointer z-30 ${
-                    reviewSidebarCollapsed ? 'right-4' : '-right-4'
+                  className={`absolute top-4 sm:top-5 w-7.5 h-7.5 sm:w-8 sm:h-8 bg-white border border-slate-300 hover:border-slate-400 rounded-lg shadow-2xs flex items-center justify-center text-slate-700 hover:text-slate-900 transition-all cursor-pointer z-30 ${
+                    reviewSidebarCollapsed ? 'right-3 sm:right-4' : '-right-3.5 sm:-right-4'
                   }`}
-                  title={reviewSidebarCollapsed ? 'Open Article Settings' : 'Hide Article Settings'}
+                  title={reviewSidebarCollapsed ? 'Open Article Settings & Tracking' : 'Hide Article Settings & Tracking'}
+                  aria-label="Toggle Article Settings & Tracking"
                 >
                   {!reviewSidebarCollapsed ? (
                     <PanelRightClose className="w-4 h-4 text-slate-700" />
@@ -1488,23 +1517,55 @@ export default function AdminDashboardContent() {
                   </div>
                 </div>
 
-                {/* Editable Title */}
-                <textarea
-                  rows={2}
-                  value={reviewTitle}
-                  onChange={(e) => setReviewTitle(e.target.value)}
-                  className="font-serif font-bold text-2xl sm:text-3xl lg:text-[34px] leading-tight text-slate-900 border-none outline-none focus:ring-0 p-0 w-full placeholder:text-slate-300 resize-none"
-                  placeholder="Add Title..."
-                />
+                {/* Article Title (Auto-resizing, clean wrapping, compact font size matching Image 2) */}
+                <div className="w-full">
+                  <textarea
+                    ref={titleTextareaRef}
+                    rows={1}
+                    value={reviewTitle}
+                    onChange={(e) => {
+                      setReviewTitle(e.target.value);
+                      autoResizeTextarea(e.target);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        subtitleTextareaRef.current?.focus();
+                      }
+                    }}
+                    placeholder="Add Title..."
+                    className="w-full text-2xl sm:text-[28px] lg:text-[30px] font-serif font-bold text-slate-900 placeholder:text-slate-300 border-none outline-none focus:ring-0 p-0 bg-transparent resize-none overflow-hidden block leading-[1.22] tracking-tight"
+                    style={{
+                      whiteSpace: 'pre-wrap',
+                      wordBreak: 'break-word',
+                      overflowWrap: 'anywhere',
+                      maxWidth: '100%',
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                </div>
 
-                {/* Editable Excerpt / Subtitle */}
-                <textarea
-                  rows={2}
-                  value={reviewExcerpt}
-                  onChange={(e) => setReviewExcerpt(e.target.value)}
-                  className="font-serif italic text-base sm:text-lg text-slate-600 border-none outline-none focus:ring-0 p-0 w-full resize-none placeholder:text-slate-400"
-                  placeholder="Add Subheading / Deck..."
-                />
+                {/* Subtitle / Excerpt (Auto-resizing, clean wrapping, matching Image 2) */}
+                <div className="w-full">
+                  <textarea
+                    ref={subtitleTextareaRef}
+                    rows={1}
+                    value={reviewExcerpt}
+                    onChange={(e) => {
+                      setReviewExcerpt(e.target.value);
+                      autoResizeTextarea(e.target);
+                    }}
+                    placeholder="Add Subheading / Deck..."
+                    className="w-full text-sm sm:text-[15.5px] font-serif text-slate-600 placeholder:text-slate-400 border-none outline-none focus:ring-0 p-0 bg-transparent resize-none overflow-hidden block leading-relaxed"
+                    style={{
+                      whiteSpace: 'pre-wrap',
+                      wordBreak: 'break-word',
+                      overflowWrap: 'anywhere',
+                      maxWidth: '100%',
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                </div>
 
                 {/* Featured Image + Caption */}
                 {reviewImageUrl && (
