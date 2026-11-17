@@ -72,6 +72,18 @@ export const SignupForm: React.FC = () => {
     }
 
     if (isFormValid) {
+      // Persist new registered user directly to the MySQL database
+      fetch('/api/admin/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          role: 'reader',
+          password,
+        }),
+      }).catch((err) => console.warn('Registration DB sync warning:', err));
+
       loginUser({
         name: name.trim(),
         email: email.trim(),
