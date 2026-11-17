@@ -43,6 +43,12 @@ import {
   Quote,
   Code,
   Image as ImageIcon,
+  Pencil,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  ChevronUp,
+  Upload,
   Settings,
   Clock,
   PanelRightClose,
@@ -55,6 +61,7 @@ import {
 } from 'lucide-react';
 import ProfileSettingsModal from '@/components/writer/ProfileSettingsModal';
 import { MAIN_CATEGORIES } from '@/data/categoriesData';
+import { convertImageToWebP } from '@/lib/imageUtils';
 
 export type AdminTab =
   | 'overview'
@@ -542,9 +549,63 @@ export default function AdminDashboardContent() {
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [previewAudioPlaying, setPreviewAudioPlaying] = useState(false);
   const [previewBookmarked, setPreviewBookmarked] = useState(false);
-  const [showInsertImageModal, setShowInsertImageModal] = useState(false);
-  const [tempImageUrl, setTempImageUrl] = useState('');
   const [reviewImageCaption, setReviewImageCaption] = useState('');
+
+  // Review Canvas contentEditable and formatting states (Matching Writer Dashboard)
+  const reviewEditorRef = useRef<HTMLDivElement>(null);
+  const reviewSavedRangeRef = useRef<Range | null>(null);
+
+  // Floating Image Toolbar State (Matching Reference Image 2 & Writer Dashboard)
+  const [selectedImageFigure, setSelectedImageFigure] = useState<HTMLElement | null>(null);
+  const [toolbarPosition, setToolbarPosition] = useState<{ top: number; left: number } | null>(null);
+  const [imageBounds, setImageBounds] = useState<{ top: number; left: number; width: number; height: number } | null>(null);
+  const [selectedImageProps, setSelectedImageProps] = useState<{
+    src: string;
+    alt: string;
+    caption: string;
+    credit: string;
+    size: 'small' | 'medium' | 'full';
+    alignment: 'left' | 'center' | 'no_wrap' | 'right';
+  } | null>(null);
+  const editingImageFigureRef = useRef<HTMLElement | null>(null);
+  const editingImageIdRef = useRef<string | null>(null);
+
+  // Formatting state
+  const [activeFormats, setActiveFormats] = useState({
+    bold: false,
+    italic: false,
+    underline: false,
+    insertOrderedList: false,
+    insertUnorderedList: false,
+    link: false,
+    blockquote: false,
+    code: false,
+  });
+  const [isQuoteActive, setIsQuoteActive] = useState(false);
+  const [isCodeActive, setIsCodeActive] = useState(false);
+  const lastToggledQuoteElRef = useRef<HTMLElement | null>(null);
+  const lastToggledCodeElRef = useRef<HTMLElement | null>(null);
+
+  // Image Modal states
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [modalImageUrl, setModalImageUrl] = useState('');
+  const [uploadedFileName, setUploadedFileName] = useState('');
+  const [imageCaption, setImageCaption] = useState('');
+  const [imageCredit, setImageCredit] = useState('');
+  const [imageSize, setImageSize] = useState<'small' | 'medium' | 'full'>('full');
+  const [imageAlignment, setImageAlignment] = useState<'left' | 'center' | 'no_wrap' | 'right'>('center');
+  const [imageKeywords, setImageKeywords] = useState<string[]>([]);
+  const [imageKeywordInput, setImageKeywordInput] = useState('');
+  const [sizeDropdownOpen, setSizeDropdownOpen] = useState(false);
+  const [alignDropdownOpen, setAlignDropdownOpen] = useState(false);
+  const modalFileInputRef = useRef<HTMLInputElement>(null);
+
+  // Link Modal states
+  const [showLinkModal, setShowLinkModal] = useState(false);
+  const [linkUrl, setLinkUrl] = useState('');
+  const [linkText, setLinkText] = useState('');
+  const [linkOpenNewTab, setLinkOpenNewTab] = useState(true);
+  const [currentLinkElement, setCurrentLinkElement] = useState<HTMLAnchorElement | null>(null);
   const [reviewReadDuration, setReviewReadDuration] = useState('5 min read');
   const [reviewHomepagePlacement, setReviewHomepagePlacement] = useState('none');
   const [reviewNewsletterBanner, setReviewNewsletterBanner] = useState('auto');
@@ -658,6 +719,909 @@ export default function AdminDashboardContent() {
     }
     return new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase();
   }, [selectedReviewArticle?.submittedDate]);
+
+  // Rich Text Editor & Image Handling (Matching Writer Dashboard Behavior)
+  const updateActiveFormats = () => {
+    if (typeof window === 'undefined') return;
+    try {
+      const isBold = document.queryCommandState('bold');
+      const isItalic = document.queryCommandState('italic');
+      const isUnderline = document.queryCommandState('underline');
+      let isOL = document.queryCommandState('insertOrderedList');
+      let isUL = document.queryCommandState('insertUnorderedList');
+
+      let isLink = false;
+      let insideQuote = false;
+      let insideCode = false;
+
+      const sel = window.getSelection();
+      if (sel && sel.anchorNode && reviewEditorRef.current?.contains(sel.anchorNode)) {
+        let el: Node | null = sel.anchorNode;
+        if (el.nodeType === Node.TEXT_NODE) el = el.parentNode;
+        if ((el as HTMLElement)?.closest?.('blockquote')) insideQuote = true;
+        if ((el as HTMLElement)?.closest?.('pre')) insideCode = true;
+        while (el && el !== reviewEditorRef.current) {
+          const tag = (el as HTMLElement).tagName?.toLowerCase();
+          if (tag === 'a') isLink = true;
+          if (tag === 'ol') isOL = true;
+          if (tag === 'ul') isUL = true;
+          el = el.parentNode;
+        }
+      }
+
+      setIsQuoteActive(insideQuote);
+      setIsCodeActive(insideCode);
+
+      setActiveFormats({
+        bold: isBold,
+        italic: isItalic,
+        underline: isUnderline,
+        insertOrderedList: isOL,
+        insertUnorderedList: isUL,
+        link: isLink,
+        blockquote: insideQuote,
+        code: insideCode,
+      });
+    } catch {}
+  };
+
+  const saveSelectionRange = () => {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0 && reviewEditorRef.current?.contains(sel.anchorNode)) {
+      reviewSavedRangeRef.current = sel.getRangeAt(0);
+    }
+    updateActiveFormats();
+  };
+
+  const ensureEditorSelection = () => {
+    if (!reviewEditorRef.current) return null;
+    reviewEditorRef.current.focus();
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0 && reviewEditorRef.current.contains(sel.anchorNode)) {
+      reviewSavedRangeRef.current = sel.getRangeAt(0);
+      return sel;
+    }
+    if (reviewSavedRangeRef.current && sel) {
+      sel.removeAllRanges();
+      sel.addRange(reviewSavedRangeRef.current);
+      return sel;
+    }
+    return sel;
+  };
+
+  const handleEditorInput = () => {
+    if (!reviewEditorRef.current) return;
+    const content = reviewEditorRef.current.innerHTML;
+    setReviewContent(content);
+    const firstImg = reviewEditorRef.current.querySelector('img');
+    if (firstImg) {
+      const src = firstImg.getAttribute('src');
+      if (src) setReviewImageUrl(src);
+    }
+  };
+
+  const executeFormatting = (command: string, value: string | undefined = undefined) => {
+    if (reviewEditorRef.current) {
+      ensureEditorSelection();
+      document.execCommand(command, false, value);
+      handleEditorInput();
+      setTimeout(updateActiveFormats, 50);
+    }
+  };
+
+  const updateImageSelectionBounds = (fig: HTMLElement) => {
+    if (!reviewEditorRef.current) return;
+    const targetRect = fig.getBoundingClientRect();
+    const container = reviewEditorRef.current.parentElement || reviewEditorRef.current;
+    const containerRect = container.getBoundingClientRect();
+    const bounds = {
+      top: targetRect.top - containerRect.top,
+      left: targetRect.left - containerRect.left,
+      width: targetRect.width,
+      height: targetRect.height,
+    };
+    setImageBounds(bounds);
+
+    setToolbarPosition({
+      top: Math.max(8, bounds.top - 46),
+      left: Math.max(8, Math.min(bounds.left, containerRect.width - 340)),
+    });
+  };
+
+  useEffect(() => {
+    if (!selectedImageFigure) return;
+    const handleScrollOrResize = () => {
+      if (selectedImageFigure && reviewEditorRef.current?.contains(selectedImageFigure)) {
+        updateImageSelectionBounds(selectedImageFigure);
+      }
+    };
+    window.addEventListener('scroll', handleScrollOrResize, { passive: true });
+    window.addEventListener('resize', handleScrollOrResize, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScrollOrResize);
+      window.removeEventListener('resize', handleScrollOrResize);
+    };
+  }, [selectedImageFigure]);
+
+  const handleEditorClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+    const anchor = target.closest('a') as HTMLAnchorElement | null;
+    if (anchor && reviewEditorRef.current?.contains(anchor)) {
+      const href = anchor.getAttribute('href');
+      if (href && href !== '#' && !href.startsWith('javascript:')) {
+        const targetAttr = anchor.getAttribute('target') || '_blank';
+        window.open(href, targetAttr, 'noopener,noreferrer');
+        showToast(`Redirecting to ${href}...`);
+        return;
+      }
+    }
+
+    const figure = target.closest('figure.article-image-figure') as HTMLElement | null;
+
+    if (figure && reviewEditorRef.current?.contains(figure)) {
+      if (!figure.dataset.imageId) {
+        figure.dataset.imageId = 'img_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+      }
+      setSelectedImageFigure(figure);
+      editingImageFigureRef.current = figure;
+      editingImageIdRef.current = figure.dataset.imageId;
+
+      const img = figure.querySelector('img');
+      const figcaption = figure.querySelector('figcaption');
+      const captionSpan = figure.querySelector('.image-caption');
+      const creditSpan = figure.querySelector('.image-credit');
+
+      let parsedCaption = captionSpan ? captionSpan.textContent || '' : '';
+      let parsedCredit = creditSpan ? creditSpan.textContent || '' : '';
+
+      if (!parsedCaption && !parsedCredit && figcaption) {
+        parsedCaption = figcaption.innerText || '';
+      }
+
+      let cleanCredit = parsedCredit.trim();
+      if (cleanCredit.startsWith('(') && cleanCredit.endsWith(')')) {
+        cleanCredit = cleanCredit.slice(1, -1).trim();
+      }
+      if (/^photo:\s*/i.test(cleanCredit)) {
+        cleanCredit = cleanCredit.replace(/^photo:\s*/i, '').trim();
+      }
+
+      const size = (figure.dataset.size as 'small' | 'medium' | 'full') || 'medium';
+      const align = (figure.dataset.align as 'left' | 'center' | 'no_wrap' | 'right') || 'center';
+
+      const extractedCaption = figure.dataset.caption !== undefined ? figure.dataset.caption : parsedCaption;
+      const extractedCredit = figure.dataset.credit !== undefined ? figure.dataset.credit : cleanCredit;
+
+      setImageCaption(extractedCaption);
+      setImageCredit(extractedCredit);
+      setReviewImageCaption(extractedCaption);
+
+      setSelectedImageProps({
+        src: img?.getAttribute('src') || '',
+        alt: img?.getAttribute('alt') || '',
+        caption: extractedCaption,
+        credit: extractedCredit,
+        size,
+        alignment: align,
+      });
+
+      updateImageSelectionBounds(figure);
+    } else {
+      setSelectedImageFigure(null);
+      setImageBounds(null);
+      setToolbarPosition(null);
+      setSelectedImageProps(null);
+    }
+    updateActiveFormats();
+  };
+
+  const getFigureStyle = (alignment: string, size: string) => {
+    let maxWidth = '480px';
+    let width = '100%';
+    if (size === 'small') {
+      maxWidth = '260px';
+    } else if (size === 'medium') {
+      maxWidth = '480px';
+    } else if (size === 'full') {
+      maxWidth = '100%';
+      width = '100%';
+    }
+
+    let float = 'none';
+    let clear = 'both';
+    let display = 'block';
+    let margin = '1.5rem auto';
+
+    if (alignment === 'left') {
+      float = 'left';
+      clear = 'none';
+      display = 'block';
+      margin = '0.5rem 1.5rem 1rem 0';
+    } else if (alignment === 'right') {
+      float = 'right';
+      clear = 'none';
+      display = 'block';
+      margin = '0.5rem 0 1rem 1.5rem';
+    } else if (alignment === 'center') {
+      float = 'none';
+      clear = 'both';
+      display = 'block';
+      margin = '1.5rem auto';
+    } else if (alignment === 'no_wrap') {
+      float = 'none';
+      clear = 'both';
+      display = 'block';
+      margin = '1.5rem auto 1.5rem 0';
+    }
+
+    return `display: ${display} !important; float: ${float} !important; clear: ${clear} !important; margin: ${margin} !important; width: ${width} !important; max-width: ${maxWidth} !important; height: fit-content !important; padding: 0 !important; box-sizing: border-box !important;`;
+  };
+
+  const handleUpdateImageSize = (size: 'small' | 'medium' | 'full') => {
+    if (!selectedImageFigure) return;
+    selectedImageFigure.dataset.size = size;
+
+    selectedImageFigure.classList.remove('max-w-[250px]', 'max-w-[260px]', 'max-w-[450px]', 'max-w-[480px]', 'w-full', 'max-w-none', 'w-fit');
+    if (size === 'small') {
+      selectedImageFigure.classList.add('max-w-[260px]', 'w-fit');
+    } else if (size === 'medium') {
+      selectedImageFigure.classList.add('max-w-[480px]', 'w-fit');
+    } else {
+      selectedImageFigure.classList.add('w-full', 'max-w-none');
+    }
+
+    const alignment = (selectedImageFigure.dataset.align as 'left' | 'center' | 'no_wrap' | 'right') || 'center';
+    selectedImageFigure.style.cssText = getFigureStyle(alignment, size);
+
+    setSelectedImageProps((prev) => (prev ? { ...prev, size } : null));
+    handleEditorInput();
+    updateImageSelectionBounds(selectedImageFigure);
+    setTimeout(() => {
+      if (selectedImageFigure) updateImageSelectionBounds(selectedImageFigure);
+    }, 40);
+    showToast(`Image size updated to ${size.toUpperCase()}`);
+  };
+
+  const handleUpdateImageAlignment = (alignment: 'left' | 'center' | 'no_wrap' | 'right') => {
+    if (!selectedImageFigure) return;
+    selectedImageFigure.dataset.align = alignment;
+
+    selectedImageFigure.classList.remove(
+      'float-left',
+      'mr-6',
+      'mb-4',
+      'my-2',
+      'float-right',
+      'ml-6',
+      'mx-auto',
+      'text-center',
+      'clear-both',
+      'my-6',
+      'block',
+      'w-fit'
+    );
+
+    const size = (selectedImageFigure.dataset.size as 'small' | 'medium' | 'full') || 'medium';
+
+    if (alignment === 'left') {
+      selectedImageFigure.classList.add('float-left', 'mr-6', 'mb-4', 'my-2', 'w-fit');
+    } else if (alignment === 'right') {
+      selectedImageFigure.classList.add('float-right', 'ml-6', 'mb-4', 'my-2', 'w-fit');
+    } else if (alignment === 'no_wrap') {
+      selectedImageFigure.classList.add('my-6', 'block', 'clear-both', 'w-fit');
+    } else {
+      selectedImageFigure.classList.add('my-6', 'block', 'clear-both', 'mx-auto', 'text-center', 'w-fit');
+    }
+
+    selectedImageFigure.style.cssText = getFigureStyle(alignment, size);
+
+    setSelectedImageProps((prev) => (prev ? { ...prev, alignment } : null));
+    handleEditorInput();
+    updateImageSelectionBounds(selectedImageFigure);
+    setTimeout(() => {
+      if (selectedImageFigure) updateImageSelectionBounds(selectedImageFigure);
+    }, 40);
+    showToast(`Image alignment updated to ${alignment}`);
+  };
+
+  const normalizeEditorBlocks = (editor: HTMLElement) => {
+    const childNodes = Array.from(editor.childNodes);
+    let currentInlineNodes: Node[] = [];
+
+    const flushInlineNodes = () => {
+      if (currentInlineNodes.length === 0) return;
+      const rawHtml = currentInlineNodes
+        .map((n) => {
+          if (n.nodeType === Node.TEXT_NODE) {
+            return (n.textContent || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          }
+          return (n as HTMLElement).outerHTML || '';
+        })
+        .join('');
+
+      const paragraphs = rawHtml.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+      const firstNode = currentInlineNodes[0];
+
+      if (paragraphs.length > 0) {
+        paragraphs.forEach((pText) => {
+          const p = document.createElement('p');
+          p.className = 'my-3';
+          p.innerHTML = pText.replace(/\n/g, '<br>');
+          editor.insertBefore(p, firstNode);
+        });
+      }
+
+      currentInlineNodes.forEach((n) => n.parentNode?.removeChild(n));
+      currentInlineNodes = [];
+    };
+
+    for (const node of childNodes) {
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        const el = node as HTMLElement;
+        const tag = el.tagName.toLowerCase();
+        if (
+          ['figure', 'p', 'div', 'blockquote', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'pre'].includes(tag)
+        ) {
+          flushInlineNodes();
+        } else {
+          currentInlineNodes.push(node);
+        }
+      } else if (node.nodeType === Node.TEXT_NODE) {
+        if (node.textContent && node.textContent.trim().length > 0) {
+          currentInlineNodes.push(node);
+        } else {
+          node.parentNode?.removeChild(node);
+        }
+      }
+    }
+    flushInlineNodes();
+  };
+
+  const handleMoveImage = (direction: 'up' | 'down') => {
+    if (!selectedImageFigure || !reviewEditorRef.current) return;
+    const editor = reviewEditorRef.current;
+    let figure = selectedImageFigure;
+
+    if (figure.parentElement && figure.parentElement !== editor && editor.contains(figure.parentElement)) {
+      const parentBlock = figure.parentElement;
+      editor.insertBefore(figure, parentBlock);
+      if (parentBlock.tagName === 'P' && !parentBlock.textContent?.trim() && !parentBlock.querySelector('img')) {
+        parentBlock.remove();
+      }
+    }
+
+    normalizeEditorBlocks(editor);
+
+    if (direction === 'up') {
+      let target = figure.previousElementSibling as HTMLElement | null;
+      while (
+        target &&
+        target.tagName === 'P' &&
+        !target.textContent?.trim() &&
+        !target.querySelector('img') &&
+        target.previousElementSibling
+      ) {
+        const emptyP = target;
+        target = target.previousElementSibling as HTMLElement | null;
+        emptyP.remove();
+      }
+      if (target && editor.contains(target)) {
+        editor.insertBefore(figure, target);
+        handleEditorInput();
+        updateImageSelectionBounds(figure);
+        setTimeout(() => {
+          updateImageSelectionBounds(figure);
+        }, 30);
+      }
+    } else {
+      let target = figure.nextElementSibling as HTMLElement | null;
+      while (
+        target &&
+        target.tagName === 'P' &&
+        !target.textContent?.trim() &&
+        !target.querySelector('img') &&
+        target.nextElementSibling
+      ) {
+        const emptyP = target;
+        target = target.nextElementSibling as HTMLElement | null;
+        emptyP.remove();
+      }
+      if (target && editor.contains(target)) {
+        if (target.nextSibling) {
+          editor.insertBefore(figure, target.nextSibling);
+        } else {
+          editor.appendChild(figure);
+        }
+        handleEditorInput();
+        updateImageSelectionBounds(figure);
+        setTimeout(() => {
+          updateImageSelectionBounds(figure);
+        }, 30);
+      }
+    }
+  };
+
+  const handleDeleteSelectedImage = () => {
+    if (!selectedImageFigure) return;
+    selectedImageFigure.remove();
+    setSelectedImageFigure(null);
+    setImageBounds(null);
+    setToolbarPosition(null);
+    setSelectedImageProps(null);
+    handleEditorInput();
+    showToast('Image removed from article.');
+  };
+
+  const handleEditSelectedImage = () => {
+    if (!selectedImageProps) return;
+    if (selectedImageFigure) {
+      if (!selectedImageFigure.dataset.imageId) {
+        selectedImageFigure.dataset.imageId = 'img_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+      }
+      editingImageFigureRef.current = selectedImageFigure;
+      editingImageIdRef.current = selectedImageFigure.dataset.imageId;
+    }
+    setModalImageUrl(selectedImageProps.src);
+    setImageCaption(selectedImageProps.caption);
+    setImageCredit(selectedImageProps.credit);
+    setImageSize(selectedImageProps.size);
+    setImageAlignment(selectedImageProps.alignment);
+    setShowImageModal(true);
+  };
+
+  const handleImageKeywordKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      const trimmed = imageKeywordInput.trim().replace(/^#/, '');
+      if (trimmed && !imageKeywords.includes(trimmed)) {
+        if (imageKeywords.length >= 4) {
+          showToast('Maximum 4 keywords per image.');
+          return;
+        }
+        setImageKeywords((prev) => [...prev, trimmed]);
+        setImageKeywordInput('');
+      }
+    }
+  };
+
+  const handleRemoveImageKeyword = (kwToRemove: string) => {
+    setImageKeywords((prev) => prev.filter((k) => k !== kwToRemove));
+  };
+
+  const handleModalFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      showToast('Please select a valid image file (JPG, PNG, WebP, etc.).', 'error');
+      return;
+    }
+    if (file.size > 20 * 1024 * 1024) {
+      showToast('Image file size must be less than 20MB.', 'error');
+      return;
+    }
+
+    try {
+      const { webpDataUrl, webpFileName } = await convertImageToWebP(file);
+      setUploadedFileName(webpFileName);
+      setModalImageUrl(webpDataUrl);
+      showToast('Image converted to WebP format successfully!');
+    } catch (_) {
+      const reader = new FileReader();
+      reader.onload = (loadEvt) => {
+        if (loadEvt.target?.result) {
+          setUploadedFileName(file.name);
+          setModalImageUrl(loadEvt.target.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleInsertImageIntoEditor = async () => {
+    let finalUrl = modalImageUrl.trim();
+    if (!finalUrl) {
+      showToast('Please provide an image URL or choose a file.', 'error');
+      return;
+    }
+
+    if (finalUrl.startsWith('data:image/') && !finalUrl.startsWith('data:image/webp')) {
+      try {
+        const { webpDataUrl } = await convertImageToWebP(finalUrl);
+        finalUrl = webpDataUrl;
+      } catch (_) {}
+    }
+
+    let sizeClass = 'max-w-[450px] w-fit';
+    if (imageSize === 'small') {
+      sizeClass = 'max-w-[250px] w-fit';
+    } else if (imageSize === 'full') {
+      sizeClass = 'w-full max-w-none';
+    }
+
+    let alignClass = 'my-6 block clear-both mx-auto text-center w-fit';
+    if (imageAlignment === 'left') {
+      alignClass = 'float-left mr-6 mb-4 my-2 text-left w-fit';
+    } else if (imageAlignment === 'right') {
+      alignClass = 'float-right ml-6 mb-4 my-2 text-right w-fit';
+    } else if (imageAlignment === 'no_wrap') {
+      alignClass = 'my-6 block clear-both text-left w-fit';
+    }
+
+    const captionSafe = imageCaption.trim().replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const rawCredit = imageCredit.trim().replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    let formattedCredit = '';
+    if (rawCredit) {
+      if (rawCredit.startsWith('(') && rawCredit.endsWith(')')) {
+        formattedCredit = rawCredit;
+      } else if (/^photo:\s*/i.test(rawCredit)) {
+        formattedCredit = `(${rawCredit.toUpperCase()})`;
+      } else {
+        formattedCredit = `(PHOTO: ${rawCredit})`;
+      }
+    }
+
+    const altSafe = (captionSafe || imageKeywords.join(', ') || reviewTitle.trim() || 'Article Image').replace(/"/g, '&quot;');
+    const figureInlineStyle = getFigureStyle(imageAlignment, imageSize);
+
+    const captionMarkup = (captionSafe || formattedCredit)
+      ? `<figcaption class="flex items-center justify-between text-[11px] text-slate-500 w-full font-sans select-none" style="margin-top: 2px !important; margin-bottom: 0 !important; padding: 0 !important; display: flex !important; align-items: center !important; justify-content: space-between !important; width: 100% !important;"><span class="image-caption text-left text-slate-600 font-normal truncate max-w-[60%]">${captionSafe}</span><span class="image-credit text-right text-slate-400 font-medium tracking-wide truncate max-w-[40%]">${formattedCredit}</span></figcaption>`
+      : '';
+
+    const targetFigure =
+      editingImageFigureRef.current ||
+      (editingImageIdRef.current && reviewEditorRef.current?.querySelector(`figure[data-image-id="${editingImageIdRef.current}"]`) as HTMLElement | null) ||
+      (selectedImageFigure && reviewEditorRef.current?.contains(selectedImageFigure) ? selectedImageFigure : null);
+
+    if (targetFigure && reviewEditorRef.current?.contains(targetFigure)) {
+      targetFigure.dataset.size = imageSize;
+      targetFigure.dataset.align = imageAlignment;
+      targetFigure.dataset.caption = captionSafe;
+      targetFigure.dataset.credit = rawCredit;
+      targetFigure.className = `article-image-figure group relative cursor-pointer ${alignClass} ${sizeClass} select-none`;
+      targetFigure.style.cssText = figureInlineStyle;
+      const img = targetFigure.querySelector('img');
+      if (img) {
+        img.src = finalUrl;
+        img.alt = altSafe;
+        img.style.cssText = 'margin: 0 !important; padding: 0 !important; display: block !important;';
+      }
+      const figcaption = targetFigure.querySelector('figcaption');
+      if (figcaption) {
+        if (captionMarkup) {
+          figcaption.className = 'flex items-center justify-between text-[11px] text-slate-500 w-full font-sans select-none';
+          figcaption.style.cssText = 'margin-top: 2px !important; margin-bottom: 0 !important; padding: 0 !important; display: flex !important; align-items: center !important; justify-content: space-between !important; width: 100% !important;';
+          figcaption.innerHTML = `<span class="image-caption text-left text-slate-600 font-normal truncate max-w-[60%]">${captionSafe}</span><span class="image-credit text-right text-slate-400 font-medium tracking-wide truncate max-w-[40%]">${formattedCredit}</span>`;
+        } else {
+          figcaption.remove();
+        }
+      } else if (captionMarkup) {
+        targetFigure.insertAdjacentHTML('beforeend', captionMarkup);
+      }
+
+      setReviewImageUrl(finalUrl);
+      setReviewImageCaption(captionSafe);
+      editingImageFigureRef.current = null;
+      editingImageIdRef.current = null;
+      setSelectedImageFigure(targetFigure);
+      setSelectedImageProps({
+        src: finalUrl,
+        alt: altSafe,
+        caption: captionSafe,
+        credit: rawCredit,
+        size: imageSize,
+        alignment: imageAlignment,
+      });
+
+      handleEditorInput();
+      updateImageSelectionBounds(targetFigure);
+      setShowImageModal(false);
+      showToast('Image updated successfully in place!');
+      return;
+    }
+
+    const newImageId = 'img_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+    const figureMarkup = `<figure class="article-image-figure group relative cursor-pointer ${alignClass} ${sizeClass} select-none" data-image-id="${newImageId}" data-size="${imageSize}" data-align="${imageAlignment}" data-caption="${captionSafe}" data-credit="${rawCredit}" contenteditable="false" style="${figureInlineStyle}"><img src="${finalUrl}" alt="${altSafe}" class="rounded-none w-full h-auto block object-cover shadow-2xs border border-slate-200 pointer-events-none" style="margin: 0 !important; padding: 0 !important; display: block !important;" />${captionMarkup}</figure><p><br></p>`;
+
+    if (reviewEditorRef.current) {
+      reviewEditorRef.current.focus();
+      if (reviewSavedRangeRef.current) {
+        const sel = window.getSelection();
+        if (sel) {
+          sel.removeAllRanges();
+          sel.addRange(reviewSavedRangeRef.current);
+        }
+      }
+      document.execCommand('insertHTML', false, figureMarkup);
+
+      if (!reviewEditorRef.current.innerHTML.includes(finalUrl)) {
+        reviewEditorRef.current.innerHTML += figureMarkup;
+      }
+      handleEditorInput();
+    }
+
+    setReviewImageUrl(finalUrl);
+    setReviewImageCaption(captionSafe);
+    editingImageFigureRef.current = null;
+    editingImageIdRef.current = null;
+    setShowImageModal(false);
+    setModalImageUrl('');
+    setUploadedFileName('');
+    setImageKeywords([]);
+    setImageCaption('');
+    setImageCredit('');
+    showToast('Image inserted successfully!');
+  };
+
+  const toggleQuoteSection = () => {
+    if (!reviewEditorRef.current) return;
+    reviewEditorRef.current.focus();
+    const sel = window.getSelection();
+    let range: Range | null = null;
+    if (sel && sel.rangeCount > 0 && reviewEditorRef.current.contains(sel.anchorNode)) {
+      range = sel.getRangeAt(0);
+    } else if (reviewSavedRangeRef.current && reviewEditorRef.current.contains(reviewSavedRangeRef.current.commonAncestorContainer)) {
+      range = reviewSavedRangeRef.current;
+    }
+
+    let existingQuote: HTMLElement | null = null;
+    if (range) {
+      let node: Node | null = range.startContainer;
+      if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+      existingQuote = (node as HTMLElement)?.closest?.('blockquote') || null;
+    }
+    if (!existingQuote && lastToggledQuoteElRef.current && reviewEditorRef.current.contains(lastToggledQuoteElRef.current)) {
+      existingQuote = lastToggledQuoteElRef.current;
+    }
+
+    if (existingQuote) {
+      const text = existingQuote.innerText?.trim() || existingQuote.textContent?.trim() || '';
+      const p = document.createElement('p');
+      p.className = 'my-3';
+      p.innerHTML = text ? text.replace(/\n\n+/g, '</p><p class="my-3">').replace(/\n/g, '<br>') : '<br>';
+      existingQuote.parentNode?.replaceChild(p, existingQuote);
+      lastToggledQuoteElRef.current = null;
+      setIsQuoteActive(false);
+      handleEditorInput();
+      showToast('Quote section removed.');
+      setTimeout(updateActiveFormats, 50);
+      return;
+    }
+
+    let targetBlock: HTMLElement | null = null;
+    if (range) {
+      let node: Node | null = range.startContainer;
+      if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+      targetBlock = ((node as HTMLElement)?.closest?.('p, div, h1, h2, h3, h4, h5, h6, li') as HTMLElement | null) || null;
+      if (targetBlock && !reviewEditorRef.current.contains(targetBlock)) targetBlock = null;
+      if (targetBlock === reviewEditorRef.current) targetBlock = null;
+    }
+
+    const quoteEl = document.createElement('blockquote');
+    quoteEl.className = 'quote-section border-l-[3px] border-[#EA580C] pl-4 py-1.5 my-3 text-slate-800 font-serif text-base';
+    quoteEl.setAttribute('contenteditable', 'true');
+
+    if (range && !range.collapsed && range.toString().trim()) {
+      const fragment = range.extractContents();
+      const p = document.createElement('p');
+      p.appendChild(fragment);
+      quoteEl.appendChild(p);
+      range.insertNode(quoteEl);
+    } else if (targetBlock && targetBlock.parentNode) {
+      const content = targetBlock.innerHTML.trim() ? targetBlock.innerHTML : '<br>';
+      quoteEl.innerHTML = `<p>${content}</p>`;
+      targetBlock.parentNode.replaceChild(quoteEl, targetBlock);
+    } else {
+      quoteEl.innerHTML = '<p><br></p>';
+      if (range) {
+        range.insertNode(quoteEl);
+      } else {
+        reviewEditorRef.current.appendChild(quoteEl);
+      }
+    }
+
+    lastToggledQuoteElRef.current = quoteEl;
+    setIsQuoteActive(true);
+    handleEditorInput();
+    showToast('Quote section formatted.');
+    setTimeout(updateActiveFormats, 50);
+  };
+
+  const toggleCodeSection = () => {
+    if (!reviewEditorRef.current) return;
+    reviewEditorRef.current.focus();
+    const sel = window.getSelection();
+    let range: Range | null = null;
+    if (sel && sel.rangeCount > 0 && reviewEditorRef.current.contains(sel.anchorNode)) {
+      range = sel.getRangeAt(0);
+    } else if (reviewSavedRangeRef.current && reviewEditorRef.current.contains(reviewSavedRangeRef.current.commonAncestorContainer)) {
+      range = reviewSavedRangeRef.current;
+    }
+
+    let existingCode: HTMLElement | null = null;
+    if (range) {
+      let node: Node | null = range.startContainer;
+      if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+      existingCode = (node as HTMLElement)?.closest?.('pre') || null;
+    }
+    if (!existingCode && lastToggledCodeElRef.current && reviewEditorRef.current.contains(lastToggledCodeElRef.current)) {
+      existingCode = lastToggledCodeElRef.current;
+    }
+
+    if (existingCode) {
+      const text = existingCode.textContent?.trim() || '';
+      const p = document.createElement('p');
+      p.className = 'my-3';
+      p.innerHTML = text ? text.replace(/\n\n+/g, '</p><p class="my-3">').replace(/\n/g, '<br>') : '<br>';
+      existingCode.parentNode?.replaceChild(p, existingCode);
+      lastToggledCodeElRef.current = null;
+      setIsCodeActive(false);
+      handleEditorInput();
+      showToast('Code block removed.');
+      setTimeout(updateActiveFormats, 50);
+      return;
+    }
+
+    const codeEl = document.createElement('pre');
+    codeEl.className = 'p-4 bg-slate-900 text-emerald-400 font-mono text-xs rounded-xl overflow-x-auto my-3';
+    codeEl.setAttribute('contenteditable', 'true');
+
+    if (range && !range.collapsed && range.toString().trim()) {
+      codeEl.textContent = range.toString();
+      range.deleteContents();
+      range.insertNode(codeEl);
+    } else {
+      codeEl.innerHTML = '<code>// Paste code or script snippet here</code>';
+      if (range) {
+        range.insertNode(codeEl);
+      } else {
+        reviewEditorRef.current.appendChild(codeEl);
+      }
+    }
+
+    lastToggledCodeElRef.current = codeEl;
+    setIsCodeActive(true);
+    handleEditorInput();
+    showToast('Code block formatted.');
+    setTimeout(updateActiveFormats, 50);
+  };
+
+  const applyListFormatting = (listType: 'ol' | 'ul') => {
+    if (!reviewEditorRef.current) return;
+    ensureEditorSelection();
+    document.execCommand(listType === 'ol' ? 'insertOrderedList' : 'insertUnorderedList', false);
+    handleEditorInput();
+    setTimeout(updateActiveFormats, 50);
+  };
+
+  const openLinkModal = () => {
+    saveSelectionRange();
+    const sel = window.getSelection();
+    let selectedText = '';
+    let existingAnchor: HTMLAnchorElement | null = null;
+
+    if (sel && sel.rangeCount > 0) {
+      selectedText = sel.toString();
+      let node: Node | null = sel.anchorNode;
+      if (node && node.nodeType === Node.TEXT_NODE) {
+        node = node.parentNode;
+      }
+      while (node && node !== reviewEditorRef.current) {
+        if ((node as HTMLElement).tagName?.toLowerCase() === 'a') {
+          existingAnchor = node as HTMLAnchorElement;
+          break;
+        }
+        node = node?.parentNode || null;
+      }
+    }
+
+    if (existingAnchor) {
+      setCurrentLinkElement(existingAnchor);
+      setLinkUrl(existingAnchor.getAttribute('href') || '');
+      setLinkText(existingAnchor.textContent || selectedText);
+      setLinkOpenNewTab(existingAnchor.getAttribute('target') === '_blank');
+    } else {
+      setCurrentLinkElement(null);
+      setLinkUrl('');
+      setLinkText(selectedText);
+      setLinkOpenNewTab(true);
+    }
+    setShowLinkModal(true);
+  };
+
+  const handleApplyLink = () => {
+    let cleanUrl = linkUrl.trim();
+    if (!cleanUrl) {
+      showToast('Please enter a valid URL.', 'error');
+      return;
+    }
+    if (cleanUrl.toLowerCase().startsWith('javascript:')) {
+      showToast('JavaScript links are not permitted.', 'error');
+      return;
+    }
+    if (
+      !cleanUrl.startsWith('http://') &&
+      !cleanUrl.startsWith('https://') &&
+      !cleanUrl.startsWith('mailto:') &&
+      !cleanUrl.startsWith('#') &&
+      !cleanUrl.startsWith('/')
+    ) {
+      cleanUrl = 'https://' + cleanUrl;
+    }
+
+    if (currentLinkElement) {
+      currentLinkElement.setAttribute('href', cleanUrl);
+      if (linkOpenNewTab) {
+        currentLinkElement.setAttribute('target', '_blank');
+        currentLinkElement.setAttribute('rel', 'noopener noreferrer');
+      } else {
+        currentLinkElement.removeAttribute('target');
+        currentLinkElement.removeAttribute('rel');
+      }
+      if (linkText.trim()) {
+        currentLinkElement.textContent = linkText.trim();
+      }
+      currentLinkElement.className = 'text-blue-600 underline hover:text-blue-800 transition-colors cursor-pointer';
+      handleEditorInput();
+      setShowLinkModal(false);
+      showToast('Link updated successfully.');
+      setTimeout(updateActiveFormats, 50);
+      return;
+    }
+
+    if (reviewEditorRef.current) {
+      reviewEditorRef.current.focus();
+      if (reviewSavedRangeRef.current) {
+        const sel = window.getSelection();
+        if (sel) {
+          sel.removeAllRanges();
+          sel.addRange(reviewSavedRangeRef.current);
+        }
+      }
+      const sel = window.getSelection();
+      const hasSelection = sel && !sel.isCollapsed && sel.toString().length > 0;
+      if (hasSelection) {
+        document.execCommand('createLink', false, cleanUrl);
+        const links = reviewEditorRef.current.querySelectorAll('a');
+        links.forEach((a) => {
+          if (a.getAttribute('href') === cleanUrl) {
+            a.className = 'text-blue-600 underline hover:text-blue-800 transition-colors cursor-pointer';
+            if (linkOpenNewTab) {
+              a.setAttribute('target', '_blank');
+              a.setAttribute('rel', 'noopener noreferrer');
+            }
+          }
+        });
+      } else {
+        const textToDisplay = linkText.trim() || cleanUrl;
+        const targetAttr = linkOpenNewTab ? ' target="_blank" rel="noopener noreferrer"' : '';
+        const linkHtml = `<a href="${cleanUrl}" class="text-blue-600 underline hover:text-blue-800 transition-colors cursor-pointer"${targetAttr}>${textToDisplay}</a>&nbsp;`;
+        document.execCommand('insertHTML', false, linkHtml);
+      }
+      handleEditorInput();
+      setShowLinkModal(false);
+      showToast('Link inserted successfully.');
+      setTimeout(updateActiveFormats, 50);
+    }
+  };
+
+  const handleRemoveLink = () => {
+    if (currentLinkElement) {
+      const text = currentLinkElement.textContent || '';
+      const textNode = document.createTextNode(text);
+      currentLinkElement.parentNode?.replaceChild(textNode, currentLinkElement);
+      handleEditorInput();
+      setShowLinkModal(false);
+      showToast('Link removed.');
+      setTimeout(updateActiveFormats, 50);
+    } else {
+      executeFormatting('unlink');
+      setShowLinkModal(false);
+      showToast('Link removed.');
+      setTimeout(updateActiveFormats, 50);
+    }
+  };
 
   // Close profile dropdown on click outside
   useEffect(() => {
@@ -921,25 +1885,29 @@ export default function AdminDashboardContent() {
 
     setReviewTitle(resolvedTitle);
     setReviewExcerpt(resolvedExcerpt);
-    setReviewContent(art.content || art.excerpt || '');
     const catName = art.category ? art.category.charAt(0).toUpperCase() + art.category.slice(1).toLowerCase() : 'World';
     setReviewCategory(catName);
-    setReviewImageUrl(art.imageUrl || '/images/topic-hero-leaders.jpg');
+
+    const resolvedImg = isSkims
+      ? '/images/skims-calendar.jpg'
+      : (art.imageUrl || '');
+    setReviewImageUrl(resolvedImg);
+
+    const resolvedCaption = isSkims
+      ? "SKIMS' $148 Accessories Advent Calendar sparked widespread criticism after customers shared unboxing videos of its 12 accessories."
+      : ((art as any).imageCaption || '');
+    setReviewImageCaption(resolvedCaption);
 
     if (isSkims) {
-      setReviewImageCaption("SKIMS' $148 Accessories Advent Calendar sparked widespread criticism after customers shared unboxing videos of its 12 accessories.");
       setReviewReadDuration('5 min read');
       setReviewHomepagePlacement('none');
       setReviewNewsletterBanner('auto');
-      setReviewImageUrl('/images/skims-calendar.jpg');
-      setReviewCategory('World');
       setReviewTags(['SKIMS', 'KIMKARDASHIAN', 'ADVENTCALENDAR', 'FASHIONNEWS', 'CONSUMERRIGHTS', 'BRANDREPUTATION', 'SOCIALMEDIA']);
       setReviewSubCategories([]);
       setReviewFocusKeyword('SKIMS Advent Calendar');
       setReviewMetaDescription(resolvedExcerpt);
       setReviewCardSummary(resolvedExcerpt);
     } else {
-      setReviewImageCaption((art as any).imageCaption || '');
       setReviewReadDuration((art as any).readTime || '5 min read');
       setReviewHomepagePlacement((art as any).placement || 'none');
       setReviewNewsletterBanner((art as any).newsletterBanner || 'auto');
@@ -983,6 +1951,39 @@ export default function AdminDashboardContent() {
       setReviewCardSummary(art.cardSummary || art.excerpt || '');
     }
 
+    // Build initial editor HTML
+    let initialHtml = art.content || '';
+    if (!initialHtml && art.excerpt) {
+      initialHtml = `<p class="my-3">${art.excerpt}</p>`;
+    }
+
+    if (resolvedImg && !resolvedImg.includes('placeholder') && !/<img[^>]+src=/i.test(initialHtml)) {
+      const cap = resolvedCaption || resolvedTitle || '';
+      const figHtml = `<figure class="article-image-figure group relative cursor-pointer my-6 block clear-both mx-auto text-center w-full max-w-none select-none" data-image-id="img_${Date.now()}" data-size="full" data-align="center" data-caption="${cap.replace(/"/g, '&quot;')}" data-credit="" contenteditable="false" style="display: block !important; float: none !important; clear: both !important; margin: 1.5rem auto !important; width: 100% !important; max-width: 100% !important; height: fit-content !important; padding: 0 !important; box-sizing: border-box !important;"><img src="${resolvedImg}" alt="${resolvedTitle.replace(/"/g, '&quot;')}" class="rounded-none w-full h-auto block object-cover shadow-2xs border border-slate-200 pointer-events-none" style="margin: 0 !important; padding: 0 !important; display: block !important;" />${cap ? `<figcaption class="flex items-center justify-between text-[11px] text-slate-500 w-full font-sans select-none" style="margin-top: 2px !important; margin-bottom: 0 !important; padding: 0 !important; display: flex !important; align-items: center !important; justify-content: space-between !important; width: 100% !important;"><span class="image-caption text-left text-slate-600 font-normal truncate max-w-[60%]">${cap}</span><span class="image-credit text-right text-slate-400 font-medium tracking-wide truncate max-w-[40%]"></span></figcaption>` : ''}</figure>`;
+      if (initialHtml) {
+        initialHtml = `${figHtml}${initialHtml.startsWith('<') ? initialHtml : `<p class="my-3">${initialHtml.replace(/\n\n+/g, '</p><p class="my-3">').replace(/\n/g, '<br>')}</p>`}`;
+      } else {
+        initialHtml = `${figHtml}<p><br></p>`;
+      }
+    } else if (initialHtml && !initialHtml.startsWith('<')) {
+      initialHtml = `<p class="my-3">${initialHtml.replace(/\n\n+/g, '</p><p class="my-3">').replace(/\n/g, '<br>')}</p>`;
+    } else if (!initialHtml) {
+      initialHtml = '<p><br></p>';
+    }
+
+    setReviewContent(initialHtml);
+    setTimeout(() => {
+      if (reviewEditorRef.current) {
+        reviewEditorRef.current.innerHTML = initialHtml;
+        normalizeEditorBlocks(reviewEditorRef.current);
+      }
+    }, 50);
+
+    setSelectedImageFigure(null);
+    setImageBounds(null);
+    setToolbarPosition(null);
+    setSelectedImageProps(null);
+
     setReviewSettingsTab('details');
     setReviewSidebarCollapsed(false);
   };
@@ -1006,6 +2007,8 @@ export default function AdminDashboardContent() {
     setIsSubmittingReview(true);
     try {
       const artId = selectedReviewArticle.slug || selectedReviewArticle.id;
+      const currentHtml = reviewEditorRef.current ? reviewEditorRef.current.innerHTML : reviewContent;
+      const contentImg = reviewEditorRef.current?.querySelector('img')?.getAttribute('src') || reviewImageUrl;
       const res = await fetch('/api/articles', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -1015,8 +2018,8 @@ export default function AdminDashboardContent() {
           status: 'published',
           title: reviewTitle,
           excerpt: reviewExcerpt,
-          content: reviewContent,
-          imageUrl: reviewImageUrl,
+          content: currentHtml,
+          imageUrl: contentImg,
           category: reviewCategory,
           tags: reviewTags,
           subCategories: reviewSubCategories,
@@ -1464,40 +2467,116 @@ export default function AdminDashboardContent() {
                 <div className="sticky top-[57px] z-20 bg-white -mx-6 sm:-mx-8 px-6 sm:px-8 pt-2 pb-3 border-b border-slate-100 shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)]">
                   <div className="flex flex-wrap items-center gap-1 sm:gap-1.5 p-2 bg-slate-50 border border-slate-200/90 rounded-xl text-slate-600 shadow-xs">
                     {/* Undo & Redo */}
-                    <button type="button" className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors" title="Undo">
+                    <button
+                      type="button"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => executeFormatting('undo')}
+                      className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
+                      title="Undo"
+                    >
                       <Undo2 className="w-4 h-4" />
                     </button>
-                    <button type="button" className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors" title="Redo">
+                    <button
+                      type="button"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => executeFormatting('redo')}
+                      className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
+                      title="Redo"
+                    >
                       <Redo2 className="w-4 h-4" />
                     </button>
                     <div className="h-4 w-px bg-slate-300 mx-1" />
 
                     {/* Bold, Italic, Underline */}
-                    <button type="button" className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors" title="Bold">
+                    <button
+                      type="button"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => executeFormatting('bold')}
+                      className={`p-1.5 rounded transition-colors cursor-pointer ${
+                        activeFormats.bold ? 'bg-slate-200 text-[#1642D0]' : 'hover:bg-slate-200/70 text-slate-600 hover:text-slate-900'
+                      }`}
+                      title="Bold"
+                    >
                       <Bold className="w-4 h-4" />
                     </button>
-                    <button type="button" className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors" title="Italic">
+                    <button
+                      type="button"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => executeFormatting('italic')}
+                      className={`p-1.5 rounded transition-colors cursor-pointer ${
+                        activeFormats.italic ? 'bg-slate-200 text-[#1642D0]' : 'hover:bg-slate-200/70 text-slate-600 hover:text-slate-900'
+                      }`}
+                      title="Italic"
+                    >
                       <Italic className="w-4 h-4" />
                     </button>
-                    <button type="button" className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors" title="Underline">
+                    <button
+                      type="button"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => executeFormatting('underline')}
+                      className={`p-1.5 rounded transition-colors cursor-pointer ${
+                        activeFormats.underline ? 'bg-slate-200 text-[#1642D0]' : 'hover:bg-slate-200/70 text-slate-600 hover:text-slate-900'
+                      }`}
+                      title="Underline"
+                    >
                       <UnderlineIcon className="w-4 h-4" />
                     </button>
                     <div className="h-4 w-px bg-slate-300 mx-1" />
 
                     {/* Link, Lists, Quote, Code */}
-                    <button type="button" className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors" title="Link">
+                    <button
+                      type="button"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={openLinkModal}
+                      className={`p-1.5 rounded transition-colors cursor-pointer ${
+                        activeFormats.link ? 'bg-slate-200 text-[#1642D0]' : 'hover:bg-slate-200/70 text-slate-600 hover:text-slate-900'
+                      }`}
+                      title="Link"
+                    >
                       <Link2 className="w-4 h-4" />
                     </button>
-                    <button type="button" className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors" title="Bullet List">
+                    <button
+                      type="button"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => applyListFormatting('ul')}
+                      className={`p-1.5 rounded transition-colors cursor-pointer ${
+                        activeFormats.insertUnorderedList ? 'bg-slate-200 text-[#1642D0]' : 'hover:bg-slate-200/70 text-slate-600 hover:text-slate-900'
+                      }`}
+                      title="Bullet List"
+                    >
                       <ListIcon className="w-4 h-4" />
                     </button>
-                    <button type="button" className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors" title="Numbered List">
+                    <button
+                      type="button"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => applyListFormatting('ol')}
+                      className={`p-1.5 rounded transition-colors cursor-pointer ${
+                        activeFormats.insertOrderedList ? 'bg-slate-200 text-[#1642D0]' : 'hover:bg-slate-200/70 text-slate-600 hover:text-slate-900'
+                      }`}
+                      title="Numbered List"
+                    >
                       <ListOrdered className="w-4 h-4" />
                     </button>
-                    <button type="button" className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors" title="Quote">
+                    <button
+                      type="button"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={toggleQuoteSection}
+                      className={`p-1.5 rounded transition-colors cursor-pointer ${
+                        isQuoteActive ? 'bg-slate-200 text-[#1642D0]' : 'hover:bg-slate-200/70 text-slate-600 hover:text-slate-900'
+                      }`}
+                      title="Quote"
+                    >
                       <Quote className="w-4 h-4" />
                     </button>
-                    <button type="button" className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors" title="Code">
+                    <button
+                      type="button"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={toggleCodeSection}
+                      className={`p-1.5 rounded transition-colors cursor-pointer ${
+                        isCodeActive ? 'bg-slate-200 text-[#1642D0]' : 'hover:bg-slate-200/70 text-slate-600 hover:text-slate-900'
+                      }`}
+                      title="Code"
+                    >
                       <Code className="w-4 h-4" />
                     </button>
                     <div className="h-4 w-px bg-slate-300 mx-1" />
@@ -1505,9 +2584,20 @@ export default function AdminDashboardContent() {
                     {/* INSERT IMAGE BUTTON with orange accent matching reference */}
                     <button
                       type="button"
+                      onMouseDown={(e) => e.preventDefault()}
                       onClick={() => {
-                        setTempImageUrl(reviewImageUrl);
-                        setShowInsertImageModal(true);
+                        saveSelectionRange();
+                        setSelectedImageFigure(null);
+                        editingImageFigureRef.current = null;
+                        editingImageIdRef.current = null;
+                        setModalImageUrl('');
+                        setUploadedFileName('');
+                        setImageCaption('');
+                        setImageCredit('');
+                        setImageKeywords([]);
+                        setImageKeywordInput('');
+                        setImageSize('full');
+                        setShowImageModal(true);
                       }}
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FFF7ED] border border-[#FFEDD5] hover:bg-[#FFEDD5] text-[#EA580C] text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer shadow-2xs"
                     >
@@ -1555,6 +2645,14 @@ export default function AdminDashboardContent() {
                       setReviewExcerpt(e.target.value);
                       autoResizeTextarea(e.target);
                     }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        if (reviewEditorRef.current) {
+                          reviewEditorRef.current.focus();
+                        }
+                      }
+                    }}
                     placeholder="Add Subheading / Deck..."
                     className="w-full text-sm sm:text-[15.5px] font-serif text-slate-600 placeholder:text-slate-400 border-none outline-none focus:ring-0 p-0 bg-transparent resize-none overflow-hidden block leading-relaxed"
                     style={{
@@ -1567,51 +2665,183 @@ export default function AdminDashboardContent() {
                   />
                 </div>
 
-                {/* Featured Image + Caption */}
-                {reviewImageUrl && (
-                  <div className="flex flex-col gap-2 my-1">
-                    <div className="relative group rounded-xl overflow-hidden border border-slate-200 bg-slate-50 max-h-[480px]">
-                      <img
-                        src={reviewImageUrl}
-                        alt={reviewTitle}
-                        className="w-full h-full object-contain max-h-[480px] mx-auto"
-                        onError={(e) => {
-                          (e.currentTarget as HTMLImageElement).src = '/images/topic-hero-leaders.jpg';
-                        }}
-                      />
+                {/* Rich Body Content Area: White canvas with floating image toolbar on image click */}
+                <div className="relative flex-1 min-h-[480px] flex flex-col" onClick={handleEditorClick}>
+                  {/* Blue Selection Box with 4 Corner Handles matching Reference Image 2 */}
+                  {selectedImageFigure && imageBounds && (
+                    <div
+                      className="pointer-events-none absolute z-20 border-2 border-blue-500 rounded-xs"
+                      style={{
+                        top: `${imageBounds.top}px`,
+                        left: `${imageBounds.left}px`,
+                        width: `${imageBounds.width}px`,
+                        height: `${imageBounds.height}px`,
+                      }}
+                    >
+                      <div className="absolute -top-1.5 -left-1.5 w-3 h-3 bg-white border-2 border-blue-500 rounded-full shadow-2xs" />
+                      <div className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-white border-2 border-blue-500 rounded-full shadow-2xs" />
+                      <div className="absolute -bottom-1.5 -left-1.5 w-3 h-3 bg-white border-2 border-blue-500 rounded-full shadow-2xs" />
+                      <div className="absolute -bottom-1.5 -right-1.5 w-3 h-3 bg-white border-2 border-blue-500 rounded-full shadow-2xs" />
+                    </div>
+                  )}
+
+                  {/* Floating Image Toolbar matching Reference Image 2 */}
+                  {selectedImageFigure && toolbarPosition && (
+                    <div
+                      onClick={(e) => e.stopPropagation()}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                      style={{ top: `${toolbarPosition.top}px`, left: `${toolbarPosition.left}px` }}
+                      className="floating-image-toolbar absolute z-30 bg-[#0B132B] text-white px-3 py-1.5 rounded-xl shadow-2xl border border-slate-700 flex items-center gap-2.5 text-xs animate-in fade-in duration-150 whitespace-nowrap"
+                    >
+                      {/* Edit Image Button */}
                       <button
                         type="button"
-                        onClick={() => {
-                          setTempImageUrl(reviewImageUrl);
-                          setShowInsertImageModal(true);
-                        }}
-                        className="absolute bottom-3 right-3 px-3 py-1.5 rounded-lg bg-black/75 hover:bg-black text-white text-xs font-semibold backdrop-blur-xs flex items-center gap-1.5 transition-colors cursor-pointer opacity-0 group-hover:opacity-100"
+                        onClick={handleEditSelectedImage}
+                        className="bg-[#EA580C] hover:bg-[#C2410C] text-white px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors shadow-2xs"
                       >
-                        <ImageIcon className="w-3.5 h-3.5" />
-                        <span>Change Image</span>
+                        <Pencil className="w-3 h-3" />
+                        <span>Edit Image</span>
+                      </button>
+
+                      {/* Size Selector */}
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 select-none">
+                        SIZE
+                      </span>
+                      <div className="flex items-center gap-1 font-bold text-xs">
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateImageSize('small')}
+                          className={`px-1.5 py-0.5 rounded cursor-pointer transition-colors ${
+                            selectedImageProps?.size === 'small' ? 'text-[#EA580C] font-extrabold' : 'text-slate-300 hover:text-white'
+                          }`}
+                        >
+                          S
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateImageSize('medium')}
+                          className={`px-1.5 py-0.5 rounded cursor-pointer transition-colors ${
+                            selectedImageProps?.size === 'medium' ? 'text-[#EA580C] font-extrabold' : 'text-slate-300 hover:text-white'
+                          }`}
+                        >
+                          M
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateImageSize('full')}
+                          className={`px-1.5 py-0.5 rounded cursor-pointer transition-colors ${
+                            selectedImageProps?.size === 'full' ? 'text-[#EA580C] font-extrabold' : 'text-slate-300 hover:text-white'
+                          }`}
+                        >
+                          FULL
+                        </button>
+                      </div>
+
+                      <span className="w-[1px] h-4 bg-slate-700 select-none" />
+
+                      {/* Alignment Selector */}
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateImageAlignment('left')}
+                          title="Left (Wrap Text Right)"
+                          className={`p-1 cursor-pointer transition-colors rounded ${
+                            selectedImageProps?.alignment === 'left' ? 'text-[#EA580C] bg-white/10' : 'text-slate-300 hover:text-white'
+                          }`}
+                        >
+                          <AlignLeft className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateImageAlignment('center')}
+                          title="Center (No Wrap)"
+                          className={`p-1 cursor-pointer transition-colors rounded ${
+                            selectedImageProps?.alignment === 'center' ? 'text-[#EA580C] bg-white/10' : 'text-slate-300 hover:text-white'
+                          }`}
+                        >
+                          <AlignCenter className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateImageAlignment('right')}
+                          title="Right (Wrap Text Left)"
+                          className={`p-1 cursor-pointer transition-colors rounded ${
+                            selectedImageProps?.alignment === 'right' ? 'text-[#EA580C] bg-white/10' : 'text-slate-300 hover:text-white'
+                          }`}
+                        >
+                          <AlignRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+
+                      <span className="w-[1px] h-4 bg-slate-700 select-none" />
+
+                      {/* Move Up / Move Down */}
+                      <button
+                        type="button"
+                        onClick={() => handleMoveImage('up')}
+                        title="Move Up"
+                        className="p-1 text-slate-300 hover:text-white cursor-pointer transition-colors"
+                      >
+                        <ChevronUp className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleMoveImage('down')}
+                        title="Move Down"
+                        className="p-1 text-slate-300 hover:text-white cursor-pointer transition-colors"
+                      >
+                        <ChevronDown className="w-3.5 h-3.5" />
+                      </button>
+
+                      <span className="w-[1px] h-4 bg-slate-700 select-none" />
+
+                      {/* Delete Image */}
+                      <button
+                        type="button"
+                        onClick={handleDeleteSelectedImage}
+                        title="Remove Image"
+                        className="p-1 text-red-400 hover:text-red-300 cursor-pointer transition-colors"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
-                    {/* Caption underneath matching reference image */}
-                    <div className="text-center px-4">
-                      <input
-                        type="text"
-                        value={reviewImageCaption}
-                        onChange={(e) => setReviewImageCaption(e.target.value)}
-                        placeholder="Add image caption..."
-                        className="w-full text-center text-xs text-slate-500 italic border-none outline-none focus:ring-0 bg-transparent placeholder:text-slate-300"
-                      />
-                    </div>
-                  </div>
-                )}
+                  )}
 
-                {/* Body Content Editor */}
-                <div className="mt-2">
-                  <textarea
-                    rows={18}
-                    value={reviewContent}
-                    onChange={(e) => setReviewContent(e.target.value)}
-                    className="w-full min-h-[420px] text-slate-800 text-[15px] sm:text-base leading-relaxed p-4 rounded-xl border border-slate-200 focus:border-[#1642D0] focus:ring-1 focus:ring-[#1642D0] outline-none font-sans resize-y placeholder:text-slate-400"
-                    placeholder="Start writing or type / for plugins"
+                  {(!reviewContent || reviewContent === '<p><br></p>' || reviewContent.trim() === '') && (
+                    <div className="absolute top-2 left-0 text-base text-slate-300 pointer-events-none select-none font-sans">
+                      Start writing or type / for plugins
+                    </div>
+                  )}
+
+                  <div
+                    ref={reviewEditorRef}
+                    contentEditable
+                    suppressContentEditableWarning
+                    onInput={handleEditorInput}
+                    onSelect={() => {
+                      saveSelectionRange();
+                      updateActiveFormats();
+                    }}
+                    onKeyUp={() => {
+                      saveSelectionRange();
+                      updateActiveFormats();
+                    }}
+                    onMouseUp={() => {
+                      saveSelectionRange();
+                      updateActiveFormats();
+                    }}
+                    className="article-editor-canvas article-editor-content w-full flex-1 min-h-[640px] text-base text-slate-800 border-none outline-none focus:ring-0 px-0 py-2 leading-relaxed font-sans bg-transparent prose prose-slate max-w-none focus:outline-none"
+                    style={{
+                      minHeight: '640px',
+                      whiteSpace: 'pre-wrap',
+                      wordBreak: 'break-word',
+                      overflowWrap: 'anywhere',
+                      maxWidth: '100%',
+                      boxSizing: 'border-box',
+                    }}
                   />
                 </div>
               </div>
@@ -2171,7 +3401,7 @@ export default function AdminDashboardContent() {
                   </div>
 
                   {/* Main Featured Article Image */}
-                  {Boolean(reviewImageUrl && !reviewImageUrl.includes('placeholder')) && (
+                  {Boolean(!formattedReviewContent.includes('<img') && reviewImageUrl && !reviewImageUrl.includes('placeholder')) && (
                     <>
                       <div className="w-full my-4 overflow-hidden border border-slate-200">
                         <img
@@ -2417,67 +3647,338 @@ export default function AdminDashboardContent() {
           </div>
         )}
 
-        {/* Insert / Change Image Modal */}
-        {showInsertImageModal && (
-          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 animate-in zoom-in-95 duration-150">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900 m-0">
-                  Insert / Change Image
-                </h3>
+        {/* Insert / Edit Image Modal (Matching Writer Dashboard) */}
+        {showImageModal && (
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+            <div className="bg-white rounded-2xl max-w-lg w-full p-4 sm:p-5 shadow-2xl border border-slate-200 flex flex-col gap-2.5 my-3 max-h-[92vh] overflow-y-auto scrollbar-thin text-slate-800 animate-in zoom-in-95 duration-150">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                <div className="flex items-center gap-2">
+                  <ImageIcon className="w-5 h-5 text-[#EA580C]" />
+                  <h3 className="text-base font-serif font-bold text-slate-900 m-0">
+                    {selectedImageFigure || editingImageFigureRef.current ? 'Edit Article Image' : 'Insert Article Image'}
+                  </h3>
+                </div>
                 <button
                   type="button"
-                  onClick={() => setShowInsertImageModal(false)}
-                  className="p-1 text-slate-400 hover:text-slate-700 rounded-lg cursor-pointer"
+                  onClick={() => {
+                    editingImageFigureRef.current = null;
+                    editingImageIdRef.current = null;
+                    setShowImageModal(false);
+                  }}
+                  className="text-slate-400 hover:text-slate-700 p-1 cursor-pointer transition-colors"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <div className="mt-4 flex flex-col gap-3">
-                <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
-                    Image URL
-                  </label>
-                  <input
-                    type="text"
-                    value={tempImageUrl}
-                    onChange={(e) => setTempImageUrl(e.target.value)}
-                    placeholder="https://... or /images/..."
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#1642D0]"
+              {/* Active Image Selected Card */}
+              {modalImageUrl && (
+                <div className="bg-slate-50 border border-slate-200/90 rounded-xl p-2.5 flex items-center gap-3">
+                  <img
+                    src={modalImageUrl}
+                    alt="Selected preview"
+                    className="w-12 h-12 rounded-lg object-cover border border-slate-200 bg-white shrink-0"
+                    onError={(e) => {
+                      (e.target as HTMLElement).style.display = 'none';
+                    }}
                   />
+                  <div className="flex flex-col min-w-0">
+                    <span className="font-bold text-xs text-slate-800 truncate block">
+                      {uploadedFileName || modalImageUrl.split('/').pop()?.split('?')[0] || 'Image.jpg'}
+                    </span>
+                    <span className="text-[11px] font-semibold text-emerald-600 flex items-center gap-1 mt-0.5">
+                      <span>✓</span> Active Image Selected
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* PASTE IMAGE URL */}
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                  PASTE IMAGE URL
+                </label>
+                <input
+                  type="text"
+                  value={modalImageUrl}
+                  onChange={(e) => setModalImageUrl(e.target.value)}
+                  placeholder="https://images.unsplash.com/photo-..."
+                  className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#EA580C]"
+                />
+              </div>
+
+              {/* Divider: OR UPLOAD FILE */}
+              <div className="relative flex items-center justify-center my-0.5">
+                <div className="border-t border-slate-200 w-full" />
+                <span className="bg-white px-2.5 text-[9.5px] font-bold uppercase tracking-wider text-slate-400 absolute">
+                  OR UPLOAD FILE
+                </span>
+              </div>
+
+              {/* CHOOSE COMPUTER FILE */}
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                  CHOOSE COMPUTER FILE
+                </label>
+                <input
+                  type="file"
+                  ref={modalFileInputRef}
+                  onChange={handleModalFileUpload}
+                  accept="image/*"
+                  className="hidden"
+                />
+                <div
+                  onClick={() => modalFileInputRef.current?.click()}
+                  className="w-full py-1.5 px-3 border border-dashed border-slate-300 rounded-lg bg-slate-50/50 hover:bg-slate-50 hover:border-[#EA580C] cursor-pointer flex items-center justify-between text-xs text-slate-600 transition-colors"
+                >
+                  <div className="flex items-center gap-2 truncate">
+                    <span className="font-semibold text-slate-700 bg-white px-2 py-0.5 rounded border border-slate-200 shadow-2xs shrink-0 text-xs">
+                      Choose file
+                    </span>
+                    <span className="text-slate-500 truncate text-xs">
+                      {uploadedFileName || 'No file chosen'}
+                    </span>
+                  </div>
+                  <Upload className="w-4 h-4 text-slate-400 shrink-0" />
                 </div>
 
-                <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
-                    Image Caption
-                  </label>
-                  <input
-                    type="text"
-                    value={reviewImageCaption}
-                    onChange={(e) => setReviewImageCaption(e.target.value)}
-                    placeholder="Brief description or photo credit..."
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#1642D0]"
-                  />
+                {uploadedFileName && (
+                  <div className="flex flex-col gap-0.5 pt-1">
+                    <span className="text-[11px] font-bold text-emerald-600 flex items-center gap-1">
+                      ✓ FILE &quot;{uploadedFileName.toUpperCase()}&quot; COMPRESSED &amp; UPLOADED TO CLOUD!
+                    </span>
+                    {modalImageUrl && (
+                      <span className="text-[10px] text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200/80 truncate block font-mono">
+                        {modalImageUrl}
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* IMAGE SEO KEYWORDS HIGHLIGHTED CARD */}
+              <div className="bg-[#FFFDF7] border border-[#FED7AA] rounded-lg p-2.5 flex flex-col gap-1.5 shadow-2xs">
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-1.5 text-xs font-bold text-amber-900">
+                    <Sparkles className="w-3.5 h-3.5 text-[#EA580C]" />
+                    <span>Image SEO Keywords (Max 4 Keywords)</span>
+                  </span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-orange-100 text-[#EA580C]">
+                    {imageKeywords.length} / 4 KEYWORDS
+                  </span>
                 </div>
 
-                {tempImageUrl && (
-                  <div className="rounded-xl overflow-hidden border border-slate-200 bg-slate-50 max-h-48 flex items-center justify-center p-2">
-                    <img
-                      src={tempImageUrl}
-                      alt="Preview"
-                      className="max-h-40 max-w-full object-contain"
-                      onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).src = '/images/topic-hero-leaders.jpg';
-                      }}
-                    />
+                <input
+                  type="text"
+                  value={imageKeywordInput}
+                  onChange={(e) => setImageKeywordInput(e.target.value)}
+                  onKeyDown={handleImageKeywordKeyDown}
+                  placeholder="e.g. Donald Trump, White House, Election 2026"
+                  className="w-full px-2.5 py-1.5 bg-white border border-amber-200 rounded-md text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#EA580C]"
+                />
+
+                {imageKeywords.length > 0 && (
+                  <div className="flex flex-wrap gap-1 pt-0.5">
+                    {imageKeywords.map((kw) => (
+                      <span
+                        key={kw}
+                        onClick={() => handleRemoveImageKeyword(kw)}
+                        className="inline-flex items-center gap-1 px-2 py-0.5 bg-orange-100 text-[#EA580C] rounded-md text-xs font-medium cursor-pointer hover:bg-orange-200 transition-colors"
+                        title="Click to remove keyword"
+                      >
+                        <span>#{kw}</span>
+                        <X className="w-3 h-3" />
+                      </span>
+                    ))}
                   </div>
                 )}
 
-                <div className="text-[11px] text-slate-500">
-                  Quick editorial presets:
+                <div className="text-[10px] text-amber-800/80 font-medium flex items-center gap-1.5">
+                  <span>💡</span>
+                  <span>Type keyword and press Enter or comma (,) to add. Maximum 4 keywords per image.</span>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+              </div>
+
+              {/* Standalone Image Caption */}
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-600">
+                  Image Caption (Visible under picture to readers)
+                </label>
+                <input
+                  type="text"
+                  value={imageCaption}
+                  onChange={(e) => setImageCaption(e.target.value)}
+                  placeholder="Brief description (e.g. President speaking with reporters outside Capitol)"
+                  className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#EA580C]"
+                />
+              </div>
+
+              {/* Standalone Image Credit / Source (Optional) */}
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-600">
+                  Image Credit / Source (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={imageCredit}
+                  onChange={(e) => setImageCredit(e.target.value)}
+                  placeholder="e.g. Reuters, AP Photo, Getty Images"
+                  className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#EA580C]"
+                />
+              </div>
+
+              {/* TWO-COLUMN ROW: IMAGE SIZE & POSITION ALIGNMENT */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-0.5">
+                {/* IMAGE SIZE DROPDOWN */}
+                <div className="flex flex-col gap-1 relative">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                    IMAGE SIZE
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSizeDropdownOpen(!sizeDropdownOpen);
+                      setAlignDropdownOpen(false);
+                    }}
+                    className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-800 flex items-center justify-between cursor-pointer focus:outline-hidden"
+                  >
+                    <span>
+                      {imageSize === 'small' && 'Small (Width: 250px)'}
+                      {imageSize === 'medium' && 'Medium (Width: 450px)'}
+                      {imageSize === 'full' && 'Full-Width (100%)'}
+                    </span>
+                    <ChevronDown className="w-4 h-4 text-slate-500" />
+                  </button>
+
+                  {sizeDropdownOpen && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-xl z-20 overflow-hidden text-xs">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setImageSize('small');
+                          setSizeDropdownOpen(false);
+                        }}
+                        className={`w-full text-left px-3 py-1.5 transition-colors cursor-pointer ${
+                          imageSize === 'small' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
+                        }`}
+                      >
+                        Small (Width: 250px)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setImageSize('medium');
+                          setSizeDropdownOpen(false);
+                        }}
+                        className={`w-full text-left px-3 py-1.5 transition-colors cursor-pointer ${
+                          imageSize === 'medium' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
+                        }`}
+                      >
+                        Medium (Width: 450px)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setImageSize('full');
+                          setSizeDropdownOpen(false);
+                        }}
+                        className={`w-full text-left px-3 py-1.5 transition-colors cursor-pointer ${
+                          imageSize === 'full' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
+                        }`}
+                      >
+                        Full-Width (100%)
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* POSITION ALIGNMENT DROPDOWN */}
+                <div className="flex flex-col gap-1 relative">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                    POSITION ALIGNMENT
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAlignDropdownOpen(!alignDropdownOpen);
+                      setSizeDropdownOpen(false);
+                    }}
+                    className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-800 flex items-center justify-between cursor-pointer focus:outline-hidden"
+                  >
+                    <span className="truncate">
+                      {imageAlignment === 'center' && 'Center (No Wrap)'}
+                      {imageAlignment === 'left' && 'Left — Wrap Text Right'}
+                      {imageAlignment === 'right' && 'Right — Wrap Text Left'}
+                      {imageAlignment === 'no_wrap' && 'No Wrap'}
+                    </span>
+                    <ChevronDown className="w-4 h-4 text-slate-500 shrink-0" />
+                  </button>
+
+                  {alignDropdownOpen && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-xl z-20 overflow-hidden text-xs">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setImageAlignment('center');
+                          setAlignDropdownOpen(false);
+                        }}
+                        className={`w-full text-left px-3 py-1.5 transition-colors cursor-pointer flex items-center gap-2 ${
+                          imageAlignment === 'center' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
+                        }`}
+                      >
+                        <AlignCenter className="w-3.5 h-3.5" />
+                        <span>Center (No Wrap)</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setImageAlignment('left');
+                          setAlignDropdownOpen(false);
+                        }}
+                        className={`w-full text-left px-3 py-1.5 transition-colors cursor-pointer flex items-center gap-2 ${
+                          imageAlignment === 'left' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
+                        }`}
+                      >
+                        <AlignLeft className="w-3.5 h-3.5" />
+                        <span>Left — Wrap Text Right</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setImageAlignment('right');
+                          setAlignDropdownOpen(false);
+                        }}
+                        className={`w-full text-left px-3 py-1.5 transition-colors cursor-pointer flex items-center gap-2 ${
+                          imageAlignment === 'right' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
+                        }`}
+                      >
+                        <AlignRight className="w-3.5 h-3.5" />
+                        <span>Right — Wrap Text Left</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setImageAlignment('no_wrap');
+                          setAlignDropdownOpen(false);
+                        }}
+                        className={`w-full text-left px-3 py-1.5 transition-colors cursor-pointer flex items-center gap-2 ${
+                          imageAlignment === 'no_wrap' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
+                        }`}
+                      >
+                        <span>No Wrap</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Editorial Presets */}
+              <div className="pt-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+                  Quick Presets:
+                </span>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
                   {[
                     { label: 'SKIMS Calendar', url: '/images/skims-calendar.jpg' },
                     { label: 'Leadership', url: '/images/topic-hero-leaders.jpg' },
@@ -2487,8 +3988,11 @@ export default function AdminDashboardContent() {
                     <button
                       key={preset.url}
                       type="button"
-                      onClick={() => setTempImageUrl(preset.url)}
-                      className="px-2 py-1.5 text-xs text-left rounded-lg border border-slate-200 hover:bg-slate-50 truncate cursor-pointer"
+                      onClick={() => {
+                        setModalImageUrl(preset.url);
+                        setUploadedFileName('');
+                      }}
+                      className="px-2 py-1 text-[11px] text-center rounded border border-slate-200 hover:bg-slate-50 truncate cursor-pointer text-slate-700 font-medium"
                     >
                       {preset.label}
                     </button>
@@ -2496,28 +4000,98 @@ export default function AdminDashboardContent() {
                 </div>
               </div>
 
-              <div className="mt-5 flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => setShowInsertImageModal(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold uppercase tracking-wider hover:bg-slate-50 cursor-pointer"
-                >
-                  Cancel
-                </button>
+              {/* MODAL FOOTER BUTTONS: CANCEL and + INSERT/UPDATE IMAGE */}
+              <div className="flex items-center justify-between pt-2 border-t border-slate-100 gap-3 mt-1">
                 <button
                   type="button"
                   onClick={() => {
-                    if (tempImageUrl.trim()) {
-                      setReviewImageUrl(tempImageUrl.trim());
-                    }
-                    setShowInsertImageModal(false);
-                    showToast('Image updated successfully.');
+                    editingImageFigureRef.current = null;
+                    editingImageIdRef.current = null;
+                    setShowImageModal(false);
                   }}
-                  className="px-4 py-2 rounded-xl bg-[#EA580C] hover:bg-[#C2410C] text-white text-xs font-bold uppercase tracking-wider shadow-xs cursor-pointer"
+                  className="px-5 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
                 >
-                  Apply Image
+                  CANCEL
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleInsertImageIntoEditor}
+                  className="px-5 py-2 rounded-lg bg-[#EA580C] hover:bg-[#C2410C] text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-xs cursor-pointer flex items-center gap-1.5"
+                >
+                  <span>+</span>
+                  <span>{selectedImageFigure || editingImageFigureRef.current ? 'UPDATE IMAGE' : 'INSERT IMAGE'}</span>
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* LINK INSERTION & EDITING MODAL */}
+        {showLinkModal && (
+          <div 
+            className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-start justify-center pt-16 p-4 animate-in fade-in duration-150"
+            onClick={() => setShowLinkModal(false)}
+          >
+            <div 
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-[460px] p-6 text-slate-800 animate-in zoom-in-95 duration-150"
+            >
+              <div className="text-sm font-semibold text-slate-800 mb-2 select-none">
+                {typeof window !== 'undefined' ? `${window.location.host} says` : 'unitedstatestoday.com says'}
+              </div>
+              
+              <div className="text-xs sm:text-[13px] text-slate-700 mb-3 font-normal">
+                Enter link URL (e.g. https://google.com):
+              </div>
+
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleApplyLink();
+                }}
+              >
+                <input
+                  type="text"
+                  autoFocus
+                  value={linkUrl}
+                  onChange={(e) => setLinkUrl(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Escape') {
+                      setShowLinkModal(false);
+                    }
+                  }}
+                  placeholder="https://..."
+                  className="w-full px-3 py-1.5 border-2 border-[#006875] rounded-md text-sm text-slate-900 outline-none shadow-xs focus:ring-1 focus:ring-[#006875]"
+                />
+
+                <div className="flex items-center justify-between mt-5">
+                  {currentLinkElement ? (
+                    <button
+                      type="button"
+                      onClick={handleRemoveLink}
+                      className="text-xs font-semibold text-red-600 hover:text-red-700 underline cursor-pointer"
+                    >
+                      Remove Link
+                    </button>
+                  ) : <span />}
+                  <div className="flex items-center gap-2.5">
+                    <button
+                      type="submit"
+                      className="px-6 py-1.5 bg-[#006875] hover:bg-[#00545F] text-white text-xs font-semibold rounded-full shadow-xs transition-colors cursor-pointer"
+                    >
+                      OK
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowLinkModal(false)}
+                      className="px-5 py-1.5 bg-[#9EEFFF] hover:bg-[#85E8FB] text-[#003B46] text-xs font-semibold rounded-full shadow-xs transition-colors cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </form>
             </div>
           </div>
         )}
