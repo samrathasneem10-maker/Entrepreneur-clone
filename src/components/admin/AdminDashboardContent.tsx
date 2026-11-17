@@ -47,6 +47,8 @@ import {
   Clock,
   PanelRightClose,
   PanelRightOpen,
+  Sparkles,
+  Info,
 } from 'lucide-react';
 import ProfileSettingsModal from '@/components/writer/ProfileSettingsModal';
 import { MAIN_CATEGORIES } from '@/data/categoriesData';
@@ -106,6 +108,19 @@ const ADMIN_TABLE_PAGE_SIZE = 20;
 const CORE_PENDING_ARTICLES: PendingArticle[] = [
   {
     id: 'p-1',
+    slug: 'kim-kardashians-skims-offers-full-refunds-after-advent',
+    title: "Kim Kardashian's SKIMS Offers Full Refunds After Advent...",
+    category: 'World',
+    author: 'Dylan Candice Odulio',
+    submittedDate: '2026-11-10T12:06:53.081Z',
+    status: 'PENDING',
+    excerpt: 'The Kim Kardashian-founded brand contacted every buyer of its $148 accessories calendar, offering full refunds or store credit after viral unboxing videos sparked criticism over the product\'s value.',
+    readTime: '5 min read',
+    imageUrl: '/images/skims-calendar.jpg',
+    content: "A holiday product meant to deliver 12 days of surprises instead became an unexpected public relations challenge for SKIMS, after customers questioned whether its $148 Accessories Advent Calendar was worth the price. Following widespread criticism across social media, the brand has offered every purchaser a full refund or store credit, acknowledging that the product failed to meet expectations.\n\nThe controversy began when customers started sharing unboxing videos revealing the calendar's contents. The 12 day collection included hair ties, satin scrunchies, bobby pins, hair clips, keychains, a small stress relief toy and accessories resembling bra straps repurposed as headbands.\n\nAlthough the items were marketed as everyday accessories and holiday surprises, many buyers considered the product's quality and contents disproportionate to its retail cost.",
+  },
+  {
+    id: 'p-2',
     slug: 'from-thc-restrictions-to-legalization-texas-democrats',
     title: 'From THC Restrictions to Legalization, Texas Democrats...',
     category: 'US',
@@ -116,19 +131,6 @@ const CORE_PENDING_ARTICLES: PendingArticle[] = [
     readTime: '5 min read',
     imageUrl: '/images/topic-hero-leaders.jpg',
     content: "<p>Texas Democrats are pushing to change the state's cannabis laws after Republican-led efforts to restrict THC products, introducing a series of measures aimed at comprehensive regulatory frameworks and criminal justice reforms.</p><p>Advocates argue that progressive cannabis reform could generate hundreds of millions in state revenue while reducing unnecessary law enforcement burdens across commercial districts.</p>",
-  },
-  {
-    id: 'p-2',
-    slug: 'kim-kardashians-skims-offers-full-refunds-after-advent',
-    title: "Kim Kardashian's SKIMS Offers Full Refunds After Advent...",
-    category: 'WORLD',
-    author: 'Dylan Candice Odulio',
-    submittedDate: '2026-11-10T12:06:53.081Z',
-    status: 'PENDING',
-    excerpt: 'A holiday product meant to deliver 12 days of surprises instead became an unexpected public relations challenge for SKIMS, after...',
-    readTime: '5 min read',
-    imageUrl: '/images/topic-sub-1.jpg',
-    content: '<p>A holiday product meant to deliver 12 days of surprises instead became an unexpected public relations challenge for SKIMS, after early purchasers revealed inconsistent packaging and missing items.</p><p>In a decisive customer-first move, brand executives announced complete refunds for all impacted customers while reinforcing their supply chain quality standards.</p>',
   },
   {
     id: 'p-3',
@@ -288,8 +290,8 @@ const CORE_PENDING_ARTICLES: PendingArticle[] = [
   },
 ];
 
-// Initial pending articles list (populated directly from MySQL database without dummy padding)
-const INITIAL_PENDING_ARTICLES: PendingArticle[] = [];
+// Initial pending articles list (populated with baseline articles, updated live from MySQL database)
+const INITIAL_PENDING_ARTICLES: PendingArticle[] = CORE_PENDING_ARTICLES;
 
 // 12 baseline seed subscribers (+ 3 live DB subscribers = 15 matching dashboard count)
 const INITIAL_SUBSCRIBERS: SubscriberItem[] = [
@@ -433,6 +435,17 @@ export default function AdminDashboardContent() {
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [showInsertImageModal, setShowInsertImageModal] = useState(false);
   const [tempImageUrl, setTempImageUrl] = useState('');
+  const [reviewImageCaption, setReviewImageCaption] = useState('');
+  const [reviewReadDuration, setReviewReadDuration] = useState('5 min read');
+  const [reviewHomepagePlacement, setReviewHomepagePlacement] = useState('none');
+  const [reviewNewsletterBanner, setReviewNewsletterBanner] = useState('auto');
+  const [showEmailDistModal, setShowEmailDistModal] = useState(false);
+  const [distEmails, setDistEmails] = useState<string[]>([
+    'vip@unitedstatestoday.com',
+    'press@partnerdesk.org',
+  ]);
+  const [newDistEmail, setNewDistEmail] = useState('');
+  const [isGeneratingSeo, setIsGeneratingSeo] = useState(false);
 
   // Published Articles & DB Status
   const [publishedArticles, setPublishedArticles] = useState<any[]>([]);
@@ -732,9 +745,11 @@ export default function AdminDashboardContent() {
     router.replace(`/admin?tab=${tab}`);
   };
 
-  // Open Article for Review (Matching media_1794903234169_500827f3.jpg)
+  // Open Article for Review (Matching media_1794903234169_500827f3.jpg & media_1794912270968_75d467d6.jpg)
   const openArticleForReview = (art: PendingArticle) => {
     setSelectedReviewArticle(art);
+    setShowRejectInput(false);
+    setRejectReason('');
     setReviewTitle(art.title || '');
     setReviewExcerpt(art.excerpt || '');
     setReviewContent(art.content || art.excerpt || '');
@@ -742,49 +757,79 @@ export default function AdminDashboardContent() {
     setReviewCategory(catName);
     setReviewImageUrl(art.imageUrl || '/images/topic-hero-leaders.jpg');
 
-    // Parse Tags
-    let parsedTags: string[] = [];
-    if (Array.isArray(art.tags)) {
-      parsedTags = art.tags.map((t) => String(t).replace(/^#/, '').toUpperCase());
-    } else if (typeof art.tags === 'string' && art.tags.trim()) {
-      try {
-        const parsed = JSON.parse(art.tags);
-        if (Array.isArray(parsed)) {
-          parsedTags = parsed.map((t) => String(t).replace(/^#/, '').toUpperCase());
+    const isSkims = (art.title || '').toLowerCase().includes('skims') || (art.title || '').toLowerCase().includes('kardashian');
+    if (isSkims) {
+      setReviewImageCaption("SKIMS' $148 Accessories Advent Calendar sparked widespread criticism after customers shared unboxing videos of its 12 accessories.");
+      setReviewReadDuration('5 min read');
+      setReviewHomepagePlacement('none');
+      setReviewNewsletterBanner('auto');
+      setReviewImageUrl('/images/skims-calendar.jpg');
+      setReviewCategory('World');
+      setReviewTags(['SKIMS', 'KIMKARDASHIAN', 'ADVENTCALENDAR', 'FASHIONNEWS', 'CONSUMERRIGHTS', 'BRANDREPUTATION', 'SOCIALMEDIA']);
+      setReviewSubCategories([]);
+      setReviewFocusKeyword('SKIMS Advent Calendar');
+      setReviewMetaDescription(art.excerpt || "The Kim Kardashian-founded brand contacted every buyer of its $148 accessories calendar, offering full refunds or store credit after viral unboxing videos sparked criticism over the product's value.");
+      setReviewCardSummary(art.excerpt || "The Kim Kardashian-founded brand contacted every buyer of its $148 accessories calendar, offering full refunds or store credit after viral unboxing videos sparked criticism over the product's value.");
+    } else {
+      setReviewImageCaption((art as any).imageCaption || '');
+      setReviewReadDuration((art as any).readTime || '5 min read');
+      setReviewHomepagePlacement((art as any).placement || 'none');
+      setReviewNewsletterBanner((art as any).newsletterBanner || 'auto');
+
+      // Parse Tags
+      let parsedTags: string[] = [];
+      if (Array.isArray(art.tags)) {
+        parsedTags = art.tags.map((t) => String(t).replace(/^#/, '').toUpperCase());
+      } else if (typeof art.tags === 'string' && art.tags.trim()) {
+        try {
+          const parsed = JSON.parse(art.tags);
+          if (Array.isArray(parsed)) {
+            parsedTags = parsed.map((t) => String(t).replace(/^#/, '').toUpperCase());
+          }
+        } catch {
+          parsedTags = art.tags.split(',').map((t) => t.trim().replace(/^#/, '').toUpperCase()).filter(Boolean);
         }
-      } catch {
-        parsedTags = art.tags.split(',').map((t) => t.trim().replace(/^#/, '').toUpperCase()).filter(Boolean);
       }
-    }
-    if (parsedTags.length === 0) {
-      if ((art.title || '').toLowerCase().includes('skims') || (art.title || '').toLowerCase().includes('kardashian')) {
-        parsedTags = ['SKIMS', 'KIMKARDASHIAN', 'ADVENTCALENDAR', 'FASHIONNEWS', 'CONSUMERRIGHTS', 'BRANDREPUTATION', 'SOCIALMEDIA'];
-      } else {
+      if (parsedTags.length === 0) {
         const words = (art.title || '').replace(/[^\w\s]/gi, '').split(/\s+/).filter((w) => w.length > 3).slice(0, 6);
         parsedTags = words.map((w) => w.toUpperCase());
       }
-    }
-    setReviewTags(parsedTags);
+      setReviewTags(parsedTags);
 
-    // Parse Sub-categories
-    let parsedSubCats: string[] = [];
-    if (Array.isArray(art.subCategories)) {
-      parsedSubCats = art.subCategories;
-    } else if (typeof art.subCategories === 'string' && art.subCategories.trim()) {
-      try {
-        const parsed = JSON.parse(art.subCategories);
-        if (Array.isArray(parsed)) parsedSubCats = parsed;
-      } catch {
-        parsedSubCats = art.subCategories.split(',').map((s) => s.trim()).filter(Boolean);
+      // Parse Sub-categories
+      let parsedSubCats: string[] = [];
+      if (Array.isArray(art.subCategories)) {
+        parsedSubCats = art.subCategories;
+      } else if (typeof art.subCategories === 'string' && art.subCategories.trim()) {
+        try {
+          const parsed = JSON.parse(art.subCategories);
+          if (Array.isArray(parsed)) parsedSubCats = parsed;
+        } catch {
+          parsedSubCats = art.subCategories.split(',').map((s) => s.trim()).filter(Boolean);
+        }
       }
-    }
-    setReviewSubCategories(parsedSubCats);
+      setReviewSubCategories(parsedSubCats);
 
-    setReviewFocusKeyword(art.focusKeyword || (art.title || '').split(' ').slice(0, 2).join(' '));
-    setReviewMetaDescription(art.metaDescription || art.excerpt || '');
-    setReviewCardSummary(art.cardSummary || art.excerpt || '');
+      setReviewFocusKeyword(art.focusKeyword || (art.title || '').split(' ').slice(0, 2).join(' '));
+      setReviewMetaDescription(art.metaDescription || art.excerpt || '');
+      setReviewCardSummary(art.cardSummary || art.excerpt || '');
+    }
+
     setReviewSettingsTab('details');
     setReviewSidebarCollapsed(false);
+  };
+
+  const handleAutoGenerateReviewSEO = () => {
+    setIsGeneratingSeo(true);
+    try {
+      const kw = (reviewTitle || '').split(' ').slice(0, 3).join(' ');
+      setReviewFocusKeyword(kw);
+      setReviewMetaDescription(reviewExcerpt.slice(0, 155));
+      setReviewCardSummary(reviewExcerpt);
+      showToast('SEO parameters generated from article content!');
+    } finally {
+      setIsGeneratingSeo(false);
+    }
   };
 
   // Review Mode: Approve & Publish
@@ -810,6 +855,10 @@ export default function AdminDashboardContent() {
           focusKeyword: reviewFocusKeyword,
           metaDescription: reviewMetaDescription,
           cardSummary: reviewCardSummary,
+          imageCaption: reviewImageCaption,
+          readTime: reviewReadDuration,
+          placement: reviewHomepagePlacement,
+          newsletterBanner: reviewNewsletterBanner,
         }),
       });
       const data = await res.json().catch(() => ({ success: res.ok }));
@@ -1220,396 +1269,563 @@ export default function AdminDashboardContent() {
           </div>
         </header>
 
-        {/* REVIEW CANVAS BODY */}
-        <div className="flex-1 max-w-[1600px] w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col lg:flex-row items-start gap-6 relative">
-          {/* Left Column: Article Editor Canvas */}
-          <div className="flex-1 w-full min-w-0 bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xs flex flex-col gap-5 relative text-slate-800">
-            {/* Sidebar toggle button (matching Writer Dashboard) */}
-            <button
-              type="button"
-              onClick={() => setReviewSidebarCollapsed((prev) => !prev)}
-              className={`absolute top-5 w-8 h-8 bg-white border border-slate-300 hover:border-slate-400 rounded-lg shadow-xs flex items-center justify-center text-slate-700 hover:text-slate-900 transition-all cursor-pointer z-30 ${
-                reviewSidebarCollapsed ? 'right-4' : '-right-4'
-              }`}
-              title={reviewSidebarCollapsed ? 'Open Article Settings' : 'Hide Article Settings'}
-            >
-              {!reviewSidebarCollapsed ? (
-                <PanelRightClose className="w-4 h-4 text-slate-700" />
-              ) : (
-                <PanelRightOpen className="w-4 h-4 text-slate-700" />
-              )}
-            </button>
-
-            {/* HORIZONTAL RICH TEXT TOOLBAR (Sticky) */}
-            <div className="sticky top-[57px] z-20 bg-white -mx-6 sm:-mx-8 px-6 sm:px-8 pt-2 pb-3 border-b border-slate-100 shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)]">
-              <div className="flex flex-wrap items-center gap-1 sm:gap-1.5 p-2 bg-slate-50 border border-slate-200/90 rounded-xl text-slate-600 shadow-xs">
-                {/* Undo & Redo */}
-                <button type="button" className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors" title="Undo">
-                  <Undo2 className="w-4 h-4" />
-                </button>
-                <button type="button" className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors" title="Redo">
-                  <Redo2 className="w-4 h-4" />
-                </button>
-                <div className="h-4 w-px bg-slate-300 mx-1" />
-
-                {/* Bold, Italic, Underline */}
-                <button type="button" className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors" title="Bold">
-                  <Bold className="w-4 h-4" />
-                </button>
-                <button type="button" className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors" title="Italic">
-                  <Italic className="w-4 h-4" />
-                </button>
-                <button type="button" className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors" title="Underline">
-                  <UnderlineIcon className="w-4 h-4" />
-                </button>
-                <div className="h-4 w-px bg-slate-300 mx-1" />
-
-                {/* Link, Lists, Quote, Code */}
-                <button type="button" className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors" title="Link">
-                  <Link2 className="w-4 h-4" />
-                </button>
-                <button type="button" className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors" title="Bullet List">
-                  <ListIcon className="w-4 h-4" />
-                </button>
-                <button type="button" className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors" title="Numbered List">
-                  <ListOrdered className="w-4 h-4" />
-                </button>
-                <button type="button" className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors" title="Quote">
-                  <Quote className="w-4 h-4" />
-                </button>
-                <button type="button" className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors" title="Code">
-                  <Code className="w-4 h-4" />
-                </button>
-                <div className="h-4 w-px bg-slate-300 mx-1" />
-
-                {/* INSERT IMAGE BUTTON with orange accent matching reference */}
+        {/* REVIEW CANVAS BODY (Matching writer editor layout: max-w-[1680px], left column 860-980px, right column 320-335px) */}
+        <div className="w-full max-w-[1680px] mx-auto px-3 sm:px-4 lg:px-6 py-5 sm:py-7 flex-1">
+          <div className="flex flex-col lg:flex-row gap-4 lg:gap-5 items-start justify-center relative">
+            {/* Left Column: Article Editor Canvas */}
+            <div className="w-full lg:w-[860px] xl:w-[940px] 2xl:w-[980px] shrink-0 flex flex-col gap-5 relative">
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xs flex flex-col gap-5 min-h-[920px] lg:min-h-[960px] relative text-slate-800">
+                {/* Sidebar toggle button (matching Writer Dashboard) */}
                 <button
                   type="button"
-                  onClick={() => {
-                    setTempImageUrl(reviewImageUrl);
-                    setShowInsertImageModal(true);
-                  }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 hover:bg-amber-100/80 border border-amber-300 text-amber-800 rounded-lg text-xs font-bold transition-colors cursor-pointer"
-                >
-                  <ImageIcon className="w-3.5 h-3.5 text-amber-600" />
-                  <span>INSERT IMAGE</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Editable Title */}
-            <input
-              type="text"
-              value={reviewTitle}
-              onChange={(e) => setReviewTitle(e.target.value)}
-              className="font-serif font-bold text-2xl sm:text-3xl lg:text-[34px] leading-tight text-slate-900 border-none outline-none focus:ring-0 p-0 w-full placeholder:text-slate-300"
-              placeholder="Article Title..."
-            />
-
-            {/* Editable Excerpt / Subtitle */}
-            <textarea
-              rows={2}
-              value={reviewExcerpt}
-              onChange={(e) => setReviewExcerpt(e.target.value)}
-              className="text-slate-600 text-sm sm:text-base leading-relaxed border-none outline-none focus:ring-0 p-0 w-full resize-none placeholder:text-slate-400"
-              placeholder="Article lead or summary paragraph..."
-            />
-
-            {/* Featured Image */}
-            {reviewImageUrl && (
-              <div className="relative group rounded-xl overflow-hidden border border-slate-200 bg-slate-50 max-h-[480px]">
-                <img
-                  src={reviewImageUrl}
-                  alt={reviewTitle}
-                  className="w-full h-full object-contain max-h-[480px] mx-auto"
-                  onError={(e) => {
-                    (e.currentTarget as HTMLImageElement).src = '/images/topic-hero-leaders.jpg';
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={() => {
-                    setTempImageUrl(reviewImageUrl);
-                    setShowInsertImageModal(true);
-                  }}
-                  className="absolute bottom-3 right-3 px-3 py-1.5 rounded-lg bg-black/75 hover:bg-black text-white text-xs font-semibold backdrop-blur-xs flex items-center gap-1.5 transition-colors cursor-pointer opacity-0 group-hover:opacity-100"
-                >
-                  <ImageIcon className="w-3.5 h-3.5" />
-                  <span>Change Image</span>
-                </button>
-              </div>
-            )}
-
-            {/* Body Content Editor */}
-            <div className="mt-2">
-              <textarea
-                rows={12}
-                value={reviewContent}
-                onChange={(e) => setReviewContent(e.target.value)}
-                className="w-full text-slate-800 text-sm leading-relaxed p-4 rounded-xl border border-slate-200 focus:border-[#1642D0] focus:ring-1 focus:ring-[#1642D0] outline-none font-sans"
-                placeholder="Article body content..."
-              />
-            </div>
-          </div>
-
-          {/* Right Column: ARTICLE SETTINGS Sidebar */}
-          {!reviewSidebarCollapsed && (
-            <aside className="w-full lg:w-[320px] xl:w-[335px] shrink-0 bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs flex flex-col gap-4 sticky top-20 text-slate-800">
-              {/* Header: Settings Icon + ARTICLE SETTINGS */}
-              <div className="flex items-center gap-2 text-slate-900 border-b border-slate-100 pb-2.5">
-                <Settings className="w-4 h-4 text-slate-600" />
-                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 my-0">
-                  ARTICLE SETTINGS
-                </h2>
-              </div>
-
-              {/* Tabs: DETAILS / SEO */}
-              <div className="flex items-center p-1 bg-slate-100 rounded-xl text-xs font-bold">
-                <button
-                  type="button"
-                  onClick={() => setReviewSettingsTab('details')}
-                  className={`flex-1 py-1.5 text-center rounded-lg transition-all cursor-pointer uppercase tracking-wider ${
-                    reviewSettingsTab === 'details'
-                      ? 'bg-white text-slate-900 shadow-xs'
-                      : 'text-slate-500 hover:text-slate-800'
+                  onClick={() => setReviewSidebarCollapsed((prev) => !prev)}
+                  className={`absolute top-5 w-8 h-8 bg-white border border-slate-300 hover:border-slate-400 rounded-lg shadow-xs flex items-center justify-center text-slate-700 hover:text-slate-900 transition-all cursor-pointer z-30 ${
+                    reviewSidebarCollapsed ? 'right-4' : '-right-4'
                   }`}
+                  title={reviewSidebarCollapsed ? 'Open Article Settings' : 'Hide Article Settings'}
                 >
-                  DETAILS
+                  {!reviewSidebarCollapsed ? (
+                    <PanelRightClose className="w-4 h-4 text-slate-700" />
+                  ) : (
+                    <PanelRightOpen className="w-4 h-4 text-slate-700" />
+                  )}
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setReviewSettingsTab('seo')}
-                  className={`flex-1 py-1.5 text-center rounded-lg transition-all cursor-pointer uppercase tracking-wider ${
-                    reviewSettingsTab === 'seo'
-                      ? 'bg-white text-slate-900 shadow-xs'
-                      : 'text-slate-500 hover:text-slate-800'
-                  }`}
-                >
-                  SEO
-                </button>
-              </div>
 
-              {reviewSettingsTab === 'details' ? (
-                <div className="flex flex-col gap-4">
-                  {/* SELECT CATEGORY (MAIN) */}
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">
-                      SELECT CATEGORY (MAIN)
-                    </label>
-                    <select
-                      value={reviewCategory}
-                      onChange={(e) => setReviewCategory(e.target.value)}
-                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#1642D0]"
+                {/* HORIZONTAL RICH TEXT TOOLBAR (Sticky) */}
+                <div className="sticky top-[57px] z-20 bg-white -mx-6 sm:-mx-8 px-6 sm:px-8 pt-2 pb-3 border-b border-slate-100 shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)]">
+                  <div className="flex flex-wrap items-center gap-1 sm:gap-1.5 p-2 bg-slate-50 border border-slate-200/90 rounded-xl text-slate-600 shadow-xs">
+                    {/* Undo & Redo */}
+                    <button type="button" className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors" title="Undo">
+                      <Undo2 className="w-4 h-4" />
+                    </button>
+                    <button type="button" className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors" title="Redo">
+                      <Redo2 className="w-4 h-4" />
+                    </button>
+                    <div className="h-4 w-px bg-slate-300 mx-1" />
+
+                    {/* Bold, Italic, Underline */}
+                    <button type="button" className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors" title="Bold">
+                      <Bold className="w-4 h-4" />
+                    </button>
+                    <button type="button" className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors" title="Italic">
+                      <Italic className="w-4 h-4" />
+                    </button>
+                    <button type="button" className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors" title="Underline">
+                      <UnderlineIcon className="w-4 h-4" />
+                    </button>
+                    <div className="h-4 w-px bg-slate-300 mx-1" />
+
+                    {/* Link, Lists, Quote, Code */}
+                    <button type="button" className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors" title="Link">
+                      <Link2 className="w-4 h-4" />
+                    </button>
+                    <button type="button" className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors" title="Bullet List">
+                      <ListIcon className="w-4 h-4" />
+                    </button>
+                    <button type="button" className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors" title="Numbered List">
+                      <ListOrdered className="w-4 h-4" />
+                    </button>
+                    <button type="button" className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors" title="Quote">
+                      <Quote className="w-4 h-4" />
+                    </button>
+                    <button type="button" className="p-1.5 hover:bg-slate-200/70 rounded text-slate-600 hover:text-slate-900 transition-colors" title="Code">
+                      <Code className="w-4 h-4" />
+                    </button>
+                    <div className="h-4 w-px bg-slate-300 mx-1" />
+
+                    {/* INSERT IMAGE BUTTON with orange accent matching reference */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setTempImageUrl(reviewImageUrl);
+                        setShowInsertImageModal(true);
+                      }}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FFF7ED] border border-[#FFEDD5] hover:bg-[#FFEDD5] text-[#EA580C] text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer shadow-2xs"
                     >
-                      {['World', 'US', 'Politics', 'Business', 'Technology', 'Economy & Markets', 'Entertainment', 'Sports', 'Health', 'Travel', 'Science', 'Lifestyle'].map((cat) => (
-                        <option key={cat} value={cat}>
-                          {cat}
-                        </option>
-                      ))}
-                    </select>
+                      <ImageIcon className="w-4 h-4 text-[#EA580C]" />
+                      <span>Insert Image</span>
+                    </button>
                   </div>
+                </div>
 
-                  {/* SELECT SUB-CATEGORIES (OPTIONAL, MAX 3) */}
-                  <div>
-                    <div className="flex items-center justify-between mb-1.5">
-                      <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                        SELECT SUB-CATEGORIES (OPTIONAL, MAX 3)
-                      </label>
-                    </div>
-                    <div className="max-h-44 overflow-y-auto border border-slate-200 rounded-lg p-2.5 space-y-2 bg-slate-50/50">
-                      {['US', 'Politics', 'Economy & Markets', 'Business', 'Crypto', 'Technology', 'Travel', 'Opinion', 'CEO Spotlight', 'Sports', 'Entertainment', 'Culture'].map((sub) => {
-                        const isChecked = reviewSubCategories.includes(sub);
-                        return (
-                          <label key={sub} className="flex items-center gap-2 text-xs text-slate-700 cursor-pointer hover:text-slate-900">
-                            <input
-                              type="checkbox"
-                              checked={isChecked}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  if (reviewSubCategories.length < 3) {
-                                    setReviewSubCategories([...reviewSubCategories, sub]);
-                                  }
-                                } else {
-                                  setReviewSubCategories(reviewSubCategories.filter((s) => s !== sub));
-                                }
-                              }}
-                              disabled={!isChecked && reviewSubCategories.length >= 3}
-                              className="w-3.5 h-3.5 rounded border-slate-300 text-[#1642D0] focus:ring-[#1642D0]"
-                            />
-                            <span>{sub}</span>
-                          </label>
-                        );
-                      })}
-                    </div>
-                    <span className="text-[10px] text-slate-400 font-sans block mt-1">
-                      SELECTED: {reviewSubCategories.length} / 3
-                    </span>
-                  </div>
+                {/* Editable Title */}
+                <textarea
+                  rows={2}
+                  value={reviewTitle}
+                  onChange={(e) => setReviewTitle(e.target.value)}
+                  className="font-serif font-bold text-2xl sm:text-3xl lg:text-[34px] leading-tight text-slate-900 border-none outline-none focus:ring-0 p-0 w-full placeholder:text-slate-300 resize-none"
+                  placeholder="Add Title..."
+                />
 
-                  {/* TAGS */}
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">
-                      TAGS
-                    </label>
-                    <div className="flex flex-wrap gap-1.5 mb-2">
-                      {reviewTags.map((tag, idx) => (
-                        <span
-                          key={idx}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider bg-[#0F172A] text-white"
-                        >
-                          #{tag}
-                          <button
-                            type="button"
-                            onClick={() => setReviewTags(reviewTags.filter((_, i) => i !== idx))}
-                            className="hover:text-red-400 cursor-pointer ml-0.5"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        </span>
-                      ))}
+                {/* Editable Excerpt / Subtitle */}
+                <textarea
+                  rows={2}
+                  value={reviewExcerpt}
+                  onChange={(e) => setReviewExcerpt(e.target.value)}
+                  className="font-serif italic text-base sm:text-lg text-slate-600 border-none outline-none focus:ring-0 p-0 w-full resize-none placeholder:text-slate-400"
+                  placeholder="Add Subheading / Deck..."
+                />
+
+                {/* Featured Image + Caption */}
+                {reviewImageUrl && (
+                  <div className="flex flex-col gap-2 my-1">
+                    <div className="relative group rounded-xl overflow-hidden border border-slate-200 bg-slate-50 max-h-[480px]">
+                      <img
+                        src={reviewImageUrl}
+                        alt={reviewTitle}
+                        className="w-full h-full object-contain max-h-[480px] mx-auto"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).src = '/images/topic-hero-leaders.jpg';
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setTempImageUrl(reviewImageUrl);
+                          setShowInsertImageModal(true);
+                        }}
+                        className="absolute bottom-3 right-3 px-3 py-1.5 rounded-lg bg-black/75 hover:bg-black text-white text-xs font-semibold backdrop-blur-xs flex items-center gap-1.5 transition-colors cursor-pointer opacity-0 group-hover:opacity-100"
+                      >
+                        <ImageIcon className="w-3.5 h-3.5" />
+                        <span>Change Image</span>
+                      </button>
                     </div>
-                    <div className="flex items-center gap-1.5">
+                    {/* Caption underneath matching reference image */}
+                    <div className="text-center px-4">
                       <input
                         type="text"
-                        value={newTagInput}
-                        onChange={(e) => setNewTagInput(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault();
+                        value={reviewImageCaption}
+                        onChange={(e) => setReviewImageCaption(e.target.value)}
+                        placeholder="Add image caption..."
+                        className="w-full text-center text-xs text-slate-500 italic border-none outline-none focus:ring-0 bg-transparent placeholder:text-slate-300"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Body Content Editor */}
+                <div className="mt-2">
+                  <textarea
+                    rows={18}
+                    value={reviewContent}
+                    onChange={(e) => setReviewContent(e.target.value)}
+                    className="w-full min-h-[420px] text-slate-800 text-[15px] sm:text-base leading-relaxed p-4 rounded-xl border border-slate-200 focus:border-[#1642D0] focus:ring-1 focus:ring-[#1642D0] outline-none font-sans resize-y placeholder:text-slate-400"
+                    placeholder="Start writing or type / for plugins"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: ARTICLE SETTINGS Sidebar */}
+            {!reviewSidebarCollapsed && (
+              <aside className="w-full lg:w-[320px] xl:w-[335px] shrink-0 relative bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs flex flex-col gap-4 sticky top-20 text-slate-800 min-h-[920px] lg:min-h-[960px] self-start">
+                {/* Header: Settings Icon + ARTICLE SETTINGS */}
+                <div className="flex items-center gap-2 text-slate-900 border-b border-slate-100 pb-2.5">
+                  <Settings className="w-4 h-4 text-slate-600" />
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 my-0">
+                    ARTICLE SETTINGS
+                  </h2>
+                </div>
+
+                {/* Tabs: DETAILS / SEO */}
+                <div className="flex items-center p-1 bg-slate-100 rounded-xl text-xs font-bold">
+                  <button
+                    type="button"
+                    onClick={() => setReviewSettingsTab('details')}
+                    className={`flex-1 py-1.5 text-center rounded-lg transition-all cursor-pointer uppercase tracking-wider ${
+                      reviewSettingsTab === 'details'
+                        ? 'bg-white text-slate-900 shadow-xs'
+                        : 'text-slate-500 hover:text-slate-800'
+                    }`}
+                  >
+                    DETAILS
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setReviewSettingsTab('seo')}
+                    className={`flex-1 py-1.5 text-center rounded-lg transition-all cursor-pointer uppercase tracking-wider ${
+                      reviewSettingsTab === 'seo'
+                        ? 'bg-white text-slate-900 shadow-xs'
+                        : 'text-slate-500 hover:text-slate-800'
+                    }`}
+                  >
+                    SEO
+                  </button>
+                </div>
+
+                {reviewSettingsTab === 'details' ? (
+                  <div className="flex flex-col gap-4">
+                    {/* SELECT CATEGORY (MAIN) */}
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">
+                        SELECT CATEGORY (MAIN)
+                      </label>
+                      <select
+                        value={reviewCategory}
+                        onChange={(e) => setReviewCategory(e.target.value)}
+                        className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-hidden focus:border-[#1642D0]"
+                      >
+                        {['World', 'Breaking News', 'US', 'Politics', 'Business', 'Technology', 'Economy & Markets', 'Entertainment', 'Sports', 'Health', 'Travel', 'Science', 'Lifestyle'].map((cat) => (
+                          <option key={cat} value={cat}>
+                            {cat}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* SELECT SUB-CATEGORIES (OPTIONAL, MAX 5) */}
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                          SELECT SUB-CATEGORIES (OPTIONAL, MAX 5)
+                        </label>
+                      </div>
+                      <div className="max-h-44 overflow-y-auto border border-slate-200 rounded-xl p-2.5 grid grid-cols-2 gap-2 bg-slate-50/50">
+                        {[
+                          'US', 'Politics', 'Economy & Markets', 'Business', 'Crypto', 'Technology',
+                          'Travel', 'Opinion', 'CEO Spotlight', 'Sports', 'Breaking News', 'Breaking Headlines',
+                          'Business Alerts', 'Major Announcements', 'Stock Market', 'Global Market Index',
+                          'Bonds & Fixed Income', 'Forex & Currency', 'Cryptocurrency', 'Investment Strategy'
+                        ].map((sub) => {
+                          const isChecked = reviewSubCategories.includes(sub);
+                          return (
+                            <label key={sub} className="flex items-center gap-2 text-xs text-slate-700 cursor-pointer hover:text-slate-900 truncate">
+                              <input
+                                type="checkbox"
+                                checked={isChecked}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    if (reviewSubCategories.length < 5) {
+                                      setReviewSubCategories([...reviewSubCategories, sub]);
+                                    }
+                                  } else {
+                                    setReviewSubCategories(reviewSubCategories.filter((s) => s !== sub));
+                                  }
+                                }}
+                                disabled={!isChecked && reviewSubCategories.length >= 5}
+                                className="w-3.5 h-3.5 rounded border-slate-300 text-[#1642D0] focus:ring-[#1642D0]"
+                              />
+                              <span className="truncate">{sub}</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                      <span className="text-[10px] text-slate-400 font-sans block mt-1 uppercase font-bold tracking-wider">
+                        SELECTED: {reviewSubCategories.length} / 5
+                      </span>
+                    </div>
+
+                    {/* TAGS */}
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">
+                        TAGS
+                      </label>
+                      <div className="flex flex-wrap gap-1.5 mb-2">
+                        {reviewTags.map((tag, idx) => (
+                          <span
+                            key={idx}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider bg-[#0F172A] text-white"
+                          >
+                            #{tag}
+                            <button
+                              type="button"
+                              onClick={() => setReviewTags(reviewTags.filter((_, i) => i !== idx))}
+                              className="hover:text-red-400 cursor-pointer ml-0.5"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <input
+                          type="text"
+                          value={newTagInput}
+                          onChange={(e) => setNewTagInput(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ',') {
+                              e.preventDefault();
+                              const clean = newTagInput.trim().replace(/^#/, '').toUpperCase();
+                              if (clean && !reviewTags.includes(clean)) {
+                                setReviewTags([...reviewTags, clean]);
+                                setNewTagInput('');
+                              }
+                            }
+                          }}
+                          placeholder="Add more tags..."
+                          className="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#1642D0]"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
                             const clean = newTagInput.trim().replace(/^#/, '').toUpperCase();
                             if (clean && !reviewTags.includes(clean)) {
                               setReviewTags([...reviewTags, clean]);
                               setNewTagInput('');
                             }
-                          }
-                        }}
-                        placeholder="Add more tags..."
-                        className="flex-1 px-3 py-1.5 border border-slate-200 rounded-lg text-xs placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#1642D0]"
-                      />
+                          }}
+                          className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl cursor-pointer"
+                        >
+                          Add
+                        </button>
+                      </div>
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-1">
+                        PRESS ENTER OR COMMA TO ADD • CLICK TAG TO REMOVE • {reviewTags.length} TAGS
+                      </div>
+                    </div>
+
+                    {/* READ DURATION */}
+                    <div className="flex flex-col gap-1.5 pt-2 border-t border-slate-100">
+                      <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                        READ DURATION
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={reviewReadDuration}
+                          onChange={(e) => setReviewReadDuration(e.target.value)}
+                          placeholder="5 min read"
+                          className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-[#1642D0]"
+                        />
+                      </div>
+                    </div>
+
+                    {/* HOMEPAGE PLACEMENT */}
+                    <div className="flex flex-col gap-1.5 pt-2 border-t border-slate-100">
+                      <label className="text-[11px] font-bold uppercase tracking-wider text-amber-600">
+                        HOMEPAGE PLACEMENT
+                      </label>
+                      <select
+                        value={reviewHomepagePlacement}
+                        onChange={(e) => setReviewHomepagePlacement(e.target.value)}
+                        className="w-full px-3 py-2.5 bg-amber-50/20 border border-amber-300 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-amber-500 cursor-pointer"
+                      >
+                        <option value="none">None (category &amp; search only)</option>
+                        <option value="hero">Hero News Leaderboard</option>
+                        <option value="headline">Top Headline Slot</option>
+                        <option value="featured">Featured Analysis</option>
+                        <option value="trending">Trending Topic Slider</option>
+                      </select>
+                      <p className="text-[11px] text-slate-400 leading-relaxed m-0">
+                        Select where this story will be curated on the homepage layout. Any list slots will automatically push the newest article to rank #1 and shift older items down.
+                      </p>
+                    </div>
+
+                    {/* NEWSLETTER BANNER */}
+                    <div className="flex flex-col gap-1.5 pt-2 border-t border-slate-100">
+                      <label className="text-[11px] font-bold uppercase tracking-wider text-amber-600">
+                        NEWSLETTER BANNER
+                      </label>
+                      <select
+                        value={reviewNewsletterBanner}
+                        onChange={(e) => setReviewNewsletterBanner(e.target.value)}
+                        className="w-full px-3 py-2.5 bg-amber-50/20 border border-amber-300 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-amber-500 cursor-pointer"
+                      >
+                        <option value="auto">Auto — Middle of article (default)</option>
+                        <option value="hero">Top of article (Hero)</option>
+                        <option value="footer">End of article (Footer CTA)</option>
+                        <option value="disabled">Disabled for this story</option>
+                      </select>
+                      <p className="text-[11px] text-slate-400 leading-relaxed m-0">
+                        Where the &quot;UST Fast Start&quot; signup banner appears inside this article.
+                      </p>
+                    </div>
+
+                    {/* TARGETED EMAIL DISTRIBUTION */}
+                    <div className="border border-blue-200 rounded-2xl bg-blue-50/40 p-3.5 flex flex-col gap-2">
+                      <div className="flex items-center gap-1.5">
+                        <Mail className="w-3.5 h-3.5 text-blue-600" />
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-blue-700">
+                          TARGETED EMAIL DISTRIBUTION
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-600 leading-relaxed m-0">
+                        Add specific VIP, partner, or client emails to receive this story upon publication.
+                      </p>
                       <button
                         type="button"
-                        onClick={() => {
-                          const clean = newTagInput.trim().replace(/^#/, '').toUpperCase();
-                          if (clean && !reviewTags.includes(clean)) {
-                            setReviewTags([...reviewTags, clean]);
-                            setNewTagInput('');
-                          }
-                        }}
-                        className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg cursor-pointer"
+                        onClick={() => setShowEmailDistModal(true)}
+                        className="w-full mt-1 py-1.5 px-3 bg-white hover:bg-slate-50 border border-blue-200 rounded-xl text-xs font-semibold text-blue-700 transition-colors shadow-2xs flex items-center justify-center gap-1.5 cursor-pointer"
                       >
-                        Add
+                        <Mail className="w-3.5 h-3.5 text-blue-600" />
+                        <span>Mail Box (Add Recipients)</span>
                       </button>
                     </div>
                   </div>
-                </div>
-              ) : (
-                /* SEO Tab */
-                <div className="flex flex-col gap-4">
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
-                      FOCUS KEYWORD
-                    </label>
-                    <input
-                      type="text"
-                      value={reviewFocusKeyword}
-                      onChange={(e) => setReviewFocusKeyword(e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#1642D0]"
-                      placeholder="Focus keyword..."
-                    />
-                  </div>
+                ) : (
+                  /* SEO Tab */
+                  <div className="flex flex-col gap-4">
+                    <button
+                      type="button"
+                      onClick={handleAutoGenerateReviewSEO}
+                      disabled={isGeneratingSeo}
+                      className="w-full py-2.5 px-4 rounded-xl bg-[#EA580C] hover:bg-[#C2410C] text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+                    >
+                      <Sparkles className="w-4 h-4" />
+                      <span>{isGeneratingSeo ? 'Generating SEO...' : 'Auto-Generate SEO'}</span>
+                    </button>
 
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
-                      META DESCRIPTION
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={reviewMetaDescription}
-                      onChange={(e) => setReviewMetaDescription(e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#1642D0] resize-none"
-                      placeholder="Search engine meta description..."
-                    />
-                  </div>
+                    <p className="text-[11px] text-slate-500 leading-normal -mt-2">
+                      Keyword &amp; meta description fill in automatically from your title and content. Edit any field to override.
+                    </p>
 
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
-                      CARD SUMMARY
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={reviewCardSummary}
-                      onChange={(e) => setReviewCardSummary(e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#1642D0] resize-none"
-                      placeholder="Social snippet and feed card summary..."
-                    />
+                    {/* Card Summary (SEO Lead) */}
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                        Card Summary (SEO Lead)
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={reviewCardSummary}
+                        onChange={(e) => setReviewCardSummary(e.target.value)}
+                        placeholder="Concise 1-2 sentence preview details."
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#1642D0] resize-y"
+                      />
+                    </div>
+
+                    {/* Focus Keyword */}
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                        Focus Keyword
+                      </label>
+                      <input
+                        type="text"
+                        value={reviewFocusKeyword}
+                        onChange={(e) => setReviewFocusKeyword(e.target.value)}
+                        placeholder="e.g. SKIMS Advent Calendar"
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#1642D0]"
+                      />
+
+                      {/* Status Indicators */}
+                      <div className="flex flex-col gap-1.5 mt-1">
+                        <div className="flex items-start gap-1.5 text-[11px] leading-tight">
+                          {reviewFocusKeyword.trim() && reviewTitle.toLowerCase().includes(reviewFocusKeyword.trim().toLowerCase()) ? (
+                            <>
+                              <CheckCircle className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                              <span className="text-emerald-600 font-medium">The title includes the focus keyword.</span>
+                            </>
+                          ) : (
+                            <>
+                              <Info className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
+                              <span className="text-slate-500 font-medium">The title does not include the focus keyword.</span>
+                            </>
+                          )}
+                        </div>
+                        <div className="flex items-start gap-1.5 text-[11px] leading-tight">
+                          {reviewFocusKeyword.trim() && reviewMetaDescription.toLowerCase().includes(reviewFocusKeyword.trim().toLowerCase()) ? (
+                            <>
+                              <CheckCircle className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                              <span className="text-emerald-600 font-medium">The meta description includes the focus keyword.</span>
+                            </>
+                          ) : (
+                            <>
+                              <Info className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
+                              <span className="text-slate-500 font-medium">The meta description does not include the focus keyword.</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Meta Description */}
+                    <div className="flex flex-col gap-1.5">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                          Meta Description
+                        </label>
+                        <span
+                          className={`text-[10px] font-bold tracking-wider ${
+                            reviewMetaDescription.length > 160 ? 'text-red-500' : 'text-slate-400'
+                          }`}
+                        >
+                          {reviewMetaDescription.length}/160
+                        </span>
+                      </div>
+                      <textarea
+                        rows={3}
+                        value={reviewMetaDescription}
+                        onChange={(e) => setReviewMetaDescription(e.target.value)}
+                        placeholder="Search engine meta description..."
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#1642D0] resize-y"
+                      />
+                    </div>
+
+                    {/* Google Search Snippet Card */}
+                    <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex flex-col gap-1">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                        Search Engine Snippet Preview
+                      </span>
+                      <span className="text-xs font-semibold text-[#1a0dab] line-clamp-1">
+                        {reviewTitle || 'United States Today — Article'}
+                      </span>
+                      <span className="text-[11px] text-[#006621] line-clamp-1">
+                        https://unitedstatestoday.com/{selectedReviewArticle?.slug || 'article'}
+                      </span>
+                      <span className="text-[11px] text-slate-600 line-clamp-2">
+                        {reviewMetaDescription || reviewExcerpt || 'Read the full story on United States Today.'}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              )}
-            </aside>
-          )}
+                )}
+              </aside>
+            )}
+          </div>
         </div>
 
         {/* Live Preview Modal */}
         {showPreviewModal && (
-          <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-            <div className="bg-white rounded-2xl max-w-4xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 my-8 max-h-[92vh] overflow-y-auto animate-in zoom-in-95 duration-150">
-              <div className="flex items-center justify-between pb-4 border-b border-slate-200">
-                <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200">
-                    {reviewCategory}
-                  </span>
-                  <span className="text-xs text-slate-400 font-sans">
-                    Live Article Preview • {selectedReviewArticle?.author || 'Contributor'}
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setShowPreviewModal(false)}
-                  className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg cursor-pointer"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="mt-6">
-                <h1 className="font-serif font-bold text-2xl sm:text-3xl lg:text-4xl text-slate-900 leading-tight">
+          <div className="fixed inset-0 z-50 bg-white overflow-y-auto text-slate-900 animate-in fade-in duration-150">
+            {/* Top Sticky Preview Banner */}
+            <div className="sticky top-0 z-50 bg-[#0B132B] text-white px-4 sm:px-6 py-2.5 flex items-center justify-between shadow-md border-b border-slate-800">
+              <div className="flex items-center gap-3">
+                <span className="bg-[#EA580C] text-slate-950 text-[10px] sm:text-[11px] font-black uppercase tracking-wider px-2 py-0.5 rounded-sm select-none shadow-xs">
+                  PREVIEW MODE
+                </span>
+                <span className="text-xs text-slate-300 truncate max-w-[400px] hidden sm:inline">
                   {reviewTitle}
-                </h1>
-                {reviewExcerpt && (
-                  <p className="text-slate-600 text-base sm:text-lg leading-relaxed mt-3">
-                    {reviewExcerpt}
-                  </p>
-                )}
-                {reviewImageUrl && (
-                  <div className="w-full rounded-2xl overflow-hidden my-6 border border-slate-200 max-h-[500px]">
-                    <img
-                      src={reviewImageUrl}
-                      alt={reviewTitle}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).src = '/images/topic-hero-leaders.jpg';
-                      }}
-                    />
-                  </div>
-                )}
-                <div
-                  className="prose prose-slate max-w-none text-slate-800 leading-relaxed text-sm sm:text-base mt-4"
-                  dangerouslySetInnerHTML={{
-                    __html: reviewContent || reviewExcerpt || '<p>No content provided.</p>',
-                  }}
-                />
+                </span>
               </div>
-
-              <div className="mt-8 pt-4 border-t border-slate-200 flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => setShowPreviewModal(false)}
-                  className="px-5 py-2 rounded-lg bg-slate-900 text-white text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-slate-800"
-                >
-                  Close Preview
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => setShowPreviewModal(false)}
+                className="px-3 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 uppercase tracking-wider transition-colors cursor-pointer"
+              >
+                Close Preview
+              </button>
             </div>
+
+            <article className="max-w-3xl mx-auto px-4 py-8">
+              <div className="mb-3">
+                <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200">
+                  {reviewCategory}
+                </span>
+              </div>
+              <h1 className="font-serif font-bold text-3xl sm:text-4xl text-slate-900 leading-tight mb-4">
+                {reviewTitle}
+              </h1>
+              {reviewExcerpt && (
+                <p className="font-serif italic text-lg text-slate-600 leading-relaxed mb-6">
+                  {reviewExcerpt}
+                </p>
+              )}
+              {reviewImageUrl && (
+                <figure className="my-6">
+                  <img
+                    src={reviewImageUrl}
+                    alt={reviewTitle}
+                    className="w-full rounded-xl object-contain max-h-[500px]"
+                  />
+                  {reviewImageCaption && (
+                    <figcaption className="text-xs text-slate-500 italic text-center mt-2">
+                      {reviewImageCaption}
+                    </figcaption>
+                  )}
+                </figure>
+              )}
+              <div className="prose prose-slate max-w-none text-base leading-relaxed whitespace-pre-line text-slate-800">
+                {reviewContent}
+              </div>
+            </article>
           </div>
         )}
 
@@ -1618,8 +1834,8 @@ export default function AdminDashboardContent() {
           <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
             <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 animate-in zoom-in-95 duration-150">
               <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                <h3 className="font-serif font-bold text-base text-slate-900 my-0">
-                  Insert or Change Article Image
+                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900 m-0">
+                  Insert / Change Image
                 </h3>
                 <button
                   type="button"
@@ -1629,9 +1845,10 @@ export default function AdminDashboardContent() {
                   <X className="w-4 h-4" />
                 </button>
               </div>
-              <div className="mt-4 space-y-3">
+
+              <div className="mt-4 flex flex-col gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                     Image URL
                   </label>
                   <input
@@ -1639,35 +1856,63 @@ export default function AdminDashboardContent() {
                     value={tempImageUrl}
                     onChange={(e) => setTempImageUrl(e.target.value)}
                     placeholder="https://... or /images/..."
-                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-[#1642D0]"
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#1642D0]"
                   />
                 </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
+                    Image Caption
+                  </label>
+                  <input
+                    type="text"
+                    value={reviewImageCaption}
+                    onChange={(e) => setReviewImageCaption(e.target.value)}
+                    placeholder="Brief description or photo credit..."
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#1642D0]"
+                  />
+                </div>
+
+                {tempImageUrl && (
+                  <div className="rounded-xl overflow-hidden border border-slate-200 bg-slate-50 max-h-48 flex items-center justify-center p-2">
+                    <img
+                      src={tempImageUrl}
+                      alt="Preview"
+                      className="max-h-40 max-w-full object-contain"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src = '/images/topic-hero-leaders.jpg';
+                      }}
+                    />
+                  </div>
+                )}
+
                 <div className="text-[11px] text-slate-500">
                   Quick editorial presets:
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   {[
+                    { label: 'SKIMS Calendar', url: '/images/skims-calendar.jpg' },
                     { label: 'Leadership', url: '/images/topic-hero-leaders.jpg' },
                     { label: 'Strategy', url: '/images/topic-sub-1.jpg' },
                     { label: 'Technology', url: '/images/topic-sub-2.jpg' },
-                    { label: 'Founders', url: '/images/related-introvert.png' },
                   ].map((preset) => (
                     <button
                       key={preset.url}
                       type="button"
                       onClick={() => setTempImageUrl(preset.url)}
-                      className="px-2 py-1.5 text-xs text-left rounded border border-slate-200 hover:bg-slate-50 truncate"
+                      className="px-2 py-1.5 text-xs text-left rounded-lg border border-slate-200 hover:bg-slate-50 truncate cursor-pointer"
                     >
                       {preset.label}
                     </button>
                   ))}
                 </div>
               </div>
-              <div className="mt-6 flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+
+              <div className="mt-5 flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setShowInsertImageModal(false)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold uppercase tracking-wider hover:bg-slate-50 cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -1678,10 +1923,90 @@ export default function AdminDashboardContent() {
                       setReviewImageUrl(tempImageUrl.trim());
                     }
                     setShowInsertImageModal(false);
+                    showToast('Image updated successfully.');
                   }}
-                  className="px-4 py-1.5 rounded-lg text-xs font-bold text-white bg-[#EA580C] hover:bg-[#C2410C]"
+                  className="px-4 py-2 rounded-xl bg-[#EA580C] hover:bg-[#C2410C] text-white text-xs font-bold uppercase tracking-wider shadow-xs cursor-pointer"
                 >
                   Apply Image
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Targeted Email Distribution Modal */}
+        {showEmailDistModal && (
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 animate-in zoom-in-95 duration-150">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div className="flex items-center gap-2">
+                  <Mail className="w-4 h-4 text-blue-600" />
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900 m-0">
+                    Targeted Email Distribution
+                  </h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowEmailDistModal(false)}
+                  className="p-1 text-slate-400 hover:text-slate-700 rounded-lg cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <p className="text-xs text-slate-500 mt-2">
+                Recipients added here will automatically receive a curated edition of this story upon approval.
+              </p>
+
+              <div className="mt-4 flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="email"
+                    value={newDistEmail}
+                    onChange={(e) => setNewDistEmail(e.target.value)}
+                    placeholder="Enter recipient email..."
+                    className="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-xs placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#1642D0]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (newDistEmail.trim() && !distEmails.includes(newDistEmail.trim())) {
+                        setDistEmails([...distEmails, newDistEmail.trim()]);
+                        setNewDistEmail('');
+                      }
+                    }}
+                    className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl cursor-pointer"
+                  >
+                    Add
+                  </button>
+                </div>
+
+                <div className="flex flex-wrap gap-1.5 mt-2 max-h-36 overflow-y-auto p-1">
+                  {distEmails.map((em, idx) => (
+                    <span
+                      key={idx}
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs bg-blue-50 text-blue-700 border border-blue-200"
+                    >
+                      <span>{em}</span>
+                      <button
+                        type="button"
+                        onClick={() => setDistEmails(distEmails.filter((_, i) => i !== idx))}
+                        className="hover:text-red-500 cursor-pointer"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-5 flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowEmailDistModal(false)}
+                  className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-wider cursor-pointer"
+                >
+                  Done
                 </button>
               </div>
             </div>
@@ -2020,9 +2345,7 @@ export default function AdminDashboardContent() {
                         <button
                           type="button"
                           onClick={() => {
-                            setSelectedReviewArticle(art);
-                            setShowRejectInput(false);
-                            setRejectReason('');
+                            openArticleForReview(art);
                           }}
                           className="flex items-center gap-3 text-left w-full cursor-pointer"
                         >
@@ -2074,9 +2397,7 @@ export default function AdminDashboardContent() {
                         <button
                           type="button"
                           onClick={() => {
-                            setSelectedReviewArticle(art);
-                            setShowRejectInput(false);
-                            setRejectReason('');
+                            openArticleForReview(art);
                           }}
                           className="px-4 py-1.5 rounded-lg bg-[#EA580C] hover:bg-[#C2410C] text-white text-xs font-bold uppercase tracking-wider shadow-2xs transition-colors cursor-pointer"
                         >

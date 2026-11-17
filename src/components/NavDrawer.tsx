@@ -82,19 +82,14 @@ export const NavDrawer: React.FC<NavDrawerProps> = ({ isOpen, onClose }) => {
           <Link
             href="/"
             onClick={onClose}
-            className="flex items-center justify-center gap-2.5 select-none hover:opacity-85 transition-opacity"
+            className="flex items-center justify-center select-none hover:opacity-85 transition-opacity"
             aria-label="United States Today Home"
           >
             <img
-              src="/favicon.png"
+              src="/logo.png"
               alt="United States Today"
-              className="w-7 h-7 sm:w-8 sm:h-8 object-contain shrink-0 rounded-[2px]"
+              className="h-8 sm:h-9 w-auto object-contain shrink-0"
             />
-            <span className="font-sans font-extrabold text-[14px] sm:text-[15px] tracking-tight text-[#020618] leading-[1.08] select-none text-left">
-              United States
-              <br />
-              Today
-            </span>
           </Link>
 
           {/* Close Icon pinned to the far right */}

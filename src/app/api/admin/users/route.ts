@@ -17,7 +17,7 @@ const DEFAULT_ADMIN_EMAIL = 'akramyoonos006@gmail.com';
 const INITIAL_REQUIRED_ACCOUNTS: AdminUser[] = [
   {
     id: 'init-1',
-    name: 'Mohamedajmi',
+    name: 'Mohamed Azmy Mohamed Akram',
     email: 'akramyoonos006@gmail.com',
     role: 'admin',
     isDefaultAdmin: true,
@@ -86,11 +86,12 @@ export async function GET(request: Request) {
         const normalizedRole = normalizeRole(du.role);
         const isDefAdmin =
           cleanEmail === DEFAULT_ADMIN_EMAIL ||
+          String(du.name || '').toLowerCase().trim() === 'mohamed azmy mohamed akram' ||
           String(du.name || '').toLowerCase().trim() === 'mohamedajmi';
 
         userMap.set(cleanEmail, {
           id: `db-${du.id}`,
-          name: du.name || (isDefAdmin ? 'Mohamedajmi' : 'User'),
+          name: du.name || (isDefAdmin ? 'Mohamed Azmy Mohamed Akram' : 'User'),
           email: du.email,
           role: normalizedRole,
           avatar: du.avatar || undefined,
@@ -173,7 +174,9 @@ export async function POST(request: Request) {
     }
 
     const isDefAdmin =
-      cleanEmail === DEFAULT_ADMIN_EMAIL || cleanName.toLowerCase() === 'mohamedajmi';
+      cleanEmail === DEFAULT_ADMIN_EMAIL ||
+      cleanName.toLowerCase() === 'mohamed azmy mohamed akram' ||
+      cleanName.toLowerCase() === 'mohamedajmi';
 
     const newUser: AdminUser = {
       id: dbId,
