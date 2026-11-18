@@ -133,30 +133,30 @@ export const HeroNewsSection: React.FC = () => {
               </Link>
             </div>
 
-            {/* List of 4 Balanced Articles matching vertical height of center & right */}
+            {/* List of 5 Balanced Articles matching vertical height of center & right */}
             <div className="divide-y divide-slate-100 flex-1 flex flex-col justify-between pt-0.5">
-              {latestArticles.slice(0, 4).map((art) => (
+              {latestArticles.slice(0, 5).map((art) => (
                 <article
                   key={art.id}
-                  className="py-2.5 first:pt-1 last:pb-0 lg:py-2.5 xl:py-3 2xl:py-3.5 flex items-center justify-between gap-3 xl:gap-4 group"
+                  className="py-1.5 first:pt-0.5 last:pb-0 lg:py-1 xl:py-1.5 2xl:py-2.5 flex items-center justify-between gap-3 xl:gap-4 group"
                 >
                   <div className="flex-1 min-w-0 pr-1">
-                    <span className="text-[9.5px] font-bold text-[#1642D0] uppercase tracking-wider block font-sans mb-0.5 no-underline hover:no-underline active:no-underline focus:no-underline">
+                    <span className="text-[9px] sm:text-[9.5px] font-bold text-[#1642D0] uppercase tracking-wider block font-sans mb-0.5 no-underline hover:no-underline active:no-underline focus:no-underline">
                       {art.category}
                     </span>
-                    <h3 className="font-serif font-bold text-[13px] sm:text-[13.5px] 2xl:text-[14.5px] leading-snug text-[#020618] group-hover:underline line-clamp-3 my-0">
+                    <h3 className="font-serif font-bold text-[12.5px] sm:text-[13px] 2xl:text-[14px] leading-snug text-[#020618] group-hover:underline line-clamp-2 xl:line-clamp-3 my-0">
                       <Link href={`/article/${art.slug || art.id}`}>
                         {art.title}
                       </Link>
                     </h3>
-                    <span className="text-[10.5px] text-slate-400 font-sans block mt-1">
+                    <span className="text-[10px] sm:text-[10.5px] text-slate-400 font-sans block mt-0.5 sm:mt-1">
                       {art.date}
                     </span>
                   </div>
 
                   <Link
                     href={`/article/${art.slug || art.id}`}
-                    className="w-[116px] h-[86px] sm:w-[124px] sm:h-[94px] lg:w-[128px] lg:h-[102px] xl:w-[134px] xl:h-[108px] 2xl:w-[154px] 2xl:h-[122px] shrink-0 rounded-none overflow-hidden bg-slate-100 block cursor-pointer"
+                    className="w-[104px] h-[72px] sm:w-[112px] sm:h-[78px] lg:w-[114px] lg:h-[80px] xl:w-[120px] xl:h-[84px] 2xl:w-[136px] 2xl:h-[96px] shrink-0 rounded-none overflow-hidden bg-slate-100 block cursor-pointer"
                   >
                     <img
                       src={art.imageUrl}

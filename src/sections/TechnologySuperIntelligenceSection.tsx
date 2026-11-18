@@ -56,7 +56,7 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
                 aria-label={item.title}
               >
                 {/* Properly sized thumbnail to keep left height balanced */}
-                <figure className="relative w-28 sm:w-32 md:w-36 lg:w-32 xl:w-36 aspect-[16/10.5] rounded-xs overflow-hidden flex-shrink-0 border border-slate-200/90 bg-slate-100">
+                <figure className="relative w-24 sm:w-26 md:w-28 xl:w-28 aspect-[16/10.5] rounded-xs overflow-hidden flex-shrink-0 border border-slate-200/90 bg-slate-100">
                   <img
                     src={item.imageUrl}
                     alt={item.title}
@@ -67,7 +67,7 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
                   <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-0.5 block">
                     {item.category}
                   </span>
-                  <h4 className="text-[13px] sm:text-[13.5px] lg:text-[14px] font-serif font-bold text-slate-900 leading-snug tracking-tight line-clamp-2 mb-0.5 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2">
+                  <h4 className="text-[12.5px] sm:text-[13px] lg:text-[13.5px] font-serif font-bold text-slate-900 leading-snug tracking-tight line-clamp-2 mb-0.5 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2">
                     {item.title}
                   </h4>
                   <div className="text-[10px] font-sans text-slate-500">
@@ -153,7 +153,7 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
               >
                 <div>
                   {/* Large Proportional Image on Top */}
-                  <figure className="relative w-full aspect-[16/9.5] overflow-hidden rounded-xs mb-2 border border-slate-200/90 bg-slate-100 flex-shrink-0">
+                  <figure className="relative w-full aspect-[16/6.2] overflow-hidden rounded-xs mb-1.5 border border-slate-200/90 bg-slate-100 flex-shrink-0">
                     <img
                       src={card.imageUrl}
                       alt={card.title}
@@ -166,7 +166,7 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
                     {card.category}
                   </span>
 
-                  <h4 className="text-[14px] sm:text-[15px] xl:text-[15.5px] font-serif font-bold text-slate-900 leading-snug tracking-tight mb-0.5 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 line-clamp-2">
+                  <h4 className="text-[13.5px] sm:text-[14px] xl:text-[15px] font-serif font-bold text-slate-900 leading-snug tracking-tight mb-0.5 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 line-clamp-2">
                     {card.title}
                   </h4>
 
@@ -177,7 +177,7 @@ export const TechnologySuperIntelligenceSection: React.FC = () => {
                   </div>
 
                   {card.excerpt && (
-                    <p className="text-xs text-slate-600 font-serif leading-relaxed line-clamp-2">
+                    <p className="text-[11.5px] sm:text-xs text-slate-600 font-serif leading-relaxed line-clamp-2">
                       {card.excerpt}
                     </p>
                   )}

@@ -72,22 +72,22 @@ export const TrendingResilienceSection: React.FC = () => {
             </h3>
           </div>
 
-          {/* List of 5 Articles with large thumbnails and big numbers on left */}
+          {/* List of 5 Articles with balanced thumbnails and numbers matching Image 4 */}
           <div className="flex-1 flex flex-col justify-between divide-y divide-slate-100">
             {items.map((item) => (
-              <article key={item.id} className="group flex-1 flex items-center py-2.5 sm:py-3 first:pt-1 last:pb-0">
+              <article key={item.id} className="group flex-1 flex items-center py-2 sm:py-2.5 first:pt-1 last:pb-0">
                 <Link
                   href={getArticleUrl(item)}
-                  className="flex items-center gap-3 sm:gap-4 w-full no-underline text-inherit cursor-pointer"
+                  className="flex items-center gap-2.5 sm:gap-3.5 w-full no-underline text-inherit cursor-pointer"
                   aria-label={item.title}
                 >
-                  {/* Big Rank Number on Left (01, 02, ...) */}
-                  <span className="text-2xl sm:text-3xl lg:text-4xl font-serif text-slate-300 font-light select-none w-8 sm:w-10 flex-shrink-0">
+                  {/* Rank Number on Left (01, 02, ...) */}
+                  <span className="text-xl sm:text-2xl lg:text-3xl font-serif text-slate-300 font-light select-none w-7 sm:w-8 flex-shrink-0">
                     {`0${item.rank}`}
                   </span>
 
-                  {/* Enlarged Thumbnail */}
-                  <figure className="relative w-40 sm:w-48 md:w-52 lg:w-48 xl:w-56 aspect-[16/9.5] rounded-xs overflow-hidden flex-shrink-0 border border-slate-200/90 bg-slate-100">
+                  {/* Balanced Thumbnail matching Image 4 */}
+                  <figure className="relative w-28 sm:w-32 lg:w-32 xl:w-36 aspect-[16/9] rounded-xs overflow-hidden flex-shrink-0 border border-slate-200/90 bg-slate-100">
                     <img
                       src={item.imageUrl}
                       alt={item.title}
@@ -97,13 +97,13 @@ export const TrendingResilienceSection: React.FC = () => {
 
                   {/* Title & Details */}
                   <div className="flex-1 min-w-0 pr-1">
-                    <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] no-underline hover:no-underline active:no-underline focus:no-underline mb-0.5 block">
+                    <span className="text-[10px] sm:text-[10.5px] font-sans font-bold uppercase tracking-wider text-[#1642D0] no-underline hover:no-underline active:no-underline focus:no-underline mb-0.5 block">
                       {item.category}
                     </span>
-                    <h4 className="text-[14px] sm:text-[15px] lg:text-[15.5px] font-serif font-bold text-slate-900 leading-snug tracking-tight line-clamp-2 mb-1 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2">
+                    <h4 className="text-[13px] sm:text-[13.5px] lg:text-[14px] xl:text-[14.5px] font-serif font-bold text-slate-900 leading-snug tracking-tight line-clamp-2 mb-1 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2">
                       {item.title}
                     </h4>
-                    <div className="text-[10px] sm:text-[11px] font-sans text-slate-500">
+                    <div className="text-[10px] sm:text-[10.5px] font-sans text-slate-500">
                       <span>{item.date}</span>
                       <span className="mx-1 text-slate-300">•</span>
                       <span>{item.readTime}</span>
