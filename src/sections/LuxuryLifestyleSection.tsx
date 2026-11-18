@@ -36,11 +36,11 @@ export const LuxuryLifestyleSection: React.FC = () => {
       </div>
 
       {/* 4-Card Responsive Grid: Images clearly displayed with respective text underneath */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-8 items-stretch">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 lg:divide-x lg:divide-slate-200 gap-6 lg:gap-0 items-stretch">
         {LUXURY_LIFESTYLE_SECTION.map((card) => {
           const cardUrl = getArticleUrl(card);
           return (
-            <article key={card.id} className="group flex flex-col justify-between w-full h-full">
+            <article key={card.id} className="group flex flex-col justify-between w-full h-full lg:px-4 xl:px-6 first:lg:pl-0 last:lg:pr-0">
               <Link
                 href={cardUrl}
                 className="flex flex-col justify-between h-full no-underline text-inherit cursor-pointer"

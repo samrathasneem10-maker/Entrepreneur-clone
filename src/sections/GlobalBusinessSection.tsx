@@ -41,7 +41,7 @@ export const GlobalBusinessSection: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
         
         {/* Left Column: Big Lead Story with Pure Photograph Background & HTML Text Overlay matching Image 4 */}
-        <div className="lg:col-span-6 flex flex-col justify-between h-full">
+        <div className="lg:col-span-6 flex flex-col justify-between h-full lg:pr-6 xl:pr-8 lg:border-r lg:border-slate-200">
           <article className="group flex flex-col justify-between w-full h-full">
             <div className="relative h-full flex-1 w-full rounded-xs overflow-hidden bg-[#070b19] text-white flex flex-col justify-end min-h-[460px] sm:min-h-[500px] shadow-sm">
               {/* Clean Photo Background - strictly no embedded text */}

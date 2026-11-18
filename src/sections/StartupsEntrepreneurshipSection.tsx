@@ -114,7 +114,7 @@ export const StartupsEntrepreneurshipSection: React.FC = () => {
                         {item.category}
                       </span>
 
-                      <h4 className="text-[13.5px] sm:text-[15.5px] lg:text-[17.5px] xl:text-[18px] font-serif font-bold text-slate-900 leading-snug tracking-tight mb-1.5 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 transition-all line-clamp-2">
+                      <h4 className="text-[13px] sm:text-[14px] lg:text-[15.5px] xl:text-[16.5px] font-serif font-bold text-slate-900 leading-snug tracking-tight mb-1.5 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 transition-all line-clamp-2">
                         {item.title}
                       </h4>
                     </div>
@@ -130,7 +130,7 @@ export const StartupsEntrepreneurshipSection: React.FC = () => {
 
                   {/* Right Thumbnail */}
                   {item.imageUrl && (
-                    <figure className="relative w-32 sm:w-44 md:w-56 lg:w-72 xl:w-80 aspect-[16/9.5] flex-shrink-0 overflow-hidden rounded-none border border-slate-200/90 bg-slate-100">
+                    <figure className="relative w-32 sm:w-44 md:w-48 lg:w-48 xl:w-56 aspect-[16/9.5] flex-shrink-0 overflow-hidden rounded-none border border-slate-200/90 bg-slate-100">
                       <img
                         src={item.imageUrl}
                         alt={item.title}

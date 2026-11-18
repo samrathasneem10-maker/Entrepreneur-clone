@@ -42,9 +42,9 @@ const REELS: ReelItem[] = [
 export const ShortsReelsSection: React.FC = () => {
   return (
     <section className="w-full my-6 sm:my-8 bg-[#fcf7f1] border border-[#f2eae0] p-4 sm:p-6 lg:p-7 relative">
-      {/* Header Tab matching Image 2 */}
+      {/* Header Tab matching Image 5 */}
       <div className="mb-4 sm:mb-5">
-        <span className="inline-block px-3 py-1.5 text-xs sm:text-sm font-sans font-bold uppercase tracking-wider text-slate-900 border-b-2 border-slate-900">
+        <span className="inline-block bg-white px-3.5 py-1.5 text-xs sm:text-sm font-sans font-bold uppercase tracking-wider text-slate-900 border-b-2 border-slate-900 shadow-xs">
           SHORTS &amp; REELS
         </span>
       </div>

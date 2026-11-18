@@ -13,7 +13,7 @@ export const TrendingResilienceSection: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-[1.14fr_1fr] gap-6 lg:gap-8 xl:gap-10 items-stretch">
         
         {/* Left Column: Big Lead Story with Glass Globe & Skyline Image */}
-        <div className="flex flex-col justify-between h-full">
+        <div className="flex flex-col justify-between h-full lg:pr-8 xl:pr-10 lg:border-r lg:border-slate-200">
           <article className="group flex flex-col justify-between h-full">
             <Link
               href={getArticleUrl(featured)}
