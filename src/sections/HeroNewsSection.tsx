@@ -60,21 +60,36 @@ const HERO_SLIDES: Article[] = [
   },
 ];
 
+const BASELINE_HERO_8: Article[] = [
+  HERO_GROWTH_DECISION_ARTICLE,
+  HERO_SLIDES[1],
+  HERO_SLIDES[2],
+  HERO_SLIDES[3],
+  UBER_DRIVER_BONUSES_ARTICLE,
+  HOMEPAGE_RIGHT_STREAM[0],
+  HOMEPAGE_RIGHT_STREAM[1],
+  HOMEPAGE_RIGHT_STREAM[2],
+];
+
 export const HeroNewsSection: React.FC = () => {
   const [activeSlide, setActiveSlide] = useState(0);
   const [latestArticles, setLatestArticles] = useState<Article[]>(HOMEPAGE_LATEST_STREAM);
+  const [heroSlides, setHeroSlides] = useState<Article[]>(HERO_SLIDES);
+  const [rightCard, setRightCard] = useState<Article>(UBER_DRIVER_BONUSES_ARTICLE);
+  const [rightStream, setRightStream] = useState<Article[]>(HOMEPAGE_RIGHT_STREAM);
 
   useEffect(() => {
-    fetch('/api/articles?status=published&limit=10')
+    // 1. Fetch Latest News (Slots 1 to 5 for left column)
+    fetch('/api/articles?status=published&placement=latest_news&limit=15')
       .then((res) => res.json())
       .then((data) => {
-        if (data?.success && Array.isArray(data.data) && data.data.length > 0) {
+        if (data?.success && Array.isArray(data.data)) {
           const dbArticles: Article[] = data.data.map((a: any) => ({
-            id: a.slug || String(a.dbId),
+            id: a.slug || String(a.dbId || a.id),
             slug: a.slug,
             title: a.title,
             category: a.category || 'BUILDING A BUSINESS',
-            author: a.author || { name: a.authorName || 'Staff Contributor', avatar: '/images/author-sherin.png' },
+            author: a.author || { name: a.authorName || 'Sherin Shibu', avatar: a.authorAvatar || '/images/author-sherin.png' },
             date: a.date || 'Just now',
             readTime: a.readTime || '5 min read',
             excerpt: a.excerpt,
@@ -91,17 +106,54 @@ export const HeroNewsSection: React.FC = () => {
         }
       })
       .catch(() => {});
+
+    // 2. Fetch Hero Section (Capacity 8: slots 1-4 for carousel, slots 5-8 for right column)
+    fetch('/api/articles?status=published&placement=hero_section&limit=15')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success && Array.isArray(data.data)) {
+          const dbHero: Article[] = data.data.map((a: any) => ({
+            id: a.slug || String(a.dbId || a.id),
+            slug: a.slug,
+            title: a.title,
+            category: a.category || 'STARTUPS & ENTREPRENEURSHIP',
+            author: a.author || { name: a.authorName || 'Scott Smrkovski', avatar: a.authorAvatar || '/images/home-hero/author-scott.png' },
+            date: a.date || 'Just now',
+            readTime: a.readTime || '5 min read',
+            excerpt: a.excerpt,
+            imageUrl: a.imageUrl || '/images/home-hero/hero-growth-decision.png',
+          }));
+
+          const combinedHero = [...dbHero];
+          BASELINE_HERO_8.forEach((item) => {
+            if (!combinedHero.some((c) => c.slug === item.slug || c.title.toLowerCase() === item.title.toLowerCase())) {
+              combinedHero.push(item);
+            }
+          });
+
+          const slides = combinedHero.slice(0, 4);
+          if (slides.length > 0) {
+            setHeroSlides(slides);
+          }
+          const rightItems = combinedHero.slice(4, 8);
+          if (rightItems.length > 0) {
+            setRightCard(rightItems[0]);
+            setRightStream(rightItems.slice(1, 4));
+          }
+        }
+      })
+      .catch(() => {});
   }, []);
 
   const prevSlide = () => {
-    setActiveSlide((prev) => (prev === 0 ? HERO_SLIDES.length - 1 : prev - 1));
+    setActiveSlide((prev) => (prev === 0 ? heroSlides.length - 1 : prev - 1));
   };
 
   const nextSlide = () => {
-    setActiveSlide((prev) => (prev === HERO_SLIDES.length - 1 ? 0 : prev + 1));
+    setActiveSlide((prev) => (prev === heroSlides.length - 1 ? 0 : prev + 1));
   };
 
-  const currentHero = HERO_SLIDES[activeSlide];
+  const currentHero = heroSlides[activeSlide] || heroSlides[0] || HERO_GROWTH_DECISION_ARTICLE;
 
   return (
     <section className="bg-white pt-2.5 sm:pt-3.5 2xl:pt-4 pb-4 sm:pb-5 2xl:pb-5 w-full">
@@ -232,7 +284,7 @@ export const HeroNewsSection: React.FC = () => {
                 <div className="flex items-center justify-between pt-3 mt-2.5 2xl:mt-3 border-t border-white/15">
                   {/* Indicator Bars */}
                   <div className="flex items-center gap-1.5">
-                    {HERO_SLIDES.map((_, idx) => (
+                    {heroSlides.map((_, idx) => (
                       <button
                         key={idx}
                         onClick={() => setActiveSlide(idx)}
@@ -270,40 +322,40 @@ export const HeroNewsSection: React.FC = () => {
           </div>
 
           {/* ========================================================= */}
-          {/* 3. RIGHT COLUMN: Top Uber Card + 3 Articles (order-3)     */}
+          {/* 3. RIGHT COLUMN: Top Card (Slot 5) + 3 Articles (Slots 6-8) */}
           {/* ========================================================= */}
           <div className="order-3 lg:order-3 flex flex-col justify-between h-full">
             
-            {/* Top Featured Card: Uber Driver Bonuses */}
+            {/* Top Featured Card: Hero Slot 5 */}
             <article className="rounded-none overflow-hidden bg-[#070b19] text-white group cursor-pointer flex flex-col shadow-xs flex-shrink-0 mb-2">
               <Link
-                href={`/article/${UBER_DRIVER_BONUSES_ARTICLE.slug}`}
+                href={`/article/${rightCard.slug || rightCard.id}`}
                 className="w-full aspect-[16/9] max-h-[145px] lg:max-h-[160px] xl:max-h-[172px] 2xl:max-h-[218px] overflow-hidden bg-slate-900 block"
               >
                 <img
-                  src={UBER_DRIVER_BONUSES_ARTICLE.imageUrl}
-                  alt={UBER_DRIVER_BONUSES_ARTICLE.title}
+                  src={rightCard.imageUrl}
+                  alt={rightCard.title}
                   className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300 rounded-none"
                 />
               </Link>
               <div className="p-2.5 sm:p-3 2xl:p-3.5">
                 <span className="inline-block bg-[#1642D0] text-white text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-xs w-fit font-sans no-underline hover:no-underline active:no-underline focus:no-underline">
-                  {UBER_DRIVER_BONUSES_ARTICLE.category}
+                  {rightCard.category}
                 </span>
                 <h3 className="font-serif font-bold text-[14.5px] sm:text-[15.5px] 2xl:text-[17.5px] leading-snug text-white group-hover:underline mt-1 my-0 line-clamp-2">
-                  <Link href={`/article/${UBER_DRIVER_BONUSES_ARTICLE.slug}`}>
-                    {UBER_DRIVER_BONUSES_ARTICLE.title}
+                  <Link href={`/article/${rightCard.slug || rightCard.id}`}>
+                    {rightCard.title}
                   </Link>
                 </h3>
                 <span className="text-[10px] text-slate-400 font-sans block mt-1">
-                  {UBER_DRIVER_BONUSES_ARTICLE.date} • {UBER_DRIVER_BONUSES_ARTICLE.readTime}
+                  {rightCard.date} • {rightCard.readTime || '5 min read'}
                 </span>
               </div>
             </article>
 
-            {/* Bottom 3 Horizontal Articles */}
+            {/* Bottom 3 Horizontal Articles: Hero Slots 6, 7, 8 */}
             <div className="divide-y divide-slate-100 flex-1 flex flex-col justify-between pt-0.5">
-              {HOMEPAGE_RIGHT_STREAM.map((art) => (
+              {rightStream.map((art) => (
                 <article
                   key={art.id}
                   className="py-1.5 first:pt-0 last:pb-0 lg:py-2 xl:py-2.5 2xl:py-3.5 flex items-center justify-between gap-3 xl:gap-4 group"

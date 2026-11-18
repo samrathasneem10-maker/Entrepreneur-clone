@@ -1,11 +1,38 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { TRENDING_RESILIENCE_SECTION, getArticleUrl } from '@/data/newsData';
+import { TRENDING_RESILIENCE_SECTION, getArticleUrl, Article } from '@/data/newsData';
 
 export const TrendingResilienceSection: React.FC = () => {
-  const { featured, items } = TRENDING_RESILIENCE_SECTION;
+  const { featured: defaultFeatured, items } = TRENDING_RESILIENCE_SECTION;
+  const [featured, setFeatured] = useState<Article>(defaultFeatured);
+
+  useEffect(() => {
+    fetch('/api/articles?status=published&placement=hero_section_2&limit=1')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success && Array.isArray(data.data) && data.data.length > 0) {
+          const a = data.data[0];
+          setFeatured({
+            id: a.slug || String(a.dbId || a.id),
+            slug: a.slug,
+            title: a.title,
+            category: a.category || defaultFeatured.category,
+            author: a.author || {
+              name: a.authorName || 'James Carter',
+              avatar: a.authorAvatar || '/images/author-sherin.png',
+              title: a.authorTitle || 'Senior Columnist',
+            },
+            date: a.date || 'Just now',
+            readTime: a.readTime || '5 min read',
+            excerpt: a.excerpt || a.cardSummary || defaultFeatured.excerpt,
+            imageUrl: a.imageUrl || defaultFeatured.imageUrl,
+          });
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <section className="bg-white pt-5 sm:pt-6 pb-5 sm:pb-6 w-full">

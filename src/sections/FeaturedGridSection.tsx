@@ -1,15 +1,61 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { TOP_STORIES_GRID, getArticleUrl } from '@/data/newsData';
+import { TOP_STORIES_GRID, HOMEPAGE_LATEST_STREAM, getArticleUrl, Article } from '@/data/newsData';
 
 export const FeaturedGridSection: React.FC = () => {
+  const [gridArticles, setGridArticles] = useState<Article[]>(TOP_STORIES_GRID);
+
+  useEffect(() => {
+    fetch('/api/articles?status=published&placement=latest_news&limit=15')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success && Array.isArray(data.data)) {
+          const dbArticles: Article[] = data.data.map((a: any) => ({
+            id: a.slug || String(a.dbId || a.id),
+            slug: a.slug,
+            title: a.title,
+            category: a.category || 'BUILDING A BUSINESS',
+            author: a.author || {
+              name: a.authorName || 'Michael Andrews Cooper',
+              avatar: a.authorAvatar || '/images/home-hero/author-scott.png',
+              title: a.authorTitle || 'Executive Contributor',
+              bio: a.authorBio || '',
+            },
+            date: a.date || 'Just now',
+            readTime: a.readTime || '5 min read',
+            excerpt: a.excerpt || a.cardSummary || '',
+            imageUrl: a.imageUrl || '/images/home-hero/grid-card-1.png',
+          }));
+
+          const combined = [...dbArticles];
+          HOMEPAGE_LATEST_STREAM.forEach((item) => {
+            if (!combined.some((c) => c.slug === item.slug || c.title.toLowerCase() === item.title.toLowerCase())) {
+              combined.push(item);
+            }
+          });
+          TOP_STORIES_GRID.forEach((item) => {
+            if (!combined.some((c) => c.slug === item.slug || c.title.toLowerCase() === item.title.toLowerCase())) {
+              combined.push(item);
+            }
+          });
+
+          // Latest News Slots 6 to 9 (indices 5 to 9)
+          const slice4 = combined.slice(5, 9);
+          if (slice4.length === 4) {
+            setGridArticles(slice4);
+          }
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <section className="bg-white pt-4 sm:pt-4.5 pb-1 sm:pb-2 w-full">
       <div className="w-full">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-3.5 lg:gap-3.5 xl:gap-4 items-stretch">
-          {TOP_STORIES_GRID.map((article) => {
+          {gridArticles.map((article, idx) => {
             const articleUrl = getArticleUrl(article);
             const authorSlug = (article.author?.name || 'author')
               .toLowerCase()
@@ -17,7 +63,7 @@ export const FeaturedGridSection: React.FC = () => {
               .replace(/^-+|-+$/g, '');
 
             return (
-              <article key={article.id} className="group flex flex-col justify-between w-full h-full">
+              <article key={article.id || `grid-${idx}`} className="group flex flex-col justify-between w-full h-full">
                 <div className="flex flex-col justify-between h-full no-underline text-inherit">
                   {/* Card Image - Sharp Rectangular Corners with slightly increased height for laptop & desktop */}
                   {article.imageUrl && (
@@ -34,7 +80,7 @@ export const FeaturedGridSection: React.FC = () => {
                               if (article.id === 'grid-1') target.src = '/images/home-hero/grid-card-1.png';
                               else if (article.id === 'grid-2') target.src = '/images/home-hero/grid-card-2.png';
                               else if (article.id === 'grid-3') target.src = '/images/home-hero/grid-card-3.png';
-                              else if (article.id === 'grid-4') target.src = '/images/home-hero/grid-card-4.png';
+                              else target.src = '/images/home-hero/grid-card-4.png';
                             }
                           }}
                           className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 rounded-none"

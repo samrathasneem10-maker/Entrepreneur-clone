@@ -3466,10 +3466,9 @@ export default function AdminDashboardContent() {
                         className="w-full px-3 py-2.5 bg-amber-50/20 border border-amber-300 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-amber-500 cursor-pointer"
                       >
                         <option value="none">None (category &amp; search only)</option>
-                        <option value="hero">Hero News Leaderboard</option>
-                        <option value="headline">Top Headline Slot</option>
-                        <option value="featured">Featured Analysis</option>
-                        <option value="trending">Trending Topic Slider</option>
+                        <option value="latest_news">Latest News</option>
+                        <option value="hero_section">Hero Section</option>
+                        <option value="hero_section_2">Hero Section 2</option>
                       </select>
                       <p className="text-[11px] text-slate-400 leading-relaxed m-0">
                         Select where this story will be curated on the homepage layout. Any list slots will automatically push the newest article to rank #1 and shift older items down.
@@ -5377,10 +5376,10 @@ export default function AdminDashboardContent() {
                       className="w-full appearance-none px-3.5 py-2 pr-8 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-[#EA580C] cursor-pointer shadow-2xs"
                     >
                       <option value="all">All Placements</option>
-                      <option value="top_news">Top News</option>
-                      <option value="middle_feed">Middle Feed</option>
-                      <option value="trending">Trending</option>
-                      <option value="featured">Featured Hero</option>
+                      <option value="none">None (Category Only)</option>
+                      <option value="latest_news">Latest News</option>
+                      <option value="hero_section">Hero Section</option>
+                      <option value="hero_section_2">Hero Section 2</option>
                     </select>
                     <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                   </div>

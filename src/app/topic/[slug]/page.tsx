@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { ChevronRight, ChevronLeft, Home } from 'lucide-react';
@@ -803,19 +803,79 @@ const INDUSTRY_ARTICLES = [
   },
 ];
 
+function matchesCategoryOrSubCategory(article: any, currentSlug: string, currentTitle: string): boolean {
+  const norm = (s: string) => (s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const targetSlug = norm(currentSlug);
+  const targetTitle = norm(currentTitle);
+
+  // Check main category
+  const mainCat = norm(article.category || article.category_name || '');
+  if (mainCat && (mainCat === targetSlug || mainCat === targetTitle || targetSlug.includes(mainCat) || mainCat.includes(targetSlug))) {
+    return true;
+  }
+
+  // Check subCategories
+  let subCats: string[] = [];
+  if (Array.isArray(article.subCategories)) {
+    subCats = article.subCategories;
+  } else if (typeof article.subCategories === 'string' && article.subCategories.trim()) {
+    try {
+      const parsed = JSON.parse(article.subCategories);
+      if (Array.isArray(parsed)) subCats = parsed;
+    } catch {
+      subCats = article.subCategories.split(',').map((s: string) => s.trim());
+    }
+  }
+
+  for (const sub of subCats) {
+    const subNorm = norm(sub);
+    if (subNorm && (subNorm === targetSlug || subNorm === targetTitle || targetSlug.includes(subNorm) || subNorm.includes(targetSlug))) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 export default function DynamicTopicPage() {
   const params = useParams();
   const rawSlug = typeof params?.slug === 'string' ? params.slug : 'thought-leaders';
   const topicData = getTopicDataBySlug(rawSlug);
   const displayTitle = rawSlug === 'business' ? 'Business' : rawSlug === 'breaking-news' ? 'Breaking News' : rawSlug === 'breaking-business-news' ? 'Breaking Business News' : topicData.title;
 
-  // Pagination state: 10 articles per page
+  const [topicArticles, setTopicArticles] = useState(INDUSTRY_ARTICLES);
   const [currentPage, setCurrentPage] = useState(1);
   const ARTICLES_PER_PAGE = 10;
-  const totalPages = Math.ceil(INDUSTRY_ARTICLES.length / ARTICLES_PER_PAGE);
+  const totalPages = Math.ceil(topicArticles.length / ARTICLES_PER_PAGE);
+
+  useEffect(() => {
+    setCurrentPage(1);
+    fetch('/api/articles?status=published&limit=100')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success && Array.isArray(data.data)) {
+          const matching = data.data.filter((a: any) =>
+            matchesCategoryOrSubCategory(a, rawSlug, topicData.title || displayTitle)
+          ).map((a: any) => ({
+            id: a.slug || String(a.dbId || a.id),
+            category: a.category || displayTitle.toUpperCase(),
+            title: a.title,
+            excerpt: a.excerpt || a.cardSummary || '',
+            image: a.imageUrl || '/images/topic-thumb-1.jpg',
+          }));
+
+          if (matching.length > 0) {
+            setTopicArticles([...matching, ...INDUSTRY_ARTICLES]);
+          } else {
+            setTopicArticles(INDUSTRY_ARTICLES);
+          }
+        }
+      })
+      .catch(() => {});
+  }, [rawSlug, topicData.title, displayTitle]);
 
   // Sliced articles for the active page (no duplicate articles between pages)
-  const currentArticles = INDUSTRY_ARTICLES.slice(
+  const currentArticles = topicArticles.slice(
     (currentPage - 1) * ARTICLES_PER_PAGE,
     currentPage * ARTICLES_PER_PAGE
   );

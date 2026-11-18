@@ -8,6 +8,7 @@ export async function GET(request: Request) {
   const author = searchParams.get('author');
   const status = searchParams.get('status');
   const slug = searchParams.get('slug');
+  const placement = searchParams.get('placement');
   const getCounts = searchParams.get('counts') === 'true';
   const page = Math.max(1, Number(searchParams.get('page')) || 1);
   const limit = Math.min(Number(searchParams.get('limit')) || 20, 200);
@@ -71,6 +72,15 @@ export async function GET(request: Request) {
       whereClause += ' AND (a.slug = ? OR a.id = ?)';
       params.push(slug, slug);
     }
+    if (placement) {
+      const p = placement.toLowerCase().trim();
+      if (p === 'none') {
+        whereClause += ' AND (a.placement IS NULL OR LOWER(a.placement) = "none" OR a.placement = "")';
+      } else {
+        whereClause += ' AND LOWER(COALESCE(a.placement, "none")) = ?';
+        params.push(p);
+      }
+    }
 
     // 1. Fetch total count for pagination
     const countSql = `SELECT COUNT(*) as total FROM articles a ${whereClause}`;
@@ -96,6 +106,8 @@ export async function GET(request: Request) {
         a.is_hero as isHero,
         a.is_featured as isFeatured,
         COALESCE(a.status, 'published') as status,
+        COALESCE(a.placement, 'none') as placement,
+        COALESCE(a.newsletter_banner, 'auto') as newsletterBanner,
         a.rejection_reason as rejectionReason,
         a.reviewer_notes as reviewerNotes,
         a.tags,
@@ -246,6 +258,9 @@ export async function POST(request: Request) {
       focusKeyword = '',
       metaDescription = '',
       subCategories = [],
+      placement = 'none',
+      newsletterBanner = 'auto',
+      newsletter_banner,
     } = body;
 
     if (!title || !title.trim()) {
@@ -326,11 +341,13 @@ export async function POST(request: Request) {
 
     const formattedTags = Array.isArray(tags) ? JSON.stringify(tags) : (tags || '');
     const formattedSubCategories = Array.isArray(subCategories) ? JSON.stringify(subCategories) : (subCategories || '');
+    const finalPlacement = (placement || 'none').toLowerCase().trim();
+    const finalNb = (newsletterBanner !== undefined ? newsletterBanner : newsletter_banner) || 'auto';
 
     const insertResult: any = await query(
       `INSERT INTO articles 
-        (slug, title, category_name, author_name, date, read_time, excerpt, content, image_url, status, views, tags, card_summary, focus_keyword, meta_description, sub_categories)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '1', ?, ?, ?, ?, ?)`,
+        (slug, title, category_name, author_name, date, read_time, excerpt, content, image_url, status, views, tags, card_summary, focus_keyword, meta_description, sub_categories, placement, newsletter_banner)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '1', ?, ?, ?, ?, ?, ?, ?)`,
       [
         slug,
         title.trim(),
@@ -347,6 +364,8 @@ export async function POST(request: Request) {
         focusKeyword || '',
         metaDescription || '',
         formattedSubCategories,
+        finalPlacement,
+        finalNb,
       ]
     );
 
@@ -407,6 +426,9 @@ export async function PUT(request: Request) {
       meta_description,
       subCategories,
       sub_categories,
+      placement,
+      newsletterBanner,
+      newsletter_banner,
     } = body;
 
     if (!id && !dbId) {
@@ -541,6 +563,16 @@ export async function PUT(request: Request) {
     if (finalSubCats !== undefined) {
       updates.push('sub_categories = ?');
       params.push(Array.isArray(finalSubCats) ? JSON.stringify(finalSubCats) : finalSubCats);
+    }
+    if (placement !== undefined) {
+      const p = (placement || 'none').toLowerCase().trim();
+      updates.push('placement = ?');
+      params.push(p);
+    }
+    const finalNb = newsletterBanner !== undefined ? newsletterBanner : newsletter_banner;
+    if (finalNb !== undefined) {
+      updates.push('newsletter_banner = ?');
+      params.push(finalNb || 'auto');
     }
 
     updates.push('updated_at = NOW()');
