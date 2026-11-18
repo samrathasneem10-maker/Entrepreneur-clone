@@ -4,6 +4,25 @@ import React from 'react';
 import Link from 'next/link';
 import { STARTUPS_ENTREPRENEURSHIP_SECTION, getArticleUrl } from '@/data/newsData';
 
+const STARTUPS_TITLE_LINES: Record<string, string[]> = {
+  'startups-introvert-connections': [
+    "An Introvert's Case for Skipping",
+    'Small Talk and Building Real',
+    'Connections',
+  ],
+  'startups-boss-bully': [
+    'Not Every Boss Deserves a Thank-You',
+    "Card. Here's What to Do When Your",
+    'Boss Is a Bully.',
+  ],
+  'startups-franchise-creative': [
+    'This Former Engineer and Preschool',
+    'Teacher Teamed Up to Start a Creative',
+    "Business: 'Haven't Regretted Choosing",
+    "a Franchise.'",
+  ],
+};
+
 export const StartupsEntrepreneurshipSection: React.FC = () => {
   const { featured, items } = STARTUPS_ENTREPRENEURSHIP_SECTION;
 
@@ -93,34 +112,40 @@ export const StartupsEntrepreneurshipSection: React.FC = () => {
           </article>
         </div>
 
-        {/* Right Column: Stacked 3 Articles matching Image 2 with equal vertical spacing & no excerpts */}
+        {/* Right Column: Stacked 3 Articles matching Image 1 with equal vertical spacing & no line clamping */}
         <div className="flex flex-col justify-between h-full divide-y divide-slate-200">
           {items.slice(0, 3).map((item) => {
             const itemUrl = getArticleUrl(item);
             return (
               <article
                 key={item.id}
-                className="group flex-1 flex flex-col justify-center py-3 first:pt-0 last:pb-0"
+                className="group flex-1 flex flex-col justify-center py-3 sm:py-3.5 first:pt-0 last:pb-0"
               >
                 <Link
                   href={itemUrl}
                   className="flex items-center justify-between gap-4 sm:gap-5 w-full no-underline text-inherit cursor-pointer"
                   aria-label={item.title}
                 >
-                  {/* Left Text Block: Category, Title, Author */}
-                  <div className="flex-1 min-w-0 pr-1 flex flex-col justify-between self-stretch py-0.5">
+                  {/* Left Text Block: Category, Title, Author matching Image 1 lines of sentences */}
+                  <div className="flex-1 min-w-0 pr-3 sm:pr-4 lg:pr-5 flex flex-col justify-between self-stretch py-0.5">
                     <div>
                       <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1 block no-underline hover:no-underline active:no-underline focus:no-underline">
                         {item.category}
                       </span>
 
-                      <h4 className="text-[13px] sm:text-[14px] lg:text-[15.5px] xl:text-[16.5px] font-serif font-bold text-slate-900 leading-snug tracking-tight mb-1.5 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 transition-all line-clamp-2">
-                        {item.title}
+                      <h4 className="text-[13.5px] sm:text-[14.5px] lg:text-[15px] xl:text-[16px] 2xl:text-[17.5px] font-serif font-bold text-slate-900 leading-[1.28] tracking-tight mb-1.5 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 transition-all">
+                        {STARTUPS_TITLE_LINES[item.id] ? (
+                          STARTUPS_TITLE_LINES[item.id].map((line, idx) => (
+                            <span key={idx} className="block">{line}</span>
+                          ))
+                        ) : (
+                          item.title
+                        )}
                       </h4>
                     </div>
 
-                    {/* Author Byline matching Image 2 */}
-                    <div className="mt-auto flex items-center text-[11px] font-sans">
+                    {/* Author Byline matching Image 1 */}
+                    <div className="mt-auto pt-1 flex items-center text-[11px] sm:text-xs font-sans">
                       <span className="text-slate-500 font-medium mr-1.5">BY</span>
                       <span className="text-[#1642D0] font-bold uppercase group-hover:underline">
                         {item.author?.name}
@@ -128,13 +153,13 @@ export const StartupsEntrepreneurshipSection: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Right Thumbnail */}
+                  {/* Right Thumbnail matching Image 1 dimensions and shape */}
                   {item.imageUrl && (
-                    <figure className="relative w-32 sm:w-44 md:w-48 lg:w-48 xl:w-56 aspect-[16/9.5] flex-shrink-0 overflow-hidden rounded-none border border-slate-200/90 bg-slate-100">
+                    <figure className="relative w-36 sm:w-44 md:w-52 lg:w-[210px] xl:w-[250px] 2xl:w-[295px] aspect-[16/9.6] flex-shrink-0 overflow-hidden rounded-none border border-slate-200/90 bg-slate-100">
                       <img
                         src={item.imageUrl}
                         alt={item.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 rounded-none"
+                        className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 rounded-none"
                         onError={(e) => {
                           const target = e.currentTarget;
                           if (!target.dataset.fallback) {

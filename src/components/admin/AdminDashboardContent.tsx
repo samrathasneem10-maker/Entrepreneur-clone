@@ -2179,10 +2179,26 @@ export default function AdminDashboardContent() {
   const filteredPublishedArticles = useMemo(() => {
     let list = publishedArticles;
     if (publishedCategoryFilter !== 'all') {
-      const target = publishedCategoryFilter.toLowerCase();
+      const target = publishedCategoryFilter.toLowerCase().trim();
+      const mainCatObj = MAIN_CATEGORIES_20.find(
+        (c) => c.name.toLowerCase().trim() === target || c.slug.toLowerCase().trim() === target
+      );
+      const subCatNames = mainCatObj ? mainCatObj.subcategories.map((s) => s.name.toLowerCase().trim()) : [];
+
       list = list.filter((a) => {
-        const c = (a.category || a.category_name || '').toLowerCase();
-        return c === target;
+        const c = (a.category || a.category_name || '').toLowerCase().trim();
+        if (c === target) return true;
+        if (subCatNames.includes(c)) return true;
+
+        const rawSubs = a.subCategories || (a as any).subcategories || [];
+        const subsArray = Array.isArray(rawSubs)
+          ? rawSubs
+          : (typeof rawSubs === 'string' ? rawSubs.split(',').map((s) => s.trim()) : []);
+        const subsMatch = subsArray.some((s: string) => {
+          const sLower = typeof s === 'string' ? s.toLowerCase().trim() : '';
+          return sLower === target || (subCatNames.length > 0 && subCatNames.includes(sLower));
+        });
+        return subsMatch;
       });
     }
     if (publishedPlacementFilter !== 'all') {
@@ -3298,22 +3314,30 @@ export default function AdminDashboardContent() {
                           className="w-full appearance-none px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-hidden focus:border-[#1642D0] cursor-pointer"
                         >
                           <option value="">Select Main Category</option>
-                          {reviewCategory && !allReviewMainCategories.some((c) => c.toLowerCase() === reviewCategory.toLowerCase()) && (
-                            <option value={reviewCategory} className="text-xs font-medium text-slate-900 bg-white">
-                              {reviewCategory}
-                            </option>
-                          )}
-                          {allReviewMainCategories.map((catName) => (
-                            <option key={catName} value={catName} className="text-xs font-medium text-slate-900 bg-white">
-                              {catName}
-                            </option>
+                          {MAIN_CATEGORIES_20.map((cat) => (
+                            <React.Fragment key={cat.id}>
+                              {/* Main Category */}
+                              <option value={cat.name} className="text-xs font-medium text-slate-900 bg-white">
+                                {cat.name}
+                              </option>
+                              {/* Subcategories directly underneath: plain text without arrow icons, aligned consistently */}
+                              {cat.subcategories.map((sub) => (
+                                <option
+                                  key={`${cat.id}-${sub.name}`}
+                                  value={sub.name}
+                                  className="text-xs font-medium text-slate-900 bg-white"
+                                >
+                                  {sub.name}
+                                </option>
+                              ))}
+                            </React.Fragment>
                           ))}
                         </select>
                         <ChevronDown className="w-4 h-4 text-slate-500 absolute right-3 top-3 pointer-events-none" />
                       </div>
                     </div>
 
-                    {/* 2. SELECT SUB-CATEGORIES (OPTIONAL, MAX 5) - Scrollable Panel Matching Reference Image 2 & Writer Dashboard */}
+                    {/* 2. SELECT SUB-CATEGORIES (OPTIONAL, MAX 5) - Scrollable Panel Matching Reference Image 1 & Writer Dashboard */}
                     <div className="flex flex-col gap-1.5">
                       <div className="flex items-center justify-between">
                         <label className="text-[11px] font-bold uppercase tracking-wider text-slate-600">
@@ -3326,57 +3350,99 @@ export default function AdminDashboardContent() {
                         )}
                       </div>
 
-                      {/* Bordered Vertically Scrollable Panel with Square Checkboxes */}
+                      {/* Bordered Vertically Scrollable Panel with Square Checkboxes: Continuous Unified Sequence */}
                       <div className="border border-slate-300 rounded-xl bg-white p-3 max-h-56 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-400">
                         <div className="grid grid-cols-2 gap-x-2.5 gap-y-2">
-                          {allReviewSubCategories.map((subName) => {
-                            const isSelectedInMain = subName.trim().toLowerCase() === reviewCategory.trim().toLowerCase();
-                            const isChecked = reviewSubCategories.includes(subName);
-
-                            if (isSelectedInMain) {
-                              return (
-                                <label
-                                  key={subName}
-                                  className="flex items-center gap-2 text-xs font-medium text-slate-400 cursor-not-allowed select-none min-w-0"
-                                  title={`${subName} (Selected as Main Category)`}
-                                >
-                                  <input
-                                    type="checkbox"
-                                    disabled
-                                    checked={false}
-                                    className="w-4 h-4 rounded border-slate-300 text-slate-300 cursor-not-allowed shrink-0"
-                                  />
-                                  <span className="truncate text-xs font-medium text-slate-400">
-                                    {subName}
-                                  </span>
-                                </label>
-                              );
-                            }
+                          {MAIN_CATEGORIES_20.map((cat) => {
+                            const isCatSelectedInMain = cat.name.trim().toLowerCase() === reviewCategory.trim().toLowerCase();
 
                             return (
-                              <label
-                                key={subName}
-                                className="flex items-center gap-2 text-xs font-medium text-slate-800 cursor-pointer select-none hover:text-[#1642D0] min-w-0"
-                                title={subName}
-                              >
-                                <input
-                                  type="checkbox"
-                                  checked={isChecked}
-                                  onChange={() => handleToggleReviewSubCategory(subName)}
-                                  className="w-4 h-4 rounded border-slate-300 text-[#1642D0] focus:ring-[#1642D0]/30 cursor-pointer shrink-0"
-                                />
-                                <span className="truncate text-xs font-medium text-slate-800">
-                                  {subName}
-                                </span>
-                              </label>
+                              <React.Fragment key={cat.id}>
+                                {/* Main Category */}
+                                {!isCatSelectedInMain ? (
+                                  <label
+                                    className="flex items-center gap-2 text-xs font-medium text-slate-800 cursor-pointer select-none hover:text-[#1642D0] min-w-0"
+                                    title={cat.name}
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={reviewSubCategories.includes(cat.name)}
+                                      onChange={() => handleToggleReviewSubCategory(cat.name)}
+                                      className="w-4 h-4 rounded border-slate-300 text-[#1642D0] focus:ring-[#1642D0]/30 cursor-pointer shrink-0"
+                                    />
+                                    <span className="truncate text-xs font-medium text-slate-800">
+                                      {cat.name}
+                                    </span>
+                                  </label>
+                                ) : (
+                                  <label
+                                    className="flex items-center gap-2 text-xs font-medium text-slate-400 cursor-not-allowed select-none min-w-0"
+                                    title={`${cat.name} (Selected as Main Category)`}
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      disabled
+                                      checked={false}
+                                      className="w-4 h-4 rounded border-slate-300 text-slate-300 cursor-not-allowed shrink-0"
+                                    />
+                                    <span className="truncate text-xs font-medium text-slate-400">
+                                      {cat.name}
+                                    </span>
+                                  </label>
+                                )}
+
+                                {/* Subcategories directly following in the same continuous grid */}
+                                {cat.subcategories.map((sub) => {
+                                  const isSubSelectedInMain = sub.name.trim().toLowerCase() === reviewCategory.trim().toLowerCase();
+                                  const isChecked = reviewSubCategories.includes(sub.name);
+
+                                  if (isSubSelectedInMain) {
+                                    return (
+                                      <label
+                                        key={`${cat.id}-${sub.name}`}
+                                        className="flex items-center gap-2 text-xs font-medium text-slate-400 cursor-not-allowed select-none min-w-0"
+                                        title={`${sub.name} (Selected as Main Category)`}
+                                      >
+                                        <input
+                                          type="checkbox"
+                                          disabled
+                                          checked={false}
+                                          className="w-4 h-4 rounded border-slate-300 text-slate-300 cursor-not-allowed shrink-0"
+                                        />
+                                        <span className="truncate text-xs font-medium text-slate-400">
+                                          {sub.name}
+                                        </span>
+                                      </label>
+                                    );
+                                  }
+
+                                  return (
+                                    <label
+                                      key={`${cat.id}-${sub.name}`}
+                                      className="flex items-center gap-2 text-xs font-medium text-slate-800 cursor-pointer select-none hover:text-[#1642D0] min-w-0"
+                                      title={sub.name}
+                                    >
+                                      <input
+                                        type="checkbox"
+                                        checked={isChecked}
+                                        onChange={() => handleToggleReviewSubCategory(sub.name)}
+                                        className="w-4 h-4 rounded border-slate-300 text-[#1642D0] focus:ring-[#1642D0]/30 cursor-pointer shrink-0"
+                                      />
+                                      <span className="truncate text-xs font-medium text-slate-800">
+                                        {sub.name}
+                                      </span>
+                                    </label>
+                                  );
+                                })}
+                              </React.Fragment>
                             );
                           })}
                         </div>
                       </div>
 
-                      {/* Counter matching Reference Image */}
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                        Selected: {reviewSubCategories.length} / 5
+                      {/* Counter matching Reference Image 1: SELECTED: 0 / 5 */}
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-1">
+                        SELECTED: {reviewSubCategories.length} / 5
                       </div>
                     </div>
 
@@ -5354,10 +5420,23 @@ export default function AdminDashboardContent() {
                       className="w-full appearance-none px-3.5 py-2 pr-8 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-[#EA580C] cursor-pointer shadow-2xs"
                     >
                       <option value="all">All Categories</option>
-                      {publishedCategories.map((c) => (
-                        <option key={c} value={c}>
-                          {c}
-                        </option>
+                      {MAIN_CATEGORIES_20.map((cat) => (
+                        <React.Fragment key={cat.id}>
+                          {/* Main Category */}
+                          <option value={cat.name} className="text-xs font-medium text-slate-900 bg-white">
+                            {cat.name}
+                          </option>
+                          {/* Subcategories directly underneath */}
+                          {cat.subcategories.map((sub) => (
+                            <option
+                              key={`${cat.id}-${sub.name}`}
+                              value={sub.name}
+                              className="text-xs font-medium text-slate-900 bg-white"
+                            >
+                              {sub.name}
+                            </option>
+                          ))}
+                        </React.Fragment>
                       ))}
                     </select>
                     <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />

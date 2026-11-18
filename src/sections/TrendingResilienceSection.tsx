@@ -4,6 +4,14 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { TRENDING_RESILIENCE_SECTION, getArticleUrl, Article } from '@/data/newsData';
 
+const TRENDING_TITLE_BREAKS: Record<number, { line1: string; line2: string }> = {
+  1: { line1: 'Elon Musk Hints at Next-Gen AI', line2: "Model to Power Tesla's Future" },
+  2: { line1: 'Global Markets Rally as Rate', line2: 'Cut Hopes Strengthen' },
+  3: { line1: 'New Trade Agreement Set to', line2: 'Boost Asia—Europe Commerce' },
+  4: { line1: 'UAE Announces Major', line2: 'Investment Plan for 2030' },
+  5: { line1: 'Global EV Sales Hit Record', line2: 'High in 2026' },
+};
+
 export const TrendingResilienceSection: React.FC = () => {
   const { featured: defaultFeatured, items } = TRENDING_RESILIENCE_SECTION;
   const [featured, setFeatured] = useState<Article>(defaultFeatured);
@@ -113,8 +121,8 @@ export const TrendingResilienceSection: React.FC = () => {
                     {`0${item.rank}`}
                   </span>
 
-                  {/* Balanced Thumbnail matching Image 4 */}
-                  <figure className="relative w-28 sm:w-32 lg:w-32 xl:w-36 aspect-[16/9] rounded-xs overflow-hidden flex-shrink-0 border border-slate-200/90 bg-slate-100">
+                  {/* Balanced Thumbnail matching Image 3 */}
+                  <figure className="relative w-32 sm:w-36 md:w-40 lg:w-40 xl:w-44 aspect-[16/9] rounded-xs overflow-hidden flex-shrink-0 border border-slate-200/90 bg-slate-100">
                     <img
                       src={item.imageUrl}
                       alt={item.title}
@@ -127,8 +135,15 @@ export const TrendingResilienceSection: React.FC = () => {
                     <span className="text-[10px] sm:text-[10.5px] font-sans font-bold uppercase tracking-wider text-[#1642D0] no-underline hover:no-underline active:no-underline focus:no-underline mb-0.5 block">
                       {item.category}
                     </span>
-                    <h4 className="text-[13px] sm:text-[13.5px] lg:text-[14px] xl:text-[14.5px] font-serif font-bold text-slate-900 leading-snug tracking-tight line-clamp-2 mb-1 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2">
-                      {item.title}
+                    <h4 className="text-[13px] sm:text-[14px] lg:text-[14.5px] xl:text-[15.5px] font-serif font-bold text-slate-900 leading-[1.26] tracking-tight mb-1 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2">
+                      {TRENDING_TITLE_BREAKS[item.rank] ? (
+                        <>
+                          <span className="block">{TRENDING_TITLE_BREAKS[item.rank].line1}</span>
+                          <span className="block">{TRENDING_TITLE_BREAKS[item.rank].line2}</span>
+                        </>
+                      ) : (
+                        item.title
+                      )}
                     </h4>
                     <div className="text-[10px] sm:text-[10.5px] font-sans text-slate-500">
                       <span>{item.date}</span>
