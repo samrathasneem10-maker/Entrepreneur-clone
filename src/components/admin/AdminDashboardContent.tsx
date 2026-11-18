@@ -29,6 +29,7 @@ import {
   ExternalLink,
   LogOut,
   User,
+  UserPlus,
   RefreshCw,
   Menu,
   Download,
@@ -807,7 +808,7 @@ export default function AdminDashboardContent() {
 
   // User Desk Modals
   const [viewUserItem, setViewUserItem] = useState<UserItem | null>(null);
-  const [showAddUserModal, setShowAddUserModal] = useState(false);
+  const [showAddUserModal, setShowAddUserModal] = useState(() => searchParams?.get('addUser') === 'true');
   const [showEditUserModal, setShowEditUserModal] = useState(false);
   const [showDeleteUserModal, setShowDeleteUserModal] = useState(false);
   const [userToEdit, setUserToEdit] = useState<UserItem | null>(null);
@@ -5771,93 +5772,105 @@ export default function AdminDashboardContent() {
         </div>
       )}
 
-      {/* Add User Modal */}
+      {/* Add User Modal matching Reference Image 1 */}
       {showAddUserModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 animate-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="font-serif font-bold text-lg text-slate-900 my-0">
-                Add New Workspace User
-              </h3>
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-[22px] max-w-[430px] w-full p-6 sm:p-7 shadow-2xl border border-slate-100 animate-in zoom-in-95 duration-150">
+            {/* Header: UserPlus icon + Add New User + close X */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <UserPlus className="w-5 h-5 text-slate-700 stroke-[2]" />
+                <h3 className="font-serif font-bold text-lg text-slate-900 my-0">
+                  Add New User
+                </h3>
+              </div>
               <button
                 type="button"
                 onClick={() => setShowAddUserModal(false)}
-                className="p-1 text-slate-400 hover:text-slate-700 rounded-lg cursor-pointer"
+                className="p-1 text-slate-400 hover:text-slate-600 rounded-md cursor-pointer transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleAddUserSubmit} className="mt-4 space-y-4">
+            <form onSubmit={handleAddUserSubmit} className="space-y-3.5">
+              {/* Field 1: USER NAME */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Full Name
+                <label className="block text-[11px] font-sans font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+                  USER NAME
                 </label>
                 <input
                   type="text"
                   required
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
-                  placeholder="e.g. John Doe"
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:border-[#EA580C]"
+                  placeholder="fathimasamra200305@gmail.com"
+                  className="w-full px-3.5 py-2.5 text-xs sm:text-[13px] bg-slate-50/70 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#EA580C]/20 focus:border-[#EA580C] text-slate-900 transition-all placeholder:text-slate-400"
                 />
               </div>
 
+              {/* Field 2: USER EMAIL */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Email Address
+                <label className="block text-[11px] font-sans font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+                  USER EMAIL
                 </label>
                 <input
                   type="email"
                   required
                   value={formEmail}
                   onChange={(e) => setFormEmail(e.target.value)}
-                  placeholder="user@example.com"
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:border-[#EA580C]"
+                  placeholder="e.g. richard@washingtontimes.com"
+                  className="w-full px-3.5 py-2.5 text-xs sm:text-[13px] bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#EA580C]/20 focus:border-[#EA580C] text-slate-900 transition-all placeholder:text-slate-400"
                 />
               </div>
 
+              {/* Field 3: USER PASSWORD */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Workspace Role
-                </label>
-                <select
-                  value={formRole}
-                  onChange={(e) => setFormRole(e.target.value as 'admin' | 'writer' | 'reader')}
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:border-[#EA580C] bg-white cursor-pointer"
-                >
-                  <option value="writer">Writer</option>
-                  <option value="admin">Administrator</option>
-                  <option value="reader">Reader</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Temporary Password
+                <label className="block text-[11px] font-sans font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+                  USER PASSWORD
                 </label>
                 <input
-                  type="text"
+                  type="password"
                   value={formPassword}
                   onChange={(e) => setFormPassword(e.target.value)}
-                  placeholder="Password123!"
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:border-[#EA580C] font-mono"
+                  placeholder="••••••••"
+                  className="w-full px-3.5 py-2.5 text-xs sm:text-[13px] bg-slate-50/70 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#EA580C]/20 focus:border-[#EA580C] text-slate-900 transition-all font-mono placeholder:text-slate-400"
                 />
               </div>
 
-              <div className="pt-2 flex items-center justify-end gap-2">
+              {/* Field 4: WORKSPACE ROLE */}
+              <div>
+                <label className="block text-[11px] font-sans font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+                  WORKSPACE ROLE
+                </label>
+                <div className="relative">
+                  <select
+                    value={formRole}
+                    onChange={(e) => setFormRole(e.target.value as 'admin' | 'writer' | 'reader')}
+                    className="w-full appearance-none px-3.5 py-2.5 text-xs sm:text-[13px] bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#EA580C]/20 focus:border-[#EA580C] text-slate-900 cursor-pointer pr-10"
+                  >
+                    <option value="writer">Writer</option>
+                    <option value="admin">Administrator</option>
+                    <option value="reader">Reader</option>
+                  </select>
+                  <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+                </div>
+              </div>
+
+              {/* Action Buttons: CANCEL and CREATE USER */}
+              <div className="pt-3 flex items-center justify-center gap-3.5">
                 <button
                   type="button"
                   onClick={() => setShowAddUserModal(false)}
-                  className="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                  className="px-8 py-2.5 text-xs font-bold uppercase tracking-wider text-slate-600 bg-[#f4f5fa] hover:bg-[#e9ecf2] rounded-xl transition-colors cursor-pointer"
                 >
-                  Cancel
+                  CANCEL
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 text-xs font-bold uppercase tracking-wider text-white bg-[#EA580C] hover:bg-[#C2410C] rounded-lg shadow-sm transition-colors cursor-pointer"
+                  className="px-8 py-2.5 text-xs font-bold uppercase tracking-wider text-white bg-[#EA580C] hover:bg-[#C2410C] rounded-xl shadow-xs transition-colors cursor-pointer"
                 >
-                  Create User
+                  CREATE USER
                 </button>
               </div>
             </form>
