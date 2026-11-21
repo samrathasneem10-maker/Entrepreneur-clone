@@ -8,6 +8,7 @@ import {
   UBER_DRIVER_BONUSES_ARTICLE,
   HOMEPAGE_LATEST_STREAM,
   HOMEPAGE_RIGHT_STREAM,
+  BASELINE_LATEST_NEWS_9,
   Article,
 } from '@/data/newsData';
 
@@ -71,19 +72,39 @@ const BASELINE_HERO_8: Article[] = [
   HOMEPAGE_RIGHT_STREAM[2],
 ];
 
-export const HeroNewsSection: React.FC = () => {
+export interface HeroNewsSectionProps {
+  initialLatest?: Article[];
+  initialSlides?: Article[];
+  initialRightCard?: Article;
+  initialRightStream?: Article[];
+}
+
+export const HeroNewsSection: React.FC<HeroNewsSectionProps> = ({
+  initialLatest,
+  initialSlides,
+  initialRightCard,
+  initialRightStream,
+}) => {
   const [activeSlide, setActiveSlide] = useState(0);
-  const [latestArticles, setLatestArticles] = useState<Article[]>(HOMEPAGE_LATEST_STREAM);
-  const [heroSlides, setHeroSlides] = useState<Article[]>(HERO_SLIDES);
-  const [rightCard, setRightCard] = useState<Article>(UBER_DRIVER_BONUSES_ARTICLE);
-  const [rightStream, setRightStream] = useState<Article[]>(HOMEPAGE_RIGHT_STREAM);
+  const [latestArticles, setLatestArticles] = useState<Article[]>(() =>
+    initialLatest && initialLatest.length > 0 ? initialLatest : BASELINE_LATEST_NEWS_9.slice(0, 5)
+  );
+  const [heroSlides, setHeroSlides] = useState<Article[]>(() =>
+    initialSlides && initialSlides.length > 0 ? initialSlides : HERO_SLIDES
+  );
+  const [rightCard, setRightCard] = useState<Article>(() =>
+    initialRightCard || UBER_DRIVER_BONUSES_ARTICLE
+  );
+  const [rightStream, setRightStream] = useState<Article[]>(() =>
+    initialRightStream && initialRightStream.length > 0 ? initialRightStream : HOMEPAGE_RIGHT_STREAM
+  );
 
   useEffect(() => {
     // 1. Fetch Latest News (Slots 1 to 5 for left column)
     fetch('/api/articles?status=published&placement=latest_news&limit=15')
       .then((res) => res.json())
       .then((data) => {
-        if (data?.success && Array.isArray(data.data)) {
+        if (data?.success && Array.isArray(data.data) && data.data.length > 0) {
           const dbArticles: Article[] = data.data.map((a: any) => ({
             id: a.slug || String(a.dbId || a.id),
             slug: a.slug,
@@ -93,11 +114,11 @@ export const HeroNewsSection: React.FC = () => {
             date: a.date || 'Just now',
             readTime: a.readTime || '5 min read',
             excerpt: a.excerpt,
-            imageUrl: a.imageUrl || '/images/home-hero/latest-1-cofounder.png',
+            imageUrl: a.imageUrl || '',
           }));
 
           const combined = [...dbArticles];
-          HOMEPAGE_LATEST_STREAM.forEach((item) => {
+          BASELINE_LATEST_NEWS_9.forEach((item) => {
             if (!combined.some((c) => c.slug === item.slug || c.title.toLowerCase() === item.title.toLowerCase())) {
               combined.push(item);
             }
@@ -196,7 +217,15 @@ export const HeroNewsSection: React.FC = () => {
                     <span className="text-[9px] sm:text-[9.5px] font-bold text-[#1642D0] uppercase tracking-wider block font-sans mb-0.5 no-underline hover:no-underline active:no-underline focus:no-underline">
                       {art.category}
                     </span>
-                    <h3 className="font-serif font-bold text-[12.5px] sm:text-[13px] 2xl:text-[14px] leading-snug text-[#020618] group-hover:underline line-clamp-2 xl:line-clamp-3 my-0">
+                    <h3
+                      className="font-serif font-bold text-[12.5px] sm:text-[13px] 2xl:text-[14px] leading-snug text-[#020618] group-hover:underline line-clamp-3 my-0"
+                      style={{
+                        display: '-webkit-box',
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                      }}
+                    >
                       <Link href={`/article/${art.slug || art.id}`}>
                         {art.title}
                       </Link>
@@ -246,22 +275,36 @@ export const HeroNewsSection: React.FC = () => {
                   {currentHero.category}
                 </Link>
 
-                {/* Title */}
-                <h1 className="font-serif font-bold text-xl sm:text-2xl lg:text-[25px] xl:text-[27px] 2xl:text-[33px] leading-[1.2] tracking-tight text-white my-1">
+                {/* Title - Line clamp 3 */}
+                <h1
+                  className="font-serif font-bold text-xl sm:text-2xl lg:text-[25px] xl:text-[27px] 2xl:text-[33px] leading-[1.2] tracking-tight text-white my-1 line-clamp-3"
+                  style={{
+                    display: '-webkit-box',
+                    WebkitLineClamp: 3,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                  }}
+                >
                   <Link
                     href={`/article/${currentHero.slug || currentHero.id}`}
-                    className="hover:underline"
+                    className="hover:underline text-white no-underline"
                   >
                     {currentHero.title}
                   </Link>
                 </h1>
 
-                {/* Excerpt */}
-                {currentHero.excerpt && (
-                  <p className="font-sans text-xs 2xl:text-[14.5px] text-slate-200 leading-relaxed mt-1.5 max-w-xl my-0 line-clamp-2">
-                    {currentHero.excerpt}
-                  </p>
-                )}
+                {/* Excerpt - Line clamp 3 */}
+                <p
+                  className="font-sans text-xs 2xl:text-[14.5px] text-slate-200 leading-relaxed mt-1.5 max-w-xl my-0 line-clamp-3"
+                  style={{
+                    display: '-webkit-box',
+                    WebkitLineClamp: 3,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                  }}
+                >
+                  {currentHero.excerpt || 'The right growth decision at the right time can unlock massive opportunities. Here is what founders need to consider before it is too late.'}
+                </p>
 
                 {/* Author Info */}
                 <div className="flex items-center gap-2.5 mt-3">
@@ -342,8 +385,16 @@ export const HeroNewsSection: React.FC = () => {
                 <span className="inline-block bg-[#1642D0] text-white text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-xs w-fit font-sans no-underline hover:no-underline active:no-underline focus:no-underline">
                   {rightCard.category}
                 </span>
-                <h3 className="font-serif font-bold text-[14.5px] sm:text-[15.5px] 2xl:text-[17.5px] leading-snug text-white group-hover:underline mt-1 my-0 line-clamp-2">
-                  <Link href={`/article/${rightCard.slug || rightCard.id}`}>
+                <h3
+                  className="font-serif font-bold text-[14.5px] sm:text-[15.5px] 2xl:text-[17.5px] leading-snug text-white group-hover:underline mt-1 my-0 line-clamp-2"
+                  style={{
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <Link href={`/article/${rightCard.slug || rightCard.id}`} className="hover:underline text-white no-underline">
                     {rightCard.title}
                   </Link>
                 </h3>
@@ -364,7 +415,15 @@ export const HeroNewsSection: React.FC = () => {
                     <span className="text-[9.5px] font-bold text-[#1642D0] uppercase tracking-wider block font-sans mb-0.5 no-underline hover:no-underline active:no-underline focus:no-underline">
                       {art.category}
                     </span>
-                    <h4 className="font-serif font-bold text-[12.5px] sm:text-[13px] 2xl:text-[14px] leading-snug text-[#020618] group-hover:underline line-clamp-2 my-0">
+                    <h4
+                      className="font-serif font-bold text-[12.5px] sm:text-[13px] 2xl:text-[14px] leading-snug text-[#020618] group-hover:underline line-clamp-3 my-0"
+                      style={{
+                        display: '-webkit-box',
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                      }}
+                    >
                       <Link href={`/article/${art.slug || art.id}`}>
                         {art.title}
                       </Link>

@@ -1,7 +1,20 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
 export async function GET() {
+  // Delegate directly to the backend service in the backend folder
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/admin/stats`, { cache: 'no-store' });
+    if (res.ok) {
+      const data = await res.json();
+      return NextResponse.json(data);
+    }
+  } catch (backendErr) {
+    // Graceful fallback to local database query if backend is restarting
+  }
+
   try {
     let pendingCount = 0;
     let publishedCount = 0;
@@ -15,9 +28,7 @@ export async function GET() {
       if (pRows && pRows[0]) {
         pendingCount = Number(pRows[0].c || 0);
       }
-    } catch (err) {
-      console.warn('Stats pending count query fallback:', err);
-    }
+    } catch (err) {}
 
     try {
       const pubRows = await query<any[]>(
@@ -26,27 +37,21 @@ export async function GET() {
       if (pubRows && pubRows[0]) {
         publishedCount = Number(pubRows[0].c || 0);
       }
-    } catch (err) {
-      console.warn('Stats published count query fallback:', err);
-    }
+    } catch (err) {}
 
     try {
       const subRows = await query<any[]>('SELECT COUNT(*) as c FROM subscribers');
       if (subRows && subRows[0]) {
         subscribersCount = Number(subRows[0].c || 0);
       }
-    } catch (err) {
-      console.warn('Stats subscribers count query fallback:', err);
-    }
+    } catch (err) {}
 
     try {
       const uRows = await query<any[]>('SELECT COUNT(*) as c FROM users');
       if (uRows && uRows[0]) {
         usersCount = Number(uRows[0].c || 0);
       }
-    } catch (err) {
-      console.warn('Stats users count query fallback:', err);
-    }
+    } catch (err) {}
 
     return NextResponse.json({
       success: true,

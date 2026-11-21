@@ -2,16 +2,22 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { TOP_STORIES_GRID, HOMEPAGE_LATEST_STREAM, getArticleUrl, Article } from '@/data/newsData';
+import { TOP_STORIES_GRID, BASELINE_LATEST_NEWS_9, getArticleUrl, Article } from '@/data/newsData';
 
-export const FeaturedGridSection: React.FC = () => {
-  const [gridArticles, setGridArticles] = useState<Article[]>(TOP_STORIES_GRID);
+export interface FeaturedGridSectionProps {
+  initialArticles?: Article[];
+}
+
+export const FeaturedGridSection: React.FC<FeaturedGridSectionProps> = ({ initialArticles }) => {
+  const [gridArticles, setGridArticles] = useState<Article[]>(() =>
+    initialArticles && initialArticles.length > 0 ? initialArticles : BASELINE_LATEST_NEWS_9.slice(5, 9)
+  );
 
   useEffect(() => {
     fetch('/api/articles?status=published&placement=latest_news&limit=15')
       .then((res) => res.json())
       .then((data) => {
-        if (data?.success && Array.isArray(data.data)) {
+        if (data?.success && Array.isArray(data.data) && data.data.length > 0) {
           const dbArticles: Article[] = data.data.map((a: any) => ({
             id: a.slug || String(a.dbId || a.id),
             slug: a.slug,
@@ -26,16 +32,11 @@ export const FeaturedGridSection: React.FC = () => {
             date: a.date || 'Just now',
             readTime: a.readTime || '5 min read',
             excerpt: a.excerpt || a.cardSummary || '',
-            imageUrl: a.imageUrl || '/images/home-hero/grid-card-1.png',
+            imageUrl: a.imageUrl || '',
           }));
 
           const combined = [...dbArticles];
-          HOMEPAGE_LATEST_STREAM.forEach((item) => {
-            if (!combined.some((c) => c.slug === item.slug || c.title.toLowerCase() === item.title.toLowerCase())) {
-              combined.push(item);
-            }
-          });
-          TOP_STORIES_GRID.forEach((item) => {
+          BASELINE_LATEST_NEWS_9.forEach((item) => {
             if (!combined.some((c) => c.slug === item.slug || c.title.toLowerCase() === item.title.toLowerCase())) {
               combined.push(item);
             }
@@ -65,58 +66,72 @@ export const FeaturedGridSection: React.FC = () => {
             return (
               <article key={article.id || `grid-${idx}`} className="group flex flex-col justify-between w-full h-full">
                 <div className="flex flex-col justify-between h-full no-underline text-inherit">
-                  {/* Card Image - Sharp Rectangular Corners with slightly increased height for laptop & desktop */}
-                  {article.imageUrl && (
-                    <figure className="relative w-full aspect-[16/10.5] sm:aspect-[16/11.8] lg:aspect-[16/12] overflow-hidden rounded-none mb-2 border border-slate-200/90 bg-slate-100 flex-shrink-0">
-                      <Link href={articleUrl} className="block w-full h-full cursor-pointer">
-                        <img
-                          src={article.imageUrl}
-                          alt={article.title}
-                          referrerPolicy="no-referrer"
-                          onError={(e) => {
-                            const target = e.currentTarget;
-                            if (!target.dataset.fallback) {
-                              target.dataset.fallback = 'true';
-                              if (article.id === 'grid-1') target.src = '/images/home-hero/grid-card-1.png';
-                              else if (article.id === 'grid-2') target.src = '/images/home-hero/grid-card-2.png';
-                              else if (article.id === 'grid-3') target.src = '/images/home-hero/grid-card-3.png';
-                              else target.src = '/images/home-hero/grid-card-4.png';
-                            }
-                          }}
-                          className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 rounded-none"
-                        />
-                      </Link>
-                    </figure>
-                  )}
+                  {/* Card Image - All 4 images exact same size as 1st image */}
+                  <figure
+                    className="relative w-full aspect-[16/10.5] overflow-hidden rounded-none mb-2 border border-slate-200/90 bg-slate-100 flex-shrink-0"
+                    style={{ aspectRatio: '16 / 10.5' }}
+                  >
+                    <Link href={articleUrl} className="block w-full h-full cursor-pointer">
+                      <img
+                        src={article.imageUrl || '/images/home-hero/grid-card-1.png'}
+                        alt={article.title}
+                        referrerPolicy="no-referrer"
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          if (!target.dataset.fallback) {
+                            target.dataset.fallback = 'true';
+                            target.src = '/images/home-hero/grid-card-1.png';
+                          }
+                        }}
+                        className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 rounded-none"
+                      />
+                    </Link>
+                  </figure>
 
-                  {/* Text Content: Displayed with descriptions and author details matching Image 1 */}
-                  <div className="flex flex-col justify-between flex-1">
-                    {/* Category Badge */}
-                    <span className="text-[11px] sm:text-xs font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1.5 text-left block no-underline hover:no-underline active:no-underline focus:no-underline">
-                      {article.category}
-                    </span>
+                  {/* Text Content: Identical alignment across all 4 cards */}
+                  <div className="flex flex-col justify-between flex-1 min-w-0">
+                    <div>
+                      {/* Category Badge */}
+                      <span className="text-[11px] sm:text-xs font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1.5 text-left block no-underline hover:no-underline active:no-underline focus:no-underline truncate h-4 leading-4">
+                        {article.category}
+                      </span>
 
-                    {/* Title */}
-                    <h3 className="text-[17px] sm:text-[18px] lg:text-[19px] font-serif font-bold text-[#020618] leading-[1.3] tracking-tight mb-1.5 text-left group-hover:underline decoration-[#020618] decoration-1 underline-offset-2 transition-all">
-                      <Link href={articleUrl} className="hover:text-[#1642D0] transition-colors">
-                        {article.title}
-                      </Link>
-                    </h3>
+                      {/* Title - Line clamp 3 with uniform height */}
+                      <h3
+                        className="text-[16px] sm:text-[17px] lg:text-[18px] font-serif font-bold text-[#020618] leading-[1.28] tracking-tight mb-2 text-left group-hover:underline decoration-[#020618] decoration-1 underline-offset-2 transition-all line-clamp-3 h-[66px] sm:h-[70px] lg:h-[74px] flex items-start"
+                        style={{
+                          display: '-webkit-box',
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                        }}
+                      >
+                        <Link href={articleUrl} className="hover:text-[#1642D0] transition-colors">
+                          {article.title}
+                        </Link>
+                      </h3>
 
-                    {/* Excerpt / Description */}
-                    {article.excerpt && (
-                      <p className="text-xs sm:text-[13px] text-slate-600 font-serif font-normal leading-relaxed mb-3 sm:mb-2.5 line-clamp-3 text-left flex-1">
-                        {article.excerpt}
+                      {/* Excerpt / Description - Line clamp 3 with uniform height */}
+                      <p
+                        className="text-xs sm:text-[13px] text-slate-600 font-serif font-normal leading-relaxed mb-3 line-clamp-3 h-[58px] sm:h-[60px] lg:h-[64px] text-left"
+                        style={{
+                          display: '-webkit-box',
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                        }}
+                      >
+                        {article.excerpt || 'Read the full coverage and in-depth reporting on key market developments.'}
                       </p>
-                    )}
+                    </div>
 
                     {/* Author Line */}
                     {article.author?.name && (
-                      <div className="mt-auto pt-1 flex items-center gap-1.5 text-[11px] sm:text-xs font-sans uppercase tracking-wider text-left">
+                      <div className="mt-auto pt-2 border-t border-slate-100/70 flex items-center gap-1.5 text-[11px] sm:text-xs font-sans uppercase tracking-wider text-left">
                         <span className="text-slate-500 font-medium">BY</span>
                         <Link
                           href={`/author/${authorSlug}`}
-                          className="text-[#1642D0] font-bold hover:underline underline-offset-2 transition-colors"
+                          className="text-[#1642D0] font-bold hover:underline underline-offset-2 transition-colors truncate"
                         >
                           {article.author.name}
                         </Link>

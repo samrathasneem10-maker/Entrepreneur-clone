@@ -1,29 +1,97 @@
 'use client';
 
-import React, { useState, useEffect, useTransition, Suspense } from 'react';
+import React, { useState, useEffect, useTransition, Suspense, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Search, X, SearchX, ChevronLeft, ChevronRight, TrendingUp } from 'lucide-react';
+import { Search, X, SearchX, ChevronLeft, ChevronRight, TrendingUp, ArrowRight } from 'lucide-react';
 import { Header } from '@/layouts/Header';
 import { Footer } from '@/layouts/Footer';
-import { searchArticles, ALL_ARTICLES, Article, getArticleUrl } from '@/data/newsData';
+import { ALL_ARTICLES, Article, getArticleUrl } from '@/data/newsData';
 import { SearchSkeleton } from '@/components/skeletons/SearchSkeleton';
 
-// United States Today existing categories for the Trending Topics section
+// 8 Main Categories captured from the Homepage Top Bar navigation
 const TRENDING_TOPICS = [
-  'Building a Business',
-  'Business News',
-  'Startups & Entrepreneurship',
-  'Technology & AI',
-  'Economy & Policy',
+  'Breaking News',
   'Markets & Investing',
-  'Banking & Finance',
+  'Economy & Policy',
   'Corporate News',
+  'Startups & Entrepreneurship',
+  'Banking & Finance',
+  'Technology & AI',
   'Real Estate & Property',
-  'Global Business',
 ];
 
-const ARTICLES_PER_PAGE = 8;
+interface AuthorProfileItem {
+  name: string;
+  slug: string;
+  role: string;
+  badge: string;
+  avatar: string;
+  bio?: string;
+}
+
+const AUTHORS_REGISTRY: AuthorProfileItem[] = [
+  {
+    name: 'Samra',
+    slug: 'samra',
+    role: 'Staff Writer',
+    badge: 'United States Today Staff',
+    avatar: '/uploads/upload_1794590868177_images__1_.webp',
+    bio: 'Executive business contributor at United States Today.',
+  },
+  {
+    name: 'mishal',
+    slug: 'mishal',
+    role: 'Staff Writer',
+    badge: 'United States Today Staff',
+    avatar: '/images/user-avatar-butterfly.png',
+    bio: 'Writer User at United States Today.',
+  },
+  {
+    name: 'Writer',
+    slug: 'writer',
+    role: 'Staff Writer',
+    badge: 'United States Today Staff',
+    avatar: '/images/user-avatar-butterfly.png',
+    bio: 'Staff Writer at United States Today.',
+  },
+  {
+    name: 'Fathima Samra',
+    slug: 'fathima-samra',
+    role: 'Staff Writer',
+    badge: 'United States Today Staff',
+    avatar: '/images/user-avatar-butterfly.png',
+    bio: 'Staff Writer at United States Today.',
+  },
+  {
+    name: 'fathima',
+    slug: 'fathima',
+    role: 'Staff Writer',
+    badge: 'United States Today Staff',
+    avatar: '/images/user-avatar-butterfly.png',
+    bio: 'Staff Writer at United States Today.',
+  },
+  {
+    name: 'System Administrator',
+    slug: 'system-administrator',
+    role: 'Editorial Director',
+    badge: 'United States Today Editorial',
+    avatar: '/uploads/upload_1794438116018_images.webp',
+    bio: 'System Administrator and Editorial Director at United States Today.',
+  },
+  {
+    name: 'Mohamed Azmy Mohamed Akram',
+    slug: 'mohamed-azmy-mohamed-akram',
+    role: 'Administrator',
+    badge: 'United States Today Staff',
+    avatar: '/images/user-avatar-butterfly.png',
+    bio: 'Administrator at United States Today.',
+  },
+];
+
+type EntityTab = 'All' | 'Articles' | 'Authors';
+
+const ARTICLES_PER_PAGE = 12;
 
 function SearchContent() {
   const router = useRouter();
@@ -32,6 +100,9 @@ function SearchContent() {
 
   const [query, setQuery] = useState(initialQuery);
   const [currentPage, setCurrentPage] = useState(1);
+  const [entityFilter, setEntityFilter] = useState<EntityTab>('All');
+  const [dbPublishedArticles, setDbPublishedArticles] = useState<Article[]>([]);
+  const [dbAuthors, setDbAuthors] = useState<AuthorProfileItem[]>([]);
   const [, startTransition] = useTransition();
 
   // Sync state if URL query changes externally
@@ -39,6 +110,88 @@ function SearchContent() {
     setQuery(initialQuery);
     setCurrentPage(1);
   }, [initialQuery]);
+
+  // Fetch published articles from database API
+  useEffect(() => {
+    fetch('/api/articles?status=published&limit=100')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success && Array.isArray(data.data)) {
+          setDbPublishedArticles(data.data.filter((a: any) => a.status === 'published'));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Fetch real writer users directly from database authors API
+  useEffect(() => {
+    fetch('/api/authors')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success && Array.isArray(data.data)) {
+          setDbAuthors(data.data);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Combined published articles (deduplicated by id/slug)
+  const allPublishedArticles = useMemo(() => {
+    const map = new Map<string, Article>();
+    dbPublishedArticles.forEach((art) => {
+      const key = art.slug || art.id;
+      if (key) map.set(key, art);
+    });
+    ALL_ARTICLES.forEach((art) => {
+      const key = art.slug || art.id;
+      if (key && !map.has(key)) {
+        map.set(key, art);
+      }
+    });
+    return Array.from(map.values());
+  }, [dbPublishedArticles]);
+
+  // Combined authors list with Real Writer Users as top priority
+  const allAuthors = useMemo(() => {
+    const map = new Map<string, AuthorProfileItem>();
+    // 1. Priority 1: Real writer users from database API
+    dbAuthors.forEach((auth) => {
+      if (auth.slug) map.set(auth.slug, auth);
+    });
+    // 2. Priority 2: Registered baseline authors (including real writer fallback)
+    AUTHORS_REGISTRY.forEach((auth) => {
+      if (!map.has(auth.slug)) {
+        map.set(auth.slug, auth);
+      }
+    });
+    return Array.from(map.values());
+  }, [dbAuthors]);
+
+  // Filtered articles (All Time, no time filter restrictions)
+  const filteredArticles = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return allPublishedArticles.filter((art) => {
+      if (!q) return true;
+      const title = (art.title || '').toLowerCase();
+      const excerpt = (art.excerpt || '').toLowerCase();
+      const cat = (art.category || '').toLowerCase();
+      const auth = (art.author?.name || '').toLowerCase();
+      return title.includes(q) || excerpt.includes(q) || cat.includes(q) || auth.includes(q);
+    });
+  }, [allPublishedArticles, query]);
+
+  // Filtered authors
+  const filteredAuthors = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return allAuthors;
+    return allAuthors.filter((auth) => {
+      const name = auth.name.toLowerCase();
+      const role = auth.role.toLowerCase();
+      const badge = auth.badge.toLowerCase();
+      const bio = (auth.bio || '').toLowerCase();
+      return name.includes(q) || role.includes(q) || badge.includes(q) || bio.includes(q);
+    });
+  }, [allAuthors, query]);
 
   // Handle Search Input Change with URL sync
   const handleQueryChange = (val: string) => {
@@ -68,9 +221,6 @@ function SearchContent() {
     }
   };
 
-  // Filtered articles
-  const filteredArticles = searchArticles(query);
-
   // Pagination logic
   const totalPages = Math.max(1, Math.ceil(filteredArticles.length / ARTICLES_PER_PAGE));
   const safePage = Math.min(Math.max(1, currentPage), totalPages);
@@ -84,148 +234,336 @@ function SearchContent() {
       {/* Main Navigation Header */}
       <Header />
 
-      {/* Main Search Page Container (Matching Reference Image 1) */}
-      <main className="flex-1 w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 py-8 sm:py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
-          
-          {/* ========================================================= */}
-          {/* LEFT COLUMN: Heading, Search Bar & Search Results         */}
-          {/* ========================================================= */}
-          <div className="lg:col-span-8 xl:col-span-8">
-            {/* Top Heading */}
-            <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-serif font-black text-[#020618] tracking-tight mb-5 leading-tight my-0">
-              How can we help you today?
-            </h1>
-
-            {/* Pill Search Bar with Gradient Border Outline */}
-            <div className="relative w-full max-w-2xl mt-4">
-              <div className="p-[2.5px] bg-gradient-to-r from-emerald-500 via-teal-500 to-blue-600 rounded-full shadow-xs focus-within:shadow-md transition-shadow">
-                <div className="relative flex items-center bg-white rounded-full px-5 py-3.5 sm:py-4">
-                  <Search className="w-5 h-5 sm:w-6 sm:h-6 text-slate-800 shrink-0 mr-3.5 stroke-[2.2]" />
-                  <input
-                    type="text"
-                    value={query}
-                    onChange={(e) => handleQueryChange(e.target.value)}
-                    placeholder="How can we help you today?"
-                    className="w-full text-base sm:text-lg font-serif italic text-slate-900 bg-transparent focus:outline-none placeholder:text-slate-400 placeholder:italic placeholder:font-serif"
-                    autoFocus
-                  />
-                  {query && (
-                    <button
-                      type="button"
-                      onClick={handleClear}
-                      className="p-1.5 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded-full transition-colors cursor-pointer ml-2"
-                      aria-label="Clear search"
-                    >
-                      <X className="w-4 h-4 sm:w-5 sm:h-5" />
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Search Results Heading */}
-            <div className="mt-10 sm:mt-12 mb-6 flex items-center justify-between">
-              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#020618] tracking-tight my-0">
-                Search Results
-              </h2>
-              {query.trim() && (
-                <span className="text-xs text-slate-500 font-sans">
-                  {filteredArticles.length} result{filteredArticles.length !== 1 ? 's' : ''}
-                </span>
+      {/* Main Full-Page Search Container (Matching Image 1) */}
+      <main className="flex-1 w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 py-8 sm:py-10">
+        {/* Search Bar Section (Image 1 Layout) */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 mb-6">
+          <h1 className="text-2xl sm:text-3xl font-serif font-black text-[#020618] tracking-tight shrink-0 my-0">
+            Search
+          </h1>
+          <div className="relative flex-1">
+            <div className="flex items-center bg-white border border-slate-300 focus-within:border-[#020618] rounded-lg px-4 py-2.5 sm:py-3 transition-colors shadow-2xs">
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => handleQueryChange(e.target.value)}
+                placeholder="What are you looking for?"
+                className="w-full text-sm sm:text-base text-slate-800 placeholder:text-slate-400 font-normal outline-none bg-transparent"
+                autoFocus
+              />
+              {query ? (
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  className="p-1 text-slate-400 hover:text-slate-700 transition-colors cursor-pointer ml-1"
+                  aria-label="Clear search"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              ) : (
+                <Search className="w-4 h-4 text-slate-400 shrink-0 ml-1 stroke-[2]" />
               )}
             </div>
+          </div>
+        </div>
 
-            {/* Search Results Article List (Horizontal Card Layout Matching Image 1) */}
-            {filteredArticles.length > 0 ? (
-              <>
-                <div className="divide-y divide-slate-200/90 border-t border-slate-200/90">
-                  {paginatedArticles.map((art) => {
-                    const articleUrl = getArticleUrl(art);
-                    const authorName = art.author?.name || 'UNITED STATES TODAY';
-                    return (
-                      <article
-                        key={art.id}
-                        className="py-6 sm:py-7 flex items-start justify-between gap-5 sm:gap-7 group"
+        {/* Filter Navigation Row: All / Articles / Authors | Categories (Image 1 Layout, Without Time Filters) */}
+        <div className="flex items-center gap-1.5 sm:gap-2 pb-3.5 border-b border-slate-200 overflow-x-auto no-scrollbar mb-8">
+          {(['All', 'Articles', 'Authors'] as const).map((tab) => {
+            const isActive = entityFilter === tab;
+            return (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => {
+                  setEntityFilter(tab);
+                  setCurrentPage(1);
+                }}
+                className={`px-3.5 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-all cursor-pointer shrink-0 select-none ${
+                  isActive
+                    ? 'bg-[#020618] text-white shadow-xs'
+                    : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
+                }`}
+              >
+                {tab}
+              </button>
+            );
+          })}
+
+          <div className="w-[1px] h-5 bg-slate-300 mx-1.5 shrink-0" />
+
+          {TRENDING_TOPICS.map((cat) => {
+            const isSelected = query.trim().toLowerCase() === cat.toLowerCase();
+            return (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => handleCategoryClick(cat)}
+                className={`px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-all cursor-pointer shrink-0 select-none ${
+                  isSelected
+                    ? 'bg-[#1642D0] text-white shadow-xs'
+                    : 'text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                {cat}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Results Header Count */}
+        <div className="mb-6 flex items-center justify-between">
+          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider font-sans">
+            {entityFilter === 'Authors'
+              ? `${filteredAuthors.length} AUTHOR${filteredAuthors.length !== 1 ? 'S' : ''}`
+              : `${filteredArticles.length} PUBLISHED ARTICLE${filteredArticles.length !== 1 ? 'S' : ''}`}
+          </span>
+        </div>
+
+        {/* ========================================================= */}
+        {/* VIEW 1: AUTHORS TAB                                       */}
+        {/* ========================================================= */}
+        {entityFilter === 'Authors' ? (
+          filteredAuthors.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+              {filteredAuthors.map((author) => (
+                <Link
+                  key={author.slug}
+                  href={`/author/${author.slug}`}
+                  className="flex items-center gap-3.5 p-4 rounded-xl border border-slate-200/90 hover:border-[#1642D0] hover:shadow-xs bg-white transition-all group"
+                >
+                  <img
+                    src={author.avatar}
+                    alt={author.name}
+                    className="w-12 h-12 rounded-full object-cover shrink-0 border border-slate-200 bg-slate-100"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = '/images/author-sherin.png';
+                    }}
+                  />
+                  <div className="min-w-0 flex-1">
+                    <h4 className="text-sm sm:text-base font-serif font-bold text-slate-900 group-hover:text-[#1642D0] truncate my-0">
+                      {author.name}
+                    </h4>
+                    <p className="text-xs text-slate-500 truncate my-0 mt-0.5">
+                      {author.role}
+                    </p>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-1 block">
+                      {author.badge}
+                    </span>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-[#1642D0] group-hover:translate-x-0.5 transition-all shrink-0" />
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="py-12 px-6 bg-slate-50 border border-slate-200/80 rounded-2xl text-center space-y-3">
+              <h3 className="text-lg font-serif font-bold text-[#020618] my-0">No authors found</h3>
+              <p className="text-xs text-slate-600">No author profiles match "{query}".</p>
+            </div>
+          )
+        ) : (
+          /* ========================================================= */
+          /* VIEW 2: ARTICLES (AND ALL) TAB - FULL-PAGE 3-COL GRID     */
+          /* ========================================================= */
+          filteredArticles.length > 0 ? (
+            <>
+              {/* If in All tab and query matches authors, display top author previews */}
+              {entityFilter === 'All' && query.trim() && filteredAuthors.length > 0 && (
+                <div className="mb-8 p-4 sm:p-5 bg-slate-50 rounded-2xl border border-slate-200/80">
+                  <div className="flex items-center justify-between mb-3.5">
+                    <span className="text-[11px] font-bold tracking-wider uppercase text-slate-500 font-sans">
+                      MATCHING AUTHORS ({filteredAuthors.length})
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEntityFilter('Authors');
+                        setCurrentPage(1);
+                      }}
+                      className="text-xs font-semibold text-[#1642D0] hover:underline cursor-pointer"
+                    >
+                      View all in Authors →
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    {filteredAuthors.slice(0, 4).map((author) => (
+                      <Link
+                        key={author.slug}
+                        href={`/author/${author.slug}`}
+                        className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-white hover:border-[#1642D0] hover:shadow-xs transition-all group"
                       >
-                        {/* Left: Article Details */}
-                        <div className="flex-1 min-w-0 pr-1">
-                          <Link href={articleUrl} className="group-hover:text-[#1642D0] transition-colors">
-                            <h3 className="font-serif font-bold text-lg sm:text-xl lg:text-[22px] text-[#020618] group-hover:text-[#1642D0] transition-colors leading-snug line-clamp-2 my-0">
-                              {art.title}
-                            </h3>
-                          </Link>
+                        <img
+                          src={author.avatar}
+                          alt={author.name}
+                          className="w-10 h-10 rounded-full object-cover shrink-0 border border-slate-200 bg-slate-100"
+                          onError={(e) => {
+                            (e.currentTarget as HTMLImageElement).src = '/images/author-sherin.png';
+                          }}
+                        />
+                        <div className="min-w-0 flex-1">
+                          <h4 className="text-sm font-serif font-bold text-slate-900 group-hover:text-[#1642D0] truncate my-0">
+                            {author.name}
+                          </h4>
+                          <p className="text-[11px] text-slate-500 truncate my-0 mt-0.5">
+                            {author.role}
+                          </p>
+                        </div>
+                        <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-[#1642D0] group-hover:translate-x-0.5 transition-all shrink-0" />
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
 
+              {/* Full-Page Responsive 3-Column Articles Grid (Image 1 Layout) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
+                {paginatedArticles.map((art) => {
+                  const articleUrl = getArticleUrl(art);
+                  const authorName = art.author?.name || 'UNITED STATES TODAY';
+                  return (
+                    <Link
+                      key={art.id}
+                      href={articleUrl}
+                      className="flex items-start justify-between gap-4 p-4 rounded-xl border border-slate-200/90 hover:border-slate-300 hover:shadow-xs bg-white transition-all group"
+                    >
+                      {/* Left: Article Details */}
+                      <div className="flex-1 min-w-0 pr-1 flex flex-col justify-between self-stretch">
+                        <div>
+                          <h3 className="font-serif font-bold text-sm sm:text-base text-[#020618] group-hover:text-[#1642D0] transition-colors leading-snug line-clamp-3 my-0">
+                            {art.title}
+                          </h3>
                           {art.excerpt && (
-                            <p className="text-xs sm:text-sm text-slate-600 font-serif leading-relaxed line-clamp-2 mt-2.5 my-0">
+                            <p className="text-xs text-slate-500 font-serif leading-relaxed line-clamp-2 mt-2 my-0">
                               {art.excerpt}
                             </p>
                           )}
-
-                          <div className="mt-3 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-700 font-sans flex items-center gap-1.5">
-                            <span className="text-slate-400 font-medium">BY</span>
-                            <span className="text-slate-800 hover:text-[#1642D0] transition-colors">
-                              {authorName.toUpperCase()}
-                            </span>
-                          </div>
                         </div>
 
-                        {/* Right: Article Thumbnail Image */}
-                        <Link
-                          href={articleUrl}
-                          className="w-28 h-20 sm:w-36 sm:h-24 md:w-44 md:h-28 rounded-lg overflow-hidden shrink-0 bg-slate-100 border border-slate-200/60 shadow-2xs group-hover:opacity-95 transition-opacity"
-                        >
-                          <img
-                            src={art.imageUrl || '/images/topic-hero-leaders.jpg'}
-                            alt={art.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                            onError={(e) => {
-                              const target = e.currentTarget as HTMLImageElement;
-                              target.onerror = null;
-                              target.src = '/images/topic-hero-leaders.jpg';
-                            }}
-                          />
-                        </Link>
-                      </article>
-                    );
-                  })}
+                        <div className="mt-3">
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-[#1642D0] block">
+                            {art.category}
+                          </span>
+                          <div className="text-[11px] text-slate-400 font-sans mt-0.5 flex items-center gap-1.5">
+                            <span>{authorName}</span>
+                            {art.date && (
+                              <>
+                                <span>•</span>
+                                <span>{art.date}</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Right: Article Thumbnail */}
+                      <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-lg overflow-hidden shrink-0 bg-slate-100 border border-slate-200/70 shadow-2xs group-hover:opacity-95 transition-opacity">
+                        <img
+                          src={art.imageUrl || '/images/topic-hero-leaders.jpg'}
+                          alt={art.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          onError={(e) => {
+                            const target = e.currentTarget as HTMLImageElement;
+                            target.onerror = null;
+                            target.src = '/images/topic-hero-leaders.jpg';
+                          }}
+                        />
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+
+              {/* Full-Width Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between pt-8 mt-10 border-t border-slate-200 text-xs font-semibold font-sans">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCurrentPage((p) => Math.max(1, p - 1));
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    disabled={safePage <= 1}
+                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    <span>Previous</span>
+                  </button>
+
+                  <span className="text-slate-500 font-medium">
+                    Page {safePage} of {totalPages}
+                  </span>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCurrentPage((p) => Math.min(totalPages, p + 1));
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    disabled={safePage >= totalPages}
+                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                  >
+                    <span>Next</span>
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
                 </div>
-
-                {/* Pagination Controls */}
-                {totalPages > 1 && (
-                  <div className="flex items-center justify-between pt-8 mt-6 border-t border-slate-200 text-xs font-semibold font-sans">
+              )}
+            </>
+          ) : (
+            query.trim() && filteredAuthors.length > 0 ? (
+              <div className="space-y-4">
+                <div className="p-5 bg-slate-50 rounded-2xl border border-slate-200/80">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <span className="text-[11px] font-bold tracking-wider uppercase text-slate-500 font-sans block">
+                        MATCHING AUTHORS ({filteredAuthors.length})
+                      </span>
+                      <p className="text-xs text-slate-500 my-0 mt-0.5">
+                        No published articles matched "{query}", but we found {filteredAuthors.length} matching author profile{filteredAuthors.length !== 1 ? 's' : ''}:
+                      </p>
+                    </div>
                     <button
                       type="button"
                       onClick={() => {
-                        setCurrentPage((p) => Math.max(1, p - 1));
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        setEntityFilter('Authors');
+                        setCurrentPage(1);
                       }}
-                      disabled={safePage <= 1}
-                      className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                      className="text-xs font-semibold text-[#1642D0] hover:underline cursor-pointer shrink-0 ml-2"
                     >
-                      <ChevronLeft className="w-4 h-4" />
-                      <span>Previous</span>
-                    </button>
-
-                    <span className="text-slate-500 font-medium">
-                      Page {safePage} of {totalPages}
-                    </span>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setCurrentPage((p) => Math.min(totalPages, p + 1));
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                      }}
-                      disabled={safePage >= totalPages}
-                      className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
-                    >
-                      <span>Next</span>
-                      <ChevronRight className="w-4 h-4" />
+                      View all in Authors →
                     </button>
                   </div>
-                )}
-              </>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    {filteredAuthors.map((author) => (
+                      <Link
+                        key={author.slug}
+                        href={`/author/${author.slug}`}
+                        className="flex items-center gap-3.5 p-3.5 rounded-xl border border-slate-200 bg-white hover:border-[#1642D0] hover:shadow-xs transition-all group"
+                      >
+                        <img
+                          src={author.avatar}
+                          alt={author.name}
+                          className="w-11 h-11 rounded-full object-cover shrink-0 border border-slate-200 bg-slate-100"
+                          onError={(e) => {
+                            (e.currentTarget as HTMLImageElement).src = '/images/author-sherin.png';
+                          }}
+                        />
+                        <div className="min-w-0 flex-1">
+                          <h4 className="text-sm font-serif font-bold text-slate-900 group-hover:text-[#1642D0] truncate my-0">
+                            {author.name}
+                          </h4>
+                          <p className="text-xs text-slate-500 truncate my-0 mt-0.5">
+                            {author.role}
+                          </p>
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-1 block">
+                            {author.badge}
+                          </span>
+                        </div>
+                        <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-[#1642D0] group-hover:translate-x-0.5 transition-all shrink-0" />
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
             ) : (
               /* No Results State */
               <div className="py-12 px-6 bg-slate-50 border border-slate-200/80 rounded-2xl text-center space-y-4">
@@ -236,7 +574,7 @@ function SearchContent() {
                   No articles found
                 </h3>
                 <p className="text-sm text-slate-600 font-sans max-w-md mx-auto">
-                  We couldn't find any articles matching <span className="font-bold text-slate-900">"{query}"</span>. Try another keyword or explore the trending topics on the right.
+                  We couldn't find any published articles matching <span className="font-bold text-slate-900">"{query}"</span>. Try another keyword or select a category above.
                 </p>
                 <button
                   type="button"
@@ -246,44 +584,9 @@ function SearchContent() {
                   View All Articles
                 </button>
               </div>
-            )}
-          </div>
-
-          {/* ========================================================= */}
-          {/* RIGHT COLUMN: Trending Topics                             */}
-          {/* ========================================================= */}
-          <aside className="lg:col-span-4 xl:col-span-4 w-full lg:pl-6 lg:border-l lg:border-slate-200/80">
-            {/* Trending Topics Heading with Upward Trend Icon */}
-            <div className="flex items-center gap-2 mb-6">
-              <TrendingUp className="w-5 h-5 text-slate-900 stroke-[2.2]" />
-              <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#020618] tracking-tight my-0">
-                Trending Topics:
-              </h2>
-            </div>
-
-            {/* Vertical Pill / Capsule Buttons Matching Image 1 */}
-            <div className="flex flex-col gap-3 max-w-xs">
-              {TRENDING_TOPICS.map((topic) => {
-                const isActive = query.trim().toLowerCase() === topic.toLowerCase();
-                return (
-                  <button
-                    key={topic}
-                    type="button"
-                    onClick={() => handleCategoryClick(topic)}
-                    className={`w-full py-2.5 px-6 rounded-full border text-sm font-serif font-semibold text-center transition-all cursor-pointer shadow-2xs ${
-                      isActive
-                        ? 'bg-[#020618] text-white border-[#020618] shadow-sm'
-                        : 'bg-white text-slate-800 border-slate-300 hover:border-slate-800 hover:bg-slate-50'
-                    }`}
-                  >
-                    {topic}
-                  </button>
-                );
-              })}
-            </div>
-          </aside>
-
-        </div>
+            )
+          )
+        )}
       </main>
 
       {/* Footer Navigation */}

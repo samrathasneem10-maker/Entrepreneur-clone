@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { writeFile } from 'fs/promises';
 import path from 'path';
+import fs from 'fs';
 
 export async function POST(request: Request) {
   try {
@@ -18,10 +19,25 @@ export async function POST(request: Request) {
     const timestamp = Date.now();
     const cleanName = file.name.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '_');
     const filename = `upload_${timestamp}_${cleanName}.webp`;
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-    const filePath = path.join(uploadDir, filename);
+    
+    // Save to frontend public uploads
+    const frontendUploadDir = path.join(process.cwd(), 'public', 'uploads');
+    if (!fs.existsSync(frontendUploadDir)) {
+      fs.mkdirSync(frontendUploadDir, { recursive: true });
+    }
+    const frontendFilePath = path.join(frontendUploadDir, filename);
+    await writeFile(frontendFilePath, buffer);
 
-    await writeFile(filePath, buffer);
+    // Also sync to backend uploads
+    const backendUploadDir = path.join(process.cwd(), '..', 'backend', 'uploads');
+    if (!fs.existsSync(backendUploadDir)) {
+      fs.mkdirSync(backendUploadDir, { recursive: true });
+    }
+    const backendFilePath = path.join(backendUploadDir, filename);
+    try {
+      await writeFile(backendFilePath, buffer);
+    } catch {}
+
     const publicUrl = `/uploads/${filename}`;
 
     return NextResponse.json({

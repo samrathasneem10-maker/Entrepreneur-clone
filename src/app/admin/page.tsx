@@ -1,18 +1,17 @@
 'use client';
 
-import React, { Suspense } from 'react';
-import AdminDashboardContent from '@/components/admin/AdminDashboardContent';
+import React from 'react';
+import dynamic from 'next/dynamic';
+import AdminDashboardSkeleton from '@/components/admin/AdminDashboardSkeleton';
+
+const AdminDashboardContent = dynamic(
+  () => import('@/components/admin/AdminDashboardContent'),
+  {
+    ssr: false,
+    loading: () => <AdminDashboardSkeleton />,
+  }
+);
 
 export default function AdminPortalPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center bg-white">
-          <div className="w-8 h-8 border-3 border-[#EA580C] border-t-transparent rounded-full animate-spin" />
-        </div>
-      }
-    >
-      <AdminDashboardContent />
-    </Suspense>
-  );
+  return <AdminDashboardContent />;
 }

@@ -53,7 +53,9 @@ export async function GET(request: Request) {
       }
     } else {
       let fallbackEmail = 'samrathasneem20@gmail.com';
-      if (cookieRole === 'writer' || cookieRole === 'writter') {
+      if (cookieRole === 'admin') {
+        fallbackEmail = 'admin@gmail.com';
+      } else if (cookieRole === 'writer' || cookieRole === 'writter') {
         fallbackEmail = 'writter@gmail.com';
       }
       const email = (queryEmail || cookieEmail || fallbackEmail).trim().toLowerCase();

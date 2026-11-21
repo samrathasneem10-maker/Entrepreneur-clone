@@ -9,12 +9,16 @@ interface ProfileSettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
   onProfileUpdated?: (updatedData: any) => void;
+  initialEmail?: string;
+  initialRole?: string;
 }
 
 export default function ProfileSettingsModal({
   isOpen,
   onClose,
   onProfileUpdated,
+  initialEmail,
+  initialRole,
 }: ProfileSettingsModalProps) {
   const { user, updateUser } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -25,6 +29,7 @@ export default function ProfileSettingsModal({
   const [bio, setBio] = useState('');
   const [linkedinUrl, setLinkedinUrl] = useState('');
   const [avatar, setAvatar] = useState('/images/user-avatar-butterfly.png');
+  const [role, setRole] = useState(initialRole || user?.role || 'user');
 
   // Loading & notification states
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
@@ -39,8 +44,8 @@ export default function ProfileSettingsModal({
     setErrorMessage(null);
     setSuccessMessage(null);
 
-    // Determine target email for active user
-    let targetEmail = user?.email || '';
+    // Determine target email for active user (admin, writer, or reader)
+    let targetEmail = initialEmail || user?.email || '';
     if (!targetEmail) {
       try {
         const stored = localStorage.getItem('entrepreneur_user');
@@ -51,10 +56,19 @@ export default function ProfileSettingsModal({
       } catch {}
     }
     if (!targetEmail) {
-      targetEmail = 'writter@gmail.com';
+      if (initialRole === 'admin' || (typeof window !== 'undefined' && window.location.pathname.startsWith('/admin'))) {
+        targetEmail = 'admin@gmail.com';
+      } else if (initialRole === 'reader' || (typeof window !== 'undefined' && window.location.pathname.includes('/reader'))) {
+        targetEmail = 'samrathasneem20@gmail.com';
+      } else {
+        targetEmail = 'writter@gmail.com';
+      }
     }
 
-    const currentName = user?.name || user?.writerName || '';
+    const effectiveRole = initialRole || user?.role || (targetEmail.includes('admin') ? 'admin' : targetEmail.includes('writ') ? 'writer' : 'reader');
+    setRole(effectiveRole);
+
+    const currentName = user?.name || user?.writerName || (effectiveRole === 'admin' ? 'System Administrator' : '');
     const currentAvatar = user?.avatar || '/images/user-avatar-butterfly.png';
     const currentBio = user?.bio || '';
     const currentLinkedin = user?.linkedinUrl || '';
@@ -77,10 +91,11 @@ export default function ProfileSettingsModal({
           if (p.avatar) setAvatar(p.avatar);
           if (p.bio !== undefined) setBio(p.bio || '');
           if (p.linkedinUrl !== undefined) setLinkedinUrl(p.linkedinUrl || '');
+          if (p.role) setRole(p.role);
         }
       })
       .catch(() => {});
-  }, [isOpen, user]);
+  }, [isOpen, user, initialEmail, initialRole]);
 
   if (!isOpen) return null;
 
@@ -221,10 +236,15 @@ export default function ProfileSettingsModal({
           bio: trimmedBio,
           writerName: trimmedName,
           linkedinUrl: trimmedLinkedin,
+          role,
         };
 
         // Update user session in AuthContext & localStorage
         updateUser(updatedData);
+
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('entrepreneur_user_updated', { detail: updatedData }));
+        }
 
         if (onProfileUpdated) {
           onProfileUpdated(updatedData);
@@ -258,8 +278,8 @@ export default function ProfileSettingsModal({
 
       <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden my-8 animate-in zoom-in-95 duration-150">
         
-        {/* Top Decorative Gradient Accent Bar */}
-        <div className="h-1.5 w-full bg-gradient-to-r from-[#D01E1E] via-[#EA580C] to-[#F59E0B]" />
+        {/* Top Decorative Gradient Accent Bar matching Image 4 */}
+        <div className="h-1.5 w-full bg-gradient-to-r from-[#EA580C] via-[#F97316] to-[#FBBF24]" />
 
         {/* Modal Header */}
         <div className="px-6 sm:px-7 pt-5 pb-3 flex items-start justify-between border-b border-slate-100">
@@ -334,7 +354,7 @@ export default function ProfileSettingsModal({
 
               <div className="mt-1.5">
                 <span className="inline-block px-2 py-0.5 bg-[#EFF6FF] text-[#2563EB] text-[10px] font-bold tracking-wider uppercase rounded border border-blue-200/60">
-                  {user?.role ? user.role.toUpperCase() : 'USER'}
+                  {role ? role.toUpperCase() : user?.role ? user.role.toUpperCase() : 'USER'}
                 </span>
               </div>
             </div>

@@ -24,6 +24,7 @@ import { Footer } from '@/layouts/Footer';
 import { ArticleCard } from '@/components/ArticleCard';
 import { useAuth } from '@/components/auth/AuthContext';
 import { getArticleById, getArticleSlug, slugifyTitle, ALL_ARTICLES, LATEST_ARTICLES } from '@/data/newsData';
+import { formatPublicationDate } from '@/lib/dateUtils';
 
 const LATEST_SIDEBAR_ARTICLES = [
   {
@@ -178,47 +179,60 @@ export default function ArticleDetailPage() {
     (rawArticle?.slug || '').includes('smart-home');
 
   const activeBase = dbArticle || rawArticle;
+  const resolvedAuthorName = isBossArticle
+    ? 'MITA MALLICK'
+    : is53SideHustle
+    ? 'SHERIN SHIBU'
+    : (activeBase?.author?.name || activeBase?.authorName || rawArticle?.author?.name || 'SHERIN SHIBU');
+  const isSamraAuthor = resolvedAuthorName.toLowerCase().includes('samra');
+
   const article = {
     ...activeBase,
     category: isBossArticle
       ? 'Building a Business'
       : is53SideHustle
       ? 'Finance & Economics'
-      : (rawArticle.category || 'Finance & Economics'),
+      : (activeBase?.category || rawArticle?.category || 'Finance & Economics'),
     title: isBossArticle
       ? 'Not Every Boss Deserves a Thank-You Card. Here’s What to Do When Your Boss Is a Bully.'
       : is53SideHustle
       ? '53 Side Hustle Ideas to Make Extra Money in 2026'
-      : rawArticle.title,
+      : (activeBase?.title || rawArticle?.title || 'Business Insights'),
     excerpt: isBossArticle
       ? 'As some of us celebrate National Boss’s Day, it’s important to remember that not everyone has a good relationship with their boss.'
       : is53SideHustle
       ? 'From freelancing to selling products, find out how to earn extra income today.'
-      : (rawArticle.excerpt || ''),
+      : (activeBase?.excerpt || rawArticle?.excerpt || ''),
     author: {
-      name: isBossArticle
-        ? 'MITA MALLICK'
-        : is53SideHustle
-        ? 'SHERIN SHIBU'
-        : (rawArticle.author?.name || 'SHERIN SHIBU'),
+      name: resolvedAuthorName,
       avatar: isBossArticle
-        ? (rawArticle.author?.avatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=300&auto=format&fit=crop')
+        ? (rawArticle?.author?.avatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=300&auto=format&fit=crop')
         : is53SideHustle
         ? '/images/author-sherin.png'
-        : (rawArticle.author?.avatar || '/images/author-sherin.png'),
+        : isSamraAuthor
+        ? '/uploads/upload_1794590868177_images__1_.webp'
+        : (activeBase?.author?.avatar || activeBase?.authorAvatar || rawArticle?.author?.avatar || '/images/author-sherin.png'),
       title: isBossArticle
         ? 'Executive Contributor'
         : is53SideHustle
         ? 'United States Today Staff'
-        : (rawArticle.author?.title || 'United States Today Staff'),
+        : isSamraAuthor
+        ? 'Staff Writer'
+        : (activeBase?.author?.title || activeBase?.authorRole || rawArticle?.author?.title || 'United States Today Staff'),
       bio: isBossArticle
         ? 'Mita Mallick is a corporate change-maker and author of the Wall Street Journal and USA Today bestseller, Reimagine Inclusion: Debunking 13 Myths to Transform Your Workplace.'
         : is53SideHustle
         ? 'Sherin Shibu is a business news reporter at United States Today. She previously worked for PCMag, Business Insider, and specializes in business trends, consumer technology, and entrepreneurship.'
-        : (rawArticle.author?.bio || 'Business news reporter and contributor at United States Today, covering high-growth ventures, market trends, and modern workplace leadership.'),
+        : isSamraAuthor
+        ? 'Executive business contributor at United States Today.'
+        : (activeBase?.author?.bio || activeBase?.authorBio || rawArticle?.author?.bio || 'Business news reporter and contributor at United States Today, covering high-growth ventures, market trends, and modern workplace leadership.'),
     },
     editor: isBossArticle ? 'KARA MCINTYRE' : is53SideHustle ? 'AMANDA BREEN' : (rawArticle.editor || 'AMANDA BREEN'),
-    date: isBossArticle ? 'OCT 14, 2026' : is53SideHustle ? 'JAN 26, 2026' : (rawArticle.date || 'JAN 26, 2026'),
+    date: isBossArticle
+      ? 'OCT 14, 2026'
+      : is53SideHustle
+      ? 'JAN 26, 2026'
+      : (activeBase?.date || (activeBase?.publishedAt ? formatPublicationDate(activeBase.publishedAt) : (rawArticle?.date || 'JAN 26, 2026'))),
     imageUrl: isBossArticle
       ? (rawArticle.imageUrl || '/images/hero-mentor.jpg')
       : is53SideHustle
@@ -269,8 +283,13 @@ export default function ArticleDetailPage() {
 
   // Auth & Comments state
   const { user, openLogin } = useAuth();
+  const [mounted, setMounted] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [commentSuccess, setCommentSuccess] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // 1. Check if article is already saved for logged-in user
   useEffect(() => {
@@ -1218,9 +1237,9 @@ export default function ArticleDetailPage() {
                     </div>
                   )}
 
-                  <div className="flex items-center justify-between mt-3">
-                    <div className="text-xs text-slate-500 font-sans">
-                      {user ? (
+                  <div className="flex items-center justify-between mt-3" suppressHydrationWarning>
+                    <div className="text-xs text-slate-500 font-sans" suppressHydrationWarning>
+                      {mounted && user ? (
                         <span className="flex items-center gap-1.5 font-semibold text-slate-700">
                           <span className="w-2 h-2 rounded-full bg-emerald-500" />
                           Posting as {user.name}
@@ -1230,16 +1249,8 @@ export default function ArticleDetailPage() {
                       )}
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      {!user ? (
-                        <button
-                          type="button"
-                          onClick={openLogin}
-                          className="bg-[#1642D0] hover:bg-[#0d2d8d] text-white font-sans text-xs sm:text-[13px] font-bold px-6 py-2.5 rounded-md transition-colors cursor-pointer shadow-xs hover:shadow-sm"
-                        >
-                          Login
-                        </button>
-                      ) : (
+                    <div className="flex items-center gap-2" suppressHydrationWarning>
+                      {mounted && user ? (
                         <button
                           type="button"
                           onClick={handlePostComment}
@@ -1247,6 +1258,14 @@ export default function ArticleDetailPage() {
                           className="bg-[#1642D0] hover:bg-[#0d2d8d] disabled:opacity-50 disabled:cursor-not-allowed text-white font-sans text-xs sm:text-[13px] font-bold px-6 py-2.5 rounded-md transition-colors cursor-pointer shadow-xs hover:shadow-sm"
                         >
                           Post Comment
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={openLogin}
+                          className="bg-[#1642D0] hover:bg-[#0d2d8d] text-white font-sans text-xs sm:text-[13px] font-bold px-6 py-2.5 rounded-md transition-colors cursor-pointer shadow-xs hover:shadow-sm"
+                        >
+                          Login
                         </button>
                       )}
                     </div>

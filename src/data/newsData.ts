@@ -14,6 +14,7 @@ export interface Article {
     bio?: string;
   };
   date?: string;
+  publishedAt?: string;
   readTime?: string;
   excerpt?: string;
   imageUrl?: string;
@@ -361,6 +362,69 @@ export const TOP_STORIES_GRID: Article[] = [
     imageAspect: 'video',
   },
 ];
+
+export const BASELINE_LATEST_NEWS_9: Article[] = [
+  {
+    id: '135',
+    slug: 'mvfbgn-hhjjlk-dtyjj',
+    title: 'mvfbgn  hhjjlk dtyjj',
+    category: 'BUILDING A BUSINESS',
+    author: { name: 'Staff Contributor', avatar: '/images/author-sherin.png' },
+    date: 'Just now',
+    readTime: '5 min read',
+    excerpt: 'mvfbgn  hhjjlk dtyjj',
+    imageUrl: '/images/home-hero/latest-mvfbgn.webp',
+  },
+  {
+    id: 'zero-burn-operations-frameworks-for-doubling-profit-margins-without-layoffs-part-98-043798',
+    slug: 'zero-burn-operations-frameworks-for-doubling-profit-margins-without-layoffs-part-98-043798',
+    title: 'Zero-Burn Operations: Frameworks for Doubling Profit Margins Without Layoffs (Part 98)',
+    category: 'BUILDING A BUSINESS',
+    author: { name: 'Staff Contributor', avatar: '/images/author-sherin.png' },
+    date: 'Oct 10, 2026',
+    readTime: '3 min read',
+    excerpt: 'A rigorous breakdown of strategic principles, actionable methodologies, and case studies for modern entrepreneurs and executive leaders.',
+    imageUrl: '/images/topic-hero-leaders.jpg',
+  },
+  {
+    id: 'global-trade-realignment-how-supply-chains-are-adapting-in-2026-part-97-043797',
+    slug: 'global-trade-realignment-how-supply-chains-are-adapting-in-2026-part-97-043797',
+    title: 'Global Trade Realignment: How Supply Chains Are Adapting in 2026 (Part 97)',
+    category: 'GLOBAL BUSINESS',
+    author: { name: 'Staff Contributor', avatar: '/images/author-sherin.png' },
+    date: 'Oct 10, 2026',
+    readTime: '3 min read',
+    excerpt: 'A rigorous breakdown of strategic principles, actionable methodologies, and case studies for modern entrepreneurs and executive leaders.',
+    imageUrl: '/images/coding-agents.jpg',
+  },
+  {
+    id: 'the-modern-brand-playbook-building-viral-velocity-with-community-led-growth-part-96-043796',
+    slug: 'the-modern-brand-playbook-building-viral-velocity-with-community-led-growth-part-96-043796',
+    title: 'The Modern Brand Playbook: Building Viral Velocity with Community-Led Growth (Part 96)',
+    category: 'MARKETING',
+    author: { name: 'Staff Contributor', avatar: '/images/author-sherin.png' },
+    date: 'Oct 10, 2026',
+    readTime: '3 min read',
+    excerpt: 'A rigorous breakdown of strategic principles, actionable methodologies, and case studies for modern entrepreneurs and executive leaders.',
+    imageUrl: '/images/related-founders-warehouse.png',
+  },
+  {
+    id: 'navigating-capital-markets-debt-financing-strategies-for-high-growth-firms-part-95-043795',
+    slug: 'navigating-capital-markets-debt-financing-strategies-for-high-growth-firms-part-95-043795',
+    title: 'Navigating Capital Markets: Debt Financing Strategies for High-Growth Firms (Part 95)',
+    category: 'FINANCE',
+    author: { name: 'Terry Rice', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300&auto=format&fit=crop' },
+    date: 'Oct 10, 2026',
+    readTime: '3 min read',
+    excerpt: 'A rigorous breakdown of strategic principles, actionable methodologies, and case studies for modern entrepreneurs and executive leaders.',
+    imageUrl: '/images/related-introvert.png',
+  },
+  TOP_STORIES_GRID[0],
+  TOP_STORIES_GRID[1],
+  TOP_STORIES_GRID[2],
+  TOP_STORIES_GRID[3],
+];
+
 
 export interface StartupsEntrepreneurshipData {
   featured: Article;

@@ -12,7 +12,9 @@ export async function GET() {
 
     // Prioritize active session email from cookie; fallback based on role or default user
     let fallbackEmail = 'samrathasneem20@gmail.com';
-    if (roleCookie === 'writer' || roleCookie === 'writter') {
+    if (roleCookie === 'admin') {
+      fallbackEmail = 'admin@gmail.com';
+    } else if (roleCookie === 'writer' || roleCookie === 'writter') {
       fallbackEmail = 'writter@gmail.com';
     }
     const targetEmail = emailCookie || (!isLoggedOut ? fallbackEmail : null);
@@ -45,7 +47,7 @@ export async function GET() {
         id: u.id,
         name: u.name || 'Writer',
         email: u.email,
-        role: u.role || 'writer',
+        role: u.role || (roleCookie === 'admin' ? 'admin' : (roleCookie === 'writer' || roleCookie === 'writter') ? 'writer' : 'reader'),
         avatar: s.avatar || u.avatar || '/images/user-avatar-butterfly.png',
         bio: s.bio || u.bio || '',
         writerName: u.name || s.writer_name || u.writer_name || 'Writer',

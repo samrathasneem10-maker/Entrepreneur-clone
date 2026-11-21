@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Badge } from './Badge';
 import { Article, getArticleUrl } from '@/data/newsData';
+import { formatPublicationDate } from '@/lib/dateUtils';
 
 interface ArticleCardProps {
   article: Article;
@@ -17,33 +18,8 @@ interface ArticleCardProps {
 }
 
 const getFormattedRelativeMetadata = (article: Article) => {
-  const relativeTimes = [
-    '5m ago', '15m ago', '42m ago', '1h ago', '2h ago',
-    '3h ago', '5h ago', '8h ago', 'Yesterday', '2d ago',
-    '3d ago', '5d ago', '1w ago'
-  ];
-  const readTimes = [
-    '2 min read', '3 min read', '4 min read', '5 min read',
-    '6 min read', '7 min read', '8 min read', '10 min read'
-  ];
-
-  let dateStr = article.date;
-  let readStr = article.readTime || '4 min read';
-
-  // If date is missing or in long format (e.g. "July 25, 2026"), compute deterministic relative time
-  if (!dateStr || dateStr.includes(',') || dateStr.length > 10) {
-    let hash = 0;
-    const str = article.id || article.title || 'article';
-    for (let i = 0; i < str.length; i++) {
-      hash = (hash << 5) - hash + str.charCodeAt(i);
-      hash |= 0;
-    }
-    const positiveHash = Math.abs(hash);
-
-    dateStr = relativeTimes[positiveHash % relativeTimes.length];
-    readStr = readTimes[(positiveHash >> 3) % readTimes.length];
-  }
-
+  const dateStr = article.date || (article.publishedAt ? formatPublicationDate(article.publishedAt) : '');
+  const readStr = article.readTime || '4 min read';
   return { dateStr, readStr };
 };
 

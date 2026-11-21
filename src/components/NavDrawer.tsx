@@ -171,7 +171,7 @@ export const NavDrawer: React.FC<NavDrawerProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Drawer Footer: User Profile / Auth Status */}
-        {user ? (
+        {mounted && user ? (
           <div className="p-3.5 sm:p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between shrink-0">
             <Link
               href={user.role === 'writer' ? '/dashboard/writer' : '/dashboard'}

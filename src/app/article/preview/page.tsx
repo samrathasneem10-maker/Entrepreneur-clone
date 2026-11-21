@@ -486,8 +486,8 @@ export default function ArticlePreviewPage() {
                   placeholder="What do you think?"
                   className="w-full bg-[#f9fafb] border border-slate-200 rounded-md p-3 text-sm font-sans placeholder-slate-400 focus:outline-hidden focus:ring-1 focus:ring-[#1642D0] focus:border-[#1642D0] resize-y transition-all"
                 />
-                <div className="flex items-center justify-between mt-3">
-                  <div className="text-xs text-slate-500 font-sans">
+                <div className="flex items-center justify-between mt-3" suppressHydrationWarning>
+                  <div className="text-xs text-slate-500 font-sans" suppressHydrationWarning>
                     <span className="flex items-center gap-1.5 font-semibold text-slate-700">
                       <span className="w-2 h-2 rounded-full bg-emerald-500" />
                       Posting as {authorName}

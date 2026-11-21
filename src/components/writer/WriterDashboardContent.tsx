@@ -493,6 +493,13 @@ function WriterDashboardInner() {
       <ProfileSettingsModal
         isOpen={showProfileSettingsModal}
         onClose={() => setShowProfileSettingsModal(false)}
+        initialEmail={user?.email || 'writter@gmail.com'}
+        initialRole="writer"
+        onProfileUpdated={(updated) => {
+          if (updated) {
+            showToast('Profile settings updated successfully.');
+          }
+        }}
       />
 
       {/* Review / Rejection Reason Modal */}

@@ -4,6 +4,7 @@ import React, { useEffect, useState, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/components/auth/AuthContext';
+import ProfileSettingsModal from '@/components/writer/ProfileSettingsModal';
 import {
   Globe,
   HelpCircle,
@@ -80,6 +81,7 @@ export function ReaderDashboardContent() {
 
   // Active Tab state: 'profile' | 'saved' | 'subscriptions' | 'settings' | 'help'
   const [activeTab, setActiveTab] = useState<TabType>('profile');
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
   useEffect(() => {
     const tabParam = searchParams.get('tab');
@@ -651,7 +653,12 @@ export function ReaderDashboardContent() {
 
           {/* Right User Avatar */}
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => setShowProfileModal(true)}
+              className="flex items-center gap-2.5 p-1 rounded-full hover:bg-slate-100 transition-colors cursor-pointer text-left border-0 bg-transparent"
+              title="Click to open Profile Settings"
+            >
               <img
                 src={user?.avatar || profile?.avatar || '/images/user-avatar-butterfly.png'}
                 alt={user?.name || 'User'}
@@ -660,7 +667,7 @@ export function ReaderDashboardContent() {
               <span className="font-bold text-xs sm:text-sm text-slate-900 hidden sm:inline">
                 {user?.name || profile?.fullName || 'Samra Thasneem'}
               </span>
-            </div>
+            </button>
           </div>
         </div>
       </header>
@@ -1762,6 +1769,19 @@ export function ReaderDashboardContent() {
           </div>
         </div>
       </footer>
+      {/* Profile Settings Modal */}
+      <ProfileSettingsModal
+        isOpen={showProfileModal}
+        onClose={() => setShowProfileModal(false)}
+        initialEmail={user?.email || profile?.email || 'samrathasneem20@gmail.com'}
+        initialRole="reader"
+        onProfileUpdated={(updated) => {
+          if (updated) {
+            fetchProfile();
+            showToast('Profile updated successfully!', 'success');
+          }
+        }}
+      />
     </div>
   );
 }

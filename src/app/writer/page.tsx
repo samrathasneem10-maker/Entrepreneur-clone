@@ -31,6 +31,7 @@ import {
   Check,
   AlertCircle,
   Clock,
+  Mail,
   Upload,
   Sparkles,
   PanelRightClose,
@@ -39,6 +40,7 @@ import {
   Pencil,
   Trash2,
   ChevronUp,
+  GripVertical,
   AlignLeft,
   AlignCenter,
   AlignRight,
@@ -404,6 +406,14 @@ function WriterEditorMain() {
   const tagInputRef = useRef<HTMLInputElement>(null);
   const [readDuration, setReadDuration] = useState('5 min read');
   const [featuredImageUrl, setFeaturedImageUrl] = useState<string>('');
+  const [homepagePlacement, setHomepagePlacement] = useState<string>('none');
+  const [newsletterBanner, setNewsletterBanner] = useState<string>('auto');
+  const [showEmailDistModal, setShowEmailDistModal] = useState(false);
+  const [distEmails, setDistEmails] = useState<string[]>([
+    'vip@unitedstatestoday.com',
+    'press@partnerdesk.org',
+  ]);
+  const [newDistEmail, setNewDistEmail] = useState('');
 
   // Rich Text Editor State & Content
   const editorRef = useRef<HTMLDivElement>(null);
@@ -467,6 +477,7 @@ function WriterEditorMain() {
   // Image In-Place Edit Tracking Refs
   const editingImageFigureRef = useRef<HTMLElement | null>(null);
   const editingImageIdRef = useRef<string | null>(null);
+  const draggedFigureRef = useRef<HTMLElement | null>(null);
 
   // SEO Fields
   const [cardSummary, setCardSummary] = useState('');
@@ -727,53 +738,65 @@ function WriterEditorMain() {
     fetchDynamicCategories();
   }, []);
 
-  // Requirement 5: Dynamic SEO Updates when heading or description changes (unless manually edited)
+  // Requirement 5: Dynamic SEO Updates when heading or description changes (debounced by 500ms to eliminate typing lag)
   useEffect(() => {
     if (!mounted) return;
-    const descriptionSource = subtitle.trim() || extractPlainTextFromHtml(htmlContent);
+    const timer = setTimeout(() => {
+      const descriptionSource = subtitle.trim() || extractPlainTextFromHtml(htmlContent);
 
-    if (!isCardSummaryEdited && descriptionSource) {
-      setCardSummary(generateCardSummary(descriptionSource));
-    }
-    if (!isFocusKeywordEdited && (title.trim() || descriptionSource)) {
-      setFocusKeyword(generateFocusKeyword(title, descriptionSource));
-    }
-    if (!isMetaDescriptionEdited && descriptionSource) {
-      setMetaDescription(generateMetaDescription(descriptionSource));
-    }
-    if (title.trim() || descriptionSource) {
-      setSuggestedKeywords(generateFocusKeywordsList(title, descriptionSource));
-    }
-    if (title.trim()) {
-      setMetaTitle(`${title.trim()} | United States Today`);
-    }
+      if (!isCardSummaryEdited && descriptionSource) {
+        setCardSummary(generateCardSummary(descriptionSource));
+      }
+      if (!isFocusKeywordEdited && (title.trim() || descriptionSource)) {
+        setFocusKeyword(generateFocusKeyword(title, descriptionSource));
+      }
+      if (!isMetaDescriptionEdited && descriptionSource) {
+        setMetaDescription(generateMetaDescription(descriptionSource));
+      }
+      if (title.trim() || descriptionSource) {
+        setSuggestedKeywords(generateFocusKeywordsList(title, descriptionSource));
+      }
+      if (title.trim()) {
+        setMetaTitle(`${title.trim()} | United States Today`);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
   }, [title, subtitle, htmlContent, mounted, isCardSummaryEdited, isFocusKeywordEdited, isMetaDescriptionEdited]);
 
-  // Auto-persist draft (title, subtitle, content, category, author, subcategories, tags, and SEO) to draft storage on change
+  // Auto-persist draft to draft storage on change (debounced by 1200ms and sanitized to avoid freezing the browser)
   useEffect(() => {
     if (!mounted) return;
-    try {
-      const existingStr = localStorage.getItem('entrepreneur_writer_draft');
-      const existing = existingStr ? JSON.parse(existingStr) : {};
-      localStorage.setItem(
-        'entrepreneur_writer_draft',
-        JSON.stringify({
-          ...existing,
-          title,
-          subtitle,
-          htmlContent: editorRef.current ? editorRef.current.innerHTML : htmlContent,
-          featuredImageUrl,
-          authorName,
-          mainCategory,
-          selectedSubCategories,
-          tags,
-          cardSummary,
-          focusKeyword,
-          metaDescription,
-          updatedAt: new Date().toISOString(),
-        })
-      );
-    } catch {}
+    const timer = setTimeout(() => {
+      try {
+        const existingStr = localStorage.getItem('entrepreneur_writer_draft');
+        const existing = existingStr ? JSON.parse(existingStr) : {};
+        const rawContent = editorRef.current ? editorRef.current.innerHTML : htmlContent;
+        // Strip large base64 data URLs exceeding 50KB to prevent browser freezing and storage quota overflow
+        const safeContent = rawContent ? rawContent.replace(/src="data:image\/[^;]+;base64,[^"]{50000,}"/g, 'src=""') : '';
+        const safeFeaturedImage = (featuredImageUrl && featuredImageUrl.length > 50000) ? '' : featuredImageUrl;
+        localStorage.setItem(
+          'entrepreneur_writer_draft',
+          JSON.stringify({
+            ...existing,
+            title,
+            subtitle,
+            htmlContent: safeContent,
+            featuredImageUrl: safeFeaturedImage,
+            authorName,
+            mainCategory,
+            selectedSubCategories,
+            tags,
+            cardSummary,
+            focusKeyword,
+            metaDescription,
+            updatedAt: new Date().toISOString(),
+          })
+        );
+      } catch {}
+    }, 1200);
+
+    return () => clearTimeout(timer);
   }, [title, subtitle, htmlContent, featuredImageUrl, mainCategory, selectedSubCategories, authorName, tags, cardSummary, focusKeyword, metaDescription, mounted]);
 
   const loadArticleById = async (idOrSlug: string) => {
@@ -825,6 +848,12 @@ function WriterEditorMain() {
         }
         setFeaturedImageUrl(art.imageUrl || '');
         if (art.readTime) setReadDuration(art.readTime);
+        if (art.placement !== undefined) {
+          setHomepagePlacement((art.placement || 'none').toLowerCase().trim());
+        }
+        if (art.newsletterBanner || art.newsletter_banner) {
+          setNewsletterBanner(art.newsletterBanner || art.newsletter_banner);
+        }
         if (art.content) {
           setHtmlContent(art.content);
           setIsEditorEmpty(false);
@@ -832,6 +861,15 @@ function WriterEditorMain() {
             if (editorRef.current) {
               editorRef.current.innerHTML = art.content;
               normalizeEditorBlocks(editorRef.current);
+              editorRef.current.querySelectorAll('figure.article-image-figure').forEach((f) => {
+                f.setAttribute('draggable', 'true');
+                (f as HTMLElement).style.cursor = 'grab';
+                const img = f.querySelector('img');
+                if (img) {
+                  img.setAttribute('draggable', 'true');
+                  (img as HTMLElement).style.cursor = 'grab';
+                }
+              });
             }
           }, 150);
         }
@@ -844,6 +882,17 @@ function WriterEditorMain() {
 
   const handleEditorInput = () => {
     if (!editorRef.current) return;
+    editorRef.current.querySelectorAll('figure.article-image-figure').forEach((f) => {
+      if (!f.getAttribute('draggable')) {
+        f.setAttribute('draggable', 'true');
+        (f as HTMLElement).style.cursor = 'grab';
+      }
+      const img = f.querySelector('img');
+      if (img && !img.getAttribute('draggable')) {
+        img.setAttribute('draggable', 'true');
+        (img as HTMLElement).style.cursor = 'grab';
+      }
+    });
     const content = editorRef.current.innerHTML;
     const text = (editorRef.current.innerText || '')
       .replace(/\u00a0/g, ' ')
@@ -1439,6 +1488,8 @@ function WriterEditorMain() {
     const figure = target.closest('figure.article-image-figure') as HTMLElement | null;
 
     if (figure && editorRef.current?.contains(figure)) {
+      figure.setAttribute('draggable', 'true');
+      figure.style.cursor = 'grab';
       if (!figure.dataset.imageId) {
         figure.dataset.imageId = 'img_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
       }
@@ -1447,6 +1498,10 @@ function WriterEditorMain() {
       editingImageIdRef.current = figure.dataset.imageId;
 
       const img = figure.querySelector('img');
+      if (img) {
+        img.setAttribute('draggable', 'true');
+        (img as HTMLElement).style.cursor = 'grab';
+      }
       const figcaption = figure.querySelector('figcaption');
       const captionSpan = figure.querySelector('.image-caption');
       const creditSpan = figure.querySelector('.image-credit');
@@ -1854,6 +1909,167 @@ function WriterEditorMain() {
     setShowImageModal(true);
   };
 
+  // Image Drag and Drop Helpers: Above, Below, Left, Right
+  const getEditorBlockChild = (node: HTMLElement | null): HTMLElement | null => {
+    if (!editorRef.current || !node) return null;
+    let curr: HTMLElement | null = node;
+    while (curr && curr.parentElement && curr.parentElement !== editorRef.current) {
+      curr = curr.parentElement;
+    }
+    if (curr && curr.parentElement === editorRef.current) {
+      return curr;
+    }
+    return null;
+  };
+
+  const clearDropIndicators = () => {
+    if (!editorRef.current) return;
+    const allTargets = editorRef.current.querySelectorAll('.drag-drop-target-active');
+    allTargets.forEach((el) => {
+      el.classList.remove(
+        'drag-drop-target-active',
+        'border-t-4',
+        'border-b-4',
+        'border-l-4',
+        'border-r-4',
+        'border-[#1642D0]',
+        'border-solid',
+        'transition-all'
+      );
+    });
+  };
+
+  const handleEditorDragStart = (e: React.DragEvent<HTMLElement>) => {
+    const figure = ((e.target as HTMLElement).closest('figure.article-image-figure') || selectedImageFigure) as HTMLElement | null;
+    if (figure && editorRef.current?.contains(figure)) {
+      draggedFigureRef.current = figure;
+      e.dataTransfer.setData('text/plain', figure.getAttribute('data-image-id') || 'figure');
+      e.dataTransfer.effectAllowed = 'move';
+      figure.style.opacity = '0.4';
+      figure.style.cursor = 'grabbing';
+    }
+  };
+
+  const handleEditorDragEnd = () => {
+    if (draggedFigureRef.current) {
+      draggedFigureRef.current.style.opacity = '1';
+      draggedFigureRef.current.style.cursor = 'grab';
+      draggedFigureRef.current = null;
+    }
+    clearDropIndicators();
+  };
+
+  const handleEditorDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    if (!draggedFigureRef.current || !editorRef.current) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+
+    const targetEl = getEditorBlockChild(e.target as HTMLElement);
+    if (!targetEl || targetEl === draggedFigureRef.current) {
+      clearDropIndicators();
+      return;
+    }
+
+    const rect = targetEl.getBoundingClientRect();
+    const relX = (e.clientX - rect.left) / Math.max(rect.width, 1);
+    const relY = (e.clientY - rect.top) / Math.max(rect.height, 1);
+
+    clearDropIndicators();
+    targetEl.classList.add('drag-drop-target-active', 'border-solid', 'border-[#1642D0]', 'transition-all');
+
+    if (relX < 0.25) {
+      targetEl.classList.add('border-l-4');
+    } else if (relX > 0.75) {
+      targetEl.classList.add('border-r-4');
+    } else if (relY < 0.5) {
+      targetEl.classList.add('border-t-4');
+    } else {
+      targetEl.classList.add('border-b-4');
+    }
+  };
+
+  const handleEditorDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    const figure = draggedFigureRef.current;
+    if (!figure || !editorRef.current) return;
+    e.preventDefault();
+    figure.style.opacity = '1';
+    figure.style.cursor = 'grab';
+
+    const targetEl = getEditorBlockChild(e.target as HTMLElement);
+    clearDropIndicators();
+    draggedFigureRef.current = null;
+
+    if (!targetEl || targetEl === figure) {
+      if (editorRef.current.contains(e.target as Node) && targetEl !== figure) {
+        editorRef.current.appendChild(figure);
+        normalizeEditorBlocks(editorRef.current);
+        handleEditorInput();
+        setSelectedImageFigure(figure);
+        updateImageSelectionBounds(figure);
+        showToast('Image moved Below', 'success');
+      }
+      return;
+    }
+
+    const rect = targetEl.getBoundingClientRect();
+    const relX = (e.clientX - rect.left) / Math.max(rect.width, 1);
+    const relY = (e.clientY - rect.top) / Math.max(rect.height, 1);
+
+    const size = (figure.dataset.size as 'small' | 'medium' | 'full') || 'medium';
+
+    figure.classList.remove(
+      'float-left', 'mr-6', 'mb-4', 'my-2',
+      'float-right', 'ml-6',
+      'mx-auto', 'text-center', 'clear-both', 'my-6', 'block', 'w-fit'
+    );
+
+    if (relX < 0.25) {
+      // Drop LEFT: Wrap Text Right
+      const appliedSize = size === 'full' ? 'medium' : size;
+      figure.dataset.align = 'left';
+      figure.dataset.size = appliedSize;
+      figure.classList.add('float-left', 'mr-6', 'mb-4', 'my-2', 'w-fit');
+      figure.style.cssText = getFigureStyle('left', appliedSize);
+      editorRef.current.insertBefore(figure, targetEl);
+      showToast('Image positioned to Left (Wrap Text Right)', 'success');
+    } else if (relX > 0.75) {
+      // Drop RIGHT: Wrap Text Left
+      const appliedSize = size === 'full' ? 'medium' : size;
+      figure.dataset.align = 'right';
+      figure.dataset.size = appliedSize;
+      figure.classList.add('float-right', 'ml-6', 'mb-4', 'my-2', 'w-fit');
+      figure.style.cssText = getFigureStyle('right', appliedSize);
+      editorRef.current.insertBefore(figure, targetEl);
+      showToast('Image positioned to Right (Wrap Text Left)', 'success');
+    } else if (relY < 0.5) {
+      // Drop ABOVE: Centered block
+      figure.dataset.align = 'center';
+      figure.classList.add('my-6', 'block', 'clear-both', 'mx-auto', 'text-center', 'w-fit');
+      figure.style.cssText = getFigureStyle('center', size);
+      editorRef.current.insertBefore(figure, targetEl);
+      showToast('Image moved Above', 'success');
+    } else {
+      // Drop BELOW: Centered block
+      figure.dataset.align = 'center';
+      figure.classList.add('my-6', 'block', 'clear-both', 'mx-auto', 'text-center', 'w-fit');
+      figure.style.cssText = getFigureStyle('center', size);
+      if (targetEl.nextSibling) {
+        editorRef.current.insertBefore(figure, targetEl.nextSibling);
+      } else {
+        editorRef.current.appendChild(figure);
+      }
+      showToast('Image moved Below', 'success');
+    }
+
+    normalizeEditorBlocks(editorRef.current);
+    handleEditorInput();
+    setSelectedImageFigure(figure);
+    updateImageSelectionBounds(figure);
+    setTimeout(() => {
+      updateImageSelectionBounds(figure);
+    }, 40);
+  };
+
   const handleToggleSubCategory = (sub: string) => {
     if (selectedSubCategories.includes(sub)) {
       setSelectedSubCategories((prev) => prev.filter((s) => s !== sub));
@@ -2071,7 +2287,7 @@ function WriterEditorMain() {
     }
 
     const newImageId = 'img_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
-    const figureMarkup = `<figure class="article-image-figure group relative cursor-pointer ${alignClass} ${sizeClass} select-none" data-image-id="${newImageId}" data-size="${imageSize}" data-align="${imageAlignment}" data-caption="${captionSafe}" data-credit="${rawCredit}" contenteditable="false" style="${figureInlineStyle}"><img src="${finalUrl}" alt="${altSafe}" class="rounded-none w-full h-auto block object-cover shadow-2xs border border-slate-200 pointer-events-none" style="margin: 0 !important; padding: 0 !important; display: block !important;" />${captionMarkup}</figure><p><br></p>`;
+    const figureMarkup = `<figure class="article-image-figure group relative cursor-grab active:cursor-grabbing ${alignClass} ${sizeClass} select-none" draggable="true" data-image-id="${newImageId}" data-size="${imageSize}" data-align="${imageAlignment}" data-caption="${captionSafe}" data-credit="${rawCredit}" contenteditable="false" style="${figureInlineStyle}"><img src="${finalUrl}" alt="${altSafe}" draggable="true" class="rounded-none w-full h-auto block object-cover shadow-2xs border border-slate-200 pointer-events-auto cursor-grab active:cursor-grabbing" style="margin: 0 !important; padding: 0 !important; display: block !important;" />${captionMarkup}</figure><p><br></p>`;
 
     if (editorRef.current) {
       editorRef.current.focus();
@@ -2207,6 +2423,7 @@ function WriterEditorMain() {
         content: currentHtml || subtitle.trim() || title.trim(),
         imageUrl: latestImage || '',
         status: 'draft',
+        placement: homepagePlacement,
         authorName: authorName.trim() || user?.writerName || user?.name || 'Staff Contributor',
         readTime: readDuration,
         tags,
@@ -2230,9 +2447,13 @@ function WriterEditorMain() {
       const data = await res.json();
       if (data?.success) {
         localStorage.removeItem('entrepreneur_writer_draft');
-        showToast('Draft saved successfully! Redirecting to Drafts...', 'success');
+        showToast('Draft saved successfully! Redirecting...', 'success');
         setTimeout(() => {
-          router.push('/writer/dashboard?tab=draft');
+          if (user?.role === 'admin') {
+            router.push('/admin');
+          } else {
+            router.push('/writer/dashboard?tab=draft');
+          }
         }, 1000);
       } else {
         showToast(data?.error || 'Failed to save draft to server.', 'error');
@@ -2332,6 +2553,102 @@ function WriterEditorMain() {
     }
   };
 
+  const handleApproveAndPublish = async () => {
+    if (!title.trim()) {
+      showToast('Please enter an article headline/title.', 'error');
+      return;
+    }
+
+    const currentHtml = editorRef.current ? editorRef.current.innerHTML : htmlContent;
+    let contentImg = '';
+    if (editorRef.current) {
+      contentImg = editorRef.current.querySelector('img')?.getAttribute('src') || '';
+    }
+    if (!contentImg && currentHtml) {
+      const m = currentHtml.match(/<img[^>]+src=["']([^"']+)["']/i);
+      if (m && m[1]) contentImg = m[1];
+    }
+    const latestImage = contentImg || featuredImageUrl || '';
+
+    if (latestImage && latestImage !== featuredImageUrl) {
+      setFeaturedImageUrl(latestImage);
+    }
+
+    setIsSubmitting(true);
+    try {
+      const payload: any = {
+        title: title.trim(),
+        category: mainCategory,
+        excerpt: subtitle.trim() || cardSummary.trim() || title.trim(),
+        content: currentHtml || subtitle.trim() || title.trim(),
+        imageUrl: latestImage,
+        status: 'published',
+        publishedAt: new Date().toISOString(),
+        placement: homepagePlacement,
+        newsletterBanner: newsletterBanner,
+        authorName: authorName.trim() || user?.writerName || user?.name || 'Staff Contributor',
+        readTime: readDuration,
+        tags,
+        subCategories: selectedSubCategories,
+        cardSummary: cardSummary.trim(),
+        focusKeyword: focusKeyword.trim(),
+        metaDescription: metaDescription.trim(),
+      };
+
+      if (editingArticleId) {
+        payload.id = editingArticleId;
+        payload.dbId = editingArticleId;
+      }
+
+      const res = await fetch('/api/articles', {
+        method: editingArticleId ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      if (data?.success) {
+        localStorage.removeItem('entrepreneur_writer_draft');
+        showToast('Article approved and published successfully! Redirecting...', 'success');
+        setTimeout(() => {
+          router.push('/admin');
+        }, 800);
+      } else {
+        showToast(data?.error || 'Failed to publish article.', 'error');
+      }
+    } catch {
+      showToast('Network error while publishing article.', 'error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleRejectToTrash = async () => {
+    if (!editingArticleId) {
+      router.push('/admin');
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      const res = await fetch(`/api/articles?id=${encodeURIComponent(String(editingArticleId))}&permanent=false`, {
+        method: 'DELETE',
+      });
+      const data = await res.json().catch(() => ({ success: res.ok }));
+      if (res.ok && data?.success !== false) {
+        showToast('Article moved to trash successfully.', 'success');
+        setTimeout(() => {
+          router.push('/admin');
+        }, 800);
+      } else {
+        showToast(data?.error || 'Failed to move article to trash.', 'error');
+      }
+    } catch {
+      showToast('Network error while moving article to trash.', 'error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const currentSlug = (title || 'new-business-headline')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
@@ -2367,56 +2684,95 @@ function WriterEditorMain() {
         <div className="w-full max-w-[1680px] mx-auto flex items-center justify-between gap-4">
           
           {/* Left: CANCEL button + Dynamic Real-time Headline */}
-          <div className="flex items-center gap-4 min-w-0">
+          <div className="flex items-center gap-3 sm:gap-4 min-w-0">
             <button
-              onClick={() => router.push('/writer/dashboard')}
-              className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-300 hover:text-white transition-colors cursor-pointer shrink-0"
+              onClick={() => {
+                if (user?.role === 'admin') {
+                  router.push('/admin');
+                } else {
+                  router.push('/writer/dashboard');
+                }
+              }}
+              className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-300 hover:text-white transition-colors cursor-pointer shrink-0"
             >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Cancel</span>
+              <ArrowLeft className="w-3.5 h-3.5 stroke-[2.5]" />
+              <span>CANCEL</span>
             </button>
 
-            <span className="text-slate-600 select-none hidden sm:inline">|</span>
+            <div className="h-4 w-px bg-slate-700/80 mx-1 shrink-0" />
 
             {/* Dynamic Headline Preview */}
-            <div className="truncate text-xs sm:text-[13px] font-semibold tracking-wider text-slate-300 uppercase">
-              {title.trim() ? title.toUpperCase() : 'NEW BUSINESS HEADLINE'}
-            </div>
+            <span
+              suppressHydrationWarning
+              className="text-[11px] font-mono font-medium tracking-wider text-slate-300 uppercase truncate max-w-[420px] sm:max-w-[550px] lg:max-w-[650px]"
+            >
+              {mounted && user?.role === 'admin'
+                ? `REVIEWING: ${title.trim() ? title.toUpperCase() : 'NEW BUSINESS HEADLINE'}`
+                : (title.trim() ? title.toUpperCase() : 'NEW BUSINESS HEADLINE')}
+            </span>
           </div>
 
-          {/* Right Action Controls: PREVIEW, SAVE DRAFT, SUBMIT FOR REVIEW */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          {/* Right Action Controls: PREVIEW, REJECT TO TRASH, APPROVE & PUBLISH */}
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0" suppressHydrationWarning>
             {/* PREVIEW Button */}
             <button
               type="button"
               onClick={handleOpenPreview}
-              className="px-3 sm:px-3.5 py-1.5 rounded-lg bg-slate-800/90 hover:bg-slate-700 text-slate-200 text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 cursor-pointer border border-slate-700 shadow-2xs"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
             >
               <Eye className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Preview</span>
+              <span>PREVIEW</span>
             </button>
 
-            {/* SAVE DRAFT Button */}
-            <button
-              type="button"
-              onClick={handleSaveDraft}
-              disabled={isSubmitting}
-              className="px-3 sm:px-3.5 py-1.5 rounded-lg bg-slate-800/90 hover:bg-slate-700 text-slate-200 text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 cursor-pointer border border-slate-700 disabled:opacity-50 shadow-2xs"
-            >
-              <Save className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Save Draft</span>
-            </button>
+            {mounted && user?.role === 'admin' ? (
+              <>
+                {/* REJECT TO TRASH (Red Button) */}
+                <button
+                  type="button"
+                  disabled={isSubmitting}
+                  onClick={handleRejectToTrash}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#991B1B] hover:bg-[#7F1D1D] text-white text-xs font-bold uppercase tracking-wider shadow-sm transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  <X className="w-3.5 h-3.5 stroke-[2.5]" />
+                  <span>REJECT TO TRASH</span>
+                </button>
 
-            {/* SUBMIT FOR REVIEW (Bright Orange Button) */}
-            <button
-              type="button"
-              onClick={handleSubmitForReview}
-              disabled={isSubmitting}
-              className="px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-[#EA580C] hover:bg-[#C2410C] text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 shadow-md cursor-pointer disabled:opacity-50"
-            >
-              <Send className="w-3.5 h-3.5" />
-              <span>{isSubmitting ? 'Submitting...' : 'Submit for Review'}</span>
-            </button>
+                {/* APPROVE & PUBLISH (Green Button) */}
+                <button
+                  type="button"
+                  disabled={isSubmitting}
+                  onClick={handleApproveAndPublish}
+                  className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-[#059669] hover:bg-[#047857] text-white text-xs font-bold uppercase tracking-wider shadow-sm transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  <Check className="w-4 h-4 stroke-[2.5]" />
+                  <span>APPROVE & PUBLISH</span>
+                </button>
+              </>
+            ) : mounted ? (
+              <>
+                {/* SAVE DRAFT Button */}
+                <button
+                  type="button"
+                  onClick={handleSaveDraft}
+                  disabled={isSubmitting}
+                  className="px-3 sm:px-3.5 py-1.5 rounded-lg bg-slate-800/90 hover:bg-slate-700 text-slate-200 text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 cursor-pointer border border-slate-700 disabled:opacity-50 shadow-2xs"
+                >
+                  <Save className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Save Draft</span>
+                </button>
+
+                {/* SUBMIT FOR REVIEW (Bright Orange Button) */}
+                <button
+                  type="button"
+                  onClick={handleSubmitForReview}
+                  disabled={isSubmitting}
+                  className="px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-[#EA580C] hover:bg-[#C2410C] text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 shadow-md cursor-pointer disabled:opacity-50"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  <span>{isSubmitting ? 'Submitting...' : 'Submit for Review'}</span>
+                </button>
+              </>
+            ) : null}
 
           </div>
 
@@ -2826,6 +3182,10 @@ function WriterEditorMain() {
                   contentEditable
                   suppressContentEditableWarning
                   onInput={handleEditorInput}
+                  onDragStart={handleEditorDragStart}
+                  onDragEnd={handleEditorDragEnd}
+                  onDragOver={handleEditorDragOver}
+                  onDrop={handleEditorDrop}
                   onSelect={() => {
                     saveSelectionRange();
                     updateActiveFormats();
@@ -3069,80 +3429,146 @@ function WriterEditorMain() {
                     </div>
                   </div>
 
-                  {/* 3. TAGS matching Screenshot 1 */}
-                        <div className="flex flex-col gap-1.5 pt-2 border-t border-slate-100">
-                          <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                            Tags
-                          </label>
+                  {/* 3. TAGS */}
+                  <div className="flex flex-col gap-1.5 pt-2 border-t border-slate-100">
+                    <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                      TAGS
+                    </label>
 
-                          {/* Bordered Tags Container Box with dark navy pills & inline input */}
-                          <div
-                            onClick={() => tagInputRef.current?.focus()}
-                            className="w-full min-h-[50px] p-2 bg-white border border-slate-200 rounded-xl flex flex-wrap items-center gap-1.5 focus-within:border-[#1642D0] focus-within:ring-2 focus-within:ring-[#1642D0]/10 transition-all cursor-text"
+                    {/* Bordered Tags Container Box with dark navy pills & inline input */}
+                    <div
+                      onClick={() => tagInputRef.current?.focus()}
+                      className="w-full min-h-[50px] p-2 bg-white border border-slate-200 rounded-xl flex flex-wrap items-center gap-1.5 focus-within:border-[#1642D0] focus-within:ring-2 focus-within:ring-[#1642D0]/10 transition-all cursor-text"
+                    >
+                      {tags.map((t) => (
+                        <span
+                          key={t}
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#0F172A] text-white rounded-md text-xs font-bold uppercase tracking-wide group select-none shadow-xs"
+                        >
+                          <span
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEditTag(t);
+                            }}
+                            className="cursor-pointer hover:underline"
+                            title="Click to edit tag"
                           >
-                            {tags.map((t) => (
-                              <span
-                                key={t}
-                                className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#0F172A] text-white rounded-md text-xs font-bold uppercase tracking-wide group select-none shadow-xs"
-                              >
-                                <span
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleEditTag(t);
-                                  }}
-                                  className="cursor-pointer hover:underline"
-                                  title="Click to edit tag"
-                                >
-                                  #{t.replace(/^#/, '')}
-                                </span>
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleRemoveTag(t);
-                                  }}
-                                  className="text-slate-300 hover:text-white hover:bg-slate-700 rounded-full p-0.5 transition-colors cursor-pointer"
-                                  title="Remove tag"
-                                >
-                                  <X className="w-3 h-3" />
-                                </button>
-                              </span>
-                            ))}
+                            #{t.replace(/^#/, '')}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveTag(t);
+                            }}
+                            className="text-slate-300 hover:text-white hover:bg-slate-700 rounded-full p-0.5 transition-colors cursor-pointer"
+                            title="Remove tag"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </span>
+                      ))}
 
-                            <input
-                              ref={tagInputRef}
-                              type="text"
-                              value={tagInput}
-                              onChange={(e) => setTagInput(e.target.value)}
-                              onKeyDown={handleTagKeyDown}
-                              onBlur={handleTagBlur}
-                              placeholder="Add more tags..."
-                              className="flex-1 min-w-[120px] bg-transparent text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none py-1 px-1 border-none"
-                            />
-                          </div>
+                      <input
+                        ref={tagInputRef}
+                        type="text"
+                        value={tagInput}
+                        onChange={(e) => setTagInput(e.target.value)}
+                        onKeyDown={handleTagKeyDown}
+                        onBlur={handleTagBlur}
+                        placeholder="Add more tags..."
+                        className="flex-1 min-w-[120px] bg-transparent text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none py-1 px-1 border-none"
+                      />
+                    </div>
 
-                          {/* Helper Text matching Screenshot 1 */}
-                          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                            Press Enter or Comma to Add • Click Tag to Remove • {tags.length} Tags
-                          </div>
+                    {/* Helper Text matching Screenshot 1 */}
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      Press Enter or Comma to Add • Click Tag to Remove • {tags.length} Tag{tags.length === 1 ? '' : 's'}
+                    </div>
+                  </div>
+
+                  {/* 4. READ DURATION */}
+                  <div className="flex flex-col gap-2 pt-2 border-t border-slate-100">
+                    <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                      READ DURATION
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={readDuration}
+                        onChange={(e) => setReadDuration(e.target.value)}
+                        placeholder="5 min read"
+                        className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-[#1642D0]"
+                      />
+                    </div>
+                  </div>
+
+                  {/* ADMIN-ONLY PUBLISHING CONTROLS: HOMEPAGE PLACEMENT, NEWSLETTER BANNER, TARGETED EMAIL DISTRIBUTION */}
+                  {mounted && user?.role === 'admin' && (
+                    <>
+                      {/* 5. HOMEPAGE PLACEMENT */}
+                      <div className="flex flex-col gap-1.5 pt-2 border-t border-slate-100">
+                        <label className="text-[11px] font-bold uppercase tracking-wider text-amber-600">
+                          HOMEPAGE PLACEMENT
+                        </label>
+                        <select
+                          value={homepagePlacement}
+                          onChange={(e) => setHomepagePlacement(e.target.value)}
+                          className="w-full px-3 py-2.5 bg-amber-50/20 border border-amber-300 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-amber-500 cursor-pointer"
+                        >
+                          <option value="none">None (category &amp; search only)</option>
+                          <option value="latest_news">Latest News</option>
+                          <option value="hero_section">Hero Section</option>
+                          <option value="hero_section_2">Hero Section 2</option>
+                          <option value="trending_news">Trending News</option>
+                        </select>
+                        <p className="text-[11px] text-slate-400 leading-relaxed m-0">
+                          Select where this story will be curated on the homepage layout. Any list slots will automatically push the newest article to rank #1 and shift older items down.
+                        </p>
+                      </div>
+
+                      {/* 6. NEWSLETTER BANNER */}
+                      <div className="flex flex-col gap-1.5 pt-2 border-t border-slate-100">
+                        <label className="text-[11px] font-bold uppercase tracking-wider text-amber-600">
+                          NEWSLETTER BANNER
+                        </label>
+                        <select
+                          value={newsletterBanner}
+                          onChange={(e) => setNewsletterBanner(e.target.value)}
+                          className="w-full px-3 py-2.5 bg-amber-50/20 border border-amber-300 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:border-amber-500 cursor-pointer"
+                        >
+                          <option value="auto">Auto — Middle of article (default)</option>
+                          <option value="hero">Top of article (Hero)</option>
+                          <option value="footer">End of article (Footer CTA)</option>
+                          <option value="disabled">Disabled for this story</option>
+                        </select>
+                        <p className="text-[11px] text-slate-400 leading-relaxed m-0">
+                          Where the &quot;UST Fast Start&quot; signup banner appears inside this article.
+                        </p>
+                      </div>
+
+                      {/* 7. TARGETED EMAIL DISTRIBUTION */}
+                      <div className="border border-blue-200 rounded-2xl bg-blue-50/40 p-3.5 flex flex-col gap-2">
+                        <div className="flex items-center gap-1.5">
+                          <Mail className="w-3.5 h-3.5 text-blue-600" />
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-blue-700">
+                            TARGETED EMAIL DISTRIBUTION
+                          </span>
                         </div>
-
-                        {/* 4. READ DURATION */}
-                        <div className="flex flex-col gap-2 pt-2 border-t border-slate-100">
-                          <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                            Read Duration
-                          </label>
-                          <div className="relative">
-                            <input
-                              type="text"
-                              value={readDuration}
-                              onChange={(e) => setReadDuration(e.target.value)}
-                              placeholder="5 min read"
-                              className="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-hidden focus:border-[#1642D0]"
-                            />
-                            <Clock className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
-                          </div>
-                        </div>
+                        <p className="text-[11px] text-slate-600 leading-relaxed m-0">
+                          Add specific VIP, partner, or client emails to receive this story upon publication.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => setShowEmailDistModal(true)}
+                          className="w-full mt-1 py-1.5 px-3 bg-white hover:bg-slate-50 border border-blue-200 rounded-xl text-xs font-semibold text-blue-700 transition-colors shadow-2xs flex items-center justify-center gap-1.5 cursor-pointer"
+                        >
+                          <Mail className="w-3.5 h-3.5 text-blue-600" />
+                          <span>Mail Box (Add Recipients)</span>
+                        </button>
+                      </div>
+                    </>
+                  )}
 
                 </div>
               )}
@@ -3487,153 +3913,6 @@ function WriterEditorMain() {
                 placeholder="e.g. Reuters, AP Photo, Getty Images"
                 className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#EA580C]"
               />
-            </div>
-
-            {/* TWO-COLUMN ROW: IMAGE SIZE & POSITION ALIGNMENT */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-0.5">
-              
-              {/* IMAGE SIZE DROPDOWN */}
-              <div className="flex flex-col gap-1 relative">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                  IMAGE SIZE
-                </label>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSizeDropdownOpen(!sizeDropdownOpen);
-                    setAlignDropdownOpen(false);
-                  }}
-                  className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-800 flex items-center justify-between cursor-pointer focus:outline-hidden"
-                >
-                  <span>
-                    {imageSize === 'small' && 'Small (Width: 250px)'}
-                    {imageSize === 'medium' && 'Medium (Width: 450px)'}
-                    {imageSize === 'full' && 'Full-Width (100%)'}
-                  </span>
-                  <ChevronDown className="w-4 h-4 text-slate-500" />
-                </button>
-
-                {sizeDropdownOpen && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-xl z-20 overflow-hidden text-xs">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setImageSize('small');
-                        setSizeDropdownOpen(false);
-                      }}
-                      className={`w-full text-left px-3 py-1.5 transition-colors cursor-pointer ${
-                        imageSize === 'small' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
-                      }`}
-                    >
-                      Small (Width: 250px)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setImageSize('medium');
-                        setSizeDropdownOpen(false);
-                      }}
-                      className={`w-full text-left px-3 py-1.5 transition-colors cursor-pointer ${
-                        imageSize === 'medium' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
-                      }`}
-                    >
-                      Medium (Width: 450px)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setImageSize('full');
-                        setSizeDropdownOpen(false);
-                      }}
-                      className={`w-full text-left px-3 py-1.5 transition-colors cursor-pointer ${
-                        imageSize === 'full' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
-                      }`}
-                    >
-                      Full-Width (100%)
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* POSITION ALIGNMENT DROPDOWN */}
-              <div className="flex flex-col gap-1 relative">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                  POSITION ALIGNMENT
-                </label>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setAlignDropdownOpen(!alignDropdownOpen);
-                    setSizeDropdownOpen(false);
-                  }}
-                  className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-800 flex items-center justify-between cursor-pointer focus:outline-hidden"
-                >
-                  <span className="truncate">
-                    {imageAlignment === 'center' && 'Center (No Wrap)'}
-                    {imageAlignment === 'left' && 'Left — Wrap Text Right'}
-                    {imageAlignment === 'right' && 'Right — Wrap Text Left'}
-                    {imageAlignment === 'no_wrap' && 'No Wrap'}
-                  </span>
-                  <ChevronDown className="w-4 h-4 text-slate-500 shrink-0" />
-                </button>
-
-                {alignDropdownOpen && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-xl z-20 overflow-hidden text-xs">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setImageAlignment('center');
-                        setAlignDropdownOpen(false);
-                      }}
-                      className={`w-full text-left px-3 py-1.5 transition-colors cursor-pointer flex items-center gap-2 ${
-                        imageAlignment === 'center' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
-                      }`}
-                    >
-                      <AlignCenter className="w-3.5 h-3.5" />
-                      <span>Center (No Wrap)</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setImageAlignment('left');
-                        setAlignDropdownOpen(false);
-                      }}
-                      className={`w-full text-left px-3 py-1.5 transition-colors cursor-pointer flex items-center gap-2 ${
-                        imageAlignment === 'left' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
-                      }`}
-                    >
-                      <AlignLeft className="w-3.5 h-3.5" />
-                      <span>Left — Wrap Text Right</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setImageAlignment('right');
-                        setAlignDropdownOpen(false);
-                      }}
-                      className={`w-full text-left px-3 py-1.5 transition-colors cursor-pointer flex items-center gap-2 ${
-                        imageAlignment === 'right' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
-                      }`}
-                    >
-                      <AlignRight className="w-3.5 h-3.5" />
-                      <span>Right — Wrap Text Left</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setImageAlignment('no_wrap');
-                        setAlignDropdownOpen(false);
-                      }}
-                      className={`w-full text-left px-3 py-1.5 transition-colors cursor-pointer flex items-center gap-2 ${
-                        imageAlignment === 'no_wrap' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
-                      }`}
-                    >
-                      <span>No Wrap</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-
             </div>
 
             {/* MODAL FOOTER BUTTONS: CANCEL and + INSERT IMAGE */}
@@ -4211,6 +4490,85 @@ function WriterEditorMain() {
           cursor: pointer !important;
         }
       `}</style>
+
+      {/* Targeted Email Distribution Modal */}
+      {showEmailDistModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 animate-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-blue-600" />
+                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900 m-0">
+                  Targeted Email Distribution
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowEmailDistModal(false)}
+                className="p-1 text-slate-400 hover:text-slate-700 rounded-lg cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-500 mt-2">
+              Recipients added here will automatically receive a curated edition of this story upon approval.
+            </p>
+
+            <div className="mt-4 flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <input
+                  type="email"
+                  value={newDistEmail}
+                  onChange={(e) => setNewDistEmail(e.target.value)}
+                  placeholder="Enter recipient email..."
+                  className="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-xs placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#1642D0]"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (newDistEmail.trim() && !distEmails.includes(newDistEmail.trim())) {
+                      setDistEmails([...distEmails, newDistEmail.trim()]);
+                      setNewDistEmail('');
+                    }
+                  }}
+                  className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl cursor-pointer"
+                >
+                  Add
+                </button>
+              </div>
+
+              <div className="flex flex-wrap gap-1.5 mt-2 max-h-36 overflow-y-auto p-1">
+                {distEmails.map((em, idx) => (
+                  <span
+                    key={idx}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs bg-blue-50 text-blue-700 border border-blue-200"
+                  >
+                    <span>{em}</span>
+                    <button
+                      type="button"
+                      onClick={() => setDistEmails(distEmails.filter((_, i) => i !== idx))}
+                      className="hover:text-red-500 cursor-pointer"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-5 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setShowEmailDistModal(false)}
+                className="px-4 py-2 bg-[#1642D0] hover:bg-[#1236A8] text-white text-xs font-bold uppercase tracking-wider rounded-xl cursor-pointer transition-colors"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Profile Settings Modal */}
       <ProfileSettingsModal

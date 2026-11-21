@@ -133,7 +133,7 @@ const AUTHORS_REGISTRY: Record<string, AuthorProfile> = {
     name: 'Fathima',
     role: 'Staff Writer',
     badge: 'United States Today Staff',
-    avatar: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?q=80&w=400&auto=format&fit=crop',
+    avatar: '/images/user-avatar-butterfly.png',
     bio: 'Fathima is a staff writer at United States Today covering business, innovation, and leadership.',
   },
   'kalid-mishal': {
@@ -143,40 +143,68 @@ const AUTHORS_REGISTRY: Record<string, AuthorProfile> = {
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop',
     bio: 'Kalid Mishal is a staff writer at United States Today covering startup growth, leadership principles, and emerging market dynamics.',
   },
+  'samra': {
+    name: 'Samra',
+    role: 'Staff Writer',
+    badge: 'United States Today Staff',
+    avatar: '/uploads/upload_1794590868177_images__1_.webp',
+    bio: 'Executive business contributor at United States Today.',
+  },
+  'samra-thasneem': {
+    name: 'Samra Thasneem',
+    role: 'Staff Writer',
+    badge: 'United States Today Staff',
+    avatar: '/uploads/upload_1794590868177_images__1_.webp',
+    bio: 'Executive business contributor at United States Today.',
+  },
+  'mishal': {
+    name: 'mishal',
+    role: 'Staff Writer',
+    badge: 'United States Today Staff',
+    avatar: '/images/user-avatar-butterfly.png',
+    bio: 'Writer User at United States Today.',
+  },
+  'fathima-samra': {
+    name: 'Fathima Samra',
+    role: 'Staff Writer',
+    badge: 'United States Today Staff',
+    avatar: '/images/user-avatar-butterfly.png',
+    bio: 'Staff Writer at United States Today.',
+  },
   'writer-account': {
     name: 'Writer Account',
     role: 'Staff Writer',
     badge: 'United States Today Staff',
     avatar: '/uploads/avatar_1793324678418_d.jpg',
-    bio: 'Executive business contributor.',
+    bio: 'Executive business contributor at United States Today.',
   },
   'writer_account': {
     name: 'Writer Account',
     role: 'Staff Writer',
     badge: 'United States Today Staff',
     avatar: '/uploads/avatar_1793324678418_d.jpg',
-    bio: 'Executive business contributor.',
+    bio: 'Executive business contributor at United States Today.',
   },
   'writer': {
     name: 'Writer Account',
     role: 'Staff Writer',
     badge: 'United States Today Staff',
     avatar: '/uploads/avatar_1793324678418_d.jpg',
-    bio: 'Executive business contributor.',
+    bio: 'Executive business contributor at United States Today.',
   },
   'writter': {
     name: 'Writer Account',
     role: 'Staff Writer',
     badge: 'United States Today Staff',
     avatar: '/uploads/avatar_1793324678418_d.jpg',
-    bio: 'Executive business contributor.',
+    bio: 'Executive business contributor at United States Today.',
   },
   'thasneem-samra': {
     name: 'Writer Account',
     role: 'Staff Writer',
     badge: 'United States Today Staff',
     avatar: '/uploads/avatar_1793324678418_d.jpg',
-    bio: 'Executive business contributor.',
+    bio: 'Executive business contributor at United States Today.',
   },
 };
 
@@ -620,35 +648,7 @@ export default function AuthorProfilePage() {
   const rawSlug = params?.slug as string | undefined;
   const slug = (Array.isArray(rawSlug) ? rawSlug[0] : rawSlug) || 'jason-feifer';
 
-  const [author, setAuthor] = useState<AuthorProfile>(() => {
-    const base = getAuthorProfile(slug);
-    if (typeof window !== 'undefined') {
-      try {
-        const stored = localStorage.getItem('entrepreneur_user');
-        if (stored) {
-          const u = JSON.parse(stored);
-          const cleanSlug = slug.toLowerCase().trim().replace(/[^a-z0-9]/g, '');
-          const userSlugWriter = (u.writerName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-          const userSlugName = (u.name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-          if (
-            (userSlugWriter && userSlugWriter === cleanSlug) ||
-            (userSlugName && userSlugName === cleanSlug) ||
-            (u.role === 'writer' && (cleanSlug === 'writer' || cleanSlug === 'writter' || cleanSlug === 'writeraccount'))
-          ) {
-            return {
-              ...base,
-              name: u.name || u.writerName || base.name,
-              avatar: u.avatar || base.avatar,
-              bio: u.bio && u.bio.trim() !== '' ? u.bio : base.bio,
-            };
-          }
-        }
-      } catch {
-        // ignore
-      }
-    }
-    return base;
-  });
+  const [author, setAuthor] = useState<AuthorProfile>(() => getAuthorProfile(slug));
   const [dbArticles, setDbArticles] = useState<any[] | null>(null);
 
   // Synchronize state when slug parameter changes
@@ -656,6 +656,31 @@ export default function AuthorProfilePage() {
   useEffect(() => {
     let isCancelled = false;
     setCurrentPage(1);
+
+    // Read stored user from localStorage after hydration
+    try {
+      const stored = localStorage.getItem('entrepreneur_user');
+      if (stored) {
+        const u = JSON.parse(stored);
+        const cleanSlug = slug.toLowerCase().trim().replace(/[^a-z0-9]/g, '');
+        const userSlugWriter = (u.writerName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+        const userSlugName = (u.name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+        if (
+          (userSlugWriter && userSlugWriter === cleanSlug) ||
+          (userSlugName && userSlugName === cleanSlug) ||
+          (u.role === 'writer' && (cleanSlug === 'writer' || cleanSlug === 'writter' || cleanSlug === 'writeraccount'))
+        ) {
+          setAuthor((prev) => ({
+            ...prev,
+            name: u.name || u.writerName || prev.name,
+            avatar: u.avatar || prev.avatar,
+            bio: u.bio && u.bio.trim() !== '' ? u.bio : prev.bio,
+          }));
+        }
+      }
+    } catch {
+      // ignore
+    }
 
     // 1. If currently logged in user matches slug, sync immediately
     if (user) {
@@ -707,7 +732,8 @@ export default function AuthorProfilePage() {
             const artAuthor = (a.author?.name || a.authorName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
             return (
               artAuthor === authorSlugClean ||
-              (artAuthor.length > 3 && authorSlugClean.includes(artAuthor))
+              (artAuthor.length > 3 && authorSlugClean.includes(artAuthor)) ||
+              (authorSlugClean.length > 3 && artAuthor.includes(authorSlugClean))
             );
           });
           if (matching.length > 0) {
@@ -721,6 +747,35 @@ export default function AuthorProfilePage() {
 
     return () => {
       isCancelled = true;
+    };
+  }, [slug, user]);
+
+  // Listen for profile updates (so changes reflect immediately on author page)
+  useEffect(() => {
+    const handleProfileUpdate = (e: any) => {
+      const updated = e?.detail;
+      if (!updated) return;
+      const cleanSlug = slug.toLowerCase().trim().replace(/[^a-z0-9]/g, '');
+      const userSlugWriter = (updated.writerName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const userSlugName = (updated.name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const isThisAuthor =
+        (userSlugWriter && userSlugWriter === cleanSlug) ||
+        (userSlugName && userSlugName === cleanSlug) ||
+        (cleanSlug === 'writer' || cleanSlug === 'writter' || cleanSlug === 'writeraccount');
+
+      if (isThisAuthor || (user && user.email === updated.email)) {
+        setAuthor((prev) => ({
+          ...prev,
+          name: updated.name || updated.writerName || prev.name,
+          avatar: updated.avatar || prev.avatar,
+          bio: updated.bio !== undefined && updated.bio.trim() !== '' ? updated.bio : prev.bio,
+        }));
+      }
+    };
+
+    window.addEventListener('entrepreneur_user_updated', handleProfileUpdate);
+    return () => {
+      window.removeEventListener('entrepreneur_user_updated', handleProfileUpdate);
     };
   }, [slug, user]);
 
@@ -863,7 +918,7 @@ export default function AuthorProfilePage() {
         {/* Responsive Grid: 4 columns on PC Desktop (xl:grid-cols-4), 3 columns on Laptop (lg:grid-cols-3), 2 on Tablet, 1 on Mobile */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 xl:gap-8">
           {currentArticles.map((art) => (
-            <article key={art.id} className="relative group flex flex-col items-start text-left cursor-pointer">
+            <article key={art.id} className="relative group flex flex-col h-full items-start text-left cursor-pointer">
               {/* Stretched link so the entire card is clickable */}
               <Link
                 href={getArticleUrl(art)}
@@ -872,7 +927,7 @@ export default function AuthorProfilePage() {
               />
 
               {/* Card Image: Sharp square rectangular corners matching square design requirement */}
-              <div className="w-full aspect-[16/9.5] overflow-hidden rounded-none bg-slate-100 mb-3.5 border border-slate-200/60 pointer-events-none">
+              <div className="w-full aspect-[16/9.5] overflow-hidden rounded-none bg-slate-100 mb-3.5 border border-slate-200/60 pointer-events-none shrink-0">
                 <img
                   src={art.imageUrl}
                   alt={art.title}
@@ -880,22 +935,27 @@ export default function AuthorProfilePage() {
                 />
               </div>
 
-              {/* Card Category */}
-              <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-1.5 block relative z-10 pointer-events-none">
-                {art.category}
-              </span>
+              {/* Card Content: flex-1 flex-col justify-between to guarantee same alignment at the bottom of each card */}
+              <div className="flex-1 flex flex-col justify-between w-full">
+                <div>
+                  {/* Card Category */}
+                  <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-1.5 block relative z-10 pointer-events-none">
+                    {art.category}
+                  </span>
 
-              {/* Card Title */}
-              <h3 className="font-serif font-bold text-base sm:text-[18px] text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-0 relative z-10 pointer-events-none">
-                {art.title}
-              </h3>
+                  {/* Card Title: Heading Line-clamp 3 */}
+                  <h3 className="font-serif font-bold text-base sm:text-[18px] text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-0 line-clamp-3 relative z-10 pointer-events-none">
+                    {art.title}
+                  </h3>
 
-              {/* Card Excerpt */}
-              {art.excerpt && (
-                <p className="font-serif text-slate-600 text-xs sm:text-[13.5px] leading-relaxed line-clamp-3 mt-2 my-0 relative z-10 pointer-events-none">
-                  {art.excerpt}
-                </p>
-              )}
+                  {/* Card Excerpt: Description Line-clamp 3 */}
+                  {art.excerpt && (
+                    <p className="font-serif text-slate-600 text-xs sm:text-[13.5px] leading-relaxed line-clamp-3 mt-2 my-0 relative z-10 pointer-events-none">
+                      {art.excerpt}
+                    </p>
+                  )}
+                </div>
+              </div>
             </article>
           ))}
         </div>

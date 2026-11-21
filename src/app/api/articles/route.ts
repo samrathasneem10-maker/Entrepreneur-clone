@@ -1,9 +1,70 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { query } from '@/lib/db';
 import { ALL_ARTICLES } from '@/data/newsData';
+import { formatPublicationDate } from '@/lib/dateUtils';
+
+const PLACEMENT_LIMITS: Record<string, number> = {
+  latest_news: 9,
+  hero_section: 8,
+  hero_section_2: 1,
+  trending_news: 5,
+};
+
+async function handlePlacementAssignment(articleId: number, placement: string, status: string) {
+  const normPlacement = (placement || 'none').toLowerCase().trim();
+  const normStatus = (status || 'published').toLowerCase().replace(/\s+/g, '_');
+
+  if (normStatus !== 'published' || normPlacement === 'none' || !normPlacement) {
+    await query('UPDATE articles SET placement_order = NULL WHERE id = ?', [articleId]);
+    return;
+  }
+
+  const limit = PLACEMENT_LIMITS[normPlacement];
+  if (!limit) {
+    return;
+  }
+
+  // 1. Shift all existing articles with this placement down by 1 position (order = order + 1)
+  await query(
+    'UPDATE articles SET placement_order = COALESCE(placement_order, 1) + 1 WHERE LOWER(COALESCE(placement, "none")) = ? AND id != ?',
+    [normPlacement, articleId]
+  );
+
+  // 2. Assign position 1 to the newly assigned article
+  await query(
+    'UPDATE articles SET placement = ?, placement_order = 1 WHERE id = ?',
+    [normPlacement, articleId]
+  );
+
+  // 3. Overflow: Any article that moved beyond capacity is automatically removed from homepage placement
+  // Note: it is NOT deleted; it remains published and visible in its category page
+  await query(
+    'UPDATE articles SET placement = "none", placement_order = NULL WHERE LOWER(COALESCE(placement, "none")) = ? AND placement_order > ?',
+    [normPlacement, limit]
+  );
+}
+
+
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
+
+  // Delegate directly to the backend service in the backend folder
+  try {
+    const url = new URL(request.url);
+    const backendRes = await fetch(`${BACKEND_URL}/api/articles${url.search}`, {
+      cache: 'no-store',
+    });
+    if (backendRes.ok) {
+      const data = await backendRes.json();
+      return NextResponse.json(data);
+    }
+  } catch (backendErr) {
+    // Fallback to local handling if backend server is starting
+  }
+
   const category = searchParams.get('category');
   const author = searchParams.get('author');
   const status = searchParams.get('status');
@@ -97,6 +158,7 @@ export async function GET(request: Request) {
         a.author_name as authorName,
         a.editor,
         a.date,
+        a.published_at as publishedAt,
         a.read_time as readTime,
         a.excerpt,
         a.content,
@@ -107,6 +169,7 @@ export async function GET(request: Request) {
         a.is_featured as isFeatured,
         COALESCE(a.status, 'published') as status,
         COALESCE(a.placement, 'none') as placement,
+        a.placement_order as placementOrder,
         COALESCE(a.newsletter_banner, 'auto') as newsletterBanner,
         a.rejection_reason as rejectionReason,
         a.reviewer_notes as reviewerNotes,
@@ -125,7 +188,9 @@ export async function GET(request: Request) {
       LEFT JOIN authors au ON (a.author_id = au.id OR LOWER(TRIM(a.author_name)) = LOWER(TRIM(au.name)))
       LEFT JOIN users u ON (a.author_id = u.id OR LOWER(TRIM(a.author_name)) = LOWER(TRIM(u.name)) OR LOWER(TRIM(a.author_name)) = LOWER(TRIM(u.writer_name)))
       ${whereClause}
-      ORDER BY a.id DESC
+      ${(placement && placement.toLowerCase().trim() !== 'all')
+        ? 'ORDER BY CASE WHEN a.placement_order IS NOT NULL AND a.placement_order > 0 THEN a.placement_order ELSE 999999 END ASC, CASE WHEN a.published_at IS NOT NULL THEN a.published_at ELSE a.created_at END DESC, a.id DESC'
+        : 'ORDER BY CASE WHEN a.published_at IS NOT NULL THEN a.published_at ELSE a.created_at END DESC, a.id DESC'}
       LIMIT ? OFFSET ?
     `;
 
@@ -134,15 +199,21 @@ export async function GET(request: Request) {
 
     const formatted = (rows as any[]).map((r) => {
       let resolvedImg = r.imageUrl;
-      if (r.content) {
-        const m = r.content.match(/<img[^>]+src=["']([^"']+)["']/i);
-        if (m && m[1] && m[1].trim() !== '') {
-          resolvedImg = m[1];
+      if (!resolvedImg || resolvedImg.includes('placeholder')) {
+        if (r.content) {
+          const m = r.content.match(/<img[^>]+src=["']([^"']+)["']/i);
+          if (m && m[1] && m[1].trim() !== '') {
+            resolvedImg = m[1];
+          }
         }
       }
       if (!resolvedImg || resolvedImg.includes('placeholder')) {
         resolvedImg = r.imageUrl && !r.imageUrl.includes('placeholder') ? r.imageUrl : '';
       }
+      const displayDate = r.publishedAt
+        ? formatPublicationDate(r.publishedAt)
+        : (r.date || formatPublicationDate(r.createdAt));
+
       return {
         id: r.slug || String(r.id),
         dbId: r.id,
@@ -150,13 +221,16 @@ export async function GET(request: Request) {
         title: r.title,
         category: r.category || 'Business',
         editor: r.editor,
-        date: r.date || 'Oct 29, 2026',
+        date: displayDate,
+        publishedAt: r.publishedAt ? new Date(r.publishedAt).toISOString() : null,
         readTime: r.readTime || '5 min read',
         excerpt: r.excerpt || '',
         content: r.content || '',
         imageUrl: resolvedImg || '',
         imageAspect: r.imageAspect,
         views: r.views || '1',
+        placement: r.placement || 'none',
+        placementOrder: r.placementOrder || null,
         status: (r.status || 'published').toLowerCase(),
       rejectionReason: r.rejectionReason || null,
       reviewerNotes: r.reviewerNotes || null,
@@ -244,6 +318,21 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+
+    // Delegate directly to the backend service in the backend folder
+    try {
+      const backendRes = await fetch(`${BACKEND_URL}/api/articles`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (backendRes.ok) {
+        const data = await backendRes.json();
+        return NextResponse.json(data, { status: 201 });
+      }
+    } catch (backendErr) {
+      // Fallback to local handling
+    }
     const {
       title,
       category = 'Business',
@@ -337,7 +426,8 @@ export async function POST(request: Request) {
       .replace(/(^-|-$)/g, '') + '-' + Date.now().toString().slice(-4);
 
     const now = new Date();
-    const formattedDate = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const formattedDate = formatPublicationDate(now);
+    const publishedAtVal = normalizedStatus === 'published' ? now : null;
 
     const formattedTags = Array.isArray(tags) ? JSON.stringify(tags) : (tags || '');
     const formattedSubCategories = Array.isArray(subCategories) ? JSON.stringify(subCategories) : (subCategories || '');
@@ -346,14 +436,15 @@ export async function POST(request: Request) {
 
     const insertResult: any = await query(
       `INSERT INTO articles 
-        (slug, title, category_name, author_name, date, read_time, excerpt, content, image_url, status, views, tags, card_summary, focus_keyword, meta_description, sub_categories, placement, newsletter_banner)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '1', ?, ?, ?, ?, ?, ?, ?)`,
+        (slug, title, category_name, author_name, date, published_at, read_time, excerpt, content, image_url, status, views, tags, card_summary, focus_keyword, meta_description, sub_categories, placement, newsletter_banner)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '1', ?, ?, ?, ?, ?, ?, ?)`,
       [
         slug,
         title.trim(),
         category,
         authorName,
         formattedDate,
+        publishedAtVal,
         readTime || '5 min read',
         finalExcerpt,
         content,
@@ -369,7 +460,12 @@ export async function POST(request: Request) {
       ]
     );
 
-    return NextResponse.json({
+    const insertedId = insertResult.insertId;
+    if (finalPlacement && finalPlacement !== 'none' && normalizedStatus === 'published') {
+      await handlePlacementAssignment(insertedId, finalPlacement, normalizedStatus);
+    }
+
+    const resObj = NextResponse.json({
       success: true,
       message: 'Article created successfully',
       article: {
@@ -380,6 +476,7 @@ export async function POST(request: Request) {
         category,
         authorName,
         date: formattedDate,
+        publishedAt: publishedAtVal ? publishedAtVal.toISOString() : null,
         readTime: readTime || '5 min read',
         excerpt: finalExcerpt,
         content,
@@ -392,6 +489,11 @@ export async function POST(request: Request) {
         subCategories: Array.isArray(subCategories) ? subCategories : [],
       },
     });
+    try {
+      revalidatePath('/');
+      revalidatePath('/topic/[slug]', 'page');
+    } catch {}
+    return resObj;
   } catch (error: any) {
     console.error('Error creating article:', error);
     return NextResponse.json(
@@ -404,10 +506,26 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
+
+    // Delegate directly to the backend service in the backend folder
+    try {
+      const backendRes = await fetch(`${BACKEND_URL}/api/articles`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (backendRes.ok) {
+        const data = await backendRes.json();
+        return NextResponse.json(data);
+      }
+    } catch (backendErr) {
+      // Fallback to local handling
+    }
     const {
       id,
       dbId,
       status,
+      republish,
       title,
       category,
       excerpt,
@@ -429,10 +547,25 @@ export async function PUT(request: Request) {
       placement,
       newsletterBanner,
       newsletter_banner,
+      publishedAt,
+      date: customDate,
     } = body;
 
     if (!id && !dbId) {
       return NextResponse.json({ success: false, error: 'Article identifier is required.' }, { status: 400 });
+    }
+
+    let targetDbId: number | null = null;
+    let existingStatus: string | null = null;
+    let existingPublishedAt: any = null;
+
+    const findWhere = dbId ? 'WHERE id = ?' : 'WHERE slug = ? OR id = ?';
+    const findParams = dbId ? [dbId] : [id, id];
+    const existingRows: any = await query(`SELECT id, status, published_at FROM articles ${findWhere} LIMIT 1`, findParams);
+    if (existingRows && existingRows[0]) {
+      targetDbId = Number(existingRows[0].id);
+      existingStatus = (existingRows[0].status || 'published').toLowerCase().replace(/\s+/g, '_');
+      existingPublishedAt = existingRows[0].published_at;
     }
 
     // Backend Validation for Pending Review Submissions on Update
@@ -493,6 +626,29 @@ export async function PUT(request: Request) {
       const normalizedStatus = status.toLowerCase().replace(/\s+/g, '_');
       updates.push('status = ?');
       params.push(normalizedStatus);
+
+      if (normalizedStatus === 'published') {
+        if (existingStatus !== 'published' || republish === true || !existingPublishedAt) {
+          updates.push('published_at = NOW()');
+          updates.push('date = ?');
+          params.push(formatPublicationDate(new Date()));
+        }
+      } else {
+        updates.push('published_at = NULL');
+      }
+    } else if (republish === true) {
+      updates.push('published_at = NOW()');
+      updates.push('date = ?');
+      params.push(formatPublicationDate(new Date()));
+    }
+
+    if (publishedAt !== undefined) {
+      updates.push('published_at = ?');
+      params.push(publishedAt ? new Date(publishedAt) : null);
+    }
+    if (customDate !== undefined && !updates.some((u) => u.startsWith('date ='))) {
+      updates.push('date = ?');
+      params.push(customDate);
     }
     if (title !== undefined) {
       updates.push('title = ?');
@@ -592,6 +748,20 @@ export async function PUT(request: Request) {
 
     await query(`UPDATE articles SET ${updates.join(', ')} ${whereClause}`, params);
 
+    if (targetDbId && (placement !== undefined || status !== undefined)) {
+      const curRows: any = await query('SELECT id, placement, status FROM articles WHERE id = ?', [targetDbId]);
+      if (curRows && curRows[0]) {
+        const curPlacement = placement !== undefined ? placement : curRows[0].placement;
+        const curStatus = status !== undefined ? status : curRows[0].status;
+        await handlePlacementAssignment(targetDbId, curPlacement, curStatus);
+      }
+    }
+
+    try {
+      revalidatePath('/');
+      revalidatePath('/topic/[slug]', 'page');
+    } catch {}
+
     return NextResponse.json({
       success: true,
       message: 'Article updated successfully',
@@ -611,6 +781,20 @@ export async function DELETE(request: Request) {
   const dbId = searchParams.get('dbId');
   const permanent = searchParams.get('permanent') === 'true';
 
+  // Delegate directly to the backend service in the backend folder
+  try {
+    const url = new URL(request.url);
+    const backendRes = await fetch(`${BACKEND_URL}/api/articles${url.search}`, {
+      method: 'DELETE',
+    });
+    if (backendRes.ok) {
+      const data = await backendRes.json();
+      return NextResponse.json(data);
+    }
+  } catch (backendErr) {
+    // Fallback to local handling
+  }
+
   if (!id && !dbId) {
     return NextResponse.json({ success: false, error: 'Article identifier is required.' }, { status: 400 });
   }
@@ -628,6 +812,10 @@ export async function DELETE(request: Request) {
         params.push(id, id);
       }
       await query(`DELETE FROM articles ${whereClause}`, params);
+      try {
+        revalidatePath('/');
+        revalidatePath('/topic/[slug]', 'page');
+      } catch {}
       return NextResponse.json({ success: true, message: 'Article permanently deleted' });
     } else {
       // Soft delete: move to trash
@@ -641,6 +829,10 @@ export async function DELETE(request: Request) {
         params.push(id, id);
       }
       await query(`UPDATE articles SET status = ? ${whereClause}`, params);
+      try {
+        revalidatePath('/');
+        revalidatePath('/topic/[slug]', 'page');
+      } catch {}
       return NextResponse.json({ success: true, message: 'Article moved to trash' });
     }
   } catch (error: any) {

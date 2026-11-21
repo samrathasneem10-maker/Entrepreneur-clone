@@ -1,11 +1,120 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { GLOBAL_BUSINESS_SECTION, getArticleUrl } from '@/data/newsData';
+import { GLOBAL_BUSINESS_SECTION, getArticleUrl, Article } from '@/data/newsData';
 
-export const GlobalBusinessSection: React.FC = () => {
-  const { featured, topCards, numberedItems } = GLOBAL_BUSINESS_SECTION;
+const BASELINE_GLOBAL_BUSINESS_6: Article[] = [
+  GLOBAL_BUSINESS_SECTION.featured,
+  GLOBAL_BUSINESS_SECTION.topCards[0],
+  GLOBAL_BUSINESS_SECTION.topCards[1],
+  GLOBAL_BUSINESS_SECTION.numberedItems[0],
+  GLOBAL_BUSINESS_SECTION.numberedItems[1],
+  GLOBAL_BUSINESS_SECTION.numberedItems[2],
+];
+
+export interface GlobalBusinessSectionProps {
+  initialFeatured?: Article;
+  initialTopCards?: Article[];
+  initialNumberedItems?: Article[];
+}
+
+export const GlobalBusinessSection: React.FC<GlobalBusinessSectionProps> = ({
+  initialFeatured,
+  initialTopCards,
+  initialNumberedItems,
+}) => {
+  const [featured, setFeatured] = useState<Article>(() => initialFeatured || BASELINE_GLOBAL_BUSINESS_6[0]);
+  const [topCards, setTopCards] = useState<Article[]>(() =>
+    initialTopCards && initialTopCards.length > 0
+      ? initialTopCards
+      : [BASELINE_GLOBAL_BUSINESS_6[1], BASELINE_GLOBAL_BUSINESS_6[2]]
+  );
+  const [numberedItems, setNumberedItems] = useState<Article[]>(() =>
+    initialNumberedItems && initialNumberedItems.length > 0
+      ? initialNumberedItems
+      : [
+          { ...BASELINE_GLOBAL_BUSINESS_6[3], rank: 1 },
+          { ...BASELINE_GLOBAL_BUSINESS_6[4], rank: 2 },
+          { ...BASELINE_GLOBAL_BUSINESS_6[5], rank: 3 },
+        ]
+  );
+
+  useEffect(() => {
+    fetch('/api/articles?status=published&limit=100')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success && Array.isArray(data.data)) {
+          // 1. Filter articles where Main category is Global Business
+          // AND placement is none (no homepage placement)
+          const dbArticles: Article[] = data.data
+            .filter((a: any) => {
+              const cat = (a.category || a.category_name || '').toLowerCase().trim();
+              const isGlobalBusinessCat =
+                cat === 'global business' ||
+                cat === 'global-business' ||
+                cat === 'global_business' ||
+                cat === 'international business' ||
+                cat === 'international-business';
+              if (!isGlobalBusinessCat) return false;
+
+              // Rule: If article is assigned to an active homepage placement (e.g. latest_news, hero_section, trending_news),
+              // it cannot be shown in this section on the homepage!
+              const placement = (a.placement || 'none').toLowerCase().trim();
+              if (placement !== 'none' && placement !== '') {
+                return false;
+              }
+
+              return true;
+            })
+            .map((a: any) => ({
+              id: a.slug || String(a.dbId || a.id),
+              slug: a.slug,
+              title: a.title,
+              category: a.category || 'GLOBAL BUSINESS',
+              excerpt: a.excerpt || a.cardSummary || '',
+              author: {
+                name: (typeof a.author === 'object' ? a.author?.name : a.author) || a.authorName || 'Staff Contributor',
+                avatar: (typeof a.author === 'object' ? a.author?.avatar : null) || a.authorAvatar || '/images/authors/james-carter.png',
+                title: (typeof a.author === 'object' ? a.author?.title : null) || a.authorTitle || 'Correspondent',
+              },
+              date: a.date || 'Oct 21, 2026',
+              readTime: a.readTime || '5 min read',
+              imageUrl: a.imageUrl || '/images/global-business/global-markets-momentum.png',
+            }));
+
+          // 2. Prepend DB articles (newest published first), then fill remaining slots with baseline articles
+          const combined: Article[] = [...dbArticles];
+          BASELINE_GLOBAL_BUSINESS_6.forEach((baseItem) => {
+            const alreadyIn = combined.some(
+              (c) => (c.slug && baseItem.slug && c.slug === baseItem.slug) || (c.id && baseItem.id && c.id === baseItem.id)
+            );
+            if (!alreadyIn) {
+              combined.push(baseItem);
+            }
+          });
+
+          // 3. Exactly 6 slots: 1st is featured lead story, 2nd-3rd are topCards, 4th-6th are numberedItems
+          // When a new article comes in, slot 6 drops off from the homepage section and remains inside category pages
+          const active6 = combined.slice(0, 6);
+          if (active6.length >= 1) {
+            setFeatured(active6[0]);
+            if (active6.length >= 3) {
+              setTopCards(active6.slice(1, 3));
+            }
+            if (active6.length >= 4) {
+              setNumberedItems(
+                active6.slice(3, 6).map((item, idx) => ({
+                  ...item,
+                  rank: idx + 1,
+                }))
+              );
+            }
+          }
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <section className="bg-white pt-5 sm:pt-6 pb-5 sm:pb-6 w-full">
@@ -61,8 +170,16 @@ export const GlobalBusinessSection: React.FC = () => {
                   {featured.category}
                 </span>
 
-                {/* Lead Headline as Real HTML Text */}
-                <h3 className="font-serif font-bold text-2xl sm:text-3xl lg:text-[28px] xl:text-[32px] leading-[1.2] tracking-tight text-white my-1.5">
+                {/* Lead Headline as Real HTML Text - Line clamp 3 */}
+                <h3
+                  className="font-serif font-bold text-2xl sm:text-3xl lg:text-[28px] xl:text-[32px] leading-[1.2] tracking-tight text-white my-1.5 line-clamp-3"
+                  style={{
+                    display: '-webkit-box',
+                    WebkitLineClamp: 3,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                  }}
+                >
                   <Link
                     href={getArticleUrl(featured)}
                     className="hover:underline text-white no-underline"
@@ -71,12 +188,18 @@ export const GlobalBusinessSection: React.FC = () => {
                   </Link>
                 </h3>
 
-                {/* Excerpt */}
-                {featured.excerpt && (
-                  <p className="font-sans text-xs sm:text-[14px] text-slate-200 leading-relaxed mt-1.5 max-w-xl my-0 line-clamp-3">
-                    {featured.excerpt}
-                  </p>
-                )}
+                {/* Excerpt - Line clamp 3 */}
+                <p
+                  className="font-sans text-xs sm:text-[14px] text-slate-200 leading-relaxed mt-1.5 max-w-xl my-0 line-clamp-3"
+                  style={{
+                    display: '-webkit-box',
+                    WebkitLineClamp: 3,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                  }}
+                >
+                  {featured.excerpt || 'Exploring global trade, market dynamics, and international business leadership across worldwide economies.'}
+                </p>
 
                 {/* Author Info */}
                 <div className="flex items-center gap-2.5 mt-3.5 pt-1">
@@ -123,7 +246,15 @@ export const GlobalBusinessSection: React.FC = () => {
                     <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] no-underline hover:no-underline active:no-underline focus:no-underline mb-1 block">
                       {card.category}
                     </span>
-                    <h4 className="text-[15px] sm:text-[16px] xl:text-[17px] font-serif font-bold text-slate-900 leading-snug tracking-tight mb-1.5 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 line-clamp-2">
+                    <h4
+                      className="text-[15px] sm:text-[16px] xl:text-[17px] font-serif font-bold text-slate-900 leading-snug tracking-tight mb-1.5 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 line-clamp-3"
+                      style={{
+                        display: '-webkit-box',
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                      }}
+                    >
                       {card.title}
                     </h4>
                   </div>
@@ -160,7 +291,15 @@ export const GlobalBusinessSection: React.FC = () => {
                     <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] no-underline hover:no-underline active:no-underline focus:no-underline mb-0.5 block">
                       {item.category}
                     </span>
-                    <h5 className="text-[14.5px] sm:text-[15.5px] lg:text-[16px] font-serif font-bold text-slate-900 leading-snug tracking-tight line-clamp-2 mb-1 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2">
+                    <h5
+                      className="text-[14.5px] sm:text-[15.5px] lg:text-[16px] font-serif font-bold text-slate-900 leading-snug tracking-tight line-clamp-2 mb-1 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2"
+                      style={{
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                      }}
+                    >
                       {item.title}
                     </h5>
                     <div className="text-[10px] sm:text-[11px] font-sans text-slate-500">

@@ -49,6 +49,7 @@ import {
   AlignCenter,
   AlignRight,
   ChevronUp,
+  GripVertical,
   Upload,
   Settings,
   Clock,
@@ -362,6 +363,16 @@ const PREVIEW_RELATED_CONTENT = [
   },
 ];
 
+// Published Tab Placement Options
+const PUBLISHED_PLACEMENT_OPTIONS = [
+  { value: 'all', label: 'All Placements' },
+  { value: 'none', label: 'None (Category Only)' },
+  { value: 'latest_news', label: 'Latest News' },
+  { value: 'hero_section', label: 'Hero Section' },
+  { value: 'hero_section_2', label: 'Hero Section 2' },
+  { value: 'trending_news', label: 'Trending News' },
+];
+
 const CORE_PENDING_ARTICLES: PendingArticle[] = [
   {
     id: 'p-1',
@@ -634,6 +645,20 @@ function TablePagination({
   );
 }
 
+const getCachedStat = (key: 'activeReviews' | 'completedReleases' | 'newsletterSubs', fallback: number = 0): number => {
+  if (typeof window === 'undefined') return fallback;
+  try {
+    const raw = localStorage.getItem('ust_admin_stats');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (typeof parsed[key] === 'number') {
+        return parsed[key];
+      }
+    }
+  } catch {}
+  return fallback;
+};
+
 export default function AdminDashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -659,10 +684,11 @@ export default function AdminDashboardContent() {
   const [activeUserRoleTab, setActiveUserRoleTab] = useState<UserRoleTab>('all');
   const [userSearchQuery, setUserSearchQuery] = useState('');
 
-  // Stats Counters
-  const [activeReviewsCount, setActiveReviewsCount] = useState(115);
-  const [completedReleasesCount, setCompletedReleasesCount] = useState(595);
-  const [newsletterSubsCount, setNewsletterSubsCount] = useState(15);
+  // Stats Counters (cached from localStorage, synced live with MySQL)
+  const [activeReviewsCount, setActiveReviewsCount] = useState<number>(() => getCachedStat('activeReviews', 0));
+  const [completedReleasesCount, setCompletedReleasesCount] = useState<number>(() => getCachedStat('completedReleases', 0));
+  const [newsletterSubsCount, setNewsletterSubsCount] = useState<number>(() => getCachedStat('newsletterSubs', 0));
+  const [isLoadingStats, setIsLoadingStats] = useState(true);
 
   // Users Desk Data
   const [usersList, setUsersList] = useState<UserItem[]>([]);
@@ -673,7 +699,18 @@ export default function AdminDashboardContent() {
   const [subscribersList, setSubscribersList] = useState<SubscriberItem[]>(INITIAL_SUBSCRIBERS);
 
   // Pending Articles List (Overview Tab)
-  const [pendingArticles, setPendingArticles] = useState<PendingArticle[]>(INITIAL_PENDING_ARTICLES);
+  const [isLoadingPending, setIsLoadingPending] = useState(true);
+  const [pendingArticles, setPendingArticles] = useState<PendingArticle[]>(() => {
+    if (typeof window === 'undefined') return [];
+    try {
+      const cached = localStorage.getItem('ust_admin_pending_articles');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch {}
+    return [];
+  });
   const [selectedReviewArticle, setSelectedReviewArticle] = useState<PendingArticle | null>(null);
   const [rejectReason, setRejectReason] = useState('');
   const [showRejectInput, setShowRejectInput] = useState(false);
@@ -736,6 +773,7 @@ export default function AdminDashboardContent() {
   } | null>(null);
   const editingImageFigureRef = useRef<HTMLElement | null>(null);
   const editingImageIdRef = useRef<string | null>(null);
+  const draggedFigureRef = useRef<HTMLElement | null>(null);
 
   // Formatting state
   const [activeFormats, setActiveFormats] = useState({
@@ -786,9 +824,13 @@ export default function AdminDashboardContent() {
 
   // Published Articles & DB Status
   const [publishedArticles, setPublishedArticles] = useState<any[]>([]);
-  const [isLoadingPublished, setIsLoadingPublished] = useState(false);
+  const [isLoadingPublished, setIsLoadingPublished] = useState(true);
   const [publishedCategoryFilter, setPublishedCategoryFilter] = useState('all');
   const [publishedPlacementFilter, setPublishedPlacementFilter] = useState('all');
+  const [isPublishedCategoryOpen, setIsPublishedCategoryOpen] = useState(false);
+  const [isPublishedPlacementOpen, setIsPublishedPlacementOpen] = useState(false);
+  const publishedCategoryDropdownRef = useRef<HTMLDivElement>(null);
+  const publishedPlacementDropdownRef = useRef<HTMLDivElement>(null);
   const [publishedSearchQuery, setPublishedSearchQuery] = useState('');
   const [dbStatus, setDbStatus] = useState<{
     connected: boolean;
@@ -1112,6 +1154,17 @@ export default function AdminDashboardContent() {
 
   const handleEditorInput = () => {
     if (!reviewEditorRef.current) return;
+    reviewEditorRef.current.querySelectorAll('figure.article-image-figure').forEach((f) => {
+      if (!f.getAttribute('draggable')) {
+        f.setAttribute('draggable', 'true');
+        (f as HTMLElement).style.cursor = 'grab';
+      }
+      const img = f.querySelector('img');
+      if (img && !img.getAttribute('draggable')) {
+        img.setAttribute('draggable', 'true');
+        (img as HTMLElement).style.cursor = 'grab';
+      }
+    });
     const content = reviewEditorRef.current.innerHTML;
     setReviewContent(content);
 
@@ -1197,6 +1250,8 @@ export default function AdminDashboardContent() {
     const figure = target.closest('figure.article-image-figure') as HTMLElement | null;
 
     if (figure && reviewEditorRef.current?.contains(figure)) {
+      figure.setAttribute('draggable', 'true');
+      figure.style.cursor = 'grab';
       if (!figure.dataset.imageId) {
         figure.dataset.imageId = 'img_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
       }
@@ -1205,6 +1260,10 @@ export default function AdminDashboardContent() {
       editingImageIdRef.current = figure.dataset.imageId;
 
       const img = figure.querySelector('img');
+      if (img) {
+        img.setAttribute('draggable', 'true');
+        (img as HTMLElement).style.cursor = 'grab';
+      }
       const figcaption = figure.querySelector('figcaption');
       const captionSpan = figure.querySelector('.image-caption');
       const creditSpan = figure.querySelector('.image-credit');
@@ -1490,6 +1549,167 @@ export default function AdminDashboardContent() {
     showToast('Image removed from article.');
   };
 
+  // Image Drag and Drop Helpers: Above, Below, Left, Right
+  const getEditorBlockChild = (node: HTMLElement | null): HTMLElement | null => {
+    if (!reviewEditorRef.current || !node) return null;
+    let curr: HTMLElement | null = node;
+    while (curr && curr.parentElement && curr.parentElement !== reviewEditorRef.current) {
+      curr = curr.parentElement;
+    }
+    if (curr && curr.parentElement === reviewEditorRef.current) {
+      return curr;
+    }
+    return null;
+  };
+
+  const clearDropIndicators = () => {
+    if (!reviewEditorRef.current) return;
+    const allTargets = reviewEditorRef.current.querySelectorAll('.drag-drop-target-active');
+    allTargets.forEach((el) => {
+      el.classList.remove(
+        'drag-drop-target-active',
+        'border-t-4',
+        'border-b-4',
+        'border-l-4',
+        'border-r-4',
+        'border-[#1642D0]',
+        'border-solid',
+        'transition-all'
+      );
+    });
+  };
+
+  const handleEditorDragStart = (e: React.DragEvent<HTMLElement>) => {
+    const figure = ((e.target as HTMLElement).closest('figure.article-image-figure') || selectedImageFigure) as HTMLElement | null;
+    if (figure && reviewEditorRef.current?.contains(figure)) {
+      draggedFigureRef.current = figure;
+      e.dataTransfer.setData('text/plain', figure.getAttribute('data-image-id') || 'figure');
+      e.dataTransfer.effectAllowed = 'move';
+      figure.style.opacity = '0.4';
+      figure.style.cursor = 'grabbing';
+    }
+  };
+
+  const handleEditorDragEnd = () => {
+    if (draggedFigureRef.current) {
+      draggedFigureRef.current.style.opacity = '1';
+      draggedFigureRef.current.style.cursor = 'grab';
+      draggedFigureRef.current = null;
+    }
+    clearDropIndicators();
+  };
+
+  const handleEditorDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    if (!draggedFigureRef.current || !reviewEditorRef.current) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+
+    const targetEl = getEditorBlockChild(e.target as HTMLElement);
+    if (!targetEl || targetEl === draggedFigureRef.current) {
+      clearDropIndicators();
+      return;
+    }
+
+    const rect = targetEl.getBoundingClientRect();
+    const relX = (e.clientX - rect.left) / Math.max(rect.width, 1);
+    const relY = (e.clientY - rect.top) / Math.max(rect.height, 1);
+
+    clearDropIndicators();
+    targetEl.classList.add('drag-drop-target-active', 'border-solid', 'border-[#1642D0]', 'transition-all');
+
+    if (relX < 0.25) {
+      targetEl.classList.add('border-l-4');
+    } else if (relX > 0.75) {
+      targetEl.classList.add('border-r-4');
+    } else if (relY < 0.5) {
+      targetEl.classList.add('border-t-4');
+    } else {
+      targetEl.classList.add('border-b-4');
+    }
+  };
+
+  const handleEditorDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    const figure = draggedFigureRef.current;
+    if (!figure || !reviewEditorRef.current) return;
+    e.preventDefault();
+    figure.style.opacity = '1';
+    figure.style.cursor = 'grab';
+
+    const targetEl = getEditorBlockChild(e.target as HTMLElement);
+    clearDropIndicators();
+    draggedFigureRef.current = null;
+
+    if (!targetEl || targetEl === figure) {
+      if (reviewEditorRef.current.contains(e.target as Node) && targetEl !== figure) {
+        reviewEditorRef.current.appendChild(figure);
+        normalizeEditorBlocks(reviewEditorRef.current);
+        handleEditorInput();
+        setSelectedImageFigure(figure);
+        updateImageSelectionBounds(figure);
+        showToast('Image moved Below');
+      }
+      return;
+    }
+
+    const rect = targetEl.getBoundingClientRect();
+    const relX = (e.clientX - rect.left) / Math.max(rect.width, 1);
+    const relY = (e.clientY - rect.top) / Math.max(rect.height, 1);
+
+    const size = (figure.dataset.size as 'small' | 'medium' | 'full') || 'medium';
+
+    figure.classList.remove(
+      'float-left', 'mr-6', 'mb-4', 'my-2',
+      'float-right', 'ml-6',
+      'mx-auto', 'text-center', 'clear-both', 'my-6', 'block', 'w-fit'
+    );
+
+    if (relX < 0.25) {
+      // Drop LEFT: Wrap Text Right
+      const appliedSize = size === 'full' ? 'medium' : size;
+      figure.dataset.align = 'left';
+      figure.dataset.size = appliedSize;
+      figure.classList.add('float-left', 'mr-6', 'mb-4', 'my-2', 'w-fit');
+      figure.style.cssText = getFigureStyle('left', appliedSize);
+      reviewEditorRef.current.insertBefore(figure, targetEl);
+      showToast('Image positioned to Left (Wrap Text Right)');
+    } else if (relX > 0.75) {
+      // Drop RIGHT: Wrap Text Left
+      const appliedSize = size === 'full' ? 'medium' : size;
+      figure.dataset.align = 'right';
+      figure.dataset.size = appliedSize;
+      figure.classList.add('float-right', 'ml-6', 'mb-4', 'my-2', 'w-fit');
+      figure.style.cssText = getFigureStyle('right', appliedSize);
+      reviewEditorRef.current.insertBefore(figure, targetEl);
+      showToast('Image positioned to Right (Wrap Text Left)');
+    } else if (relY < 0.5) {
+      // Drop ABOVE: Centered block
+      figure.dataset.align = 'center';
+      figure.classList.add('my-6', 'block', 'clear-both', 'mx-auto', 'text-center', 'w-fit');
+      figure.style.cssText = getFigureStyle('center', size);
+      reviewEditorRef.current.insertBefore(figure, targetEl);
+      showToast('Image moved Above');
+    } else {
+      // Drop BELOW: Centered block
+      figure.dataset.align = 'center';
+      figure.classList.add('my-6', 'block', 'clear-both', 'mx-auto', 'text-center', 'w-fit');
+      figure.style.cssText = getFigureStyle('center', size);
+      if (targetEl.nextSibling) {
+        reviewEditorRef.current.insertBefore(figure, targetEl.nextSibling);
+      } else {
+        reviewEditorRef.current.appendChild(figure);
+      }
+      showToast('Image moved Below');
+    }
+
+    normalizeEditorBlocks(reviewEditorRef.current);
+    handleEditorInput();
+    setSelectedImageFigure(figure);
+    updateImageSelectionBounds(figure);
+    setTimeout(() => {
+      updateImageSelectionBounds(figure);
+    }, 40);
+  };
+
   const handleEditSelectedImage = () => {
     if (!selectedImageProps) return;
     if (selectedImageFigure) {
@@ -1660,7 +1880,7 @@ export default function AdminDashboardContent() {
     }
 
     const newImageId = 'img_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
-    const figureMarkup = `<figure class="article-image-figure group relative cursor-pointer ${alignClass} ${sizeClass} select-none" data-image-id="${newImageId}" data-size="${imageSize}" data-align="${imageAlignment}" data-caption="${captionSafe}" data-credit="${rawCredit}" contenteditable="false" style="${figureInlineStyle}"><img src="${finalUrl}" alt="${altSafe}" class="rounded-none w-full h-auto block object-cover shadow-2xs border border-slate-200 pointer-events-none" style="margin: 0 !important; padding: 0 !important; display: block !important;" />${captionMarkup}</figure><p><br></p>`;
+    const figureMarkup = `<figure class="article-image-figure group relative cursor-grab active:cursor-grabbing ${alignClass} ${sizeClass} select-none" draggable="true" data-image-id="${newImageId}" data-size="${imageSize}" data-align="${imageAlignment}" data-caption="${captionSafe}" data-credit="${rawCredit}" contenteditable="false" style="${figureInlineStyle}"><img src="${finalUrl}" alt="${altSafe}" draggable="true" class="rounded-none w-full h-auto block object-cover shadow-2xs border border-slate-200 pointer-events-auto cursor-grab active:cursor-grabbing" style="margin: 0 !important; padding: 0 !important; display: block !important;" />${captionMarkup}</figure><p><br></p>`;
 
     if (reviewEditorRef.current) {
       reviewEditorRef.current.focus();
@@ -1967,6 +2187,18 @@ export default function AdminDashboardContent() {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setShowUserDropdown(false);
       }
+      if (
+        publishedCategoryDropdownRef.current &&
+        !publishedCategoryDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsPublishedCategoryOpen(false);
+      }
+      if (
+        publishedPlacementDropdownRef.current &&
+        !publishedPlacementDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsPublishedPlacementOpen(false);
+      }
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -2015,7 +2247,6 @@ export default function AdminDashboardContent() {
           }
         });
         setSubscribersList(merged);
-        setNewsletterSubsCount(merged.length);
       }
     } catch {}
   };
@@ -2026,11 +2257,22 @@ export default function AdminDashboardContent() {
       const res = await fetch('/api/admin/stats');
       const data = await res.json();
       if (data?.success && data.stats) {
-        setActiveReviewsCount(data.stats.activeReviews ?? 0);
-        setCompletedReleasesCount(data.stats.completedReleases ?? 0);
-        setNewsletterSubsCount(data.stats.newsletterSubs ?? 0);
+        const ar = data.stats.activeReviews ?? 0;
+        const cr = data.stats.completedReleases ?? 0;
+        const ns = data.stats.newsletterSubs ?? 0;
+        setActiveReviewsCount(ar);
+        setCompletedReleasesCount(cr);
+        setNewsletterSubsCount(ns);
+        try {
+          localStorage.setItem(
+            'ust_admin_stats',
+            JSON.stringify({ activeReviews: ar, completedReleases: cr, newsletterSubs: ns })
+          );
+        } catch {}
       }
-    } catch {}
+    } catch {} finally {
+      setIsLoadingStats(false);
+    }
 
     try {
       const resArticles = await fetch('/api/articles?status=pending_review&limit=200');
@@ -2068,8 +2310,13 @@ export default function AdminDashboardContent() {
           };
         });
         setPendingArticles(mapped);
+        try {
+          localStorage.setItem('ust_admin_pending_articles', JSON.stringify(mapped));
+        } catch {}
       }
-    } catch {}
+    } catch {} finally {
+      setIsLoadingPending(false);
+    }
   };
 
   // Fetch Live Published Articles
@@ -2334,7 +2581,7 @@ export default function AdminDashboardContent() {
 
     if (resolvedImg && !resolvedImg.includes('placeholder') && !/<img[^>]+src=/i.test(initialHtml)) {
       const cap = resolvedCaption || resolvedTitle || '';
-      const figHtml = `<figure class="article-image-figure group relative cursor-pointer my-6 block clear-both mx-auto text-center w-full max-w-none select-none" data-image-id="img_${Date.now()}" data-size="full" data-align="center" data-caption="${cap.replace(/"/g, '&quot;')}" data-credit="" contenteditable="false" style="display: block !important; float: none !important; clear: both !important; margin: 1.5rem auto !important; width: 100% !important; max-width: 100% !important; height: fit-content !important; padding: 0 !important; box-sizing: border-box !important;"><img src="${resolvedImg}" alt="${resolvedTitle.replace(/"/g, '&quot;')}" class="rounded-none w-full h-auto block object-cover shadow-2xs border border-slate-200 pointer-events-none" style="margin: 0 !important; padding: 0 !important; display: block !important;" />${cap ? `<figcaption class="flex items-center justify-between text-[11px] text-slate-500 w-full font-sans select-none" style="margin-top: 2px !important; margin-bottom: 0 !important; padding: 0 !important; display: flex !important; align-items: center !important; justify-content: space-between !important; width: 100% !important;"><span class="image-caption text-left text-slate-600 font-normal truncate max-w-[60%]">${cap}</span><span class="image-credit text-right text-slate-400 font-medium tracking-wide truncate max-w-[40%]"></span></figcaption>` : ''}</figure>`;
+      const figHtml = `<figure class="article-image-figure group relative cursor-grab active:cursor-grabbing my-6 block clear-both mx-auto text-center w-full max-w-none select-none" draggable="true" data-image-id="img_${Date.now()}" data-size="full" data-align="center" data-caption="${cap.replace(/"/g, '&quot;')}" data-credit="" contenteditable="false" style="display: block !important; float: none !important; clear: both !important; margin: 1.5rem auto !important; width: 100% !important; max-width: 100% !important; height: fit-content !important; padding: 0 !important; box-sizing: border-box !important;"><img src="${resolvedImg}" alt="${resolvedTitle.replace(/"/g, '&quot;')}" draggable="true" class="rounded-none w-full h-auto block object-cover shadow-2xs border border-slate-200 pointer-events-auto cursor-grab active:cursor-grabbing" style="margin: 0 !important; padding: 0 !important; display: block !important;" />${cap ? `<figcaption class="flex items-center justify-between text-[11px] text-slate-500 w-full font-sans select-none" style="margin-top: 2px !important; margin-bottom: 0 !important; padding: 0 !important; display: flex !important; align-items: center !important; justify-content: space-between !important; width: 100% !important;"><span class="image-caption text-left text-slate-600 font-normal truncate max-w-[60%]">${cap}</span><span class="image-credit text-right text-slate-400 font-medium tracking-wide truncate max-w-[40%]"></span></figcaption>` : ''}</figure>`;
       if (initialHtml) {
         initialHtml = `${figHtml}${initialHtml.startsWith('<') ? initialHtml : `<p class="my-3">${initialHtml.replace(/\n\n+/g, '</p><p class="my-3">').replace(/\n/g, '<br>')}</p>`}`;
       } else {
@@ -2351,6 +2598,15 @@ export default function AdminDashboardContent() {
       if (reviewEditorRef.current) {
         reviewEditorRef.current.innerHTML = initialHtml;
         normalizeEditorBlocks(reviewEditorRef.current);
+        reviewEditorRef.current.querySelectorAll('figure.article-image-figure').forEach((f) => {
+          f.setAttribute('draggable', 'true');
+          (f as HTMLElement).style.cursor = 'grab';
+          const img = f.querySelector('img');
+          if (img) {
+            img.setAttribute('draggable', 'true');
+            (img as HTMLElement).style.cursor = 'grab';
+          }
+        });
       }
     }, 50);
 
@@ -3210,6 +3466,10 @@ export default function AdminDashboardContent() {
                     contentEditable
                     suppressContentEditableWarning
                     onInput={handleEditorInput}
+                    onDragStart={handleEditorDragStart}
+                    onDragEnd={handleEditorDragEnd}
+                    onDragOver={handleEditorDragOver}
+                    onDrop={handleEditorDrop}
                     onSelect={() => {
                       saveSelectionRange();
                       updateActiveFormats();
@@ -3535,6 +3795,7 @@ export default function AdminDashboardContent() {
                         <option value="latest_news">Latest News</option>
                         <option value="hero_section">Hero Section</option>
                         <option value="hero_section_2">Hero Section 2</option>
+                        <option value="trending_news">Trending News</option>
                       </select>
                       <p className="text-[11px] text-slate-400 leading-relaxed m-0">
                         Select where this story will be curated on the homepage layout. Any list slots will automatically push the newest article to rank #1 and shift older items down.
@@ -4327,151 +4588,6 @@ export default function AdminDashboardContent() {
                 />
               </div>
 
-              {/* TWO-COLUMN ROW: IMAGE SIZE & POSITION ALIGNMENT */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-0.5">
-                {/* IMAGE SIZE DROPDOWN */}
-                <div className="flex flex-col gap-1 relative">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                    IMAGE SIZE
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSizeDropdownOpen(!sizeDropdownOpen);
-                      setAlignDropdownOpen(false);
-                    }}
-                    className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-800 flex items-center justify-between cursor-pointer focus:outline-hidden"
-                  >
-                    <span>
-                      {imageSize === 'small' && 'Small (Width: 250px)'}
-                      {imageSize === 'medium' && 'Medium (Width: 450px)'}
-                      {imageSize === 'full' && 'Full-Width (100%)'}
-                    </span>
-                    <ChevronDown className="w-4 h-4 text-slate-500" />
-                  </button>
-
-                  {sizeDropdownOpen && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-xl z-20 overflow-hidden text-xs">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setImageSize('small');
-                          setSizeDropdownOpen(false);
-                        }}
-                        className={`w-full text-left px-3 py-1.5 transition-colors cursor-pointer ${
-                          imageSize === 'small' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
-                        }`}
-                      >
-                        Small (Width: 250px)
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setImageSize('medium');
-                          setSizeDropdownOpen(false);
-                        }}
-                        className={`w-full text-left px-3 py-1.5 transition-colors cursor-pointer ${
-                          imageSize === 'medium' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
-                        }`}
-                      >
-                        Medium (Width: 450px)
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setImageSize('full');
-                          setSizeDropdownOpen(false);
-                        }}
-                        className={`w-full text-left px-3 py-1.5 transition-colors cursor-pointer ${
-                          imageSize === 'full' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
-                        }`}
-                      >
-                        Full-Width (100%)
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                {/* POSITION ALIGNMENT DROPDOWN */}
-                <div className="flex flex-col gap-1 relative">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                    POSITION ALIGNMENT
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setAlignDropdownOpen(!alignDropdownOpen);
-                      setSizeDropdownOpen(false);
-                    }}
-                    className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-800 flex items-center justify-between cursor-pointer focus:outline-hidden"
-                  >
-                    <span className="truncate">
-                      {imageAlignment === 'center' && 'Center (No Wrap)'}
-                      {imageAlignment === 'left' && 'Left — Wrap Text Right'}
-                      {imageAlignment === 'right' && 'Right — Wrap Text Left'}
-                      {imageAlignment === 'no_wrap' && 'No Wrap'}
-                    </span>
-                    <ChevronDown className="w-4 h-4 text-slate-500 shrink-0" />
-                  </button>
-
-                  {alignDropdownOpen && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-xl z-20 overflow-hidden text-xs">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setImageAlignment('center');
-                          setAlignDropdownOpen(false);
-                        }}
-                        className={`w-full text-left px-3 py-1.5 transition-colors cursor-pointer flex items-center gap-2 ${
-                          imageAlignment === 'center' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
-                        }`}
-                      >
-                        <AlignCenter className="w-3.5 h-3.5" />
-                        <span>Center (No Wrap)</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setImageAlignment('left');
-                          setAlignDropdownOpen(false);
-                        }}
-                        className={`w-full text-left px-3 py-1.5 transition-colors cursor-pointer flex items-center gap-2 ${
-                          imageAlignment === 'left' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
-                        }`}
-                      >
-                        <AlignLeft className="w-3.5 h-3.5" />
-                        <span>Left — Wrap Text Right</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setImageAlignment('right');
-                          setAlignDropdownOpen(false);
-                        }}
-                        className={`w-full text-left px-3 py-1.5 transition-colors cursor-pointer flex items-center gap-2 ${
-                          imageAlignment === 'right' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
-                        }`}
-                      >
-                        <AlignRight className="w-3.5 h-3.5" />
-                        <span>Right — Wrap Text Left</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setImageAlignment('no_wrap');
-                          setAlignDropdownOpen(false);
-                        }}
-                        className={`w-full text-left px-3 py-1.5 transition-colors cursor-pointer flex items-center gap-2 ${
-                          imageAlignment === 'no_wrap' ? 'bg-[#1642D0] text-white font-semibold' : 'text-slate-700 hover:bg-slate-50'
-                        }`}
-                      >
-                        <span>No Wrap</span>
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-
               {/* Editorial Presets */}
               <div className="pt-1">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
@@ -4867,7 +4983,7 @@ export default function AdminDashboardContent() {
             <h1 className="font-serif font-black text-2xl sm:text-3xl lg:text-[32px] text-[#020618] tracking-tight my-0">
               My Workspace
             </h1>
-            <p className="text-xs sm:text-sm text-slate-400 font-sans mt-1 my-0">
+            <p className="text-xs sm:text-sm text-slate-400 font-sans mt-1 my-0" suppressHydrationWarning>
               Welcome back, {adminName}!
             </p>
           </div>
@@ -4883,10 +4999,10 @@ export default function AdminDashboardContent() {
                 {adminAvatar ? (
                   <img src={adminAvatar} alt={adminName} className="w-full h-full object-cover" />
                 ) : (
-                  adminInitials
+                  <span suppressHydrationWarning>{adminInitials}</span>
                 )}
               </div>
-              <span className="text-xs font-bold text-slate-800 hidden sm:inline">
+              <span className="text-xs font-bold text-slate-800 hidden sm:inline" suppressHydrationWarning>
                 {adminName}
               </span>
               <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
@@ -4895,8 +5011,8 @@ export default function AdminDashboardContent() {
             {showUserDropdown && (
               <div className="absolute right-0 top-12 w-64 bg-white rounded-2xl shadow-xl border border-slate-200 p-4 z-40 animate-in fade-in zoom-in-95 duration-100">
                 <div className="pb-3 border-b border-slate-100">
-                  <div className="font-bold text-sm text-slate-900 leading-tight">{adminName}</div>
-                  <div className="text-[11px] text-slate-400 truncate mt-0.5">{adminEmail}</div>
+                  <div className="font-bold text-sm text-slate-900 leading-tight" suppressHydrationWarning>{adminName}</div>
+                  <div className="text-[11px] text-slate-400 truncate mt-0.5" suppressHydrationWarning>{adminEmail}</div>
                   <span className="inline-block px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-blue-50 text-[#1642D0] border border-blue-200 mt-2">
                     ADMIN
                   </span>
@@ -4939,9 +5055,13 @@ export default function AdminDashboardContent() {
               <span className="text-[10.5px] uppercase font-bold text-slate-400 tracking-wider font-sans block mb-1">
                 ACTIVE REVIEWS
               </span>
-              <div className="font-serif font-black text-3xl sm:text-4xl text-[#020618] leading-none">
-                {activeReviewsCount}
-              </div>
+              {isLoadingStats ? (
+                <div className="h-8 w-16 bg-slate-200 rounded-lg animate-pulse mt-1" />
+              ) : (
+                <div className="font-serif font-black text-3xl sm:text-4xl text-[#020618] leading-none">
+                  {activeReviewsCount}
+                </div>
+              )}
             </div>
             <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
               <FileText className="w-5 h-5" />
@@ -4953,9 +5073,13 @@ export default function AdminDashboardContent() {
               <span className="text-[10.5px] uppercase font-bold text-slate-400 tracking-wider font-sans block mb-1">
                 COMPLETED RELEASES
               </span>
-              <div className="font-serif font-black text-3xl sm:text-4xl text-[#020618] leading-none">
-                {completedReleasesCount}
-              </div>
+              {isLoadingStats ? (
+                <div className="h-8 w-16 bg-slate-200 rounded-lg animate-pulse mt-1" />
+              ) : (
+                <div className="font-serif font-black text-3xl sm:text-4xl text-[#020618] leading-none">
+                  {completedReleasesCount}
+                </div>
+              )}
             </div>
             <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
               <CheckCircle className="w-5 h-5" />
@@ -4967,9 +5091,13 @@ export default function AdminDashboardContent() {
               <span className="text-[10.5px] uppercase font-bold text-slate-400 tracking-wider font-sans block mb-1">
                 NEWSLETTER SUBS
               </span>
-              <div className="font-serif font-black text-3xl sm:text-4xl text-[#020618] leading-none">
-                {newsletterSubsCount}
-              </div>
+              {isLoadingStats ? (
+                <div className="h-8 w-16 bg-slate-200 rounded-lg animate-pulse mt-1" />
+              ) : (
+                <div className="font-serif font-black text-3xl sm:text-4xl text-[#020618] leading-none">
+                  {newsletterSubsCount}
+                </div>
+              )}
             </div>
             <div className="w-10 h-10 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center shrink-0">
               <Mail className="w-5 h-5" />
@@ -5004,74 +5132,102 @@ export default function AdminDashboardContent() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {paginatedPendingArticles.map((art) => (
-                    <tr key={art.id} className="hover:bg-slate-50/70 transition-colors group">
-                      <td className="py-4 px-3 max-w-sm sm:max-w-md">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            openArticleForReview(art);
-                          }}
-                          className="flex items-center gap-3 text-left w-full cursor-pointer"
-                        >
-                          <img
-                            src={art.imageUrl || '/images/topic-hero-leaders.jpg'}
-                            alt={art.title}
-                            onError={(e) => {
-                              (e.currentTarget as HTMLImageElement).src = '/images/topic-hero-leaders.jpg';
-                            }}
-                            className="w-14 h-11 object-cover rounded-md bg-slate-100 shrink-0 border border-slate-200/70"
-                          />
-                          <div className="min-w-0 flex-1">
-                            <h3 className="font-serif font-bold text-slate-900 text-xs sm:text-[13px] leading-snug line-clamp-1 my-0 group-hover:text-[#1642D0] transition-colors">
-                              {art.title}
-                            </h3>
-                            {art.excerpt && (
-                              <p className="text-[11px] text-slate-500 line-clamp-1 mt-0.5 my-0">
-                                {art.excerpt}
+                  {isLoadingPending && pendingArticles.length === 0 ? (
+                    <>
+                      {[...Array(4)].map((_, i) => (
+                        <tr key={`pending-skel-${i}`} className="animate-pulse">
+                          <td className="py-4 px-3 max-w-sm sm:max-w-md">
+                            <div className="flex items-start gap-3.5 sm:gap-4">
+                              <div className="w-[70px] h-[70px] rounded-xl bg-slate-200 shrink-0" />
+                              <div className="flex-1 space-y-2 pt-1 min-w-0">
+                                <div className="h-4 bg-slate-200 rounded w-4/5" />
+                                <div className="h-3 bg-slate-200/70 rounded w-full" />
+                                <div className="h-3 bg-slate-200/60 rounded w-2/3" />
+                                <div className="h-2.5 bg-slate-200/50 rounded w-16" />
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-4 px-3 whitespace-nowrap">
+                            <div className="h-5 w-20 bg-slate-200 rounded-md" />
+                          </td>
+                          <td className="py-4 px-3 whitespace-nowrap">
+                            <div className="h-4 w-24 bg-slate-200 rounded" />
+                          </td>
+                          <td className="py-4 px-3 whitespace-nowrap">
+                            <div className="h-4 w-20 bg-slate-200 rounded" />
+                          </td>
+                          <td className="py-4 px-3 whitespace-nowrap">
+                            <div className="h-5 w-16 bg-slate-200 rounded-full" />
+                          </td>
+                          <td className="py-4 px-3 whitespace-nowrap text-right">
+                            <div className="h-7 w-16 bg-slate-200 rounded-lg inline-block" />
+                          </td>
+                        </tr>
+                      ))}
+                    </>
+                  ) : (
+                    paginatedPendingArticles.map((art) => (
+                      <tr key={art.id} className="hover:bg-slate-50/70 transition-colors group">
+                        <td className="py-4 px-3 max-w-sm sm:max-w-md">
+                          <Link
+                            href={`/writer?id=${art.slug || art.id}`}
+                            className="flex items-start gap-3.5 sm:gap-4 text-left w-full cursor-pointer group"
+                          >
+                            <img
+                              src={art.imageUrl || '/images/topic-hero-leaders.jpg'}
+                              alt={art.title}
+                              onError={(e) => {
+                                (e.currentTarget as HTMLImageElement).src = '/images/topic-hero-leaders.jpg';
+                              }}
+                              className="w-[70px] h-[70px] object-cover rounded-xl bg-slate-100 shrink-0 border border-slate-200/80 shadow-2xs"
+                            />
+                            <div className="min-w-0 flex-1">
+                              <h3 className="font-sans font-bold text-slate-900 text-xs sm:text-[13.5px] leading-snug line-clamp-1 sm:line-clamp-2 my-0 group-hover:text-[#1642D0] transition-colors">
+                                {art.title}
+                              </h3>
+                              <p className="text-[11.5px] text-slate-600 leading-snug line-clamp-2 mt-1 my-0">
+                                {art.excerpt || art.cardSummary || 'Read detailed coverage and analysis.'}
                               </p>
-                            )}
-                            <span className="text-[10px] text-slate-400 font-sans block mt-0.5">
-                              {art.readTime || '5 min read'}
-                            </span>
-                          </div>
-                        </button>
-                      </td>
+                              <span className="text-[10.5px] text-slate-400 font-sans block mt-1">
+                                {art.readTime ? (String(art.readTime).includes('read') ? art.readTime : `${art.readTime} min read`) : '5 min read'}
+                              </span>
+                            </div>
+                          </Link>
+                        </td>
 
-                      <td className="py-4 px-3 whitespace-nowrap">
-                        <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200/80">
-                          {art.category}
-                        </span>
-                      </td>
+                        <td className="py-4 px-3 whitespace-nowrap">
+                          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200/80">
+                            {art.category}
+                          </span>
+                        </td>
 
-                      <td className="py-4 px-3 whitespace-nowrap text-slate-700 font-medium">
-                        {art.author}
-                      </td>
+                        <td className="py-4 px-3 whitespace-nowrap text-slate-700 font-medium">
+                          {art.author}
+                        </td>
 
-                      <td className="py-4 px-3 whitespace-nowrap text-[11px] text-slate-400 font-mono">
-                        {art.submittedDate}
-                      </td>
+                        <td className="py-4 px-3 whitespace-nowrap text-[11px] text-slate-400 font-mono">
+                          {art.submittedDate}
+                        </td>
 
-                      <td className="py-4 px-3 whitespace-nowrap">
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-100/80 text-amber-800">
-                          {art.status}
-                        </span>
-                      </td>
+                        <td className="py-4 px-3 whitespace-nowrap">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-100/80 text-amber-800">
+                            {art.status}
+                          </span>
+                        </td>
 
-                      <td className="py-4 px-3 whitespace-nowrap text-right">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            openArticleForReview(art);
-                          }}
-                          className="px-4 py-1.5 rounded-lg bg-[#EA580C] hover:bg-[#C2410C] text-white text-xs font-bold uppercase tracking-wider shadow-2xs transition-colors cursor-pointer"
-                        >
-                          OPEN
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                  {pendingArticles.length === 0 && (
+                        <td className="py-4 px-3 whitespace-nowrap text-right">
+                          <Link
+                            href={`/writer?id=${art.slug || art.id}`}
+                            className="inline-block px-4 py-1.5 rounded-lg bg-[#EA580C] hover:bg-[#C2410C] text-white text-xs font-bold uppercase tracking-wider shadow-2xs transition-colors cursor-pointer text-center"
+                          >
+                            OPEN
+                          </Link>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+
+                  {!isLoadingPending && pendingArticles.length === 0 && (
                     <tr>
                       <td colSpan={6} className="py-12 text-center text-slate-400">
                         No pending articles waiting for review.
@@ -5282,11 +5438,30 @@ export default function AdminDashboardContent() {
                     </tr>
                   )}
                   {isLoadingUsers && usersList.length === 0 && (
-                    <tr>
-                      <td colSpan={4} className="py-12 text-center text-slate-400">
-                        Loading workspace users...
-                      </td>
-                    </tr>
+                    <>
+                      {[...Array(5)].map((_, i) => (
+                        <tr key={`user-skel-${i}`} className="animate-pulse">
+                          <td className="py-3.5 px-3">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-full bg-slate-200 shrink-0" />
+                              <div className="space-y-1.5 flex-1">
+                                <div className="h-3.5 bg-slate-200 rounded w-28" />
+                                <div className="h-2.5 bg-slate-200/60 rounded w-36" />
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-3.5 px-3">
+                            <div className="h-5 w-16 bg-slate-200 rounded-full" />
+                          </td>
+                          <td className="py-3.5 px-3">
+                            <div className="h-4 w-20 bg-slate-200 rounded" />
+                          </td>
+                          <td className="py-3.5 px-3 text-right">
+                            <div className="h-6 w-12 bg-slate-200 rounded inline-block" />
+                          </td>
+                        </tr>
+                      ))}
+                    </>
                   )}
                 </tbody>
               </table>
@@ -5413,33 +5588,78 @@ export default function AdminDashboardContent() {
                   <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 font-mono">
                     FILTER BY CATEGORY
                   </label>
-                  <div className="relative">
-                    <select
-                      value={publishedCategoryFilter}
-                      onChange={(e) => setPublishedCategoryFilter(e.target.value)}
-                      className="w-full appearance-none px-3.5 py-2 pr-8 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-[#EA580C] cursor-pointer shadow-2xs"
+                  <div className="relative" ref={publishedCategoryDropdownRef}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsPublishedCategoryOpen((prev) => !prev);
+                        setIsPublishedPlacementOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between px-3.5 py-2 bg-white border text-xs font-medium text-slate-800 rounded-lg cursor-pointer shadow-2xs transition-colors ${
+                        isPublishedCategoryOpen
+                          ? 'border-[#1d63ed] ring-1 ring-[#1d63ed]'
+                          : 'border-slate-200 hover:border-slate-300'
+                      }`}
                     >
-                      <option value="all">All Categories</option>
-                      {MAIN_CATEGORIES_20.map((cat) => (
-                        <React.Fragment key={cat.id}>
-                          {/* Main Category */}
-                          <option value={cat.name} className="text-xs font-medium text-slate-900 bg-white">
-                            {cat.name}
-                          </option>
-                          {/* Subcategories directly underneath */}
-                          {cat.subcategories.map((sub) => (
-                            <option
-                              key={`${cat.id}-${sub.name}`}
-                              value={sub.name}
-                              className="text-xs font-medium text-slate-900 bg-white"
+                      <span className="truncate">
+                        {publishedCategoryFilter === 'all' ? 'All Categories' : publishedCategoryFilter}
+                      </span>
+                      <ChevronDown className="w-4 h-4 text-slate-500 shrink-0 ml-2 pointer-events-none" />
+                    </button>
+
+                    {isPublishedCategoryOpen && (
+                      <div className="absolute bottom-full mb-0 left-0 w-full min-w-full bg-white border border-slate-300 rounded-t-md shadow-lg z-50 overflow-hidden py-1 max-h-72 overflow-y-auto">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setPublishedCategoryFilter('all');
+                            setIsPublishedCategoryOpen(false);
+                          }}
+                          className={`w-full text-left px-3.5 py-1.5 text-xs transition-colors block cursor-pointer ${
+                            publishedCategoryFilter === 'all'
+                              ? 'bg-[#1d63ed] text-white font-medium'
+                              : 'text-slate-800 hover:bg-slate-100 font-normal'
+                          }`}
+                        >
+                          All Categories
+                        </button>
+                        {MAIN_CATEGORIES_20.map((cat) => (
+                          <React.Fragment key={cat.id}>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setPublishedCategoryFilter(cat.name);
+                                setIsPublishedCategoryOpen(false);
+                              }}
+                              className={`w-full text-left px-3.5 py-1.5 text-xs transition-colors block cursor-pointer ${
+                                publishedCategoryFilter.toLowerCase().trim() === cat.name.toLowerCase().trim()
+                                  ? 'bg-[#1d63ed] text-white font-medium'
+                                  : 'text-slate-800 hover:bg-slate-100 font-normal'
+                              }`}
                             >
-                              {sub.name}
-                            </option>
-                          ))}
-                        </React.Fragment>
-                      ))}
-                    </select>
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                              {cat.name}
+                            </button>
+                            {cat.subcategories.map((sub) => (
+                              <button
+                                key={`${cat.id}-${sub.name}`}
+                                type="button"
+                                onClick={() => {
+                                  setPublishedCategoryFilter(sub.name);
+                                  setIsPublishedCategoryOpen(false);
+                                }}
+                                className={`w-full text-left px-3.5 py-1.5 text-xs transition-colors block cursor-pointer ${
+                                  publishedCategoryFilter.toLowerCase().trim() === sub.name.toLowerCase().trim()
+                                    ? 'bg-[#1d63ed] text-white font-medium'
+                                    : 'text-slate-800 hover:bg-slate-100 font-normal'
+                                }`}
+                              >
+                                {sub.name}
+                              </button>
+                            ))}
+                          </React.Fragment>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -5448,19 +5668,49 @@ export default function AdminDashboardContent() {
                   <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 font-mono">
                     FILTER BY PLACEMENT
                   </label>
-                  <div className="relative">
-                    <select
-                      value={publishedPlacementFilter}
-                      onChange={(e) => setPublishedPlacementFilter(e.target.value)}
-                      className="w-full appearance-none px-3.5 py-2 pr-8 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-[#EA580C] cursor-pointer shadow-2xs"
+                  <div className="relative" ref={publishedPlacementDropdownRef}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsPublishedPlacementOpen((prev) => !prev);
+                        setIsPublishedCategoryOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between px-3.5 py-2 bg-white border text-xs font-medium text-slate-800 rounded-lg cursor-pointer shadow-2xs transition-colors ${
+                        isPublishedPlacementOpen
+                          ? 'border-[#1d63ed] ring-1 ring-[#1d63ed]'
+                          : 'border-slate-200 hover:border-slate-300'
+                      }`}
                     >
-                      <option value="all">All Placements</option>
-                      <option value="none">None (Category Only)</option>
-                      <option value="latest_news">Latest News</option>
-                      <option value="hero_section">Hero Section</option>
-                      <option value="hero_section_2">Hero Section 2</option>
-                    </select>
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      <span className="truncate">
+                        {PUBLISHED_PLACEMENT_OPTIONS.find((opt) => opt.value === publishedPlacementFilter)?.label || 'All Placements'}
+                      </span>
+                      <ChevronDown className="w-4 h-4 text-slate-500 shrink-0 ml-2 pointer-events-none" />
+                    </button>
+
+                    {isPublishedPlacementOpen && (
+                      <div className="absolute bottom-full mb-0 left-0 w-full min-w-full bg-white border border-slate-300 rounded-t-md shadow-lg z-50 overflow-hidden py-1 max-h-72 overflow-y-auto">
+                        {PUBLISHED_PLACEMENT_OPTIONS.map((opt) => {
+                          const isSelected = publishedPlacementFilter === opt.value;
+                          return (
+                            <button
+                              key={opt.value}
+                              type="button"
+                              onClick={() => {
+                                setPublishedPlacementFilter(opt.value);
+                                setIsPublishedPlacementOpen(false);
+                              }}
+                              className={`w-full text-left px-3.5 py-1.5 text-xs transition-colors block cursor-pointer ${
+                                isSelected
+                                  ? 'bg-[#1d63ed] text-white font-medium'
+                                  : 'text-slate-800 hover:bg-slate-100 font-normal'
+                              }`}
+                            >
+                              {opt.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -5489,6 +5739,8 @@ export default function AdminDashboardContent() {
                       setPublishedPlacementFilter('all');
                       setPublishedSearchQuery('');
                       setPublishedPage(1);
+                      setIsPublishedCategoryOpen(false);
+                      setIsPublishedPlacementOpen(false);
                     }}
                     className="w-full lg:w-auto px-4 py-2 rounded-lg border border-slate-200 hover:border-slate-300 text-xs font-bold text-blue-600 hover:text-blue-700 bg-white hover:bg-slate-50 transition-colors cursor-pointer shadow-2xs"
                   >
@@ -5512,104 +5764,149 @@ export default function AdminDashboardContent() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    {paginatedPublishedArticles.map((art: any) => {
-                      const viewsCount = art.views || ((Number(art.id) || 1) * 3 % 20 + 2);
-                      const commentsCount = art.comments || 0;
-
-                      return (
-                        <tr key={art.slug || art.id} className="hover:bg-slate-50/70 transition-colors">
-                          {/* ARTICLE DETAILS */}
-                          <td className="py-3.5 px-3">
-                            <div className="flex items-center gap-3">
-                              <img
-                                src={art.imageUrl || '/images/topic-hero-leaders.jpg'}
-                                alt={art.title}
-                                onError={(e) => {
-                                  (e.currentTarget as HTMLImageElement).src = '/images/topic-hero-leaders.jpg';
-                                }}
-                                className="w-14 h-11 object-cover rounded-md bg-slate-100 border border-slate-200/80 shrink-0"
-                              />
-                              <div className="min-w-0 flex-1">
-                                <Link
-                                  href={`/article/${art.slug || art.id}`}
-                                  target="_blank"
-                                  className="font-serif font-bold text-slate-900 hover:text-[#EA580C] text-xs sm:text-[13px] line-clamp-1 transition-colors block"
-                                >
-                                  {art.title}
-                                </Link>
-                                <p className="text-[11px] text-slate-400 line-clamp-1 mt-0.5 mb-0">
-                                  {art.excerpt || art.cardSummary || 'Read detailed coverage and analysis.'}
-                                </p>
-                                <span className="text-[10px] text-slate-400 mt-0.5 block">
-                                  {art.readTime || '5 min read'}
-                                </span>
+                    {isLoadingPublished && paginatedPublishedArticles.length === 0 ? (
+                      <>
+                        {[...Array(5)].map((_, i) => (
+                          <tr key={`published-skel-${i}`} className="animate-pulse">
+                            {/* ARTICLE DETAILS skeleton */}
+                            <td className="py-3.5 px-3">
+                              <div className="flex items-start gap-3.5 sm:gap-4">
+                                <div className="w-[70px] h-[70px] rounded-xl bg-slate-200 shrink-0" />
+                                <div className="flex-1 space-y-2 pt-1 min-w-0">
+                                  <div className="h-3.5 bg-slate-200 rounded w-4/5" />
+                                  <div className="h-2.5 bg-slate-200/70 rounded w-full" />
+                                  <div className="h-2.5 bg-slate-200/60 rounded w-2/3" />
+                                  <div className="h-2 bg-slate-200/50 rounded w-16" />
+                                </div>
                               </div>
-                            </div>
-                          </td>
+                            </td>
+                            {/* CATEGORY skeleton */}
+                            <td className="py-3.5 px-3">
+                              <div className="h-5 w-20 bg-slate-200 rounded" />
+                            </td>
+                            {/* AUTHOR skeleton */}
+                            <td className="py-3.5 px-3">
+                              <div className="h-4 w-24 bg-slate-200 rounded" />
+                            </td>
+                            {/* METRICS DESK skeleton */}
+                            <td className="py-3.5 px-3">
+                              <div className="h-4 w-28 bg-slate-200 rounded" />
+                            </td>
+                            {/* DELETE GATE skeleton */}
+                            <td className="py-3.5 px-3 text-right">
+                              <div className="inline-flex gap-2 justify-end">
+                                <div className="h-7 w-20 bg-slate-200 rounded-lg" />
+                                <div className="h-7 w-7 bg-slate-200 rounded-lg" />
+                                <div className="h-7 w-7 bg-slate-200 rounded-lg" />
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </>
+                    ) : (
+                      paginatedPublishedArticles.map((art: any) => {
+                        const viewsCount = art.views || ((Number(art.id) || 1) * 3 % 20 + 2);
+                        const commentsCount = art.comments || 0;
 
-                          {/* CATEGORY */}
-                          <td className="py-3.5 px-3 whitespace-nowrap">
-                            <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 border border-slate-200/70">
-                              {art.category || art.category_name || 'US'}
-                            </span>
-                          </td>
+                        return (
+                          <tr key={art.slug || art.id} className="hover:bg-slate-50/70 transition-colors">
+                            {/* ARTICLE DETAILS */}
+                            <td className="py-3.5 px-3">
+                              <div className="flex items-start gap-3.5 sm:gap-4">
+                                <img
+                                  src={art.imageUrl || '/images/topic-hero-leaders.jpg'}
+                                  alt={art.title}
+                                  onError={(e) => {
+                                    (e.currentTarget as HTMLImageElement).src = '/images/topic-hero-leaders.jpg';
+                                  }}
+                                  className="w-[70px] h-[70px] object-cover rounded-xl bg-slate-100 border border-slate-200/80 shadow-2xs shrink-0"
+                                />
+                                <div className="min-w-0 flex-1">
+                                  <Link
+                                    href={`/article/${art.slug || art.id}`}
+                                    target="_blank"
+                                    className="font-sans font-bold text-slate-900 hover:text-[#EA580C] text-xs sm:text-[13.5px] leading-snug transition-colors line-clamp-2"
+                                    style={{
+                                      display: '-webkit-box',
+                                      WebkitLineClamp: 2,
+                                      WebkitBoxOrient: 'vertical',
+                                      overflow: 'hidden',
+                                    }}
+                                  >
+                                    {art.title}
+                                  </Link>
+                                  <p className="text-[11.5px] text-slate-600 leading-snug line-clamp-2 mt-1 mb-0">
+                                    {art.excerpt || art.cardSummary || 'Read detailed coverage and analysis.'}
+                                  </p>
+                                  <span className="text-[10.5px] text-slate-400 font-sans block mt-1">
+                                    {art.readTime ? (String(art.readTime).includes('read') ? art.readTime : `${art.readTime} min read`) : '5 min read'}
+                                  </span>
+                                </div>
+                              </div>
+                            </td>
 
-                          {/* AUTHOR */}
-                          <td className="py-3.5 px-3 whitespace-nowrap text-slate-600 font-medium">
-                            {art.authorName ||
-                              (typeof art.author === 'object' ? art.author?.name : art.author) ||
-                              'Dylan Candice Odulio'}
-                          </td>
+                            {/* CATEGORY */}
+                            <td className="py-3.5 px-3 whitespace-nowrap">
+                              <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 border border-slate-200/70">
+                                {art.category || art.category_name || 'US'}
+                              </span>
+                            </td>
 
-                          {/* METRICS DESK */}
-                          <td className="py-3.5 px-3 whitespace-nowrap text-slate-500 text-xs font-medium">
-                            {viewsCount} Views • {commentsCount} Comments
-                          </td>
+                            {/* AUTHOR */}
+                            <td className="py-3.5 px-3 whitespace-nowrap text-slate-600 font-medium">
+                              {art.authorName ||
+                                (typeof art.author === 'object' ? art.author?.name : art.author) ||
+                                'Dylan Candice Odulio'}
+                            </td>
 
-                          {/* DELETE GATE */}
-                          <td className="py-3.5 px-3 whitespace-nowrap text-right">
-                            <div className="inline-flex items-center gap-1.5 justify-end">
-                              {/* Google Index button */}
-                              <button
-                                type="button"
-                                onClick={() => handleToggleGoogleIndex(art)}
-                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10.5px] font-bold text-[#EA580C] bg-orange-50/70 hover:bg-orange-100 border border-orange-200/80 transition-colors cursor-pointer shadow-2xs"
-                                title="Google Index Status"
-                              >
-                                <Search className="w-3 h-3 stroke-[2.5]" />
-                                <span>Google Index</span>
-                              </button>
+                            {/* METRICS DESK */}
+                            <td className="py-3.5 px-3 whitespace-nowrap text-slate-500 text-xs font-medium">
+                              {viewsCount} Views • {commentsCount} Comments
+                            </td>
 
-                              {/* Edit pencil icon */}
-                              <Link
-                                href={`/writer?id=${art.slug || art.id}`}
-                                className="p-1.5 rounded-md text-blue-600 hover:text-blue-800 bg-blue-50/70 hover:bg-blue-100 border border-blue-200/80 transition-colors cursor-pointer shadow-2xs"
-                                title="Edit Article"
-                              >
-                                <Edit2 className="w-3.5 h-3.5 stroke-[2]" />
-                              </Link>
+                            {/* DELETE GATE */}
+                            <td className="py-3.5 px-3 whitespace-nowrap text-right">
+                              <div className="inline-flex items-center gap-1.5 justify-end">
+                                {/* Google Index button */}
+                                <button
+                                  type="button"
+                                  onClick={() => handleToggleGoogleIndex(art)}
+                                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10.5px] font-bold text-[#EA580C] bg-orange-50/70 hover:bg-orange-100 border border-orange-200/80 transition-colors cursor-pointer shadow-2xs"
+                                  title="Google Index Status"
+                                >
+                                  <Search className="w-3 h-3 stroke-[2.5]" />
+                                  <span>Google Index</span>
+                                </button>
 
-                              {/* Trash can icon (THE RED BUTTON) */}
-                              <button
-                                type="button"
-                                onClick={() => handleTrashPublishedArticle(art)}
-                                className="p-1.5 rounded-md text-rose-600 hover:text-rose-800 bg-rose-50/70 hover:bg-rose-100 border border-rose-200/80 transition-colors cursor-pointer shadow-2xs"
-                                title="Delete / Move to Trash"
-                              >
-                                <Trash2 className="w-3.5 h-3.5 stroke-[2]" />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
+                                {/* Edit pencil icon */}
+                                <Link
+                                  href={`/writer?id=${art.slug || art.id}`}
+                                  className="p-1.5 rounded-md text-blue-600 hover:text-blue-800 bg-blue-50/70 hover:bg-blue-100 border border-blue-200/80 transition-colors cursor-pointer shadow-2xs"
+                                  title="Edit Article"
+                                >
+                                  <Edit2 className="w-3.5 h-3.5 stroke-[2]" />
+                                </Link>
 
-                    {paginatedPublishedArticles.length === 0 && (
+                                {/* Trash can icon (THE RED BUTTON) */}
+                                <button
+                                  type="button"
+                                  onClick={() => handleTrashPublishedArticle(art)}
+                                  className="p-1.5 rounded-md text-rose-600 hover:text-rose-800 bg-rose-50/70 hover:bg-rose-100 border border-rose-200/80 transition-colors cursor-pointer shadow-2xs"
+                                  title="Delete / Move to Trash"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5 stroke-[2]" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+
+                    {!isLoadingPublished && paginatedPublishedArticles.length === 0 && (
                       <tr>
                         <td colSpan={5} className="py-12 text-center text-slate-400">
-                          {isLoadingPublished
-                            ? 'Loading published releases...'
-                            : 'No published articles match the selected filters.'}
+                          No published articles match the selected filters.
                         </td>
                       </tr>
                     )}
@@ -6069,6 +6366,14 @@ export default function AdminDashboardContent() {
       <ProfileSettingsModal
         isOpen={showProfileModal}
         onClose={() => setShowProfileModal(false)}
+        initialEmail={adminEmail}
+        initialRole="admin"
+        onProfileUpdated={(updated) => {
+          if (updated) {
+            setToastMessage({ text: 'Admin profile updated successfully', type: 'success' });
+            setTimeout(() => setToastMessage(null), 3000);
+          }
+        }}
       />
     </div>
   );

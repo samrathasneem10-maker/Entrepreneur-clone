@@ -155,20 +155,30 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
               </Link>
             </div>
 
-            {/* Right: SEARCH, SIGN IN / USER PROFILE CARD, NEWSLETTERS matching Reference Images 1 & 2 */}
+            {/* Right: 1. NEWSLETTERS, 2. SEARCH, 3. USER PROFILE / SIGN IN */}
             <div className="flex items-center gap-4 sm:gap-6 font-sans">
               
-              {/* 1. SEARCH Icon & Label */}
+              {/* 1. NEWSLETTERS Link */}
               <Link
-                href="/search"
-                className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-900 hover:text-[#1642D0] transition-colors cursor-pointer py-1"
+                href="/newsletters"
+                className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-900 hover:text-[#1642D0] transition-colors whitespace-nowrap py-1"
+              >
+                <Mail className="w-4 h-4 stroke-[2.2]" />
+                <span className="hidden sm:inline">Newsletters</span>
+              </Link>
+
+              {/* 2. SEARCH Icon & Label (Opens Search Modal Overlay) */}
+              <button
+                type="button"
+                onClick={() => setIsSearchOpen(true)}
+                className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-900 hover:text-[#1642D0] transition-colors cursor-pointer py-1 bg-transparent border-0"
                 aria-label="Search"
               >
                 <Search className="w-4 h-4 stroke-[2.2]" />
                 <span className="hidden sm:inline">Search</span>
-              </Link>
+              </button>
 
-              {/* 2. USER PROFILE CARD (when signed in) OR SIGN IN (when guest) matching Reference Image 2 */}
+              {/* 3. USER PROFILE CARD (when signed in) OR SIGN IN (when guest) */}
               {mounted && user ? (
                 /* Authenticated User Profile Card */
                 <div className="relative" ref={accountDropdownRef}>
@@ -256,6 +266,19 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
                               <LayoutDashboard className="w-3.5 h-3.5 text-slate-400" />
                               <span>Admin Dashboard</span>
                             </Link>
+
+                            {/* 2. Profile Settings (Opens Profile Settings Modal) */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setShowAccountDropdown(false);
+                                setShowWriterProfileModal(true);
+                              }}
+                              className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors text-left cursor-pointer"
+                            >
+                              <Settings className="w-3.5 h-3.5 text-slate-400" />
+                              <span>Profile Settings</span>
+                            </button>
                           </>
                         ) : (
                           <>
@@ -269,15 +292,18 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
                               <span>Reader Dashboard</span>
                             </Link>
 
-                            {/* 2. Profile Settings */}
-                            <Link
-                              href="/dashboard/reader?tab=profile"
-                              onClick={() => setShowAccountDropdown(false)}
-                              className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors"
+                            {/* 2. Profile Settings (Opens Profile Settings Modal) */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setShowAccountDropdown(false);
+                                setShowWriterProfileModal(true);
+                              }}
+                              className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-[#1642D0] transition-colors text-left cursor-pointer"
                             >
                               <Settings className="w-3.5 h-3.5 text-slate-400" />
                               <span>Profile Settings</span>
-                            </Link>
+                            </button>
                           </>
                         )}
                       </div>
@@ -308,15 +334,6 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
                   <span>Sign In</span>
                 </button>
               )}
-
-              {/* 3. NEWSLETTERS Link matching Reference Image 1 */}
-              <Link
-                href="/newsletters"
-                className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-900 hover:text-[#1642D0] transition-colors whitespace-nowrap py-1"
-              >
-                <Mail className="w-4 h-4 stroke-[2.2]" />
-                <span className="hidden sm:inline">Newsletters</span>
-              </Link>
 
             </div>
 

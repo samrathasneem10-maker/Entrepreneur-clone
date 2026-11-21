@@ -6,7 +6,7 @@ import { useParams } from 'next/navigation';
 import { ChevronRight, ChevronLeft, Home } from 'lucide-react';
 import { Header } from '@/layouts/Header';
 import { Footer } from '@/layouts/Footer';
-import { getTopicDataBySlug } from '@/data/newsData';
+import { getTopicDataBySlug, getCategoryBySlug } from '@/data/newsData';
 
 // 30 unique Industry articles for full 10-per-page pagination without duplicates
 const INDUSTRY_ARTICLES = [
@@ -808,9 +808,12 @@ function matchesCategoryOrSubCategory(article: any, currentSlug: string, current
   const targetSlug = norm(currentSlug);
   const targetTitle = norm(currentTitle);
 
+  const catLookup = getCategoryBySlug(currentSlug);
+
   // Check main category
-  const mainCat = norm(article.category || article.category_name || '');
-  if (mainCat && (mainCat === targetSlug || mainCat === targetTitle || targetSlug.includes(mainCat) || mainCat.includes(targetSlug))) {
+  const mainCat = article.category || article.category_name || '';
+  const mainCatNorm = norm(mainCat);
+  if (mainCatNorm && (mainCatNorm === targetSlug || mainCatNorm === targetTitle || targetSlug.includes(mainCatNorm) || mainCatNorm.includes(targetSlug))) {
     return true;
   }
 
@@ -822,6 +825,7 @@ function matchesCategoryOrSubCategory(article: any, currentSlug: string, current
     try {
       const parsed = JSON.parse(article.subCategories);
       if (Array.isArray(parsed)) subCats = parsed;
+      else subCats = [article.subCategories];
     } catch {
       subCats = article.subCategories.split(',').map((s: string) => s.trim());
     }
@@ -834,6 +838,34 @@ function matchesCategoryOrSubCategory(article: any, currentSlug: string, current
     }
   }
 
+  // Cross-reference with category structure
+  if (catLookup) {
+    const { main, sub } = catLookup;
+    if (sub) {
+      const subSlugNorm = norm(sub.slug);
+      const subNameNorm = norm(sub.name);
+      if (mainCatNorm === subSlugNorm || mainCatNorm === subNameNorm) return true;
+      for (const s of subCats) {
+        const sNorm = norm(s);
+        if (sNorm === subSlugNorm || sNorm === subNameNorm) return true;
+      }
+    } else if (main) {
+      const mainSlugNorm = norm(main.slug);
+      const mainNameNorm = norm(main.name);
+      if (mainCatNorm === mainSlugNorm || mainCatNorm === mainNameNorm) return true;
+      if (main.aliases?.some((a) => norm(a) === mainCatNorm)) return true;
+
+      for (const s of subCats) {
+        const sNorm = norm(s);
+        if (sNorm === mainSlugNorm || sNorm === mainNameNorm) return true;
+        if (main.aliases?.some((a) => norm(a) === sNorm)) return true;
+        if (main.subcategories?.some((mSub) => norm(mSub.slug) === sNorm || norm(mSub.name) === sNorm)) {
+          return true;
+        }
+      }
+    }
+  }
+
   return false;
 }
 
@@ -843,72 +875,116 @@ export default function DynamicTopicPage() {
   const topicData = getTopicDataBySlug(rawSlug);
   const displayTitle = rawSlug === 'business' ? 'Business' : rawSlug === 'breaking-news' ? 'Breaking News' : rawSlug === 'breaking-business-news' ? 'Breaking Business News' : topicData.title;
 
-  const [topicArticles, setTopicArticles] = useState(INDUSTRY_ARTICLES);
   const [currentPage, setCurrentPage] = useState(1);
   const ARTICLES_PER_PAGE = 10;
-  const totalPages = Math.ceil(topicArticles.length / ARTICLES_PER_PAGE);
+
+  // Base fallback list from topic data and industry articles
+  const buildFallbackArticles = () => {
+    const list: any[] = [
+      ...(topicData.articles || []).map((art: any, idx: number) => ({
+        id: art.id ? String(art.id) : `fallback-${idx}`,
+        title: art.title || '',
+        category: art.category || displayTitle.toUpperCase(),
+        excerpt: art.excerpt || (art as any).description || '',
+        image: art.imageUrl || (art as any).image || '/images/topic-thumb-1.jpg',
+        link: art.id ? `/article/${art.id}` : '#',
+      })),
+      ...INDUSTRY_ARTICLES.map((art: any) => ({
+        id: String(art.id),
+        title: art.title || '',
+        category: art.category || displayTitle.toUpperCase(),
+        excerpt: art.excerpt || '',
+        image: art.image || '/images/topic-thumb-1.jpg',
+        link: `/article/${art.id}`,
+      })),
+    ];
+    const seen = new Set<string>();
+    return list.filter((item) => {
+      const k = item.id || item.title;
+      if (seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    });
+  };
+
+  const [allCategoryArticles, setAllCategoryArticles] = useState<any[]>(buildFallbackArticles);
 
   useEffect(() => {
     setCurrentPage(1);
-    fetch('/api/articles?status=published&limit=100')
+    const fallbackList = buildFallbackArticles();
+
+    fetch('/api/articles?status=published&limit=200')
       .then((res) => res.json())
       .then((data) => {
         if (data?.success && Array.isArray(data.data)) {
-          const matching = data.data.filter((a: any) =>
-            matchesCategoryOrSubCategory(a, rawSlug, topicData.title || displayTitle)
-          ).map((a: any) => ({
-            id: a.slug || String(a.dbId || a.id),
-            category: a.category || displayTitle.toUpperCase(),
-            title: a.title,
-            excerpt: a.excerpt || a.cardSummary || '',
-            image: a.imageUrl || '/images/topic-thumb-1.jpg',
-          }));
+          const matching = data.data
+            .filter((a: any) => matchesCategoryOrSubCategory(a, rawSlug, topicData.title || displayTitle))
+            .map((a: any) => ({
+              id: a.slug || String(a.dbId || a.id),
+              category: a.category || displayTitle.toUpperCase(),
+              title: a.title,
+              excerpt: a.excerpt || a.cardSummary || '',
+              image: a.imageUrl || a.image || '/images/topic-thumb-1.jpg',
+              link: `/article/${a.slug || a.id}`,
+            }));
 
-          if (matching.length > 0) {
-            setTopicArticles([...matching, ...INDUSTRY_ARTICLES]);
-          } else {
-            setTopicArticles(INDUSTRY_ARTICLES);
-          }
+          const combined = [...matching, ...fallbackList];
+          const seen = new Set<string>();
+          const deduped = combined.filter((item) => {
+            const k = item.id || item.title;
+            if (seen.has(k)) return false;
+            seen.add(k);
+            return true;
+          });
+
+          setAllCategoryArticles(deduped);
+        } else {
+          setAllCategoryArticles(fallbackList);
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        setAllCategoryArticles(fallbackList);
+      });
   }, [rawSlug, topicData.title, displayTitle]);
 
-  // Sliced articles for the active page (no duplicate articles between pages)
-  const currentArticles = topicArticles.slice(
+  // Order when new article for category page arrives:
+  // 1st - left side image article
+  const item1 = allCategoryArticles[0];
+  const heroFeatured = {
+    title: item1?.title || 'How Great Leaders Build Teams That Thrive',
+    category: item1?.category || displayTitle.toUpperCase(),
+    description: item1?.excerpt || "Strong leadership isn't just about making decisions. It's about building teams that thrive.",
+    image: item1?.image || '/images/topic-hero-leaders.jpg',
+    link: item1?.link || (item1?.id ? `/article/${item1.id}` : '#'),
+  };
+
+  // 2nd - right side up first image article
+  const item2 = allCategoryArticles[1];
+  const heroSub1 = {
+    title: item2?.title || 'The Power of Effective Communication in Leadership',
+    category: item2?.category || displayTitle.toUpperCase(),
+    description: item2?.excerpt || "Great leaders don't just give direction — they listen, inspire and bring people together.",
+    image: item2?.image || '/images/topic-sub-1.jpg',
+    link: item2?.link || (item2?.id ? `/article/${item2.id}` : '#'),
+  };
+
+  // 3rd - right side second image article
+  const item3 = allCategoryArticles[2];
+  const heroSub2 = {
+    title: item3?.title || 'Collaboration Drives Innovation and Growth',
+    category: item3?.category || displayTitle.toUpperCase(),
+    description: item3?.excerpt || 'When great minds work together, new ideas turn into real progress.',
+    image: item3?.image || '/images/topic-sub-2.jpg',
+    link: item3?.link || (item3?.id ? `/article/${item3.id}` : '#'),
+  };
+
+  // 4th - More News (in the category) top 10 articles in vertical from top to bottom
+  const moreNewsArticles = allCategoryArticles.slice(3);
+  const totalPages = Math.max(1, Math.ceil(moreNewsArticles.length / ARTICLES_PER_PAGE));
+  const currentArticles = moreNewsArticles.slice(
     (currentPage - 1) * ARTICLES_PER_PAGE,
     currentPage * ARTICLES_PER_PAGE
   );
-
-  
-  // Hero section articles configuration (Dynamic across all categories, displaying authentic topic articles)
-  const art1 = topicData.articles?.[0];
-  const art2 = topicData.articles?.[1];
-  const art3 = topicData.articles?.[2];
-
-  const heroFeatured = {
-    title: art1?.title || 'How Great Leaders Build Teams That Thrive',
-    category: art1?.category || topicData.title || 'Business News',
-    description: art1?.excerpt || (art1 as any)?.description || "Strong leadership isn't just about making decisions. It's about building teams that thrive.",
-    image: art1?.imageUrl || (art1 as any)?.image || '/images/topic-hero-leaders.jpg',
-    link: art1?.id ? `/article/${art1.id}` : '/article/how-great-leaders-build-teams-that-thrive',
-  };
-
-  const heroSub1 = {
-    title: art2?.title || 'The Power of Effective Communication in Leadership',
-    category: art2?.category || topicData.title || 'Business News',
-    description: art2?.excerpt || (art2 as any)?.description || "Great leaders don't just give direction — they listen, inspire and bring people together.",
-    image: art2?.imageUrl || (art2 as any)?.image || '/images/topic-sub-1.jpg',
-    link: art2?.id ? `/article/${art2.id}` : '/article/power-of-effective-communication-leadership',
-  };
-
-  const heroSub2 = {
-    title: art3?.title || 'Collaboration Drives Innovation and Growth',
-    category: art3?.category || topicData.title || 'Business News',
-    description: art3?.excerpt || (art3 as any)?.description || 'When great minds work together, new ideas turn into real progress.',
-    image: art3?.imageUrl || (art3 as any)?.image || '/images/topic-sub-2.jpg',
-    link: art3?.id ? `/article/${art3.id}` : '/article/collaboration-drives-innovation-growth',
-  };
 
   return (
     <div className="min-h-screen flex flex-col bg-white font-sans antialiased text-slate-900">
@@ -963,13 +1039,29 @@ export default function DynamicTopicPage() {
               <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-1 lg:mb-1.5 block">
                 {heroFeatured.category}
               </span>
-              <h2 className="font-serif font-bold text-xl sm:text-2xl lg:text-[21px] xl:text-[23px] 2xl:text-[25px] tracking-tight text-[#020618] leading-[1.25] group-hover:underline decoration-1 underline-offset-2 my-0.5 lg:my-1">
+              <h2
+                className="font-serif font-bold text-xl sm:text-2xl lg:text-[21px] xl:text-[23px] 2xl:text-[25px] tracking-tight text-[#020618] leading-[1.25] group-hover:underline decoration-1 underline-offset-2 my-0.5 lg:my-1 line-clamp-2"
+                style={{
+                  display: '-webkit-box',
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: 'vertical',
+                  overflow: 'hidden',
+                }}
+              >
                 <Link href={heroFeatured.link} className="hover:text-[#1642D0] transition-colors">
                   {heroFeatured.title}
                 </Link>
               </h2>
             </div>
-            <p className="font-serif text-slate-600 sm:text-slate-700 text-sm sm:text-base lg:text-[13.5px] xl:text-[14px] 2xl:text-[14.5px] leading-relaxed mt-1.5 lg:mt-2 my-0 w-full line-clamp-2 lg:line-clamp-3">
+            <p
+              className="font-serif text-slate-600 sm:text-slate-700 text-sm sm:text-base lg:text-[13.5px] xl:text-[14px] 2xl:text-[14.5px] leading-relaxed mt-1.5 lg:mt-2 my-0 w-full line-clamp-2"
+              style={{
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+              }}
+            >
               {heroFeatured.description}
             </p>
           </article>
@@ -992,7 +1084,15 @@ export default function DynamicTopicPage() {
                 <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-0.5 lg:mb-1 block leading-tight">
                   {heroSub1.category}
                 </span>
-                <h3 className="font-serif font-bold text-[15px] sm:text-[16px] lg:text-[15px] xl:text-[16px] 2xl:text-[17px] tracking-tight text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-0.5 lg:my-1 line-clamp-2">
+                <h3
+                  className="font-serif font-bold text-[15px] sm:text-[16px] lg:text-[15px] xl:text-[16px] 2xl:text-[17px] tracking-tight text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-0.5 lg:my-1 line-clamp-3"
+                  style={{
+                    display: '-webkit-box',
+                    WebkitLineClamp: 3,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                  }}
+                >
                   <Link href={heroSub1.link} className="hover:text-[#1642D0] transition-colors">
                     {heroSub1.title}
                   </Link>
@@ -1018,7 +1118,15 @@ export default function DynamicTopicPage() {
                 <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-0.5 lg:mb-1 block leading-tight">
                   {heroSub2.category}
                 </span>
-                <h3 className="font-serif font-bold text-[15px] sm:text-[16px] lg:text-[15px] xl:text-[16px] 2xl:text-[17px] tracking-tight text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-0.5 lg:my-1 line-clamp-2">
+                <h3
+                  className="font-serif font-bold text-[15px] sm:text-[16px] lg:text-[15px] xl:text-[16px] 2xl:text-[17px] tracking-tight text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-0.5 lg:my-1 line-clamp-3"
+                  style={{
+                    display: '-webkit-box',
+                    WebkitLineClamp: 3,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                  }}
+                >
                   <Link href={heroSub2.link} className="hover:text-[#1642D0] transition-colors">
                     {heroSub2.title}
                   </Link>
@@ -1055,7 +1163,7 @@ export default function DynamicTopicPage() {
                   className={`flex gap-4 sm:gap-5 items-start ${index === 0 ? 'pt-0' : 'pt-6'}`}
                 >
                   <Link
-                    href={`/article/${art.id}`}
+                    href={art.link || `/article/${art.id}`}
                     className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 overflow-hidden bg-slate-100 block cursor-pointer group/thumb"
                   >
                     <img
@@ -1066,10 +1174,10 @@ export default function DynamicTopicPage() {
                   </Link>
                   <div className="flex-1 min-w-0">
                     <span className="text-[11px] font-bold text-[#1642D0] uppercase tracking-wider font-sans block mb-1">
-                      {displayTitle.toUpperCase()}
+                      {art.category || displayTitle.toUpperCase()}
                     </span>
                     <h3 className="font-serif font-bold text-sm sm:text-base text-[#020618] leading-snug hover:underline my-1">
-                      <Link href={`/article/${art.id}`}>
+                      <Link href={art.link || `/article/${art.id}`}>
                         {art.title}
                       </Link>
                     </h3>
