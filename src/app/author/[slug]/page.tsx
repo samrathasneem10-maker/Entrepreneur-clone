@@ -14,6 +14,8 @@ interface AuthorProfile {
   badge: string;
   avatar: string;
   bio: string;
+  linkedinUrl?: string;
+  email?: string;
 }
 
 const AUTHORS_REGISTRY: Record<string, AuthorProfile> = {
@@ -129,13 +131,7 @@ const AUTHORS_REGISTRY: Record<string, AuthorProfile> = {
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop',
     bio: 'R.L. Adams is a software engineer, serial entrepreneur, and bestselling author of dozens of books on online business, search engine optimization, and passive income generation.',
   },
-  'fathima': {
-    name: 'Fathima',
-    role: 'Staff Writer',
-    badge: 'United States Today Staff',
-    avatar: '/images/user-avatar-butterfly.png',
-    bio: 'Fathima is a staff writer at United States Today covering business, innovation, and leadership.',
-  },
+
   'kalid-mishal': {
     name: 'Kalid Mishal',
     role: 'Staff Writer',
@@ -144,67 +140,138 @@ const AUTHORS_REGISTRY: Record<string, AuthorProfile> = {
     bio: 'Kalid Mishal is a staff writer at United States Today covering startup growth, leadership principles, and emerging market dynamics.',
   },
   'samra': {
-    name: 'Samra',
+    name: 'Samra Thsaneem',
     role: 'Staff Writer',
     badge: 'United States Today Staff',
-    avatar: '/uploads/upload_1794590868177_images__1_.webp',
-    bio: 'Executive business contributor at United States Today.',
+    avatar: '/uploads/upload_1795317297120_modern-muslim-woman-hijab-office-room_285396-11089.webp',
+    bio: 'Executive business contributor.',
+    linkedinUrl: 'https://www.linkedin.com/in/fathima-samra-8823b634a',
+  },
+  'samra-thsaneem': {
+    name: 'Samra Thsaneem',
+    role: 'Staff Writer',
+    badge: 'United States Today Staff',
+    avatar: '/uploads/upload_1795317297120_modern-muslim-woman-hijab-office-room_285396-11089.webp',
+    bio: 'Executive business contributor.',
+    linkedinUrl: 'https://www.linkedin.com/in/fathima-samra-8823b634a',
   },
   'samra-thasneem': {
     name: 'Samra Thasneem',
     role: 'Staff Writer',
     badge: 'United States Today Staff',
-    avatar: '/uploads/upload_1794590868177_images__1_.webp',
+    avatar: '/uploads/upload_1795460148898_modern-muslim-woman-hijab-office-room_285396-11089.webp',
     bio: 'Executive business contributor at United States Today.',
+    linkedinUrl: 'https://www.linkedin.com/in/fathima-samra-8823b634a',
   },
   'mishal': {
     name: 'mishal',
     role: 'Staff Writer',
     badge: 'United States Today Staff',
-    avatar: '/images/user-avatar-butterfly.png',
-    bio: 'Writer User at United States Today.',
+    avatar: '',
+    bio: 'Staff Writer at United States Today.',
+    linkedinUrl: 'https://www.linkedin.com/in/fathima-samra-8823b634a',
   },
-  'fathima-samra': {
-    name: 'Fathima Samra',
+  'fathima': {
+    name: 'fathima',
     role: 'Staff Writer',
     badge: 'United States Today Staff',
-    avatar: '/images/user-avatar-butterfly.png',
+    avatar: '',
     bio: 'Staff Writer at United States Today.',
+    linkedinUrl: 'https://www.linkedin.com/in/fathima-samra-8823b634a',
+  },
+  'mohamed-azmy-mohamed-akram': {
+    name: 'Mohamed Azmy Mohamed Akram',
+    role: 'Default Administrator',
+    badge: 'United States Today Staff',
+    avatar: '',
+    bio: 'Default Administrator and Lead Technologist at United States Today.',
+    linkedinUrl: 'https://www.linkedin.com/in/mohamed-azmy-mohamed-akram-240456190',
+  },
+  'samra-admin': {
+    name: 'samra admin',
+    role: 'Administrator',
+    badge: 'United States Today Staff',
+    avatar: '/uploads/upload_1795317297120_modern-muslim-woman-hijab-office-room_285396-11089.webp',
+    bio: 'Administrator at United States Today.',
+    linkedinUrl: 'https://www.linkedin.com/in/fathima-samra-8823b634a',
+  },
+  'samra-admin-user': {
+    name: 'Samra Admin User',
+    role: 'Administrator',
+    badge: 'United States Today Staff',
+    avatar: '/uploads/upload_1794438116018_images.webp',
+    bio: 'Administrator at United States Today.',
+    linkedinUrl: 'https://www.linkedin.com/in/fathima-samra-8823b634a',
+  },
+  'samra-thasneem-reader': {
+    name: 'Samra Thasneem',
+    role: 'Reader',
+    badge: 'Community Member',
+    avatar: '/uploads/avatar_1793493350773_c.jpg',
+    bio: 'Reader and active community member at United States Today.',
+  },
+  'fathi-samra': {
+    name: 'fathi samra',
+    role: 'Reader',
+    badge: 'Community Member',
+    avatar: '',
+    bio: 'Reader and community member at United States Today.',
+  },
+  'abd': {
+    name: 'ABD',
+    role: 'Reader',
+    badge: 'Community Member',
+    avatar: '',
+    bio: 'Reader and community member at United States Today.',
   },
   'writer-account': {
     name: 'Writer Account',
     role: 'Staff Writer',
     badge: 'United States Today Staff',
-    avatar: '/uploads/avatar_1793324678418_d.jpg',
-    bio: 'Executive business contributor at United States Today.',
+    avatar: '/uploads/upload_1795317297120_modern-muslim-woman-hijab-office-room_285396-11089.webp',
+    bio: 'Executive business contributor.',
+    linkedinUrl: 'https://www.linkedin.com/in/fathima-samra-8823b634a',
   },
   'writer_account': {
     name: 'Writer Account',
     role: 'Staff Writer',
     badge: 'United States Today Staff',
-    avatar: '/uploads/avatar_1793324678418_d.jpg',
-    bio: 'Executive business contributor at United States Today.',
+    avatar: '/uploads/upload_1795317297120_modern-muslim-woman-hijab-office-room_285396-11089.webp',
+    bio: 'Executive business contributor.',
+    linkedinUrl: 'https://www.linkedin.com/in/fathima-samra-8823b634a',
   },
   'writer': {
     name: 'Writer Account',
     role: 'Staff Writer',
     badge: 'United States Today Staff',
-    avatar: '/uploads/avatar_1793324678418_d.jpg',
-    bio: 'Executive business contributor at United States Today.',
+    avatar: '/uploads/upload_1795317297120_modern-muslim-woman-hijab-office-room_285396-11089.webp',
+    bio: 'Executive business contributor.',
+    linkedinUrl: 'https://www.linkedin.com/in/fathima-samra-8823b634a',
   },
   'writter': {
     name: 'Writer Account',
     role: 'Staff Writer',
     badge: 'United States Today Staff',
-    avatar: '/uploads/avatar_1793324678418_d.jpg',
-    bio: 'Executive business contributor at United States Today.',
+    avatar: '/uploads/upload_1795317297120_modern-muslim-woman-hijab-office-room_285396-11089.webp',
+    bio: 'Executive business contributor.',
+    linkedinUrl: 'https://www.linkedin.com/in/fathima-samra-8823b634a',
   },
   'thasneem-samra': {
     name: 'Writer Account',
     role: 'Staff Writer',
     badge: 'United States Today Staff',
-    avatar: '/uploads/avatar_1793324678418_d.jpg',
-    bio: 'Executive business contributor at United States Today.',
+    avatar: '/uploads/upload_1795317297120_modern-muslim-woman-hijab-office-room_285396-11089.webp',
+    bio: 'Executive business contributor.',
+    linkedinUrl: 'https://www.linkedin.com/in/fathima-samra-8823b634a',
+  },
+
+  'akram-yoonos': {
+    name: 'Akram Yoonos',
+    role: 'Staff Writer & Web Developer',
+    badge: 'United States Today Staff',
+    avatar: '/images/user-avatar-butterfly.png',
+    bio: 'Staff Writer and Web Developer at United States Today.',
+    linkedinUrl: 'https://www.linkedin.com/in/mohamed-azmy-mohamed-akram-240456190',
   },
 };
 
@@ -221,6 +288,9 @@ function getAuthorProfile(rawSlug: string): AuthorProfile {
   const cleanSlug = decodeURIComponent(rawSlug || '').toLowerCase().trim().replace(/[\s_]+/g, '-');
   if (AUTHORS_REGISTRY[cleanSlug]) {
     return AUTHORS_REGISTRY[cleanSlug];
+  }
+  if (cleanSlug.includes('samra')) {
+    return AUTHORS_REGISTRY['samra-thsaneem'];
   }
   // Try partial match in registry
   for (const [key, profile] of Object.entries(AUTHORS_REGISTRY)) {
@@ -242,6 +312,7 @@ function getAuthorProfile(rawSlug: string): AuthorProfile {
     badge: 'United States Today Staff',
     avatar,
     bio: `${name} is a contributing writer at United States Today covering business strategy, technology, and entrepreneurship.`,
+    linkedinUrl: `https://www.linkedin.com/in/${cleanSlug}`,
   };
 }
 
@@ -700,6 +771,7 @@ export default function AuthorProfilePage() {
           badge: prev.badge || 'United States Today Staff',
           avatar: user.avatar || prev.avatar,
           bio: user.bio && user.bio.trim() !== '' ? user.bio : prev.bio,
+          linkedinUrl: user.linkedinUrl || prev.linkedinUrl,
         }));
       }
     }
@@ -713,10 +785,12 @@ export default function AuthorProfilePage() {
           setAuthor((prev) => ({
             ...prev,
             name: p.name || p.fullName || p.writerName || prev.name,
-            role: prev.role || 'Staff Writer',
+            role: prev.role === 'admin' ? 'Editorial Director' : (prev.role || 'Staff Writer'),
             badge: prev.badge || 'United States Today Staff',
             avatar: p.avatar && p.avatar.trim() !== '' ? p.avatar : prev.avatar,
             bio: p.bio && p.bio.trim() !== '' ? p.bio : prev.bio,
+            linkedinUrl: p.linkedin_url || p.linkedinUrl || prev.linkedinUrl,
+            email: p.email || prev.email,
           }));
         }
       })
@@ -854,24 +928,54 @@ export default function AuthorProfilePage() {
       <section className="bg-white pt-10 pb-4 md:pt-14 md:pb-6 px-5 lg:px-10">
         <div className="max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8 md:gap-12">
-            {/* Author Avatar: Clean circle with sharp high-res portrait image */}
+            {/* Author Avatar: Clean circle with sharp portrait image or Initial Letter */}
             <div className="shrink-0">
-              <img
-                src={author.avatar}
-                alt={author.name}
-                className="w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 rounded-full object-cover shadow-2xs border border-slate-200"
-              />
+              {author.avatar &&
+              !author.avatar.includes('user-avatar-butterfly') &&
+              !author.avatar.includes('author-placeholder') ? (
+                <img
+                  src={author.avatar}
+                  alt={author.name}
+                  onError={(e) => {
+                    const parent = (e.currentTarget as HTMLElement).parentElement;
+                    if (parent) {
+                      parent.innerHTML = `<span class="w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 rounded-full bg-[#1642D0] text-white flex items-center justify-center font-serif font-black text-5xl sm:text-6xl shadow-2xs border border-blue-900/10 select-none">${(author.name || 'A').trim().charAt(0).toUpperCase()}</span>`;
+                    }
+                  }}
+                  className="w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 rounded-full object-cover shadow-2xs border border-slate-200"
+                />
+              ) : (
+                <div className="w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 rounded-full bg-[#1642D0] text-white flex items-center justify-center font-serif font-black text-5xl sm:text-6xl shadow-2xs border border-blue-900/10 select-none">
+                  {(author.name || 'A').trim().charAt(0).toUpperCase()}
+                </div>
+              )}
             </div>
 
             {/* Author Details */}
             <div className="text-center sm:text-left flex-1 min-w-0">
-              {/* Author Name */}
-              <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-serif font-black text-[#020618] leading-[1.1] tracking-tight my-0">
-                {author.name}
-              </h1>
+              {/* Author Name, LinkedIn Icon & Gmail Button */}
+              <div className="flex items-center justify-center sm:justify-start gap-2.5 flex-wrap">
+                <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-serif font-black text-[#020618] leading-[1.1] tracking-tight my-0">
+                  {author.name}
+                </h1>
+                <a
+                  href={
+                    author.linkedinUrl && !author.linkedinUrl.includes('your-profile') && author.linkedinUrl !== 'https://linkedin.com'
+                      ? author.linkedinUrl
+                      : 'https://www.linkedin.com/in/fathima-samra-8823b634a'
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center w-5 h-5 bg-[#0A66C2] rounded-[3px] text-white text-[11px] font-bold leading-none hover:opacity-90 transition-opacity cursor-pointer shadow-2xs shrink-0"
+                  aria-label={`${author.name} LinkedIn Profile`}
+                  title={`${author.name} LinkedIn Profile`}
+                >
+                  in
+                </a>
+              </div>
 
               {/* Author Role */}
-              <p className="text-sm sm:text-[15px] font-sans text-slate-500 font-normal mt-1.5 mb-2">
+              <p suppressHydrationWarning className="text-sm sm:text-[15px] font-sans text-slate-500 font-normal mt-1.5 mb-2">
                 {author.role}
               </p>
 
@@ -895,7 +999,7 @@ export default function AuthorProfilePage() {
               </div>
 
               {/* Author Bio */}
-              <p className="font-serif text-slate-700 text-sm sm:text-[15px] leading-relaxed max-w-2xl my-0">
+              <p suppressHydrationWarning className="font-serif text-slate-700 text-sm sm:text-[15px] leading-relaxed max-w-2xl my-0">
                 {author.bio}
               </p>
             </div>

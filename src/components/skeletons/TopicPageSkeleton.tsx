@@ -1,9 +1,16 @@
+'use client';
+
 import React from 'react';
 import { SkeletonBase } from './SkeletonBase';
+import { useSkeletonMaxDuration } from './useSkeletonMaxDuration';
 
 export const TopicPageSkeleton: React.FC = () => {
+  const isVisible = useSkeletonMaxDuration(2000);
+
+  if (!isVisible) return null;
+
   return (
-    <div className="w-full bg-white animate-in fade-in duration-200">
+    <div className="w-full bg-white animate-in fade-in duration-200 skeleton-max-duration">
       
       {/* Breadcrumb Bar Skeleton */}
       <div className="bg-slate-50/80 border-b border-slate-200 py-3 px-5 lg:px-10">

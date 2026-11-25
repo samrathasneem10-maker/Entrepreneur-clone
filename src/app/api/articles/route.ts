@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache';
 import { query } from '@/lib/db';
 import { ALL_ARTICLES } from '@/data/newsData';
 import { formatPublicationDate } from '@/lib/dateUtils';
+import { resolveArticleAuthor } from '@/lib/authorUtils';
 
 const PLACEMENT_LIMITS: Record<string, number> = {
   latest_news: 9,
@@ -189,8 +190,8 @@ export async function GET(request: Request) {
       LEFT JOIN users u ON (a.author_id = u.id OR LOWER(TRIM(a.author_name)) = LOWER(TRIM(u.name)) OR LOWER(TRIM(a.author_name)) = LOWER(TRIM(u.writer_name)))
       ${whereClause}
       ${(placement && placement.toLowerCase().trim() !== 'all')
-        ? 'ORDER BY CASE WHEN a.placement_order IS NOT NULL AND a.placement_order > 0 THEN a.placement_order ELSE 999999 END ASC, CASE WHEN a.published_at IS NOT NULL THEN a.published_at ELSE a.created_at END DESC, a.id DESC'
-        : 'ORDER BY CASE WHEN a.published_at IS NOT NULL THEN a.published_at ELSE a.created_at END DESC, a.id DESC'}
+        ? 'ORDER BY CASE WHEN a.placement_order IS NOT NULL AND a.placement_order > 0 THEN a.placement_order ELSE 999999 END ASC, COALESCE(a.updated_at, a.published_at, a.created_at) DESC, a.id DESC'
+        : 'ORDER BY COALESCE(a.updated_at, a.published_at, a.created_at) DESC, a.id DESC'}
       LIMIT ? OFFSET ?
     `;
 
@@ -213,6 +214,8 @@ export async function GET(request: Request) {
       const displayDate = r.publishedAt
         ? formatPublicationDate(r.publishedAt)
         : (r.date || formatPublicationDate(r.createdAt));
+
+      const resolvedAuthor = resolveArticleAuthor(r);
 
       return {
         id: r.slug || String(r.id),
@@ -242,13 +245,13 @@ export async function GET(request: Request) {
       createdAt: r.createdAt || null,
       updatedAt: r.updatedAt || null,
       author: {
-        name: r.authorName || 'Staff Contributor',
-        avatar: r.authorAvatar || '/images/author-sherin.png',
-        title: r.authorTitle || 'Staff Contributor',
-        bio: r.authorBio,
-        linkedinUrl: r.authorLinkedinUrl || null,
+        name: resolvedAuthor.name,
+        avatar: resolvedAuthor.avatar,
+        title: resolvedAuthor.title,
+        bio: resolvedAuthor.bio,
+        linkedinUrl: resolvedAuthor.linkedinUrl,
       },
-      authorLinkedinUrl: r.authorLinkedinUrl || null,
+      authorLinkedinUrl: resolvedAuthor.linkedinUrl,
       };
     });
 
@@ -340,7 +343,7 @@ export async function POST(request: Request) {
       content = '',
       imageUrl = '',
       status = 'published',
-      authorName = 'Staff Contributor',
+      authorName = 'Samra Thasneem',
       readTime = '5 min read',
       tags = [],
       cardSummary = '',
@@ -524,6 +527,7 @@ export async function PUT(request: Request) {
     const {
       id,
       dbId,
+      slug,
       status,
       republish,
       title,
@@ -551,7 +555,7 @@ export async function PUT(request: Request) {
       date: customDate,
     } = body;
 
-    if (!id && !dbId) {
+    if (!id && !dbId && !slug) {
       return NextResponse.json({ success: false, error: 'Article identifier is required.' }, { status: 400 });
     }
 
@@ -559,8 +563,22 @@ export async function PUT(request: Request) {
     let existingStatus: string | null = null;
     let existingPublishedAt: any = null;
 
-    const findWhere = dbId ? 'WHERE id = ?' : 'WHERE slug = ? OR id = ?';
-    const findParams = dbId ? [dbId] : [id, id];
+    const isNumericDbId = dbId !== undefined && dbId !== null && !isNaN(Number(dbId)) && Number(dbId) > 0;
+    const isNumericId = id !== undefined && id !== null && !isNaN(Number(id)) && Number(id) > 0;
+
+    let findWhere = '';
+    let findParams: any[] = [];
+    if (isNumericDbId) {
+      findWhere = 'WHERE id = ?';
+      findParams = [Number(dbId)];
+    } else if (isNumericId) {
+      findWhere = 'WHERE id = ?';
+      findParams = [Number(id)];
+    } else {
+      findWhere = 'WHERE slug = ? OR id = ?';
+      findParams = [slug || id || dbId, slug || id || dbId];
+    }
+
     const existingRows: any = await query(`SELECT id, status, published_at FROM articles ${findWhere} LIMIT 1`, findParams);
     if (existingRows && existingRows[0]) {
       targetDbId = Number(existingRows[0].id);
@@ -738,12 +756,18 @@ export async function PUT(request: Request) {
     }
 
     let whereClause = '';
-    if (dbId) {
+    if (targetDbId) {
       whereClause = 'WHERE id = ?';
-      params.push(dbId);
+      params.push(targetDbId);
+    } else if (isNumericDbId) {
+      whereClause = 'WHERE id = ?';
+      params.push(Number(dbId));
+    } else if (isNumericId) {
+      whereClause = 'WHERE id = ?';
+      params.push(Number(id));
     } else {
       whereClause = 'WHERE slug = ? OR id = ?';
-      params.push(id, id);
+      params.push(slug || id || dbId, slug || id || dbId);
     }
 
     await query(`UPDATE articles SET ${updates.join(', ')} ${whereClause}`, params);

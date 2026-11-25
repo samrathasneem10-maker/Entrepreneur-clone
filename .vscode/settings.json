@@ -1,0 +1,45 @@
+{
+  "telemetry.telemetryLevel": "off",
+  "files.watcherExclude": {
+    "**/.git/**": true,
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true,
+    "**/.next/**": true,
+    "**/out/**": true,
+    "**/dist/**": true,
+    "**/build/**": true,
+    "**/.turbo/**": true,
+    "**/*.sql": true,
+    "**/*.jpg": true,
+    "**/*.jpeg": true,
+    "**/*.png": true,
+    "**/*.webp": true,
+    "**/*.gif": true,
+    "**/*.mp4": true,
+    "**/*.zip": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/.next": true,
+    "**/*.code-search": true,
+    "**/out": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/.turbo": true,
+    "**/*.sql": true,
+    "**/*.webp": true,
+    "**/*.png": true,
+    "**/*.jpg": true
+  },
+  "editor.inlineSuggest.enabled": false,
+  "editor.quickSuggestions": {
+    "other": "off",
+    "comments": "off",
+    "strings": "off"
+  },
+  "editor.suggestOnTriggerCharacters": false,
+  "editor.acceptSuggestionOnEnter": "off",
+  "editor.wordBasedSuggestions": "off"
+}

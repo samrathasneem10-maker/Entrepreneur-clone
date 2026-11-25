@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { Search, X, TrendingUp, ArrowRight, FileText, User } from 'lucide-react';
-import { ALL_ARTICLES, getArticleUrl, type Article } from '@/data/newsData';
+import { getArticleUrl, type Article } from '@/data/newsData';
 
 interface SearchBarProps {
   isOpen: boolean;
@@ -32,14 +32,14 @@ export const TOP_BAR_MAIN_CATEGORIES = [
   'Real Estate & Property',
 ];
 
-// Baseline registered real authors mapping to their exact author pages (/author/[slug])
-const AUTHORS_REGISTRY: AuthorItem[] = [
+// Baseline registered real workspace users (writers, admins, default admin, readers)
+const REAL_USERS_REGISTRY: AuthorItem[] = [
   {
-    name: 'Samra',
-    slug: 'samra',
+    name: 'Samra Thasneem',
+    slug: 'samra-thasneem',
     role: 'Staff Writer',
     badge: 'United States Today Staff',
-    avatar: '/uploads/upload_1794590868177_images__1_.webp',
+    avatar: '/uploads/upload_1795460148898_modern-muslim-woman-hijab-office-room_285396-11089.webp',
     bio: 'Executive business contributor at United States Today.',
   },
   {
@@ -47,23 +47,7 @@ const AUTHORS_REGISTRY: AuthorItem[] = [
     slug: 'mishal',
     role: 'Staff Writer',
     badge: 'United States Today Staff',
-    avatar: '/images/user-avatar-butterfly.png',
-    bio: 'Writer User at United States Today.',
-  },
-  {
-    name: 'Writer',
-    slug: 'writer',
-    role: 'Staff Writer',
-    badge: 'United States Today Staff',
-    avatar: '/images/user-avatar-butterfly.png',
-    bio: 'Staff Writer at United States Today.',
-  },
-  {
-    name: 'Fathima Samra',
-    slug: 'fathima-samra',
-    role: 'Staff Writer',
-    badge: 'United States Today Staff',
-    avatar: '/images/user-avatar-butterfly.png',
+    avatar: '',
     bio: 'Staff Writer at United States Today.',
   },
   {
@@ -71,26 +55,108 @@ const AUTHORS_REGISTRY: AuthorItem[] = [
     slug: 'fathima',
     role: 'Staff Writer',
     badge: 'United States Today Staff',
-    avatar: '/images/user-avatar-butterfly.png',
+    avatar: '',
     bio: 'Staff Writer at United States Today.',
-  },
-  {
-    name: 'System Administrator',
-    slug: 'system-administrator',
-    role: 'Editorial Director',
-    badge: 'United States Today Editorial',
-    avatar: '/uploads/upload_1794438116018_images.webp',
-    bio: 'System Administrator and Editorial Director at United States Today.',
   },
   {
     name: 'Mohamed Azmy Mohamed Akram',
     slug: 'mohamed-azmy-mohamed-akram',
+    role: 'Default Administrator',
+    badge: 'United States Today Staff',
+    avatar: '',
+    bio: 'Default Administrator at United States Today.',
+  },
+  {
+    name: 'samra admin',
+    slug: 'samra-admin',
     role: 'Administrator',
     badge: 'United States Today Staff',
-    avatar: '/images/user-avatar-butterfly.png',
+    avatar: '/uploads/upload_1795317297120_modern-muslim-woman-hijab-office-room_285396-11089.webp',
     bio: 'Administrator at United States Today.',
   },
+  {
+    name: 'Samra Admin User',
+    slug: 'samra-admin-user',
+    role: 'Administrator',
+    badge: 'United States Today Staff',
+    avatar: '/uploads/upload_1794438116018_images.webp',
+    bio: 'Administrator at United States Today.',
+  },
+  {
+    name: 'Samra Thasneem',
+    slug: 'samra-thasneem-reader',
+    role: 'Reader',
+    badge: 'Community Member',
+    avatar: '/uploads/avatar_1793493350773_c.jpg',
+    bio: 'Reader and active community member at United States Today.',
+  },
+  {
+    name: 'fathi samra',
+    slug: 'fathi-samra',
+    role: 'Reader',
+    badge: 'Community Member',
+    avatar: '',
+    bio: 'Reader and community member at United States Today.',
+  },
+  {
+    name: 'ABD',
+    slug: 'abd',
+    role: 'Reader',
+    badge: 'Community Member',
+    avatar: '',
+    bio: 'Reader and community member at United States Today.',
+  },
 ];
+
+function isDemoArticle(art: any): boolean {
+  if (!art) return false;
+  const title = (art.title || '').trim().toLowerCase();
+  const author = (art.author?.name || art.authorName || '').trim().toLowerCase();
+
+  if (
+    title.startsWith('test ') ||
+    title.startsWith('debug ') ||
+    title.startsWith('currently, the pending') ||
+    title === 'test' ||
+    title === 'debug'
+  ) {
+    return true;
+  }
+
+  const demoAuthors = [
+    'writer',
+    'writer account',
+    'alex writer',
+    'kalid writer user',
+    'jordan contributor',
+  ];
+
+  if (demoAuthors.includes(author)) {
+    return true;
+  }
+
+  return false;
+}
+
+function isDemoAuthor(auth: any): boolean {
+  if (!auth) return false;
+  const name = (auth.name || '').trim().toLowerCase();
+  const slug = (auth.slug || '').trim().toLowerCase();
+
+  const demoIdentifiers = [
+    'writer',
+    'writer-account',
+    'writer account',
+    'alex-writer',
+    'alex writer',
+    'kalid-writer-user',
+    'kalid writer user',
+    'jordan-contributor',
+    'jordan contributor',
+  ];
+
+  return demoIdentifiers.includes(name) || demoIdentifiers.includes(slug);
+}
 
 type EntityType = 'All' | 'Articles' | 'Authors';
 
@@ -138,15 +204,17 @@ export const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
     if (!isOpen) return;
     let isCancelled = false;
 
-    // Fetch only published articles directly from database API
-    fetch('/api/articles?status=published&limit=100')
+    // Fetch only published articles directly from database API (no demo articles)
+    fetch('/api/articles?status=published&limit=200')
       .then((res) => res.json())
       .then((data) => {
         if (!isCancelled && data?.success && Array.isArray(data.data)) {
-          const published = data.data.filter((a: any) => a.status === 'published');
+          const published = data.data.filter(
+            (a: any) => a.status === 'published' && !isDemoArticle(a)
+          );
           setDbPublishedArticles(published);
 
-          // Extract any dynamic authors from published articles
+          // Extract any dynamic authors from published articles (excluding demo writers)
           const authorMap = new Map<string, AuthorItem>();
           published.forEach((a: any) => {
             const name = a.author?.name || a.authorName;
@@ -156,7 +224,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
                 .toLowerCase()
                 .replace(/[^a-z0-9]+/g, '-')
                 .replace(/^-|-$/g, '');
-              if (!authorMap.has(slug)) {
+              if (!isDemoAuthor({ name: cleanName, slug }) && !authorMap.has(slug)) {
                 authorMap.set(slug, {
                   name: cleanName,
                   slug,
@@ -173,12 +241,12 @@ export const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
       })
       .catch(() => {});
 
-    // Fetch real writer users directly from database API
+    // Fetch real writer users directly from database API (excluding demo writers)
     fetch('/api/authors')
       .then((res) => res.json())
       .then((data) => {
         if (!isCancelled && data?.success && Array.isArray(data.data)) {
-          setRealWriters(data.data);
+          setRealWriters(data.data.filter((auth: any) => !isDemoAuthor(auth)));
         }
       })
       .catch(() => {});
@@ -188,47 +256,34 @@ export const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
     };
   }, [isOpen]);
 
-  // Combined published articles (deduplicated by id/slug)
+  // Combined published articles (deduplicated by id/slug) - ONLY real DB published articles
   const allPublishedArticles = useMemo(() => {
     const map = new Map<string, Article>();
-    // First add DB published articles (source of truth)
     dbPublishedArticles.forEach((art) => {
+      if (isDemoArticle(art)) return;
       const key = art.slug || art.id;
       if (key) map.set(key, art);
-    });
-    // Next complement with static published articles if not already present
-    ALL_ARTICLES.forEach((art) => {
-      const key = art.slug || art.id;
-      if (key && !map.has(key)) {
-        map.set(key, art);
-      }
     });
     return Array.from(map.values());
   }, [dbPublishedArticles]);
 
-  // Combined authors list with Real Writer Users as top priority
+  // Real workspace users: writers, admins, default admin, readers
   const allAuthors = useMemo(() => {
     const map = new Map<string, AuthorItem>();
-    // 1. Priority 1: Real writer users from database API
+    // 1. Priority 1: Real users from database API
     realWriters.forEach((auth) => {
-      if (auth.slug) {
+      if (auth.slug && !isDemoAuthor(auth)) {
         map.set(auth.slug, auth);
       }
     });
-    // 2. Priority 2: Registered baseline authors (including real writer fallback)
-    AUTHORS_REGISTRY.forEach((auth) => {
-      if (!map.has(auth.slug)) {
-        map.set(auth.slug, auth);
-      }
-    });
-    // 3. Priority 3: Dynamic authors extracted from DB published articles
-    dbAuthors.forEach((auth) => {
-      if (!map.has(auth.slug)) {
+    // 2. Priority 2: Registered real users baseline
+    REAL_USERS_REGISTRY.forEach((auth) => {
+      if (!isDemoAuthor(auth) && !map.has(auth.slug)) {
         map.set(auth.slug, auth);
       }
     });
     return Array.from(map.values());
-  }, [realWriters, dbAuthors]);
+  }, [realWriters]);
 
   // Filtered published articles
   const filteredArticles = useMemo(() => {
@@ -267,78 +322,75 @@ export const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
 
   const modalContent = (
     <div
-      className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 md:p-8 animate-in fade-in duration-200"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) {
-          onClose();
-        }
-      }}
+      className="fixed inset-0 z-50 bg-white flex flex-col w-full h-full min-h-screen overflow-hidden animate-in fade-in duration-150"
     >
       <div
-        className="relative w-[95vw] max-w-5xl h-[88vh] max-h-[90vh] flex flex-col bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden border border-slate-100 animate-in fade-in zoom-in-95 duration-150"
-        onClick={(e) => e.stopPropagation()}
+        className="relative w-full h-full flex flex-col bg-white overflow-hidden"
       >
         {/* ========================================================= */}
-        {/* TOP SEARCH BAR & FILTER TABS (Header)                      */}
+        {/* TOP SEARCH BAR & FILTER TABS (Header - Full Screen)       */}
         {/* ========================================================= */}
-        <div className="p-4 sm:p-6 pb-3.5 border-b border-slate-100 shrink-0 bg-white">
-          {/* Search Input Row */}
-          <div className="relative flex items-center w-full">
-            <Search className="w-5 h-5 text-slate-400 absolute left-4 pointer-events-none" />
-            <input
-              ref={inputRef}
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search articles, authors, topics..."
-              className="w-full pl-12 pr-20 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm sm:text-base text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-[#1642D0] focus:ring-1 focus:ring-[#1642D0] transition-all"
-            />
-            {query && (
+        <div className="w-full border-b border-slate-100 shrink-0 bg-white">
+          <div className="w-full max-w-6xl mx-auto px-4 sm:px-8 py-5 sm:py-6">
+            {/* Search Input Row */}
+            <div className="relative flex items-center w-full">
+              <Search className="w-5 h-5 text-slate-400 absolute left-4 pointer-events-none" />
+              <input
+                ref={inputRef}
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search articles, authors, topics..."
+                className="w-full pl-12 pr-20 py-3.5 rounded-xl bg-slate-50 border border-slate-200 text-base sm:text-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-[#1642D0] focus:ring-1 focus:ring-[#1642D0] transition-all"
+              />
+              {query && (
+                <button
+                  type="button"
+                  onClick={() => setQuery('')}
+                  className="absolute right-12 p-1.5 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+                  aria-label="Clear query"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
               <button
                 type="button"
-                onClick={() => setQuery('')}
-                className="absolute right-12 p-1.5 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
-                aria-label="Clear query"
+                onClick={onClose}
+                className="absolute right-3 p-1.5 text-slate-400 hover:text-slate-700 cursor-pointer rounded-lg hover:bg-slate-200/60 transition-colors"
+                aria-label="Close search"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
-            )}
-            <button
-              type="button"
-              onClick={onClose}
-              className="absolute right-3 p-1.5 text-slate-400 hover:text-slate-700 cursor-pointer rounded-lg hover:bg-slate-200/60 transition-colors"
-              aria-label="Close search"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
+            </div>
 
-          {/* Filter Navigation Tabs: All / Articles / Authors */}
-          <div className="flex items-center gap-2 mt-3.5">
-            {(['All', 'Articles', 'Authors'] as const).map((tab) => {
-              const isActive = entityFilter === tab;
-              return (
-                <button
-                  key={tab}
-                  type="button"
-                  onClick={() => setEntityFilter(tab)}
-                  className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer select-none ${
-                    isActive
-                      ? 'bg-[#020618] text-white shadow-xs'
-                      : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
-                  }`}
-                >
-                  {tab}
-                </button>
-              );
-            })}
+            {/* Filter Navigation Tabs: All / Articles / Authors */}
+            <div className="flex items-center gap-2 mt-4">
+              {(['All', 'Articles', 'Authors'] as const).map((tab) => {
+                const isActive = entityFilter === tab;
+                return (
+                  <button
+                    key={tab}
+                    type="button"
+                    onClick={() => setEntityFilter(tab)}
+                    className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer select-none ${
+                      isActive
+                        ? 'bg-[#020618] text-white shadow-xs'
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 
         {/* ========================================================= */}
-        {/* SCROLLABLE RESULTS BODY                                   */}
+        {/* SCROLLABLE RESULTS BODY (Full Screen Container)           */}
         {/* ========================================================= */}
-        <div className="flex-1 overflow-y-auto px-5 sm:px-8 py-5 space-y-6">
+        <div className="flex-1 overflow-y-auto w-full">
+          <div className="w-full max-w-6xl mx-auto px-4 sm:px-8 py-6 space-y-6">
           {/* STATE 1: Empty Query -> Show 8 Trending Categories */}
           {!hasQuery && (
             <div className="space-y-3.5 pt-1">
@@ -466,24 +518,28 @@ export const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
                             onClick={onClose}
                             className="flex items-center gap-3.5 sm:gap-4 py-3 sm:py-3.5 px-2 rounded-xl hover:bg-slate-50/80 transition-colors group cursor-pointer"
                           >
-                            {/* Circular Avatar */}
-                            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden bg-slate-100 shrink-0 border border-slate-200">
-                              {author.avatar ? (
+                            {/* Circular Avatar: Photo if custom avatar exists, otherwise starting letter of name */}
+                            {author.avatar &&
+                            !author.avatar.includes('user-avatar-butterfly') &&
+                            !author.avatar.includes('author-placeholder') ? (
+                              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden bg-slate-100 shrink-0 border border-slate-200">
                                 <img
                                   src={author.avatar}
                                   alt={author.name}
                                   className="w-full h-full object-cover"
                                   onError={(e) => {
-                                    (e.currentTarget as HTMLImageElement).src =
-                                      '/images/user-avatar-butterfly.png';
+                                    const parent = (e.currentTarget as HTMLElement).parentElement;
+                                    if (parent) {
+                                      parent.innerHTML = `<span class="w-full h-full bg-[#1642D0] text-white flex items-center justify-center font-bold text-base sm:text-lg select-none">${(author.name || 'A').trim().charAt(0).toUpperCase()}</span>`;
+                                    }
                                   }}
                                 />
-                              ) : (
-                                <div className="w-full h-full bg-[#1642D0] text-white text-xs font-bold flex items-center justify-center uppercase">
-                                  {author.name.charAt(0)}
-                                </div>
-                              )}
-                            </div>
+                              </div>
+                            ) : (
+                              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#1642D0] text-white flex items-center justify-center font-serif font-black text-base sm:text-lg shrink-0 border border-blue-900/10 select-none shadow-2xs">
+                                {(author.name || 'A').trim().charAt(0).toUpperCase()}
+                              </div>
+                            )}
 
                             {/* Content */}
                             <div className="flex-1 min-w-0 pr-2">
@@ -523,28 +579,31 @@ export const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
               )}
             </>
           )}
+          </div>
         </div>
 
         {/* ========================================================= */}
         {/* FOOTER BAR (Enter to search, Esc to close, Branding)       */}
         {/* ========================================================= */}
-        <div className="px-5 sm:px-8 py-3.5 bg-slate-50/90 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400 shrink-0 select-none">
-          <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 text-[10px] bg-white border border-slate-200 rounded font-sans text-slate-600">
-                Enter
-              </kbd>{' '}
-              to search
-            </span>
-            <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 text-[10px] bg-white border border-slate-200 rounded font-sans text-slate-600">
-                Esc
-              </kbd>{' '}
-              to close
-            </span>
-          </div>
-          <div className="font-semibold text-slate-500 tracking-wide">
-            United States Today
+        <div className="w-full bg-slate-50/90 border-t border-slate-100 shrink-0 select-none">
+          <div className="w-full max-w-6xl mx-auto px-4 sm:px-8 py-3.5 flex items-center justify-between text-xs text-slate-400">
+            <div className="flex items-center gap-3">
+              <span className="flex items-center gap-1">
+                <kbd className="px-1.5 py-0.5 text-[10px] bg-white border border-slate-200 rounded font-sans text-slate-600">
+                  Enter
+                </kbd>{' '}
+                to search
+              </span>
+              <span className="flex items-center gap-1">
+                <kbd className="px-1.5 py-0.5 text-[10px] bg-white border border-slate-200 rounded font-sans text-slate-600">
+                  Esc
+                </kbd>{' '}
+                to close
+              </span>
+            </div>
+            <div className="font-semibold text-slate-500 tracking-wide">
+              United States Today
+            </div>
           </div>
         </div>
       </div>

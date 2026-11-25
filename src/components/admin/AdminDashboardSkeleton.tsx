@@ -1,10 +1,15 @@
 'use client';
 
 import React from 'react';
+import { useSkeletonMaxDuration } from '@/components/skeletons/useSkeletonMaxDuration';
 
 export default function AdminDashboardSkeleton() {
+  const isVisible = useSkeletonMaxDuration(2000);
+
+  if (!isVisible) return null;
+
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col md:flex-row font-sans text-slate-800 antialiased animate-pulse">
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col md:flex-row font-sans text-slate-800 antialiased animate-pulse skeleton-max-duration">
       {/* 1. LEFT DARK SIDEBAR SKELETON */}
       <aside className="flex w-full md:w-64 lg:w-72 bg-[#0B132B] text-slate-300 flex-shrink-0 flex-col md:self-start md:sticky md:top-0 md:h-screen border-r border-slate-800/80 shadow-md z-30">
         {/* Brand Header */}

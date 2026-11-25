@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Search, X, SearchX, ChevronLeft, ChevronRight, TrendingUp, ArrowRight } from 'lucide-react';
 import { Header } from '@/layouts/Header';
 import { Footer } from '@/layouts/Footer';
-import { ALL_ARTICLES, Article, getArticleUrl } from '@/data/newsData';
+import { Article, getArticleUrl } from '@/data/newsData';
 import { SearchSkeleton } from '@/components/skeletons/SearchSkeleton';
 
 // 8 Main Categories captured from the Homepage Top Bar navigation
@@ -30,13 +30,13 @@ interface AuthorProfileItem {
   bio?: string;
 }
 
-const AUTHORS_REGISTRY: AuthorProfileItem[] = [
+const REAL_USERS_REGISTRY: AuthorProfileItem[] = [
   {
-    name: 'Samra',
-    slug: 'samra',
+    name: 'Samra Thasneem',
+    slug: 'samra-thasneem',
     role: 'Staff Writer',
     badge: 'United States Today Staff',
-    avatar: '/uploads/upload_1794590868177_images__1_.webp',
+    avatar: '/uploads/upload_1795460148898_modern-muslim-woman-hijab-office-room_285396-11089.webp',
     bio: 'Executive business contributor at United States Today.',
   },
   {
@@ -44,23 +44,7 @@ const AUTHORS_REGISTRY: AuthorProfileItem[] = [
     slug: 'mishal',
     role: 'Staff Writer',
     badge: 'United States Today Staff',
-    avatar: '/images/user-avatar-butterfly.png',
-    bio: 'Writer User at United States Today.',
-  },
-  {
-    name: 'Writer',
-    slug: 'writer',
-    role: 'Staff Writer',
-    badge: 'United States Today Staff',
-    avatar: '/images/user-avatar-butterfly.png',
-    bio: 'Staff Writer at United States Today.',
-  },
-  {
-    name: 'Fathima Samra',
-    slug: 'fathima-samra',
-    role: 'Staff Writer',
-    badge: 'United States Today Staff',
-    avatar: '/images/user-avatar-butterfly.png',
+    avatar: '',
     bio: 'Staff Writer at United States Today.',
   },
   {
@@ -68,26 +52,108 @@ const AUTHORS_REGISTRY: AuthorProfileItem[] = [
     slug: 'fathima',
     role: 'Staff Writer',
     badge: 'United States Today Staff',
-    avatar: '/images/user-avatar-butterfly.png',
+    avatar: '',
     bio: 'Staff Writer at United States Today.',
-  },
-  {
-    name: 'System Administrator',
-    slug: 'system-administrator',
-    role: 'Editorial Director',
-    badge: 'United States Today Editorial',
-    avatar: '/uploads/upload_1794438116018_images.webp',
-    bio: 'System Administrator and Editorial Director at United States Today.',
   },
   {
     name: 'Mohamed Azmy Mohamed Akram',
     slug: 'mohamed-azmy-mohamed-akram',
+    role: 'Default Administrator',
+    badge: 'United States Today Staff',
+    avatar: '',
+    bio: 'Default Administrator at United States Today.',
+  },
+  {
+    name: 'samra admin',
+    slug: 'samra-admin',
     role: 'Administrator',
     badge: 'United States Today Staff',
-    avatar: '/images/user-avatar-butterfly.png',
+    avatar: '/uploads/upload_1795317297120_modern-muslim-woman-hijab-office-room_285396-11089.webp',
     bio: 'Administrator at United States Today.',
   },
+  {
+    name: 'Samra Admin User',
+    slug: 'samra-admin-user',
+    role: 'Administrator',
+    badge: 'United States Today Staff',
+    avatar: '/uploads/upload_1794438116018_images.webp',
+    bio: 'Administrator at United States Today.',
+  },
+  {
+    name: 'Samra Thasneem',
+    slug: 'samra-thasneem-reader',
+    role: 'Reader',
+    badge: 'Community Member',
+    avatar: '/uploads/avatar_1793493350773_c.jpg',
+    bio: 'Reader and active community member at United States Today.',
+  },
+  {
+    name: 'fathi samra',
+    slug: 'fathi-samra',
+    role: 'Reader',
+    badge: 'Community Member',
+    avatar: '',
+    bio: 'Reader and community member at United States Today.',
+  },
+  {
+    name: 'ABD',
+    slug: 'abd',
+    role: 'Reader',
+    badge: 'Community Member',
+    avatar: '',
+    bio: 'Reader and community member at United States Today.',
+  },
 ];
+
+function isDemoArticle(art: any): boolean {
+  if (!art) return false;
+  const title = (art.title || '').trim().toLowerCase();
+  const author = (art.author?.name || art.authorName || '').trim().toLowerCase();
+
+  if (
+    title.startsWith('test ') ||
+    title.startsWith('debug ') ||
+    title.startsWith('currently, the pending') ||
+    title === 'test' ||
+    title === 'debug'
+  ) {
+    return true;
+  }
+
+  const demoAuthors = [
+    'writer',
+    'writer account',
+    'alex writer',
+    'kalid writer user',
+    'jordan contributor',
+  ];
+
+  if (demoAuthors.includes(author)) {
+    return true;
+  }
+
+  return false;
+}
+
+function isDemoAuthor(auth: any): boolean {
+  if (!auth) return false;
+  const name = (auth.name || '').trim().toLowerCase();
+  const slug = (auth.slug || '').trim().toLowerCase();
+
+  const demoIdentifiers = [
+    'writer',
+    'writer-account',
+    'writer account',
+    'alex-writer',
+    'alex writer',
+    'kalid-writer-user',
+    'kalid writer user',
+    'jordan-contributor',
+    'jordan contributor',
+  ];
+
+  return demoIdentifiers.includes(name) || demoIdentifiers.includes(slug);
+}
 
 type EntityTab = 'All' | 'Articles' | 'Authors';
 
@@ -113,11 +179,13 @@ function SearchContent() {
 
   // Fetch published articles from database API
   useEffect(() => {
-    fetch('/api/articles?status=published&limit=100')
+    fetch('/api/articles?status=published&limit=200')
       .then((res) => res.json())
       .then((data) => {
         if (data?.success && Array.isArray(data.data)) {
-          setDbPublishedArticles(data.data.filter((a: any) => a.status === 'published'));
+          setDbPublishedArticles(
+            data.data.filter((a: any) => a.status === 'published' && !isDemoArticle(a))
+          );
         }
       })
       .catch(() => {});
@@ -129,38 +197,33 @@ function SearchContent() {
       .then((res) => res.json())
       .then((data) => {
         if (data?.success && Array.isArray(data.data)) {
-          setDbAuthors(data.data);
+          setDbAuthors(data.data.filter((auth: any) => !isDemoAuthor(auth)));
         }
       })
       .catch(() => {});
   }, []);
 
-  // Combined published articles (deduplicated by id/slug)
+  // Combined published articles (deduplicated by id/slug) - ONLY real DB published articles
   const allPublishedArticles = useMemo(() => {
     const map = new Map<string, Article>();
     dbPublishedArticles.forEach((art) => {
+      if (isDemoArticle(art)) return;
       const key = art.slug || art.id;
       if (key) map.set(key, art);
-    });
-    ALL_ARTICLES.forEach((art) => {
-      const key = art.slug || art.id;
-      if (key && !map.has(key)) {
-        map.set(key, art);
-      }
     });
     return Array.from(map.values());
   }, [dbPublishedArticles]);
 
-  // Combined authors list with Real Writer Users as top priority
+  // Real workspace users: writers, admins, default admin, readers
   const allAuthors = useMemo(() => {
     const map = new Map<string, AuthorProfileItem>();
-    // 1. Priority 1: Real writer users from database API
+    // 1. Priority 1: Users from database API
     dbAuthors.forEach((auth) => {
-      if (auth.slug) map.set(auth.slug, auth);
+      if (auth.slug && !isDemoAuthor(auth)) map.set(auth.slug, auth);
     });
-    // 2. Priority 2: Registered baseline authors (including real writer fallback)
-    AUTHORS_REGISTRY.forEach((auth) => {
-      if (!map.has(auth.slug)) {
+    // 2. Priority 2: Registered real users baseline
+    REAL_USERS_REGISTRY.forEach((auth) => {
+      if (!isDemoAuthor(auth) && !map.has(auth.slug)) {
         map.set(auth.slug, auth);
       }
     });
@@ -332,14 +395,25 @@ function SearchContent() {
                   href={`/author/${author.slug}`}
                   className="flex items-center gap-3.5 p-4 rounded-xl border border-slate-200/90 hover:border-[#1642D0] hover:shadow-xs bg-white transition-all group"
                 >
-                  <img
-                    src={author.avatar}
-                    alt={author.name}
-                    className="w-12 h-12 rounded-full object-cover shrink-0 border border-slate-200 bg-slate-100"
-                    onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).src = '/images/author-sherin.png';
-                    }}
-                  />
+                  {author.avatar &&
+                  !author.avatar.includes('user-avatar-butterfly') &&
+                  !author.avatar.includes('author-placeholder') ? (
+                    <img
+                      src={author.avatar}
+                      alt={author.name}
+                      className="w-12 h-12 rounded-full object-cover shrink-0 border border-slate-200 bg-slate-100"
+                      onError={(e) => {
+                        const parent = (e.currentTarget as HTMLElement).parentElement;
+                        if (parent) {
+                          parent.innerHTML = `<span class="w-12 h-12 rounded-full bg-[#1642D0] text-white flex items-center justify-center font-bold text-lg select-none">${(author.name || 'A').trim().charAt(0).toUpperCase()}</span>`;
+                        }
+                      }}
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-[#1642D0] text-white flex items-center justify-center font-serif font-black text-lg shrink-0 border border-blue-900/10 select-none shadow-2xs">
+                      {(author.name || 'A').trim().charAt(0).toUpperCase()}
+                    </div>
+                  )}
                   <div className="min-w-0 flex-1">
                     <h4 className="text-sm sm:text-base font-serif font-bold text-slate-900 group-hover:text-[#1642D0] truncate my-0">
                       {author.name}
@@ -392,14 +466,25 @@ function SearchContent() {
                         href={`/author/${author.slug}`}
                         className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-white hover:border-[#1642D0] hover:shadow-xs transition-all group"
                       >
-                        <img
-                          src={author.avatar}
-                          alt={author.name}
-                          className="w-10 h-10 rounded-full object-cover shrink-0 border border-slate-200 bg-slate-100"
-                          onError={(e) => {
-                            (e.currentTarget as HTMLImageElement).src = '/images/author-sherin.png';
-                          }}
-                        />
+                        {author.avatar &&
+                        !author.avatar.includes('user-avatar-butterfly') &&
+                        !author.avatar.includes('author-placeholder') ? (
+                          <img
+                            src={author.avatar}
+                            alt={author.name}
+                            className="w-10 h-10 rounded-full object-cover shrink-0 border border-slate-200 bg-slate-100"
+                            onError={(e) => {
+                              const parent = (e.currentTarget as HTMLElement).parentElement;
+                              if (parent) {
+                                parent.innerHTML = `<span class="w-10 h-10 rounded-full bg-[#1642D0] text-white flex items-center justify-center font-bold text-sm select-none">${(author.name || 'A').trim().charAt(0).toUpperCase()}</span>`;
+                              }
+                            }}
+                          />
+                        ) : (
+                          <div className="w-10 h-10 rounded-full bg-[#1642D0] text-white flex items-center justify-center font-serif font-black text-sm shrink-0 border border-blue-900/10 select-none shadow-2xs">
+                            {(author.name || 'A').trim().charAt(0).toUpperCase()}
+                          </div>
+                        )}
                         <div className="min-w-0 flex-1">
                           <h4 className="text-sm font-serif font-bold text-slate-900 group-hover:text-[#1642D0] truncate my-0">
                             {author.name}
@@ -539,14 +624,25 @@ function SearchContent() {
                         href={`/author/${author.slug}`}
                         className="flex items-center gap-3.5 p-3.5 rounded-xl border border-slate-200 bg-white hover:border-[#1642D0] hover:shadow-xs transition-all group"
                       >
-                        <img
-                          src={author.avatar}
-                          alt={author.name}
-                          className="w-11 h-11 rounded-full object-cover shrink-0 border border-slate-200 bg-slate-100"
-                          onError={(e) => {
-                            (e.currentTarget as HTMLImageElement).src = '/images/author-sherin.png';
-                          }}
-                        />
+                        {author.avatar &&
+                        !author.avatar.includes('user-avatar-butterfly') &&
+                        !author.avatar.includes('author-placeholder') ? (
+                          <img
+                            src={author.avatar}
+                            alt={author.name}
+                            className="w-11 h-11 rounded-full object-cover shrink-0 border border-slate-200 bg-slate-100"
+                            onError={(e) => {
+                              const parent = (e.currentTarget as HTMLElement).parentElement;
+                              if (parent) {
+                                parent.innerHTML = `<span class="w-11 h-11 rounded-full bg-[#1642D0] text-white flex items-center justify-center font-bold text-base select-none">${(author.name || 'A').trim().charAt(0).toUpperCase()}</span>`;
+                              }
+                            }}
+                          />
+                        ) : (
+                          <div className="w-11 h-11 rounded-full bg-[#1642D0] text-white flex items-center justify-center font-serif font-black text-base shrink-0 border border-blue-900/10 select-none shadow-2xs">
+                            {(author.name || 'A').trim().charAt(0).toUpperCase()}
+                          </div>
+                        )}
                         <div className="min-w-0 flex-1">
                           <h4 className="text-sm font-serif font-bold text-slate-900 group-hover:text-[#1642D0] truncate my-0">
                             {author.name}

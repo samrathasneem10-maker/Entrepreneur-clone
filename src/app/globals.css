@@ -42,13 +42,31 @@ html, body {
   scrollbar-width: none;  /* Firefox */
 }
 
-/* Skeleton Loading Shimmer Animation */
+/* Skeleton Loading Shimmer & 5-Second Maximum Display Duration */
 @keyframes shimmer {
   0% {
     background-position: -200% 0;
   }
   100% {
     background-position: 200% 0;
+  }
+}
+
+@keyframes skeletonMaxDurationFadeOut {
+  0%, 99.9% {
+    opacity: 1;
+    visibility: visible;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+    height: 0 !important;
+    max-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+    display: none !important;
   }
 }
 
@@ -61,7 +79,11 @@ html, body {
     #f1f5f9 100%
   );
   background-size: 200% 100%;
-  animation: shimmer 1.6s infinite ease-in-out;
+  animation: shimmer 1.6s infinite ease-in-out, skeletonMaxDurationFadeOut 0.01s ease-out 5s forwards;
+}
+
+.skeleton-max-duration {
+  animation: skeletonMaxDurationFadeOut 0.01s ease-out 5s forwards;
 }
 
 .fade-in-content {

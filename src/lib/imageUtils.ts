@@ -57,8 +57,8 @@ export async function convertImageToWebP(
       }
     };
 
-    img.onerror = (err) => {
-      reject(err);
+    img.onerror = () => {
+      reject(new Error('Failed to load image for WebP conversion'));
     };
 
     if (typeof input === 'string') {
@@ -72,7 +72,7 @@ export async function convertImageToWebP(
           reject(new Error('Failed to read image file'));
         }
       };
-      reader.onerror = (err) => reject(err);
+      reader.onerror = () => reject(new Error('Failed to read image file'));
       reader.readAsDataURL(input);
     }
   });

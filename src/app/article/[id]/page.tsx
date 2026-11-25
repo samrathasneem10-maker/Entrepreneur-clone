@@ -25,6 +25,7 @@ import { ArticleCard } from '@/components/ArticleCard';
 import { useAuth } from '@/components/auth/AuthContext';
 import { getArticleById, getArticleSlug, slugifyTitle, ALL_ARTICLES, LATEST_ARTICLES } from '@/data/newsData';
 import { formatPublicationDate } from '@/lib/dateUtils';
+import { resolveArticleAuthor } from '@/lib/authorUtils';
 
 const LATEST_SIDEBAR_ARTICLES = [
   {
@@ -179,11 +180,8 @@ export default function ArticleDetailPage() {
     (rawArticle?.slug || '').includes('smart-home');
 
   const activeBase = dbArticle || rawArticle;
-  const resolvedAuthorName = isBossArticle
-    ? 'MITA MALLICK'
-    : is53SideHustle
-    ? 'SHERIN SHIBU'
-    : (activeBase?.author?.name || activeBase?.authorName || rawArticle?.author?.name || 'SHERIN SHIBU');
+  const authorInfo = resolveArticleAuthor(activeBase || rawArticle);
+  const resolvedAuthorName = authorInfo.name;
   const isSamraAuthor = resolvedAuthorName.toLowerCase().includes('samra');
 
   const article = {
@@ -204,28 +202,11 @@ export default function ArticleDetailPage() {
       ? 'From freelancing to selling products, find out how to earn extra income today.'
       : (activeBase?.excerpt || rawArticle?.excerpt || ''),
     author: {
-      name: resolvedAuthorName,
-      avatar: isBossArticle
-        ? (rawArticle?.author?.avatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=300&auto=format&fit=crop')
-        : is53SideHustle
-        ? '/images/author-sherin.png'
-        : isSamraAuthor
-        ? '/uploads/upload_1794590868177_images__1_.webp'
-        : (activeBase?.author?.avatar || activeBase?.authorAvatar || rawArticle?.author?.avatar || '/images/author-sherin.png'),
-      title: isBossArticle
-        ? 'Executive Contributor'
-        : is53SideHustle
-        ? 'United States Today Staff'
-        : isSamraAuthor
-        ? 'Staff Writer'
-        : (activeBase?.author?.title || activeBase?.authorRole || rawArticle?.author?.title || 'United States Today Staff'),
-      bio: isBossArticle
-        ? 'Mita Mallick is a corporate change-maker and author of the Wall Street Journal and USA Today bestseller, Reimagine Inclusion: Debunking 13 Myths to Transform Your Workplace.'
-        : is53SideHustle
-        ? 'Sherin Shibu is a business news reporter at United States Today. She previously worked for PCMag, Business Insider, and specializes in business trends, consumer technology, and entrepreneurship.'
-        : isSamraAuthor
-        ? 'Executive business contributor at United States Today.'
-        : (activeBase?.author?.bio || activeBase?.authorBio || rawArticle?.author?.bio || 'Business news reporter and contributor at United States Today, covering high-growth ventures, market trends, and modern workplace leadership.'),
+      name: authorInfo.name,
+      avatar: authorInfo.avatar,
+      title: authorInfo.title,
+      bio: authorInfo.bio,
+      linkedinUrl: authorInfo.linkedinUrl,
     },
     editor: isBossArticle ? 'KARA MCINTYRE' : is53SideHustle ? 'AMANDA BREEN' : (rawArticle.editor || 'AMANDA BREEN'),
     date: isBossArticle
@@ -233,11 +214,37 @@ export default function ArticleDetailPage() {
       : is53SideHustle
       ? 'JAN 26, 2026'
       : (activeBase?.date || (activeBase?.publishedAt ? formatPublicationDate(activeBase.publishedAt) : (rawArticle?.date || 'JAN 26, 2026'))),
-    imageUrl: isBossArticle
-      ? (rawArticle.imageUrl || '/images/hero-mentor.jpg')
-      : is53SideHustle
-      ? '/images/side-hustle-53.jpg'
-      : (rawArticle.imageUrl || '/images/side-hustle-53.jpg'),
+    content: activeBase?.content || (rawArticle as any)?.content || '',
+    subtitle: activeBase?.subtitle || activeBase?.excerpt || rawArticle?.excerpt || '',
+    imageUrl: (() => {
+      let img = activeBase?.imageUrl || activeBase?.image_url || (rawArticle?.imageUrl && !rawArticle.imageUrl.includes('placeholder') ? rawArticle.imageUrl : '');
+      if (!img || img.includes('placeholder')) {
+        const c = activeBase?.content || (rawArticle as any)?.content || '';
+        const m = c.match(/<img[^>]+src=["']([^"']+)["']/i);
+        if (m && m[1] && m[1].trim() !== '') {
+          img = m[1];
+        }
+      }
+      if (!img) {
+        img = isBossArticle ? '/images/hero-mentor.jpg' : '/images/side-hustle-53.jpg';
+      }
+      return img;
+    })(),
+    imageCaption: activeBase?.imageCaption || activeBase?.image_caption || '',
+    imageCredit: activeBase?.imageCredit || activeBase?.image_credit || '',
+    subCategories: (() => {
+      const raw = activeBase?.subCategories || activeBase?.sub_categories;
+      if (!raw) return [];
+      if (Array.isArray(raw)) return raw;
+      if (typeof raw === 'string') {
+        try {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) return parsed;
+        } catch {}
+        return raw.split(',').map((s: string) => s.trim()).filter(Boolean);
+      }
+      return [];
+    })(),
     tags: (activeBase as any)?.tags || (rawArticle as any)?.tags || [],
   };
 
@@ -672,6 +679,9 @@ export default function ArticleDetailPage() {
               >
                 {article.category || 'FINANCE & ECONOMICS'}
               </Link>
+              {article.subCategories && article.subCategories.length > 0 && (
+                <span className="text-slate-400 font-normal text-xs sm:text-[13px]"> &bull; {article.subCategories.join(', ')}</span>
+              )}
             </div>
 
             {/* Main Headline (H1): Bold, Colored Text */}
@@ -699,7 +709,11 @@ export default function ArticleDetailPage() {
                 {article.author?.name || 'SHERIN SHIBU'}
               </Link>
               <a
-                href={article.author?.linkedinUrl || 'https://www.linkedin.com'}
+                href={
+                  article.author?.linkedinUrl && !article.author?.linkedinUrl.includes('your-profile') && article.author.linkedinUrl !== 'https://linkedin.com'
+                    ? article.author.linkedinUrl
+                    : (isSamraAuthor ? 'https://www.linkedin.com/in/fathima-samra-8823b634a' : 'https://www.linkedin.com')
+                }
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center w-3.5 h-3.5 bg-[#0A66C2] rounded-[2px] text-white text-[9px] font-bold leading-none hover:opacity-90 transition-opacity"
@@ -827,23 +841,42 @@ export default function ArticleDetailPage() {
               )}
             </div>
 
-            {/* Main Featured Article Image matching reference screenshot */}
-            <div className="w-full my-4 overflow-hidden">
-              <img
-                src={article.imageUrl || '/images/side-hustle-53.jpg'}
-                alt={article.title}
-                className="w-full h-auto object-cover"
+            {/* Featured Image: Only display at the top if the article body does not already contain an image */}
+            {Boolean(article.imageUrl && !article.imageUrl.includes('placeholder') && !(article.content || '').includes('<img')) && (
+              <>
+                <div className="w-full my-4 overflow-hidden border border-slate-200">
+                  <img
+                    src={article.imageUrl}
+                    alt={article.title}
+                    className="w-full h-auto max-h-[580px] object-cover"
+                  />
+                </div>
+
+                {/* Caption & Credit */}
+                {(article.imageCaption || article.imageCredit) ? (
+                  <div className="flex items-center justify-between text-xs text-slate-500 font-sans pt-1 pb-2">
+                    <span className="italic">{article.imageCaption}</span>
+                    <span className="text-slate-400 font-sans text-[11px]">{article.imageCredit}</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between text-xs text-slate-500 font-sans pt-1 pb-2">
+                    <span className="italic">Opinions expressed by United States Today contributors are their own.</span>
+                    <span className="text-slate-400 font-sans text-[11px]">kundoy | Getty Images</span>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* Rendered HTML Content with exact preview / editor formatting */}
+            {article.content && article.content.trim().length > 0 ? (
+              <div
+                className="article-editor-content prose prose-slate max-w-none text-slate-800 text-base leading-relaxed break-words font-serif pt-4 space-y-4"
+                dangerouslySetInnerHTML={{ __html: article.content }}
               />
-            </div>
-
-            {/* Image caption and opinions disclaimer matching screenshot */}
-            <div className="flex items-center justify-between text-xs text-slate-500 font-sans pt-1 pb-2">
-              <span className="italic">Opinions expressed by United States Today contributors are their own.</span>
-              <span className="text-slate-400 font-sans text-[11px]">kundoy | Getty Images</span>
-            </div>
-
-            {/* Key Takeaways Section with Bold Colored Subtitle */}
-            <div className="pt-2 pb-1">
+            ) : (
+              <>
+                {/* Key Takeaways Section with Bold Colored Subtitle */}
+                <div className="pt-2 pb-1">
               <h2 className="text-2xl sm:text-[26px] font-serif font-bold text-[#1642D0] my-0">
                 Key Takeaways
               </h2>
@@ -1109,16 +1142,9 @@ export default function ArticleDetailPage() {
                   </p>
                 </>
               )}
-
-              {/* Subscription Callout Bar */}
-              <div className="border-l-[3.5px] border-[#1642D0] pl-4 py-1 my-8">
-                <p className="text-[15px] sm:text-[16px] italic font-['Georgia',serif] text-slate-700 m-0 leading-normal">
-                  Get unlimited access to our tools, playbooks and insights built to grow your business.{' '}
-                  <a href="#" className="text-[#1642D0] underline underline-offset-[3px] not-italic font-sans font-semibold hover:text-[#0d2d8d]">
-                    Subscribe now.
-                  </a>
-                </p>
-              </div>
+            </div>
+          </>
+        )}
 
               {/* Article Tags matching Screenshot 1 */}
               {articleTags.length > 0 && (
@@ -1144,8 +1170,11 @@ export default function ArticleDetailPage() {
               <div className="flex items-start gap-4 sm:gap-5 pb-6 mb-6">
                 <div className="w-14 h-14 rounded-full overflow-hidden shrink-0 border border-slate-200 shadow-2xs">
                   <img
-                    src={article.author?.avatar || '/images/author-sherin.png'}
-                    alt={article.author?.name || 'Sherin Shibu'}
+                    src={article.author?.avatar || '/images/user-avatar-butterfly.png'}
+                    alt={article.author?.name || 'Author'}
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = '/images/user-avatar-butterfly.png';
+                    }}
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -1160,7 +1189,11 @@ export default function ArticleDetailPage() {
                       </Link>
                     </h4>
                     <a
-                      href={article.author?.linkedinUrl || 'https://www.linkedin.com'}
+                      href={
+                        article.author?.linkedinUrl && !article.author?.linkedinUrl.includes('your-profile') && article.author.linkedinUrl !== 'https://linkedin.com'
+                          ? article.author.linkedinUrl
+                          : (isSamraAuthor ? 'https://www.linkedin.com/in/fathima-samra-8823b634a' : 'https://www.linkedin.com')
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center justify-center w-3.5 h-3.5 bg-[#0A66C2] rounded-[2px] text-white text-[9px] font-bold ml-0.5 leading-none hover:opacity-90 transition-opacity"
@@ -1331,7 +1364,6 @@ export default function ArticleDetailPage() {
 
                 <div className="border-b border-slate-200 mt-6" />
               </section>
-            </div>
 
           </article>
 

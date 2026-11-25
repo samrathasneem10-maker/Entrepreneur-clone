@@ -124,24 +124,18 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
         <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 py-3 sm:py-3.5">
           <div className="w-full flex items-center justify-between">
             
-            {/* Left: Menu Dots Grid + Logo */}
+            {/* Left: 3-Line Menu Icon + Logo */}
             <div className="flex items-center gap-3 sm:gap-4">
               <button
                 onClick={() => setIsDrawerOpen(true)}
                 className="p-1 text-[#020618] hover:bg-slate-100/80 rounded-md transition-colors cursor-pointer group flex items-center justify-center mr-0.5"
                 aria-label="Open main menu"
               >
-                {/* 9-Dots Grid */}
-                <svg className="w-7 h-7 sm:w-8 sm:h-8 fill-[#020618] group-hover:scale-105 transition-transform" viewBox="0 0 24 24">
-                  <circle cx="4" cy="4" r="2.7" />
-                  <circle cx="12" cy="4" r="2.7" />
-                  <circle cx="20" cy="4" r="2.7" />
-                  <circle cx="4" cy="12" r="2.7" />
-                  <circle cx="12" cy="12" r="2.7" />
-                  <circle cx="20" cy="12" r="2.7" />
-                  <circle cx="4" cy="20" r="2.7" />
-                  <circle cx="12" cy="20" r="2.7" />
-                  <circle cx="20" cy="20" r="2.7" />
+                {/* 3 Horizontal Lines */}
+                <svg className="w-7 h-7 sm:w-8 sm:h-8 stroke-[#020618] group-hover:scale-105 transition-transform" viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round">
+                  <line x1="3" y1="6" x2="21" y2="6" />
+                  <line x1="3" y1="12" x2="21" y2="12" />
+                  <line x1="3" y1="18" x2="21" y2="18" />
                 </svg>
               </button>
 
@@ -150,7 +144,7 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
                 <img
                   src="/logo.png"
                   alt="United States Today"
-                  className="h-8 sm:h-9 md:h-9.5 lg:h-10 w-auto object-contain shrink-0"
+                  className="h-10 sm:h-11 md:h-12 lg:h-[52px] w-auto object-contain shrink-0"
                 />
               </Link>
             </div>
@@ -358,12 +352,12 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
                           } catch (_) {}
                         }}
                         className={`relative pb-2.5 pt-1 text-[9.5px] sm:text-[10px] md:text-[9.5px] lg:text-[10px] xl:text-[11px] 2xl:text-[12px] font-bold uppercase tracking-tight md:tracking-tighter lg:tracking-tight xl:tracking-normal 2xl:tracking-wider transition-colors flex items-center gap-1 whitespace-nowrap no-underline hover:no-underline active:no-underline focus:no-underline visited:text-[#020618] ${
-                          isActive ? 'text-[#020618]' : 'text-[#020618] hover:text-[#1642D0]'
+                          isActive ? 'text-[#020618]' : 'text-[#020618] hover:text-[#c61830]'
                         }`}
                       >
                         <span>{item.label}</span>
                         {isActive && (
-                          <span className="block absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#1642D0]" />
+                          <span className="block absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#c61830]" />
                         )}
                       </Link>
                     </li>
@@ -378,7 +372,7 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
         {showProgressBar && (
           <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-slate-200/50 overflow-hidden pointer-events-none z-50">
             <div
-              className="h-full bg-[#1642D0] transition-[width] duration-150 ease-out"
+              className="h-full bg-[#c61830] transition-[width] duration-150 ease-out"
               style={{ width: `${readingProgress}%` }}
             />
           </div>

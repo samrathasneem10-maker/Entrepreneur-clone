@@ -120,17 +120,18 @@ export const GlobalBusinessSection: React.FC<GlobalBusinessSectionProps> = ({
     <section className="bg-white pt-5 sm:pt-6 pb-5 sm:pb-6 w-full">
       {/* Section Header */}
       <div className="flex items-center justify-between mb-3.5 sm:mb-4.5">
-        <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
-          <Link href="/topic/global-business" className="hover:text-[#1642D0] transition-colors no-underline hover:no-underline active:no-underline focus:no-underline">
+        <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight flex items-center">
+        <span className="inline-block w-3.5 h-3.5 sm:w-4 sm:h-4 border-2 border-[#c61830] rounded-2xs mr-2 -translate-y-0.5 shrink-0" aria-hidden="true" />
+          <Link href="/topic/global-business" className="hover:text-[#c61830] transition-colors no-underline hover:no-underline active:no-underline focus:no-underline">
             Global Business
           </Link>
         </h2>
         <Link
           href="/topic/global-business"
-          className="inline-flex items-center gap-2 group text-xs sm:text-sm font-sans font-bold tracking-wider uppercase text-slate-800 hover:text-[#1642D0] transition-colors"
+          className="inline-flex items-center gap-2 group text-xs sm:text-sm font-sans font-bold tracking-wider uppercase text-slate-800 hover:text-[#c61830] transition-colors"
         >
           <span>SEE ALL</span>
-          <span className="w-5 h-5 sm:w-6 sm:h-6 bg-[#1642D0] group-hover:bg-[#1235a8] text-white flex items-center justify-center rounded transition-colors shadow-sm">
+          <span className="w-5 h-5 sm:w-6 sm:h-6 bg-[#c61830] group-hover:bg-[#a51226] text-white flex items-center justify-center rounded transition-colors shadow-sm">
             <svg
               className="w-3 h-3 sm:w-3.5 sm:h-3.5"
               fill="none"
@@ -166,7 +167,7 @@ export const GlobalBusinessSection: React.FC<GlobalBusinessSectionProps> = ({
               {/* Text Overlay: 100% Real Selectable Vector Typography */}
               <div className="relative z-10 p-5 sm:p-7 flex flex-col justify-end">
                 {/* Category Badge */}
-                <span className="inline-block bg-[#1642D0] text-white text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-xs mb-2.5 w-fit font-sans">
+                <span className="inline-block bg-[#c61830] text-white text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-xs mb-2.5 w-fit font-sans">
                   {featured.category}
                 </span>
 
@@ -243,7 +244,7 @@ export const GlobalBusinessSection: React.FC<GlobalBusinessSectionProps> = ({
                         className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 rounded-xs"
                       />
                     </figure>
-                    <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] no-underline hover:no-underline active:no-underline focus:no-underline mb-1 block">
+                    <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#c61830] no-underline hover:no-underline active:no-underline focus:no-underline mb-1 block">
                       {card.category}
                     </span>
                     <h4
@@ -288,7 +289,7 @@ export const GlobalBusinessSection: React.FC<GlobalBusinessSectionProps> = ({
 
                   {/* Text Details */}
                   <div className="flex-1 min-w-0 pr-2">
-                    <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] no-underline hover:no-underline active:no-underline focus:no-underline mb-0.5 block">
+                    <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#c61830] no-underline hover:no-underline active:no-underline focus:no-underline mb-0.5 block">
                       {item.category}
                     </span>
                     <h5

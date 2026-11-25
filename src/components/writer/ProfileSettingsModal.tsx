@@ -186,16 +186,6 @@ export default function ProfileSettingsModal({
       return;
     }
 
-    if (!trimmedEmail) {
-      setErrorMessage('Email address is required.');
-      return;
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(trimmedEmail)) {
-      setErrorMessage('Please enter a valid email address.');
-      return;
-    }
-
     // Validate LinkedIn URL if provided
     if (trimmedLinkedin) {
       if (!/^https?:\/\//i.test(trimmedLinkedin)) {
@@ -209,7 +199,7 @@ export default function ProfileSettingsModal({
     }
 
     setIsSaving(true);
-    const currentEmail = user?.email || email;
+    const currentEmail = user?.email || email || 'mishalzuhrie@gmail.com';
 
     try {
       const res = await fetch('/api/user/profile', {
@@ -218,7 +208,6 @@ export default function ProfileSettingsModal({
         body: JSON.stringify({
           currentEmail,
           fullName: trimmedName,
-          newEmail: trimmedEmail,
           bio: trimmedBio,
           writerName: trimmedName,
           linkedinUrl: trimmedLinkedin,
@@ -231,7 +220,7 @@ export default function ProfileSettingsModal({
       if (data?.success) {
         const updatedData = {
           name: trimmedName,
-          email: trimmedEmail,
+          email: currentEmail,
           avatar,
           bio: trimmedBio,
           writerName: trimmedName,
@@ -276,15 +265,15 @@ export default function ProfileSettingsModal({
         onChange={handlePhotoUpload}
       />
 
-      <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden my-8 animate-in zoom-in-95 duration-150">
+      <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden my-8 animate-in zoom-in-95 duration-150">
         
-        {/* Top Decorative Gradient Accent Bar matching Image 4 */}
+        {/* Top Decorative Gradient Accent Bar matching Image */}
         <div className="h-1.5 w-full bg-gradient-to-r from-[#EA580C] via-[#F97316] to-[#FBBF24]" />
 
         {/* Modal Header */}
         <div className="px-6 sm:px-7 pt-5 pb-3 flex items-start justify-between border-b border-slate-100">
           <div>
-            <h2 className="font-serif text-2xl sm:text-[26px] font-bold text-slate-900 tracking-tight my-0">
+            <h2 className="font-serif text-2xl font-bold text-slate-900 tracking-tight my-0">
               Profile Settings
             </h2>
             <p className="text-[10px] sm:text-[11px] font-bold tracking-widest text-slate-400 uppercase mt-0.5 my-0 font-mono">
@@ -321,7 +310,7 @@ export default function ProfileSettingsModal({
           <div className="px-6 sm:px-7 py-5 flex items-center gap-4">
             
             {/* Square-rounded Avatar */}
-            <div className="relative w-16 h-16 sm:w-18 sm:h-18 rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shrink-0 shadow-2xs group">
+            <div className="relative w-15 h-15 sm:w-16 sm:h-16 rounded-xl overflow-hidden border border-slate-200 bg-slate-100 shrink-0 shadow-2xs group">
               <img
                 src={avatar || '/images/user-avatar-butterfly.png'}
                 alt={fullName || 'Profile'}
@@ -343,18 +332,18 @@ export default function ProfileSettingsModal({
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploadingPhoto}
-                className="text-xs sm:text-sm font-bold text-[#0066cc] hover:text-[#004d99] hover:underline cursor-pointer transition-colors block text-left"
+                className="text-xs sm:text-sm font-semibold text-[#0066cc] hover:text-[#004d99] hover:underline cursor-pointer transition-colors block text-left"
               >
                 {isUploadingPhoto ? 'Uploading photo...' : 'Change photo'}
               </button>
               
-              <div className="text-xs text-slate-500 font-mono mt-1 truncate">
-                {email || user?.email || 'user@unitedstatestoday.com'}
+              <div className="text-xs text-slate-500 font-sans mt-0.5 truncate">
+                {email || user?.email || 'mishalzuhrie@gmail.com'}
               </div>
 
               <div className="mt-1.5">
-                <span className="inline-block px-2 py-0.5 bg-[#EFF6FF] text-[#2563EB] text-[10px] font-bold tracking-wider uppercase rounded border border-blue-200/60">
-                  {role ? role.toUpperCase() : user?.role ? user.role.toUpperCase() : 'USER'}
+                <span className="inline-block px-2.5 py-0.5 bg-[#EEF2F6] text-[#2563EB] text-[10px] font-bold tracking-wider uppercase rounded">
+                  {role ? role.toUpperCase() : user?.role ? user.role.toUpperCase() : 'WRITER'}
                 </span>
               </div>
             </div>
@@ -365,7 +354,7 @@ export default function ProfileSettingsModal({
             
             {/* FULL NAME */}
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1.5 font-sans">
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5 font-sans">
                 FULL NAME
               </label>
               <input
@@ -378,24 +367,9 @@ export default function ProfileSettingsModal({
               />
             </div>
 
-            {/* EMAIL ADDRESS */}
-            <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1.5 font-sans">
-                EMAIL ADDRESS
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="user@unitedstatestoday.com"
-                required
-                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#003B64] focus:border-[#003B64] transition-colors"
-              />
-            </div>
-
             {/* BIO */}
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1.5 font-sans">
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5 font-sans">
                 BIO
               </label>
               <textarea
@@ -409,11 +383,11 @@ export default function ProfileSettingsModal({
 
             {/* LINKEDIN PROFILE */}
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1.5 font-sans">
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5 font-sans">
                 LINKEDIN PROFILE
               </label>
               <div className="relative flex items-center">
-                <div className="absolute left-3 w-4.5 h-4.5 bg-[#0A66C2] text-white rounded flex items-center justify-center font-bold text-[10px] select-none font-sans shrink-0 pointer-events-none">
+                <div className="absolute left-3 w-4.5 h-4.5 bg-[#0A66C2] text-white rounded-[2px] flex items-center justify-center font-bold text-[10px] select-none font-sans shrink-0 pointer-events-none">
                   in
                 </div>
                 <input
@@ -425,18 +399,18 @@ export default function ProfileSettingsModal({
                 />
               </div>
               <p className="text-[11px] text-slate-400 font-sans mt-1.5 my-0">
-                Shown on your profile and article bylines so colleagues and readers can connect with you.
+                Shown on your article bylines so readers can connect with you.
               </p>
             </div>
           </div>
 
           {/* Modal Actions Footer */}
-          <div className="px-6 sm:px-7 py-5 flex items-center justify-between gap-3 border-t border-slate-100 mt-6 bg-slate-50/50">
+          <div className="px-6 sm:px-7 py-5 flex items-center justify-between gap-3 border-t border-slate-100 mt-6 bg-white">
             <button
               type="button"
               onClick={onClose}
               disabled={isSaving}
-              className="px-6 py-2.5 rounded-lg border border-slate-300 text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors cursor-pointer disabled:opacity-50"
+              className="px-7 py-2.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-700 bg-white hover:bg-slate-50 transition-colors cursor-pointer disabled:opacity-50"
             >
               CANCEL
             </button>
@@ -444,7 +418,7 @@ export default function ProfileSettingsModal({
             <button
               type="submit"
               disabled={isSaving}
-              className="px-6 py-2.5 rounded-lg bg-[#003B64] hover:bg-[#002a48] text-white text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors shadow-sm cursor-pointer disabled:opacity-50 flex items-center gap-2"
+              className="px-7 py-2.5 rounded-lg bg-[#004080] hover:bg-[#003366] text-white text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors shadow-xs cursor-pointer disabled:opacity-50 flex items-center gap-2"
             >
               {isSaving && <Loader2 className="w-4 h-4 animate-spin" />}
               <span>{isSaving ? 'SAVING...' : 'SAVE CHANGES'}</span>

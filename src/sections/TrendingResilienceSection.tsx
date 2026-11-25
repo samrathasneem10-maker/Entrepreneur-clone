@@ -130,8 +130,8 @@ export const TrendingResilienceSection: React.FC<TrendingSectionProps> = ({
                   />
                 </figure>
 
-                {/* Blue Category Badge */}
-                <span className="text-[11px] sm:text-xs font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1.5 block">
+                {/* Red Category Badge */}
+                <span className="text-[11px] sm:text-xs font-sans font-bold uppercase tracking-wider text-[#c61830] mb-1.5 block">
                   {featured.category}
                 </span>
 
@@ -151,7 +151,7 @@ export const TrendingResilienceSection: React.FC<TrendingSectionProps> = ({
               {/* Author Byline matching Image 1 */}
               <div className="mt-auto pt-1 flex items-center text-xs font-sans text-slate-500">
                 <span className="text-slate-500 font-medium mr-1.5">BY</span>
-                <span className="text-[#1642D0] font-bold uppercase group-hover:underline mr-2">
+                <span className="text-[#c61830] font-bold uppercase group-hover:underline mr-2">
                   {featured.author?.name}
                 </span>
                 <span className="text-slate-300 mr-2">•</span>
@@ -167,7 +167,8 @@ export const TrendingResilienceSection: React.FC<TrendingSectionProps> = ({
         <div className="flex flex-col justify-between h-full">
           {/* Trending News Heading aligned with top of left image */}
           <div className="pb-2 mb-1 flex-shrink-0">
-            <h3 className="text-2xl sm:text-[26px] font-serif font-bold text-slate-900 tracking-tight my-0">
+            <h3 className="text-2xl sm:text-[26px] font-serif font-bold text-slate-900 tracking-tight my-0 flex items-center">
+              <span className="inline-block w-3.5 h-3.5 sm:w-4 sm:h-4 border-2 border-[#c61830] rounded-2xs mr-2 -translate-y-0.5 shrink-0" aria-hidden="true" />
               Trending News
             </h3>
           </div>
@@ -199,7 +200,7 @@ export const TrendingResilienceSection: React.FC<TrendingSectionProps> = ({
 
                     {/* Title & Details */}
                     <div className="flex-1 min-w-0 pr-1">
-                      <span className="text-[10px] sm:text-[10.5px] font-sans font-bold uppercase tracking-wider text-[#1642D0] no-underline hover:no-underline active:no-underline focus:no-underline mb-0.5 block">
+                      <span className="text-[10px] sm:text-[10.5px] font-sans font-bold uppercase tracking-wider text-[#c61830] no-underline hover:no-underline active:no-underline focus:no-underline mb-0.5 block">
                         {item.category}
                       </span>
                       <h4 className="text-[13px] sm:text-[14px] lg:text-[14.5px] xl:text-[15.5px] font-serif font-bold text-slate-900 leading-[1.26] tracking-tight mb-1 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2">

@@ -104,11 +104,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       } catch {
         // ignore
       }
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new CustomEvent('entrepreneur_user_updated', { detail: updated }));
-      }
       return updated;
     });
+    if (typeof window !== 'undefined') {
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('entrepreneur_user_updated', { detail: profile }));
+      }, 0);
+    }
   };
 
   const logout = async () => {

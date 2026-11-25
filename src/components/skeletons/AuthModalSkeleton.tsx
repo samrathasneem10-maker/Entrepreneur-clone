@@ -1,9 +1,16 @@
+'use client';
+
 import React from 'react';
 import { SkeletonBase } from './SkeletonBase';
+import { useSkeletonMaxDuration } from './useSkeletonMaxDuration';
 
 export const AuthModalSkeleton: React.FC = () => {
+  const isVisible = useSkeletonMaxDuration(2000);
+
+  if (!isVisible) return null;
+
   return (
-    <div className="w-full space-y-5 p-2 animate-in fade-in duration-200">
+    <div className="w-full space-y-5 p-2 animate-in fade-in duration-200 skeleton-max-duration">
       {/* Title Skeleton */}
       <div className="text-center space-y-2 mb-6">
         <SkeletonBase className="h-7 w-48 mx-auto" />

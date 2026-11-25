@@ -247,8 +247,9 @@ function WriterDashboardInner() {
   // Toast notification
   const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
-  const showToast = (text: string, type: 'success' | 'error' = 'success') => {
-    setToastMessage({ text, type });
+  const showToast = (text: any, type: 'success' | 'error' = 'success') => {
+    const safeText = typeof text === 'string' ? text : (text?.message || (text ? String(text) : 'An error occurred'));
+    setToastMessage({ text: safeText, type });
     setTimeout(() => {
       setToastMessage(null);
     }, 4000);
@@ -485,7 +486,7 @@ function WriterDashboardInner() {
           ) : (
             <AlertTriangle className="w-5 h-5 text-rose-200" />
           )}
-          <span>{toastMessage.text}</span>
+          <span>{typeof toastMessage.text === 'string' ? toastMessage.text : ((toastMessage.text as any)?.message || String(toastMessage.text || ''))}</span>
         </div>
       )}
 
@@ -540,7 +541,7 @@ function WriterDashboardInner() {
                 {reasonModalArticle.rejectionReason ||
                   reasonModalArticle.reviewerNotes ||
                   (reasonModalArticle.status === 'rejected'
-                    ? 'This article requires revisions and additional verification before it can be approved for publication.'
+                    ? ''
                     : 'This article was submitted for review and is currently awaiting editorial evaluation. Our editors will verify source accuracy and tone before clearing it for publication.')}
               </p>
               {reasonModalArticle.reviewerNotes && reasonModalArticle.rejectionReason && (
@@ -955,7 +956,11 @@ function WriterDashboardInner() {
                               <div className="flex items-center gap-2.5">
                                 <button
                                   type="button"
-                                  onClick={() => setReasonModalArticle(art)}
+                                  onClick={() => {
+                                    if (art.rejectionReason && art.rejectionReason.trim()) {
+                                      setReasonModalArticle(art);
+                                    }
+                                  }}
                                   className="bg-red-600 hover:bg-red-700 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded shadow-2xs transition-colors cursor-pointer"
                                 >
                                   REASON

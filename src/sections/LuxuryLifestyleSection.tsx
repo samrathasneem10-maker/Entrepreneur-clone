@@ -84,17 +84,18 @@ export const LuxuryLifestyleSection: React.FC<LuxurySectionProps> = ({ initialAr
     <section className="bg-white pt-5 sm:pt-6 pb-5 sm:pb-6 w-full">
       {/* Header */}
       <div className="flex items-center justify-between mb-3.5 sm:mb-4.5">
-        <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
-          <Link href="/topic/luxury-lifestyle" className="hover:text-[#1642D0] transition-colors no-underline hover:no-underline active:no-underline focus:no-underline">
+        <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight flex items-center">
+        <span className="inline-block w-3.5 h-3.5 sm:w-4 sm:h-4 border-2 border-[#c61830] rounded-2xs mr-2 -translate-y-0.5 shrink-0" aria-hidden="true" />
+          <Link href="/topic/luxury-lifestyle" className="hover:text-[#c61830] transition-colors no-underline hover:no-underline active:no-underline focus:no-underline">
             Luxury &amp; Lifestyle
           </Link>
         </h2>
         <Link
           href="/topic/luxury-lifestyle"
-          className="inline-flex items-center gap-2 group text-xs sm:text-sm font-sans font-bold tracking-wider uppercase text-slate-800 hover:text-[#1642D0] transition-colors"
+          className="inline-flex items-center gap-2 group text-xs sm:text-sm font-sans font-bold tracking-wider uppercase text-slate-800 hover:text-[#c61830] transition-colors"
         >
           <span>SEE ALL</span>
-          <span className="w-5 h-5 sm:w-6 sm:h-6 bg-[#1642D0] group-hover:bg-[#1235a8] text-white flex items-center justify-center rounded transition-colors shadow-sm">
+          <span className="w-5 h-5 sm:w-6 sm:h-6 bg-[#c61830] group-hover:bg-[#a51226] text-white flex items-center justify-center rounded transition-colors shadow-sm">
             <svg
               className="w-3 h-3 sm:w-3.5 sm:h-3.5"
               fill="none"
@@ -150,13 +151,13 @@ export const LuxuryLifestyleSection: React.FC<LuxurySectionProps> = ({ initialAr
                   )}
 
                   <div className="flex-1 flex flex-col">
-                    <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] no-underline hover:no-underline active:no-underline focus:no-underline mb-1.5 block truncate h-4 leading-4">
+                    <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#c61830] no-underline hover:no-underline active:no-underline focus:no-underline mb-1.5 block truncate h-4 leading-4">
                       {card.category}
                     </span>
 
                     {/* Title - Line clamp 3 */}
                     <h3
-                      className="text-[16px] sm:text-[17px] lg:text-[18px] font-serif font-bold text-slate-900 leading-[1.28] tracking-tight mb-2 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 transition-all line-clamp-3 h-[66px] sm:h-[68px] lg:h-[72px] flex items-start"
+                      className="text-[16px] sm:text-[17px] lg:text-[18px] font-serif font-bold text-slate-900 leading-[1.28] tracking-tight mb-2 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 transition-all line-clamp-3"
                       style={{
                         display: '-webkit-box',
                         WebkitLineClamp: 3,
@@ -169,7 +170,7 @@ export const LuxuryLifestyleSection: React.FC<LuxurySectionProps> = ({ initialAr
 
                     {/* Excerpt - Line clamp 3 */}
                     <p
-                      className="text-xs sm:text-[13px] text-slate-600 font-serif leading-relaxed mb-3 line-clamp-3 h-[58px] sm:h-[60px] lg:h-[64px]"
+                      className="text-xs sm:text-[13px] text-slate-600 font-serif leading-relaxed mb-3 line-clamp-3"
                       style={{
                         display: '-webkit-box',
                         WebkitLineClamp: 3,
@@ -181,7 +182,8 @@ export const LuxuryLifestyleSection: React.FC<LuxurySectionProps> = ({ initialAr
                     </p>
                   </div>
 
-                  <div className="mt-auto text-[11px] font-sans text-slate-500 pt-2 border-t border-slate-100/70 flex items-center justify-between">
+                  {/* Date / Read Time / Author: Uniform min-h for synchronized row ending alignment */}
+                  <div className="mt-auto text-[11px] font-sans text-slate-500 pt-2 border-t border-slate-100/70 flex items-center justify-between min-h-[28px]">
                     <span className="truncate max-w-[120px]">{card.author?.name || 'Staff Contributor'}</span>
                     <div className="flex items-center gap-1.5 shrink-0">
                       <span>{card.date}</span>

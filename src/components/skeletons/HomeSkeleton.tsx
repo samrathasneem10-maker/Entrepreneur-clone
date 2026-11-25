@@ -1,9 +1,16 @@
+'use client';
+
 import React from 'react';
 import { SkeletonBase } from './SkeletonBase';
+import { useSkeletonMaxDuration } from './useSkeletonMaxDuration';
 
 export const HomeSkeleton: React.FC = () => {
+  const isVisible = useSkeletonMaxDuration(2000);
+
+  if (!isVisible) return null;
+
   return (
-    <div className="w-full bg-white animate-in fade-in duration-200">
+    <div className="w-full bg-white animate-in fade-in duration-200 skeleton-max-duration">
       
       {/* Announcement Bar Skeleton */}
       <div className="w-full bg-[#1642D0]/30 py-2.5 px-4 flex justify-center">

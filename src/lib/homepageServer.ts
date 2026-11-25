@@ -1,4 +1,4 @@
-import { query } from '@/lib/db';
+import { getDbPool } from '@/lib/db';
 import {
   Article,
   HERO_GROWTH_DECISION_ARTICLE,
@@ -19,6 +19,7 @@ import {
   MARKETING_BRANDING_SECTION,
 } from '@/data/newsData';
 import { formatPublicationDateOnly } from '@/lib/dateUtils';
+import { resolveArticleAuthor } from '@/lib/authorUtils';
 
 const BASELINE_STARTUPS_4: Article[] = [
   STARTUPS_ENTREPRENEURSHIP_SECTION.featured,
@@ -100,6 +101,8 @@ function rowToArticle(r: any): Article {
     ? formatPublicationDateOnly(r.publishedAt)
     : (r.date || formatPublicationDateOnly(r.createdAt));
 
+  const authorInfo = resolveArticleAuthor(r);
+
   return {
     id: r.slug || String(r.id),
     slug: r.slug,
@@ -113,10 +116,10 @@ function rowToArticle(r: any): Article {
     imageUrl: resolvedImg || '',
     imageAspect: r.imageAspect,
     author: {
-      name: r.authorName || 'Staff Contributor',
-      avatar: r.authorAvatar || '/images/author-sherin.png',
-      title: r.authorTitle || 'Staff Contributor',
-      bio: r.authorBio,
+      name: authorInfo.name,
+      avatar: authorInfo.avatar,
+      title: authorInfo.title,
+      bio: authorInfo.bio,
     },
   };
 }
@@ -164,7 +167,9 @@ export async function getHomepageArticlesFromDb(): Promise<HomepageData> {
         a.id DESC
       LIMIT 250
     `;
-    dbRows = await query<any[]>(sql);
+    const pool = getDbPool();
+    const [rows] = await pool.query<any[]>(sql);
+    dbRows = Array.isArray(rows) ? rows : [];
   } catch (err) {
     console.warn('Failed to query homepage articles from MySQL:', err);
   }

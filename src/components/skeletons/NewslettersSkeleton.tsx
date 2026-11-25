@@ -1,9 +1,16 @@
+'use client';
+
 import React from 'react';
 import { SkeletonBase } from './SkeletonBase';
+import { useSkeletonMaxDuration } from './useSkeletonMaxDuration';
 
 export const NewslettersSkeleton: React.FC = () => {
+  const isVisible = useSkeletonMaxDuration(2000);
+
+  if (!isVisible) return null;
+
   return (
-    <div className="w-full bg-white animate-in fade-in duration-200">
+    <div className="w-full bg-white animate-in fade-in duration-200 skeleton-max-duration">
       
       {/* Hero Header Section */}
       <section className="bg-slate-900 text-white py-12 px-5 lg:px-10">

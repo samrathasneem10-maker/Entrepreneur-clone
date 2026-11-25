@@ -178,17 +178,18 @@ export const EnergyCommoditiesSection: React.FC<EnergySectionProps> = ({
     <section className="bg-white pt-5 sm:pt-6 pb-5 sm:pb-6 w-full">
       {/* Section Header */}
       <div className="flex items-center justify-between mb-3.5 sm:mb-4.5">
-        <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
-          <Link href="/topic/energy-commodities" className="hover:text-[#1642D0] transition-colors no-underline hover:no-underline active:no-underline focus:no-underline">
+        <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight flex items-center">
+        <span className="inline-block w-3.5 h-3.5 sm:w-4 sm:h-4 border-2 border-[#c61830] rounded-2xs mr-2 -translate-y-0.5 shrink-0" aria-hidden="true" />
+          <Link href="/topic/energy-commodities" className="hover:text-[#c61830] transition-colors no-underline hover:no-underline active:no-underline focus:no-underline">
             Energy &amp; Commodities
           </Link>
         </h2>
         <Link
           href="/topic/energy-commodities"
-          className="inline-flex items-center gap-2 group text-xs sm:text-sm font-sans font-bold tracking-wider uppercase text-slate-800 hover:text-[#1642D0] transition-colors"
+          className="inline-flex items-center gap-2 group text-xs sm:text-sm font-sans font-bold tracking-wider uppercase text-slate-800 hover:text-[#c61830] transition-colors"
         >
           <span>SEE ALL</span>
-          <span className="w-5 h-5 sm:w-6 sm:h-6 bg-[#1642D0] group-hover:bg-[#1235a8] text-white flex items-center justify-center rounded transition-colors shadow-sm">
+          <span className="w-5 h-5 sm:w-6 sm:h-6 bg-[#c61830] group-hover:bg-[#a51226] text-white flex items-center justify-center rounded transition-colors shadow-sm">
             <svg
               className="w-3 h-3 sm:w-3.5 sm:h-3.5"
               fill="none"
@@ -227,7 +228,7 @@ export const EnergyCommoditiesSection: React.FC<EnergySectionProps> = ({
                   />
                 </figure>
 
-                <span className="text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1.5 block">
+                <span className="text-[11px] font-sans font-bold uppercase tracking-wider text-[#c61830] mb-1.5 block">
                   {lead.category}
                 </span>
 
@@ -287,7 +288,7 @@ export const EnergyCommoditiesSection: React.FC<EnergySectionProps> = ({
                   {/* Story Details on Right */}
                   <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
                     <div>
-                      <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] no-underline hover:no-underline active:no-underline focus:no-underline mb-1 block">
+                      <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#c61830] no-underline hover:no-underline active:no-underline focus:no-underline mb-1 block">
                         {item.category}
                       </span>
 
@@ -354,7 +355,7 @@ export const EnergyCommoditiesSection: React.FC<EnergySectionProps> = ({
                   {/* Thumbnail Details */}
                   <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
                     <div>
-                      <span className="text-[10px] sm:text-[10.5px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-0.5 block">
+                      <span className="text-[10px] sm:text-[10.5px] font-sans font-bold uppercase tracking-wider text-[#c61830] mb-0.5 block">
                         {item.category}
                       </span>
                       <h4 className="text-[12px] sm:text-[12.5px] xl:text-[13px] font-serif font-bold text-slate-900 leading-[1.24] group-hover:underline underline-offset-2 transition-all">

@@ -23,15 +23,18 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export default async function Home() {
-  const data = await getHomepageArticlesFromDb();
+  const [data] = await Promise.all([
+    getHomepageArticlesFromDb(),
+    new Promise((resolve) => setTimeout(resolve, 2000)),
+  ]);
 
   return (
     <div className="min-h-screen flex flex-col bg-white font-sans antialiased text-slate-900">
       {/* Sticky Top Header Navigation */}
       <Header />
 
-      {/* Main Page Body: wide screen layout matching Reference Image 3 with clean side margins */}
-      <main className="flex-1 w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
+      {/* Main Page Body: wide screen layout with comfortable side margins trimming edges */}
+      <main className="flex-1 w-full max-w-[1536px] mx-auto px-6 sm:px-10 md:px-14 lg:px-20 xl:px-24">
         {/* 1. Hero News Section */}
         <HeroNewsSection
           initialLatest={data.heroLatest}

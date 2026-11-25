@@ -15,6 +15,7 @@ import {
   X,
 } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthContext';
+import { resolveArticleAuthor } from '@/lib/authorUtils';
 
 const PREVIEW_SIDEBAR_ARTICLES = [
   {
@@ -123,10 +124,14 @@ export default function ArticlePreviewPage() {
   const subtitle = previewData?.subtitle || 'Exclusive reporting and in-depth business analysis: How Top Founders Run High Stakes Board Meetings with Complete Clarity.';
   const category = previewData?.category || 'BUILDING A BUSINESS';
   const subCategories = previewData?.subCategories || [];
-  const authorName = user?.name || previewData?.author?.name || user?.writerName || 'SHERIN SHIBU';
-  const authorAvatar = user?.avatar || previewData?.author?.avatar || '/images/user-avatar-butterfly.png';
-  const authorBio = previewData?.author?.bio || user?.bio || 'Business news reporter and contributor at United States Today, covering high-growth ventures, market trends, and modern workplace leadership.';
-  const authorLinkedin = previewData?.author?.linkedinUrl || user?.linkedinUrl || 'https://www.linkedin.com';
+  const resolved = resolveArticleAuthor(previewData || user);
+  const authorName = previewData?.author?.name || user?.name || user?.writerName || resolved.name;
+  const authorAvatar = (user?.avatar && !user.avatar.includes('butterfly')) ? user.avatar : resolved.avatar;
+  const authorBio = user?.bio || previewData?.author?.bio || resolved.bio;
+  const isSamra = (authorName || '').toLowerCase().includes('samra') || (user?.role === 'writer');
+  const authorLinkedin = isSamra
+    ? 'https://www.linkedin.com/in/fathima-samra-8823b634a'
+    : (user?.linkedinUrl || previewData?.author?.linkedinUrl || resolved.linkedinUrl || 'https://www.linkedin.com');
   const date = previewData?.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase();
   const imageUrl = previewData?.imageUrl || '';
   const imageCaption = previewData?.imageCaption || '';
@@ -382,16 +387,6 @@ export default function ArticlePreviewPage() {
               className="article-editor-content prose prose-slate max-w-none text-slate-800 text-base leading-relaxed break-words font-serif pt-4 space-y-4"
               dangerouslySetInnerHTML={{ __html: content }}
             />
-
-            {/* Subscription Callout Bar */}
-            <div className="border-l-[3.5px] border-[#1642D0] pl-4 py-1 my-8">
-              <p className="text-[15px] sm:text-[16px] italic font-['Georgia',serif] text-slate-700 m-0 leading-normal">
-                Get unlimited access to our tools, playbooks and insights built to grow your business.{' '}
-                <a href="#" className="text-[#1642D0] underline underline-offset-[3px] not-italic font-sans font-semibold hover:text-[#0d2d8d]">
-                  Subscribe now.
-                </a>
-              </p>
-            </div>
 
             {/* Tags */}
             {tags.length > 0 && (

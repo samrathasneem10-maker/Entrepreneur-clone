@@ -9,10 +9,33 @@ export interface AdminUser {
   role: 'admin' | 'writer' | 'reader';
   isDefaultAdmin?: boolean;
   avatar?: string;
+  bio?: string;
+  linkedinUrl?: string;
   createdAt?: string;
 }
 
-const DEFAULT_ADMIN_EMAIL = 'akramyoonos006@gmail.com';
+const DEFAULT_ADMIN_EMAILS = [
+  'akramyoonos006@gmail.com',
+];
+
+function isDefaultAdminAccount(account?: {
+  email?: string;
+  name?: string;
+  isDefaultAdmin?: boolean;
+}): boolean {
+  if (!account) return false;
+  if (account.isDefaultAdmin) return true;
+  const email = String(account.email || '').toLowerCase().trim();
+  const name = String(account.name || '').toLowerCase().trim();
+  if (DEFAULT_ADMIN_EMAILS.includes(email)) return true;
+  if (
+    name === 'mohamed azmy mohamed akram' ||
+    name === 'mohamedajmi'
+  ) {
+    return true;
+  }
+  return false;
+}
 
 const INITIAL_REQUIRED_ACCOUNTS: AdminUser[] = [
   {
@@ -21,31 +44,8 @@ const INITIAL_REQUIRED_ACCOUNTS: AdminUser[] = [
     email: 'akramyoonos006@gmail.com',
     role: 'admin',
     isDefaultAdmin: true,
+    bio: 'New Washington Times subscriber via Google.',
     createdAt: '2026-10-15',
-  },
-  {
-    id: 'init-2',
-    name: 'End Reader',
-    email: 'endreader@unitedstatestoday.com',
-    role: 'reader',
-    isDefaultAdmin: false,
-    createdAt: '2026-10-18',
-  },
-  {
-    id: 'init-3',
-    name: 'Reader',
-    email: 'reader@gmail.com',
-    role: 'reader',
-    isDefaultAdmin: false,
-    createdAt: '2026-10-20',
-  },
-  {
-    id: 'init-4',
-    name: 'Writer',
-    email: 'writer@gmail.com',
-    role: 'writer',
-    isDefaultAdmin: false,
-    createdAt: '2026-10-25',
   },
 ];
 
@@ -64,7 +64,7 @@ export async function GET(request: Request) {
     let dbUsers: any[] = [];
     try {
       dbUsers = await query<any[]>(
-        'SELECT id, name, email, role, avatar, created_at as createdAt FROM users ORDER BY id ASC'
+        'SELECT id, name, email, role, avatar, bio, linkedin_url as linkedinUrl, created_at as createdAt FROM users ORDER BY id ASC'
       );
     } catch (err) {
       console.warn('GET /api/admin/users DB query warning:', err);
@@ -72,29 +72,35 @@ export async function GET(request: Request) {
 
     const userMap = new Map<string, AdminUser>();
 
-    // 1. Ensure the 4 required initial accounts are in the map
+    // 1. Baseline initial Default Admin account
     INITIAL_REQUIRED_ACCOUNTS.forEach((acc) => {
       userMap.set(acc.email.toLowerCase(), { ...acc });
     });
 
-    // 2. Overlay / add all real users from the database
+    // 2. Overlay / add real users from the database
     if (Array.isArray(dbUsers) && dbUsers.length > 0) {
       dbUsers.forEach((du) => {
         const cleanEmail = String(du.email || '').trim().toLowerCase();
         if (!cleanEmail) return;
 
         const normalizedRole = normalizeRole(du.role);
-        const isDefAdmin =
-          cleanEmail === DEFAULT_ADMIN_EMAIL ||
-          String(du.name || '').toLowerCase().trim() === 'mohamed azmy mohamed akram' ||
-          String(du.name || '').toLowerCase().trim() === 'mohamedajmi';
+        const isDefAdmin = isDefaultAdminAccount({
+          email: cleanEmail,
+          name: du.name,
+        });
+
+        // If avatar is placeholder butterfly, treat as unuploaded (null) so initials avatar is shown
+        const rawAvatar = du.avatar ? String(du.avatar) : '';
+        const cleanAvatar = rawAvatar && !rawAvatar.includes('butterfly') ? rawAvatar : undefined;
 
         userMap.set(cleanEmail, {
           id: `db-${du.id}`,
           name: du.name || (isDefAdmin ? 'Mohamed Azmy Mohamed Akram' : 'User'),
           email: du.email,
           role: normalizedRole,
-          avatar: du.avatar || undefined,
+          avatar: cleanAvatar,
+          bio: du.bio || undefined,
+          linkedinUrl: normalizedRole === 'writer' ? (du.linkedinUrl || 'https://www.linkedin.com/in/fathima-samra-8823b634a') : undefined,
           createdAt: du.createdAt
             ? new Date(du.createdAt).toISOString().split('T')[0]
             : '2026-10-01',
@@ -105,10 +111,12 @@ export async function GET(request: Request) {
 
     const allUsersList = Array.from(userMap.values());
 
-    // Sort to keep Default Admin at the top, then others
+    // Sort: Default Admin (Mohamed Azmy Mohamed Akram) at the very top, others below
     allUsersList.sort((a, b) => {
-      if (a.isDefaultAdmin) return -1;
-      if (b.isDefaultAdmin) return 1;
+      const aEmail = a.email.toLowerCase();
+      const bEmail = b.email.toLowerCase();
+      if (aEmail === 'akramyoonos006@gmail.com') return -1;
+      if (bEmail === 'akramyoonos006@gmail.com') return 1;
       return 0;
     });
 
@@ -173,10 +181,7 @@ export async function POST(request: Request) {
       console.warn('POST /api/admin/users MySQL insert fallback:', (err as any)?.message);
     }
 
-    const isDefAdmin =
-      cleanEmail === DEFAULT_ADMIN_EMAIL ||
-      cleanName.toLowerCase() === 'mohamed azmy mohamed akram' ||
-      cleanName.toLowerCase() === 'mohamedajmi';
+    const isDefAdmin = isDefaultAdminAccount({ email: cleanEmail, name: cleanName });
 
     const newUser: AdminUser = {
       id: dbId,
@@ -203,7 +208,7 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
-    const { id, name, email, originalEmail, role } = body;
+    const { id, name, email, originalEmail, role, password, requesterEmail } = body;
 
     if (!email) {
       return NextResponse.json(
@@ -216,19 +221,60 @@ export async function PUT(request: Request) {
     const cleanEmail = String(email).trim().toLowerCase();
     const lookupEmail = String(originalEmail || email).trim().toLowerCase();
     const cleanRole = normalizeRole(role);
+    const cleanRequesterEmail = String(requesterEmail || '').trim().toLowerCase();
 
-    if (lookupEmail === DEFAULT_ADMIN_EMAIL || cleanEmail === DEFAULT_ADMIN_EMAIL) {
-      return NextResponse.json(
-        { success: false, error: 'Default administrator account cannot be modified.' },
-        { status: 403 }
-      );
+    const isRequesterDefaultAdmin = isDefaultAdminAccount({ email: cleanRequesterEmail });
+    const isTargetDefaultAdmin =
+      isDefaultAdminAccount({ email: lookupEmail }) || isDefaultAdminAccount({ email: cleanEmail });
+
+    // Permissions logic:
+    // Only Default Admin can edit any user.
+    // A regular Admin can View and Edit their own account, View other Admin and Default Admin accounts only,
+    // and View, Edit, and Delete Writer and Reader accounts.
+    if (!isRequesterDefaultAdmin) {
+      const isSelf = Boolean(cleanRequesterEmail && lookupEmail === cleanRequesterEmail);
+
+      // Cannot edit Default Admin accounts
+      if (isTargetDefaultAdmin) {
+        return NextResponse.json(
+          { success: false, error: 'Regular administrators cannot edit Default Administrator accounts.' },
+          { status: 403 }
+        );
+      }
+
+      // Check target's current role in DB
+      let targetCurrentRole = cleanRole;
+      try {
+        const rows: any[] = await query('SELECT role FROM users WHERE LOWER(email) = ?', [lookupEmail]);
+        if (rows && rows.length > 0) {
+          targetCurrentRole = normalizeRole(rows[0].role);
+        }
+      } catch {
+        // fallback
+      }
+
+      // If target is another admin and not self -> forbidden
+      if (targetCurrentRole === 'admin' && !isSelf) {
+        return NextResponse.json(
+          { success: false, error: 'Regular administrators can only view other admin accounts.' },
+          { status: 403 }
+        );
+      }
     }
 
     try {
-      await query(
-        'UPDATE users SET name = ?, email = ?, role = ?, writer_name = ? WHERE LOWER(email) = ?',
-        [cleanName, cleanEmail, cleanRole, cleanName, lookupEmail]
-      );
+      if (password && String(password).trim().length > 0) {
+        const passwordHash = await bcrypt.hash(String(password).trim(), 10);
+        await query(
+          'UPDATE users SET name = ?, email = ?, role = ?, writer_name = ?, password_hash = ? WHERE LOWER(email) = ?',
+          [cleanName, cleanEmail, cleanRole, cleanName, passwordHash, lookupEmail]
+        );
+      } else {
+        await query(
+          'UPDATE users SET name = ?, email = ?, role = ?, writer_name = ? WHERE LOWER(email) = ?',
+          [cleanName, cleanEmail, cleanRole, cleanName, lookupEmail]
+        );
+      }
     } catch (err) {
       console.warn('PUT /api/admin/users MySQL update fallback:', (err as any)?.message);
     }
@@ -250,6 +296,7 @@ export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const email = searchParams.get('email');
+    const requesterEmail = searchParams.get('requesterEmail');
 
     if (!email) {
       return NextResponse.json(
@@ -259,11 +306,46 @@ export async function DELETE(request: Request) {
     }
 
     const cleanEmail = email.trim().toLowerCase();
-    if (cleanEmail === DEFAULT_ADMIN_EMAIL) {
+    const cleanRequesterEmail = String(requesterEmail || '').trim().toLowerCase();
+
+    // Cannot delete own logged-in account
+    if (cleanRequesterEmail && cleanEmail === cleanRequesterEmail) {
+      return NextResponse.json(
+        { success: false, error: 'You cannot delete your own account.' },
+        { status: 400 }
+      );
+    }
+
+    const isRequesterDefaultAdmin = isDefaultAdminAccount({ email: cleanRequesterEmail });
+    const isTargetDefaultAdmin = isDefaultAdminAccount({ email: cleanEmail });
+
+    // Default admin accounts can never be deleted by regular admins
+    if (isTargetDefaultAdmin && !isRequesterDefaultAdmin) {
       return NextResponse.json(
         { success: false, error: 'Default administrator account cannot be deleted.' },
         { status: 403 }
       );
+    }
+
+    // Regular admin permissions check:
+    // "A regular Admin can View and Edit their own account, View other Admin and Default Admin accounts only, and View, Edit, and Delete Writer and Reader accounts."
+    if (!isRequesterDefaultAdmin) {
+      let targetRole = '';
+      try {
+        const rows: any[] = await query('SELECT role FROM users WHERE LOWER(email) = ?', [cleanEmail]);
+        if (rows && rows.length > 0) {
+          targetRole = normalizeRole(rows[0].role);
+        }
+      } catch {
+        // fallback
+      }
+
+      if (targetRole === 'admin') {
+        return NextResponse.json(
+          { success: false, error: 'Regular administrators cannot delete other admin accounts.' },
+          { status: 403 }
+        );
+      }
     }
 
     try {

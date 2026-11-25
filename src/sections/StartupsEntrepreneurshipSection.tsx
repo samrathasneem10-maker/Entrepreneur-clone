@@ -134,52 +134,52 @@ export const StartupsEntrepreneurshipSection: React.FC<StartupsSectionProps> = (
   }, []);
 
   return (
-    <section className="bg-white pt-2 sm:pt-3 pb-5 sm:pb-6 w-full">
-      {/* Section Header with consistent border-b matching reference */}
-      <div className="flex items-center justify-between mb-2.5 sm:mb-3">
-        <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
-          <Link href="/topic/startups-entrepreneurship" className="hover:text-[#1642D0] transition-colors no-underline hover:no-underline active:no-underline focus:no-underline">
-            Startups &amp; Entrepreneurship
-          </Link>
-        </h2>
-        <Link
-          href="/topic/startups-entrepreneurship"
-          className="inline-flex items-center gap-2 group text-xs sm:text-sm font-sans font-bold tracking-wider uppercase text-slate-800 hover:text-[#1642D0] transition-colors"
-        >
-          <span>See All</span>
-          <span className="w-5 h-5 sm:w-6 sm:h-6 bg-[#1642D0] group-hover:bg-[#1235a8] text-white flex items-center justify-center rounded transition-colors shadow-sm">
-            <svg
-              className="w-3 h-3 sm:w-3.5 sm:h-3.5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </span>
-        </Link>
-      </div>
+    <section className="bg-white pb-10 md:pb-12 w-full">
+      <div className="w-full">
+        {/* Top line with SMALL DECREASED GAP above section heading matching Image 2 */}
+        <div className="border-t border-slate-200 pt-2.5 sm:pt-3 pb-2 mb-5">
+          <div className="flex items-center justify-between">
+            <h2 className="my-0 text-[#020618] font-bold text-2xl sm:text-3xl font-serif leading-none tracking-tight flex items-center">
+              <span className="inline-block w-3.5 h-3.5 sm:w-4 sm:h-4 border-2 border-[#c61830] rounded-2xs mr-2 -translate-y-0.5 shrink-0" aria-hidden="true" />
+              <Link
+                href="/topic/startups-entrepreneurship"
+                className="text-[#020618] no-underline hover:underline decoration-[#020618] decoration-1 underline-offset-[4px] transition-all"
+              >
+                Startups &amp; Entrepreneurship
+              </Link>
+            </h2>
 
-      {/* 2-Column Balanced Grid: Left Featured (6 cols) + Right Stacked (6 cols) perfectly aligned at top and bottom */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1.12fr_1fr] gap-6 lg:gap-8 items-stretch">
-        {/* Left Column: Big Lead Story (col-span-6) */}
-        <div className="flex flex-col justify-between h-full">
-          <article className="group flex flex-col justify-between h-full">
             <Link
-              href={getArticleUrl(featured)}
-              className="flex flex-col justify-between h-full no-underline text-inherit cursor-pointer"
-              aria-label={featured.title}
+              href="/topic/startups-entrepreneurship"
+              aria-label="Read more about Startups & Entrepreneurship"
+              className="flex items-center no-underline hover:underline text-xs sm:text-[13px] font-bold text-[#020618] uppercase tracking-wider group"
             >
-              <div className="flex flex-col">
-                {/* Featured Image */}
-                <figure className="relative w-full aspect-[16/9.5] overflow-hidden rounded-none mb-3 border border-slate-200/90 bg-slate-100 flex-shrink-0">
+              <span>See All</span>
+              <svg
+                aria-hidden="true"
+                fill="currentColor"
+                className="w-5 h-5 fill-current ml-1 text-[#c61830] group-hover:scale-105 transition-transform"
+                viewBox="0 0 24 24"
+              >
+                <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12s4.48 10 10 10 10-4.48 10-10m-10 1H8v-2h4V8l4 4-4 4z" />
+              </svg>
+            </Link>
+          </div>
+        </div>
+
+        {/* 2-Column Layout matching Image 2: Left and Right sides stretch to the exact same baseline */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-stretch">
+          
+          {/* Left Column: Lead Story ending on the same baseline */}
+          <div className="group flex flex-col justify-between h-full">
+            <div>
+              {/* Lead Image: matching aspect-[16/10] rounded-xl from Image 2 */}
+              <Link href={getArticleUrl(featured)} className="block">
+                <div className="relative w-full aspect-[16/10] overflow-hidden rounded-xl border border-slate-200/90 shadow-2xs">
                   <img
                     src={featured.imageUrl}
                     alt={featured.title}
-                    className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300 rounded-none"
+                    className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
                     onError={(e) => {
                       const target = e.currentTarget;
                       if (!target.dataset.fallback) {
@@ -188,103 +188,84 @@ export const StartupsEntrepreneurshipSection: React.FC<StartupsSectionProps> = (
                       }
                     }}
                   />
-                </figure>
+                </div>
+              </Link>
 
-                {/* Category Badge */}
-                <span className="text-[11px] sm:text-xs font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1.5 text-left block no-underline hover:no-underline active:no-underline focus:no-underline">
+              {/* Lead Story Details: identical typography & spacing */}
+              <div className="pt-3.5 space-y-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#c61830] font-sans block">
                   {featured.category}
                 </span>
 
-                {/* Lead Story Title - Line clamp 2 */}
-                <h3
-                  className="text-2xl sm:text-3xl lg:text-[28px] xl:text-[30px] font-serif font-bold text-slate-900 leading-[1.22] tracking-tight mb-2 text-left group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 transition-all line-clamp-2"
-                  style={{
-                    display: '-webkit-box',
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden',
-                  }}
-                >
-                  {featured.title}
+                <h3 className="text-lg sm:text-[21px] lg:text-[22px] font-serif font-bold text-[#020618] leading-[1.3] tracking-tight">
+                  <Link
+                    href={getArticleUrl(featured)}
+                    className="text-[#020618] no-underline hover:underline decoration-[#020618] decoration-1 underline-offset-[3px] transition-all"
+                  >
+                    {featured.title}
+                  </Link>
                 </h3>
 
-                {/* Lead Story Excerpt - Line clamp 2 */}
-                <p
-                  className="text-sm sm:text-[14.5px] text-slate-600 font-serif font-normal leading-relaxed mb-3 text-left line-clamp-2"
-                  style={{
-                    display: '-webkit-box',
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden',
-                  }}
-                >
+                {/* Normal font weight excerpt */}
+                <p className="text-sm sm:text-[15px] font-serif font-normal text-slate-700 leading-relaxed pt-0.5">
                   {featured.excerpt || 'The strongest workplace cultures are built by leaders who normalize honest conversations before misunderstandings turn into resentment.'}
                 </p>
               </div>
+            </div>
 
-              {/* Author Byline matching Image 2 */}
-              <div className="mt-auto pt-1 flex items-center text-xs font-sans">
-                <span className="text-slate-500 font-medium mr-1.5">BY</span>
-                <span className="text-[#1642D0] font-bold uppercase group-hover:underline">
-                  {featured.author?.name || (typeof featured.author === 'string' ? featured.author : 'Ruthann Peace Brown')}
-                </span>
-              </div>
-            </Link>
-          </article>
-        </div>
+            {/* Byline ending at the exact same horizontal line as the right column */}
+            <div className="text-xs font-sans uppercase tracking-wider pt-4 pb-1 flex items-center gap-1">
+              <span className="text-slate-500 font-semibold">BY</span>
+              <span className="text-[#c61830] font-bold underline decoration-[#c61830] underline-offset-2 hover:text-red-800 transition-colors">
+                {featured.author?.name || (typeof featured.author === 'string' ? featured.author : 'Ruthann Peace Brown')}
+              </span>
+            </div>
+          </div>
 
-        {/* Right Column: Stacked 3 Articles matching Image 1 with equal vertical spacing & no line clamping */}
-        <div className="flex flex-col justify-between h-full divide-y divide-slate-200">
-          {items.slice(0, 3).map((item) => {
-            const itemUrl = getArticleUrl(item);
-            const titleLines = STARTUPS_TITLE_LINES[item.id] || (item.slug ? STARTUPS_TITLE_LINES[item.slug] : null);
+          {/* Right Column: 3 Stacked Stories with matching 150x150 rounded-xl thumbnails from Image 2 */}
+          <div className="flex flex-col justify-between h-full space-y-4 sm:space-y-5">
+            {items.slice(0, 3).map((item) => {
+              const itemUrl = getArticleUrl(item);
 
-            return (
-              <article
-                key={item.id}
-                className="group flex-1 flex flex-col justify-center py-3 sm:py-3.5 first:pt-0 last:pb-0"
-              >
-                <Link
-                  href={itemUrl}
-                  className="flex items-center justify-between gap-4 sm:gap-5 w-full no-underline text-inherit cursor-pointer"
-                  aria-label={item.title}
+              return (
+                <div
+                  key={item.id}
+                  className="group flex items-start justify-between gap-4 sm:gap-6 pb-4 sm:pb-5 border-b border-slate-200"
                 >
-                  {/* Left Text Block: Category, Title, Author matching Image 1 lines of sentences */}
-                  <div className="flex-1 min-w-0 pr-3 sm:pr-4 lg:pr-5 flex flex-col justify-between self-stretch py-0.5">
-                    <div>
-                      <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-1 block no-underline hover:no-underline active:no-underline focus:no-underline">
-                        {item.category}
-                      </span>
+                  {/* Left Text Block */}
+                  <div className="flex-1 space-y-1.5 pr-1 sm:pr-2">
+                    <span className="text-xs font-bold uppercase tracking-wider text-[#c61830] font-sans block">
+                      {item.category}
+                    </span>
 
-                      <h4
-                        className="text-[13.5px] sm:text-[14.5px] lg:text-[15px] xl:text-[16px] 2xl:text-[17.5px] font-serif font-bold text-slate-900 leading-[1.28] tracking-tight mb-1.5 group-hover:underline decoration-slate-900 decoration-1 underline-offset-2 transition-all line-clamp-3"
-                        style={{
-                          display: '-webkit-box',
-                          WebkitLineClamp: 3,
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden',
-                        }}
+                    <h3 className="text-lg sm:text-[19px] lg:text-[20px] font-serif font-bold text-[#020618] leading-[1.3] sm:leading-[1.35] tracking-tight">
+                      <Link
+                        href={itemUrl}
+                        className="text-[#020618] no-underline hover:underline decoration-[#020618] decoration-1 underline-offset-[3px] transition-all"
                       >
                         {item.title}
-                      </h4>
-                    </div>
+                      </Link>
+                    </h3>
 
-                    {/* Author Byline matching Image 1 */}
-                    <div className="mt-auto pt-1 flex items-center text-[11px] sm:text-xs font-sans">
-                      <span className="text-slate-500 font-medium mr-1.5">BY</span>
-                      <span className="text-[#1642D0] font-bold uppercase group-hover:underline">
+                    {/* Byline */}
+                    <div className="text-xs font-sans uppercase tracking-wider pt-1 flex items-center gap-1">
+                      <span className="text-slate-500 font-semibold">BY</span>
+                      <span className="text-[#c61830] font-bold underline decoration-[#c61830] underline-offset-2 hover:text-red-800 transition-colors">
                         {item.author?.name || (typeof item.author === 'string' ? item.author : 'Staff Contributor')}
                       </span>
                     </div>
                   </div>
 
-                  {/* Right Thumbnail matching Image 1 dimensions and shape */}
+                  {/* Right Square Thumbnail: 125x125 to 150x150 rounded-xl matching Image 2 */}
                   {item.imageUrl && (
-                    <figure className="relative w-36 sm:w-44 md:w-52 lg:w-[210px] xl:w-[250px] 2xl:w-[295px] aspect-[16/9.6] flex-shrink-0 overflow-hidden rounded-none border border-slate-200/90 bg-slate-100">
+                    <Link
+                      href={itemUrl}
+                      className="w-[125px] h-[125px] sm:w-[140px] sm:h-[140px] lg:w-[150px] lg:h-[150px] flex-shrink-0 overflow-hidden rounded-xl border border-slate-200/90 shadow-2xs block"
+                    >
                       <img
                         src={item.imageUrl}
                         alt={item.title}
-                        className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 rounded-none"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         onError={(e) => {
                           const target = e.currentTarget;
                           if (!target.dataset.fallback) {
@@ -293,12 +274,13 @@ export const StartupsEntrepreneurshipSection: React.FC<StartupsSectionProps> = (
                           }
                         }}
                       />
-                    </figure>
+                    </Link>
                   )}
-                </Link>
-              </article>
-            );
-          })}
+                </div>
+              );
+            })}
+          </div>
+
         </div>
       </div>
     </section>

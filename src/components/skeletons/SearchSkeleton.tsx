@@ -1,9 +1,16 @@
+'use client';
+
 import React from 'react';
 import { SkeletonBase } from './SkeletonBase';
+import { useSkeletonMaxDuration } from './useSkeletonMaxDuration';
 
 export const SearchSkeleton: React.FC = () => {
+  const isVisible = useSkeletonMaxDuration(2000);
+
+  if (!isVisible) return null;
+
   return (
-    <div className="w-full bg-white animate-in fade-in duration-200">
+    <div className="w-full bg-white animate-in fade-in duration-200 skeleton-max-duration">
       
       {/* Search Hero Skeleton */}
       <section className="bg-slate-50/80 border-b border-slate-200 py-10 md:py-14 px-5 lg:px-10">

@@ -115,8 +115,9 @@ export const TechnologySuperIntelligenceSection: React.FC<TechSectionProps> = ({
       {/* Header with Title, Subtitle and See All */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-3.5 sm:mb-4.5 gap-3">
         <div>
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight">
-            <Link href="/topic/technology-super-intelligence" className="hover:text-[#1642D0] transition-colors no-underline hover:no-underline active:no-underline focus:no-underline">
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 tracking-tight flex items-center">
+        <span className="inline-block w-3.5 h-3.5 sm:w-4 sm:h-4 border-2 border-[#c61830] rounded-2xs mr-2 -translate-y-0.5 shrink-0" aria-hidden="true" />
+            <Link href="/topic/technology-super-intelligence" className="hover:text-[#c61830] transition-colors no-underline hover:no-underline active:no-underline focus:no-underline">
               Technology &amp; Super Intelligence
             </Link>
           </h2>
@@ -127,10 +128,10 @@ export const TechnologySuperIntelligenceSection: React.FC<TechSectionProps> = ({
 
         <Link
           href="/topic/technology-super-intelligence"
-          className="inline-flex items-center gap-2 group text-xs sm:text-sm font-sans font-bold tracking-wider uppercase text-slate-800 hover:text-[#1642D0] transition-colors flex-shrink-0"
+          className="inline-flex items-center gap-2 group text-xs sm:text-sm font-sans font-bold tracking-wider uppercase text-slate-800 hover:text-[#c61830] transition-colors flex-shrink-0"
         >
           <span>SEE ALL</span>
-          <span className="w-5 h-5 sm:w-6 sm:h-6 bg-[#1642D0] group-hover:bg-[#1235a8] text-white flex items-center justify-center rounded transition-colors shadow-sm">
+          <span className="w-5 h-5 sm:w-6 sm:h-6 bg-[#c61830] group-hover:bg-[#a51226] text-white flex items-center justify-center rounded transition-colors shadow-sm">
             <svg
               className="w-3 h-3 sm:w-3.5 sm:h-3.5"
               fill="none"
@@ -167,7 +168,7 @@ export const TechnologySuperIntelligenceSection: React.FC<TechSectionProps> = ({
                   />
                 </figure>
                 <div className="flex-1 min-w-0">
-                  <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-0.5 block">
+                  <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-[#c61830] mb-0.5 block">
                     {item.category}
                   </span>
                   <h4
@@ -211,7 +212,7 @@ export const TechnologySuperIntelligenceSection: React.FC<TechSectionProps> = ({
                 </figure>
 
                 {/* Content Placed Separately Below the Image */}
-                <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#1642D0] no-underline hover:no-underline active:no-underline focus:no-underline mb-1 block">
+                <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#c61830] no-underline hover:no-underline active:no-underline focus:no-underline mb-1 block">
                   {featured.category}
                 </span>
 
@@ -251,7 +252,7 @@ export const TechnologySuperIntelligenceSection: React.FC<TechSectionProps> = ({
                 )}
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <span className="text-slate-500 font-medium">By</span>
-                  <span className="text-[#1642D0] font-bold group-hover:underline">
+                  <span className="text-[#c61830] font-bold group-hover:underline">
                     {featured.author?.name}
                   </span>
                   <span className="text-slate-300">•</span>
@@ -287,7 +288,7 @@ export const TechnologySuperIntelligenceSection: React.FC<TechSectionProps> = ({
                   </figure>
 
                   {/* Content Placed Separately Below the Image */}
-                  <span className="text-[10px] sm:text-[10.5px] font-sans font-bold uppercase tracking-wider text-[#1642D0] mb-0.5 block">
+                  <span className="text-[10px] sm:text-[10.5px] font-sans font-bold uppercase tracking-wider text-[#c61830] mb-0.5 block">
                     {card.category}
                   </span>
 

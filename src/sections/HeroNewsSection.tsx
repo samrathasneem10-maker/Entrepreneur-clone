@@ -117,9 +117,20 @@ export const HeroNewsSection: React.FC<HeroNewsSectionProps> = ({
             imageUrl: a.imageUrl || '',
           }));
 
-          const combined = [...dbArticles];
-          BASELINE_LATEST_NEWS_9.forEach((item) => {
-            if (!combined.some((c) => c.slug === item.slug || c.title.toLowerCase() === item.title.toLowerCase())) {
+          const seenKeys = new Set<string>();
+          const combined: Article[] = [];
+          [...dbArticles, ...BASELINE_LATEST_NEWS_9].forEach((item) => {
+            const idKey = item.id || '';
+            const slugKey = item.slug || '';
+            const titleKey = (item.title || '').toLowerCase().trim();
+            if (
+              (!idKey || !seenKeys.has(idKey)) &&
+              (!slugKey || !seenKeys.has(slugKey)) &&
+              (!titleKey || !seenKeys.has(titleKey))
+            ) {
+              if (idKey) seenKeys.add(idKey);
+              if (slugKey) seenKeys.add(slugKey);
+              if (titleKey) seenKeys.add(titleKey);
               combined.push(item);
             }
           });
@@ -145,9 +156,20 @@ export const HeroNewsSection: React.FC<HeroNewsSectionProps> = ({
             imageUrl: a.imageUrl || '/images/home-hero/hero-growth-decision.png',
           }));
 
-          const combinedHero = [...dbHero];
-          BASELINE_HERO_8.forEach((item) => {
-            if (!combinedHero.some((c) => c.slug === item.slug || c.title.toLowerCase() === item.title.toLowerCase())) {
+          const seenHeroKeys = new Set<string>();
+          const combinedHero: Article[] = [];
+          [...dbHero, ...BASELINE_HERO_8].forEach((item) => {
+            const idKey = item.id || '';
+            const slugKey = item.slug || '';
+            const titleKey = (item.title || '').toLowerCase().trim();
+            if (
+              (!idKey || !seenHeroKeys.has(idKey)) &&
+              (!slugKey || !seenHeroKeys.has(slugKey)) &&
+              (!titleKey || !seenHeroKeys.has(titleKey))
+            ) {
+              if (idKey) seenHeroKeys.add(idKey);
+              if (slugKey) seenHeroKeys.add(slugKey);
+              if (titleKey) seenHeroKeys.add(titleKey);
               combinedHero.push(item);
             }
           });
@@ -177,10 +199,10 @@ export const HeroNewsSection: React.FC<HeroNewsSectionProps> = ({
   const currentHero = heroSlides[activeSlide] || heroSlides[0] || HERO_GROWTH_DECISION_ARTICLE;
 
   return (
-    <section className="bg-white pt-2.5 sm:pt-3.5 2xl:pt-4 pb-4 sm:pb-5 2xl:pb-5 w-full">
+    <section className="bg-white pt-2.5 sm:pt-3.5 2xl:pt-4 pb-6 sm:pb-8 2xl:pb-10 w-full border-b border-slate-200/80 mb-6 sm:mb-8">
       <div className="w-full">
-        {/* Main 3-Column Layout: Laptop and Desktop views slightly taller with synchronized alignment across latest, middle, and right parts */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_1.65fr_1.25fr] xl:grid-cols-[1.2fr_1.75fr_1.3fr] gap-4 sm:gap-5 xl:gap-6 items-stretch lg:h-[555px] xl:h-[580px] 2xl:h-[675px] 2xl:min-h-[660px] 2xl:max-h-[690px]">
+        {/* Main 3-Column Layout: dynamic height with stretch alignment across latest, middle, and right parts */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_1.65fr_1.25fr] xl:grid-cols-[1.2fr_1.75fr_1.3fr] gap-4 sm:gap-5 xl:gap-6 items-stretch">
           
           {/* ========================================================= */}
           {/* 1. LEFT COLUMN: Latest (Mobile: order-2, Desktop: order-1) */}
@@ -188,7 +210,8 @@ export const HeroNewsSection: React.FC<HeroNewsSectionProps> = ({
           <div className="order-2 lg:order-1 flex flex-col justify-between h-full">
             {/* Header: Latest + See All [->] */}
             <div className="flex items-center justify-between pb-1.5 mb-1 flex-shrink-0">
-              <h2 className="font-serif font-black text-xl sm:text-2xl text-[#020618] leading-none my-0">
+              <h2 className="font-serif font-black text-xl sm:text-2xl text-[#020618] leading-none my-0 flex items-center">
+                <span className="inline-block w-3.5 h-3.5 sm:w-4 sm:h-4 border-2 border-[#c61830] rounded-2xs mr-2 -translate-y-0.5 shrink-0" aria-hidden="true" />
                 <Link href="/latest" className="no-underline hover:no-underline active:no-underline focus:no-underline">
                   Latest
                 </Link>
@@ -196,11 +219,11 @@ export const HeroNewsSection: React.FC<HeroNewsSectionProps> = ({
 
               <Link
                 href="/latest"
-                className="flex items-center gap-1.5 text-xs font-bold text-[#020618] hover:text-[#1642D0] transition-colors group"
+                className="flex items-center gap-1.5 text-xs font-bold text-[#020618] hover:text-[#c61830] transition-colors group"
                 aria-label="See all latest articles"
               >
                 <span>See All</span>
-                <div className="w-4.5 h-4.5 bg-[#1642D0] group-hover:bg-blue-800 text-white rounded-xs flex items-center justify-center transition-colors">
+                <div className="w-4.5 h-4.5 bg-[#c61830] group-hover:bg-[#a51226] text-white rounded-xs flex items-center justify-center transition-colors">
                   <ArrowRight className="w-2.5 h-2.5 stroke-[2.5]" />
                 </div>
               </Link>
@@ -208,13 +231,13 @@ export const HeroNewsSection: React.FC<HeroNewsSectionProps> = ({
 
             {/* List of 5 Balanced Articles matching vertical height of center & right */}
             <div className="divide-y divide-slate-100 flex-1 flex flex-col justify-between pt-0.5">
-              {latestArticles.slice(0, 5).map((art) => (
+              {latestArticles.slice(0, 5).map((art, idx) => (
                 <article
-                  key={art.id}
+                  key={`${art.id || art.slug || 'art'}-${idx}`}
                   className="py-1.5 first:pt-0.5 last:pb-0 lg:py-1 xl:py-1.5 2xl:py-2.5 flex items-center justify-between gap-3 xl:gap-4 group"
                 >
                   <div className="flex-1 min-w-0 pr-1">
-                    <span className="text-[9px] sm:text-[9.5px] font-bold text-[#1642D0] uppercase tracking-wider block font-sans mb-0.5 no-underline hover:no-underline active:no-underline focus:no-underline">
+                    <span className="text-[9px] sm:text-[9.5px] font-bold text-[#c61830] uppercase tracking-wider block font-sans mb-0.5 no-underline hover:no-underline active:no-underline focus:no-underline">
                       {art.category}
                     </span>
                     <h3
@@ -253,31 +276,21 @@ export const HeroNewsSection: React.FC<HeroNewsSectionProps> = ({
           {/* ========================================================= */}
           {/* 2. CENTER COLUMN: Main Featured Hero Card (Mobile: order-1, Desktop: order-2) */}
           {/* ========================================================= */}
-          <div className="order-1 lg:order-2 flex flex-col h-full">
-            <div className="relative h-full flex-1 w-full rounded-xs overflow-hidden bg-[#070b19] text-white flex flex-col justify-end min-h-[380px] lg:min-h-[410px] xl:min-h-[430px] 2xl:min-h-[640px] shadow-sm group">
-              {/* Background Image */}
-              <img
-                src={currentHero.imageUrl || '/images/home-hero/hero-growth-decision.png'}
-                alt={currentHero.title}
-                className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-[1.01] transition-transform duration-500"
-              />
-
-              {/* Gradient Dark Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/75 to-transparent" />
-
-              {/* Hero Content Overlay */}
-              <div className="relative z-10 p-4 sm:p-5 lg:p-6 2xl:p-8 flex flex-col justify-end">
-                {/* Category Badge */}
+          <div className="order-1 lg:order-2 flex flex-col justify-between h-full bg-white">
+            <div className="flex flex-col justify-between h-full group">
+              {/* Top Text Content: Category, Title, Author Byline (Matching User Image 2) */}
+              <div className="text-center px-2 pt-1 pb-2">
+                {/* Category Link */}
                 <Link
                   href="/topic/startups-entrepreneurship"
-                  className="inline-block bg-[#1642D0] hover:bg-blue-700 text-white text-[9.5px] sm:text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-xs mb-1.5 w-fit font-sans transition-colors no-underline hover:no-underline active:no-underline focus:no-underline"
+                  className="text-[11px] sm:text-xs font-sans font-bold uppercase tracking-wider text-[#c61830] hover:underline mb-1.5 inline-block text-center"
                 >
                   {currentHero.category}
                 </Link>
 
-                {/* Title - Line clamp 3 */}
+                {/* Main Headline */}
                 <h1
-                  className="font-serif font-bold text-xl sm:text-2xl lg:text-[25px] xl:text-[27px] 2xl:text-[33px] leading-[1.2] tracking-tight text-white my-1 line-clamp-3"
+                  className="font-serif font-bold text-xl sm:text-2xl lg:text-[26px] xl:text-[29px] leading-[1.22] tracking-tight text-[#020618] my-1 group-hover:underline text-center line-clamp-3"
                   style={{
                     display: '-webkit-box',
                     WebkitLineClamp: 3,
@@ -287,80 +300,72 @@ export const HeroNewsSection: React.FC<HeroNewsSectionProps> = ({
                 >
                   <Link
                     href={`/article/${currentHero.slug || currentHero.id}`}
-                    className="hover:underline text-white no-underline"
+                    className="hover:underline text-[#020618] no-underline"
                   >
                     {currentHero.title}
                   </Link>
                 </h1>
 
-                {/* Excerpt - Line clamp 3 */}
-                <p
-                  className="font-sans text-xs 2xl:text-[14.5px] text-slate-200 leading-relaxed mt-1.5 max-w-xl my-0 line-clamp-3"
-                  style={{
-                    display: '-webkit-box',
-                    WebkitLineClamp: 3,
-                    WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden',
-                  }}
-                >
-                  {currentHero.excerpt || 'The right growth decision at the right time can unlock massive opportunities. Here is what founders need to consider before it is too late.'}
-                </p>
-
-                {/* Author Info */}
-                <div className="flex items-center gap-2.5 mt-3">
-                  <img
-                    src={currentHero.author?.avatar || '/images/home-hero/author-scott.png'}
-                    alt={currentHero.author?.name || 'Author'}
-                    className="w-6.5 h-6.5 sm:w-7 sm:h-7 2xl:w-8.5 2xl:h-8.5 rounded-full object-cover border border-slate-500"
-                  />
-                  <div className="text-xs font-sans">
-                    <span className="font-bold text-white block leading-tight">
-                      By {currentHero.author?.name || 'Scott Smrkovski'}
-                    </span>
-                    <span className="text-slate-300 text-[10.5px]">
-                      {currentHero.date} • {currentHero.readTime || '8 min read'}
-                    </span>
-                  </div>
+                {/* Author Byline: BY AUTHOR NAME */}
+                <div className="text-center mt-1 text-[11px] sm:text-xs font-sans uppercase tracking-wider text-slate-500 font-medium">
+                  <span className="text-slate-500">BY </span>
+                  <span className="text-[#c61830] font-bold underline underline-offset-2">
+                    {currentHero.author?.name || 'Sherin Shibu'}
+                  </span>
                 </div>
-
-                {/* Carousel Controls Row */}
-                <div className="flex items-center justify-between pt-3 mt-2.5 2xl:mt-3 border-t border-white/15">
-                  {/* Indicator Bars */}
-                  <div className="flex items-center gap-1.5">
-                    {heroSlides.map((_, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => setActiveSlide(idx)}
-                        aria-label={`Go to slide ${idx + 1}`}
-                        className={`h-1 rounded-full transition-all cursor-pointer ${
-                          activeSlide === idx
-                            ? 'w-7 bg-[#1642D0]'
-                            : 'w-6 bg-white/40 hover:bg-white/60'
-                        }`}
-                      />
-                    ))}
-                  </div>
-
-                  {/* Prev / Next Arrows */}
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      onClick={prevSlide}
-                      aria-label="Previous slide"
-                      className="w-6.5 h-6.5 sm:w-7 sm:h-7 rounded-xs border border-white/30 hover:border-white/80 bg-black/40 hover:bg-black/70 text-white flex items-center justify-center transition-colors cursor-pointer"
-                    >
-                      <ChevronLeft className="w-3.5 h-3.5 stroke-[2]" />
-                    </button>
-                    <button
-                      onClick={nextSlide}
-                      aria-label="Next slide"
-                      className="w-6.5 h-6.5 sm:w-7 sm:h-7 rounded-xs border border-white/30 hover:border-white/80 bg-black/40 hover:bg-black/70 text-white flex items-center justify-center transition-colors cursor-pointer"
-                    >
-                      <ChevronRight className="w-3.5 h-3.5 stroke-[2]" />
-                    </button>
-                  </div>
-                </div>
-
               </div>
+
+              {/* Center Image: Square / Portrait Card with crisp non-rounded borders */}
+              <div className="relative w-full aspect-[4/3] sm:aspect-[1/1] max-h-[380px] lg:max-h-[420px] my-2 overflow-hidden rounded-none border border-slate-200/80 bg-slate-100 flex-shrink-0">
+                <Link
+                  href={`/article/${currentHero.slug || currentHero.id}`}
+                  className="block w-full h-full cursor-pointer"
+                >
+                  <img
+                    src={currentHero.imageUrl || '/images/home-hero/hero-growth-decision.png'}
+                    alt={currentHero.title}
+                    className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500 rounded-none"
+                  />
+                </Link>
+              </div>
+
+              {/* Bottom Carousel Controls: 4 Slot Bars + Left/Right Arrows */}
+              <div className="flex items-center justify-between pt-2 px-1 flex-shrink-0">
+                {/* 4 Dedicated Slot Indicator Bars */}
+                <div className="flex items-center gap-2">
+                  {heroSlides.slice(0, 4).map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setActiveSlide(idx)}
+                      aria-label={`Go to slide ${idx + 1}`}
+                      className={`h-1.5 transition-all cursor-pointer rounded-none ${
+                        activeSlide === idx
+                          ? 'w-10 sm:w-12 bg-[#c61830]'
+                          : 'w-7 sm:w-8 bg-slate-300 hover:bg-slate-400'
+                      }`}
+                    />
+                  ))}
+                </div>
+
+                {/* Prev / Next Arrows */}
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={prevSlide}
+                    aria-label="Previous slide"
+                    className="w-7 h-7 rounded-none border border-slate-300 hover:border-slate-800 bg-white hover:bg-slate-50 text-slate-800 flex items-center justify-center transition-colors cursor-pointer shadow-2xs"
+                  >
+                    <ChevronLeft className="w-4 h-4 stroke-[2]" />
+                  </button>
+                  <button
+                    onClick={nextSlide}
+                    aria-label="Next slide"
+                    className="w-7 h-7 rounded-none border border-slate-300 hover:border-slate-800 bg-white hover:bg-slate-50 text-slate-800 flex items-center justify-center transition-colors cursor-pointer shadow-2xs"
+                  >
+                    <ChevronRight className="w-4 h-4 stroke-[2]" />
+                  </button>
+                </div>
+              </div>
+
             </div>
           </div>
 
@@ -382,7 +387,7 @@ export const HeroNewsSection: React.FC<HeroNewsSectionProps> = ({
                 />
               </Link>
               <div className="p-2.5 sm:p-3 2xl:p-3.5">
-                <span className="inline-block bg-[#1642D0] text-white text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-xs w-fit font-sans no-underline hover:no-underline active:no-underline focus:no-underline">
+                <span className="inline-block bg-[#c61830] text-white text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-xs w-fit font-sans no-underline hover:no-underline active:no-underline focus:no-underline">
                   {rightCard.category}
                 </span>
                 <h3
@@ -406,13 +411,13 @@ export const HeroNewsSection: React.FC<HeroNewsSectionProps> = ({
 
             {/* Bottom 3 Horizontal Articles: Hero Slots 6, 7, 8 */}
             <div className="divide-y divide-slate-100 flex-1 flex flex-col justify-between pt-0.5">
-              {rightStream.map((art) => (
+              {rightStream.map((art, idx) => (
                 <article
-                  key={art.id}
+                  key={`${art.id || art.slug || 'right'}-${idx}`}
                   className="py-1.5 first:pt-0 last:pb-0 lg:py-2 xl:py-2.5 2xl:py-3.5 flex items-center justify-between gap-3 xl:gap-4 group"
                 >
                   <div className="flex-1 min-w-0 pr-1">
-                    <span className="text-[9.5px] font-bold text-[#1642D0] uppercase tracking-wider block font-sans mb-0.5 no-underline hover:no-underline active:no-underline focus:no-underline">
+                    <span className="text-[9.5px] font-bold text-[#c61830] uppercase tracking-wider block font-sans mb-0.5 no-underline hover:no-underline active:no-underline focus:no-underline">
                       {art.category}
                     </span>
                     <h4

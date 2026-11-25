@@ -102,7 +102,11 @@ export async function GET(request: Request) {
         avatar: effectiveAvatar,
         bio: effectiveBio,
         writerName: u.name || effectiveWriterName,
-        linkedinUrl: s.linkedin_url || u.linkedin_url || '',
+        linkedinUrl: (s.linkedin_url && !s.linkedin_url.includes('your-profile') && s.linkedin_url !== 'https://www.linkedin.com/in/fathima-samra')
+          ? s.linkedin_url
+          : (u.linkedin_url && !u.linkedin_url.includes('your-profile') && u.linkedin_url !== 'https://www.linkedin.com/in/fathima-samra')
+          ? u.linkedin_url
+          : (u.role === 'writer' ? 'https://www.linkedin.com/in/fathima-samra-8823b634a' : 'https://www.linkedin.com/in/mohamed-azmy-mohamed-akram-240456190'),
         phone: s.phone || '',
         facebookConnected: Boolean(s.facebook_connected),
         googleConnected: s.google_connected !== undefined ? Boolean(s.google_connected) : true,

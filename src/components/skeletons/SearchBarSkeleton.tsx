@@ -1,9 +1,16 @@
+'use client';
+
 import React from 'react';
 import { SkeletonBase } from './SkeletonBase';
+import { useSkeletonMaxDuration } from './useSkeletonMaxDuration';
 
 export const SearchBarSkeleton: React.FC = () => {
+  const isVisible = useSkeletonMaxDuration(2000);
+
+  if (!isVisible) return null;
+
   return (
-    <div className="space-y-4 pt-4 animate-in fade-in duration-200">
+    <div className="space-y-4 pt-4 animate-in fade-in duration-200 skeleton-max-duration">
       <SkeletonBase className="h-4 w-32" />
       <div className="space-y-3">
         {[...Array(3)].map((_, i) => (
