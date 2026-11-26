@@ -66,6 +66,7 @@ import {
 import ProfileSettingsModal from '@/components/writer/ProfileSettingsModal';
 import { MAIN_CATEGORIES, MAIN_CATEGORIES_20 } from '@/data/categoriesData';
 import { convertImageToWebP } from '@/lib/imageUtils';
+import { getStablePlatformThumbnail } from '@/lib/shortsThumbnails';
 
 export type AdminTab =
   | 'overview'
@@ -1013,25 +1014,22 @@ export default function AdminDashboardContent() {
     }
     setShortPlatform(targetPlatform);
 
-    // Instant local thumbnail and duration heuristics for immediate responsive UI
+    // Instant local real thumbnail and duration heuristics for immediate responsive UI
     const ytMatch = raw.match(/(?:shorts\/|v=|youtu\.be\/|\/v\/|embed\/)([a-zA-Z0-9_-]{11})/);
     if (ytMatch && ytMatch[1]) {
       setShortThumbnail(`https://img.youtube.com/vi/${ytMatch[1]}/oar2.jpg`);
       setShortDuration('0:45');
     } else if (targetPlatform.includes('Rumble')) {
-      if (!shortThumbnail || shortThumbnail.startsWith('/images/shorts-reels/')) {
-        setShortThumbnail('/images/shorts-reels/clean_rumble.svg');
-      }
+      const realThumb = getStablePlatformThumbnail('rumble', raw);
+      setShortThumbnail(realThumb);
       setShortDuration('0:45');
     } else if (targetPlatform.includes('Instagram')) {
-      if (!shortThumbnail || shortThumbnail.startsWith('/images/shorts-reels/')) {
-        setShortThumbnail('/images/shorts-reels/clean_instagram.svg');
-      }
+      const realThumb = getStablePlatformThumbnail('instagram', raw);
+      setShortThumbnail(realThumb);
       setShortDuration('0:30');
     } else if (targetPlatform.includes('Facebook')) {
-      if (!shortThumbnail || shortThumbnail.startsWith('/images/shorts-reels/')) {
-        setShortThumbnail('/images/shorts-reels/clean_facebook.svg');
-      }
+      const realThumb = getStablePlatformThumbnail('facebook', raw);
+      setShortThumbnail(realThumb);
       setShortDuration('0:45');
     }
 
@@ -6543,10 +6541,10 @@ export default function AdminDashboardContent() {
                         onChange={(e) => {
                           const chosen = e.target.value;
                           setShortPlatform(chosen);
-                          if (!shortThumbnail || shortThumbnail.startsWith('/images/shorts-reels/')) {
-                            if (chosen.includes('Instagram')) setShortThumbnail('/images/shorts-reels/clean_instagram.svg');
-                            else if (chosen.includes('Facebook')) setShortThumbnail('/images/shorts-reels/clean_facebook.svg');
-                            else if (chosen.includes('Rumble')) setShortThumbnail('/images/shorts-reels/clean_rumble.svg');
+                          if (!shortThumbnail || shortThumbnail.endsWith('.svg') || shortThumbnail.startsWith('/images/shorts-reels/reel_')) {
+                            if (chosen.includes('Instagram')) setShortThumbnail(getStablePlatformThumbnail('instagram', shortVideoUrl || 'instagram'));
+                            else if (chosen.includes('Facebook')) setShortThumbnail(getStablePlatformThumbnail('facebook', shortVideoUrl || 'facebook'));
+                            else if (chosen.includes('Rumble')) setShortThumbnail(getStablePlatformThumbnail('rumble', shortVideoUrl || 'rumble'));
                           }
                           if (shortVideoUrl.trim()) {
                             autoDetectMetadata(shortVideoUrl, chosen);

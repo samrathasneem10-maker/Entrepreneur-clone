@@ -329,10 +329,10 @@ export const HeroNewsSection: React.FC<HeroNewsSectionProps> = ({
                 </Link>
               </div>
 
-              {/* Bottom Carousel Controls: 4 Slot Bars + Left/Right Arrows */}
-              <div className="flex items-center justify-between pt-2 px-1 flex-shrink-0">
-                {/* 4 Dedicated Slot Indicator Bars */}
-                <div className="flex items-center gap-2">
+              {/* Bottom Carousel Controls: 4 Slot Bars Centered in the Middle */}
+              <div className="flex items-center justify-center pt-2 px-1 flex-shrink-0">
+                {/* 4 Dedicated Slot Indicator Bars centered */}
+                <div className="flex items-center justify-center gap-2">
                   {heroSlides.slice(0, 4).map((_, idx) => (
                     <button
                       key={idx}
@@ -345,24 +345,6 @@ export const HeroNewsSection: React.FC<HeroNewsSectionProps> = ({
                       }`}
                     />
                   ))}
-                </div>
-
-                {/* Prev / Next Arrows */}
-                <div className="flex items-center gap-1.5">
-                  <button
-                    onClick={prevSlide}
-                    aria-label="Previous slide"
-                    className="w-7 h-7 rounded-none border border-slate-300 hover:border-slate-800 bg-white hover:bg-slate-50 text-slate-800 flex items-center justify-center transition-colors cursor-pointer shadow-2xs"
-                  >
-                    <ChevronLeft className="w-4 h-4 stroke-[2]" />
-                  </button>
-                  <button
-                    onClick={nextSlide}
-                    aria-label="Next slide"
-                    className="w-7 h-7 rounded-none border border-slate-300 hover:border-slate-800 bg-white hover:bg-slate-50 text-slate-800 flex items-center justify-center transition-colors cursor-pointer shadow-2xs"
-                  >
-                    <ChevronRight className="w-4 h-4 stroke-[2]" />
-                  </button>
                 </div>
               </div>
 

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getStablePlatformThumbnail } from '@/lib/shortsThumbnails';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
@@ -17,7 +18,9 @@ export async function GET(request: Request) {
     });
     if (backendRes.ok) {
       const data = await backendRes.json();
-      return NextResponse.json(data);
+      if (data && data.success && data.thumbnail && !data.thumbnail.endsWith('.svg')) {
+        return NextResponse.json(data);
+      }
     }
   } catch (err) {}
 
@@ -47,10 +50,10 @@ export async function GET(request: Request) {
     }
   } else if (lower.includes('rumble')) {
     platform = 'Rumble Video';
-    thumbnail = '/images/shorts-reels/clean_rumble.svg';
+    thumbnail = getStablePlatformThumbnail('rumble', rawUrl);
   } else if (lower.includes('instagram') || lower.includes('instagr.am')) {
     platform = 'Instagram Reel';
-    thumbnail = '/images/shorts-reels/clean_instagram.svg';
+    thumbnail = getStablePlatformThumbnail('instagram', rawUrl);
     duration = '0:30';
     try {
       const parsed = new URL(rawUrl.startsWith('http') ? rawUrl : `https://${rawUrl}`);
@@ -68,7 +71,7 @@ export async function GET(request: Request) {
     } catch {}
   } else if (lower.includes('facebook') || lower.includes('fb.watch') || lower.includes('fb.com')) {
     platform = 'Facebook Reel';
-    thumbnail = '/images/shorts-reels/clean_facebook.svg';
+    thumbnail = getStablePlatformThumbnail('facebook', rawUrl);
     duration = '0:45';
     try {
       const parsed = new URL(rawUrl.startsWith('http') ? rawUrl : `https://${rawUrl}`);
@@ -93,6 +96,10 @@ export async function GET(request: Request) {
         title = cleanSlug.split(' ').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
       }
     } catch {}
+  }
+
+  if (!thumbnail || thumbnail.endsWith('.svg')) {
+    thumbnail = getStablePlatformThumbnail(platform, title || rawUrl);
   }
 
   return NextResponse.json({
