@@ -47,11 +47,15 @@ export function sanitizeVideoUrl(rawInput: string): string {
 
     // Facebook: handle /share/r/{id} or /reel/{id}
     if (host.includes('facebook.com') || host.includes('fb.watch')) {
+      if (urlObj.pathname.includes('/share/r/')) {
+        return `https://www.facebook.com${urlObj.pathname}`;
+      }
       const parts = urlObj.pathname.split('/').filter(Boolean);
-      const reelIdx = parts.findIndex(p => p === 'reel' || p === 'reels' || p === 'r');
+      const reelIdx = parts.findIndex(p => p === 'reel' || p === 'reels');
       if (reelIdx !== -1 && parts[reelIdx + 1]) {
         return `https://www.facebook.com/reel/${parts[reelIdx + 1]}/`;
       }
+      return urlObj.toString();
     }
 
     // Rumble: handle /shorts/{id} or /v{id}-slug.html
