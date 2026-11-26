@@ -79,7 +79,7 @@ export async function GET(request: Request) {
       const parsed = new URL(rawUrl);
       const segments = parsed.pathname.split('/').filter(Boolean);
       const last = segments.pop() || '';
-      const cleanSlug = last.replace(/\.html?$/i, '').replace(/^v[0-9]+-/, '').replace(/[-_]+/g, ' ').trim();
+      const cleanSlug = last.replace(/\.html?$/i, '').replace(/^v[0-9a-z]+-/i, '').replace(/[-_]+/g, ' ').trim();
       if (cleanSlug.length > 2 && !cleanSlug.toLowerCase().includes('reel') && !/^\d+$/.test(cleanSlug)) {
         title = cleanSlug.split(' ').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
       }
