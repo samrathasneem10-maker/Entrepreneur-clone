@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
+import { sanitizeVideoUrl } from '@/lib/sanitizeVideoUrl';
 
 interface ReelItem {
   id: string | number;
@@ -152,10 +153,7 @@ export const ShortsReelsSection: React.FC = () => {
 
   const handleCardClick = (reel: ReelItem) => {
     if (reel.videoUrl) {
-      const clean = reel.videoUrl.trim();
-      const targetUrl = clean.startsWith('http://') || clean.startsWith('https://')
-        ? clean
-        : `https://${clean}`;
+      const targetUrl = sanitizeVideoUrl(reel.videoUrl);
       window.open(targetUrl, '_blank', 'noopener,noreferrer');
     }
   };

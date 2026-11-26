@@ -67,6 +67,7 @@ import ProfileSettingsModal from '@/components/writer/ProfileSettingsModal';
 import { MAIN_CATEGORIES, MAIN_CATEGORIES_20 } from '@/data/categoriesData';
 import { convertImageToWebP } from '@/lib/imageUtils';
 import { getStablePlatformThumbnail } from '@/lib/shortsThumbnails';
+import { sanitizeVideoUrl } from '@/lib/sanitizeVideoUrl';
 
 export type AdminTab =
   | 'overview'
@@ -1049,9 +1050,10 @@ export default function AdminDashboardContent() {
   };
 
   const handleVideoUrlChange = (val: string) => {
-    setShortVideoUrl(val);
-    if (val.trim().length > 8) {
-      autoDetectMetadata(val);
+    const sanitized = sanitizeVideoUrl(val);
+    setShortVideoUrl(sanitized);
+    if (sanitized.trim().length > 8) {
+      autoDetectMetadata(sanitized);
     }
   };
 
@@ -1096,10 +1098,7 @@ export default function AdminDashboardContent() {
       return;
     }
 
-    const cleanUrl = shortVideoUrl.trim();
-    const finalVideoUrl = cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://')
-      ? cleanUrl
-      : `https://${cleanUrl}`;
+    const finalVideoUrl = sanitizeVideoUrl(shortVideoUrl.trim());
 
     let finalThumbnail = shortThumbnail.trim();
     if (!finalThumbnail || finalThumbnail.startsWith('/images/shorts-reels/reel_')) {
@@ -6843,11 +6842,7 @@ export default function AdminDashboardContent() {
                               {short.duration}
                             </span>
                             <a
-                              href={
-                                short.videoUrl.startsWith('http://') || short.videoUrl.startsWith('https://')
-                                  ? short.videoUrl
-                                  : `https://${short.videoUrl}`
-                              }
+                              href={sanitizeVideoUrl(short.videoUrl)}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-[#EA580C] hover:text-[#C2410C] font-semibold flex items-center gap-0.5 hover:underline"
