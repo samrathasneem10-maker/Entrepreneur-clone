@@ -2349,9 +2349,51 @@ export default function AdminDashboardContent() {
   const applyListFormatting = (listType: 'ol' | 'ul') => {
     if (!reviewEditorRef.current) return;
     ensureEditorSelection();
-    document.execCommand(listType === 'ol' ? 'insertOrderedList' : 'insertUnorderedList', false);
+    const command = listType === 'ol' ? 'insertOrderedList' : 'insertUnorderedList';
+    document.execCommand(command, false);
+
+    // Ensure generated ol/ul have appropriate list classes
+    const lists = reviewEditorRef.current.querySelectorAll(listType);
+    lists.forEach((l) => {
+      l.classList.add(listType === 'ol' ? 'editor-ordered-list' : 'editor-unordered-list');
+    });
+
     handleEditorInput();
     setTimeout(updateActiveFormats, 50);
+  };
+
+  const handleEditorKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter') {
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0) {
+        const range = sel.getRangeAt(0);
+        let node: Node | null = range.startContainer;
+        if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+        const li = (node as HTMLElement)?.closest?.('li');
+        if (li && (li.textContent === '' || li.textContent === '\n') && li.parentElement) {
+          e.preventDefault();
+          const parentList = li.parentElement;
+          const p = document.createElement('p');
+          p.innerHTML = '<br>';
+          if (parentList.nextSibling) {
+            parentList.parentNode?.insertBefore(p, parentList.nextSibling);
+          } else {
+            parentList.parentNode?.appendChild(p);
+          }
+          li.remove();
+          if (parentList.children.length === 0) {
+            parentList.remove();
+          }
+          const newRange = document.createRange();
+          newRange.setStart(p, 0);
+          newRange.collapse(true);
+          sel.removeAllRanges();
+          sel.addRange(newRange);
+          handleEditorInput();
+          setTimeout(updateActiveFormats, 50);
+        }
+      }
+    }
   };
 
   const openLinkModal = () => {
@@ -3790,6 +3832,7 @@ export default function AdminDashboardContent() {
                     contentEditable
                     suppressContentEditableWarning
                     onInput={handleEditorInput}
+                    onKeyDown={handleEditorKeyDown}
                     onDragStart={handleEditorDragStart}
                     onDragEnd={handleEditorDragEnd}
                     onDragOver={handleEditorDragOver}
