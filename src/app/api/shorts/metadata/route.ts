@@ -32,7 +32,16 @@ export async function GET(request: Request) {
     platform = 'YouTube Shorts';
     const ytMatch = rawUrl.match(/(?:shorts\/|v=|youtu\.be\/|\/v\/|embed\/)([a-zA-Z0-9_-]{11})/);
     if (ytMatch && ytMatch[1]) {
-      thumbnail = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+      const vidId = ytMatch[1];
+      thumbnail = `https://img.youtube.com/vi/${vidId}/oar2.jpg`;
+      try {
+        const testRes = await fetch(`https://img.youtube.com/vi/${vidId}/oar2.jpg`, { method: 'HEAD', signal: AbortSignal.timeout(2000) });
+        if (!testRes.ok) {
+          thumbnail = `https://img.youtube.com/vi/${vidId}/hqdefault.jpg`;
+        }
+      } catch {
+        thumbnail = `https://img.youtube.com/vi/${vidId}/hqdefault.jpg`;
+      }
     } else {
       thumbnail = '/images/shorts-reels/reel_1.png';
     }

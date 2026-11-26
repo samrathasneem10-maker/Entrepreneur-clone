@@ -1016,7 +1016,7 @@ export default function AdminDashboardContent() {
     // Instant local thumbnail and duration heuristics for immediate responsive UI
     const ytMatch = raw.match(/(?:shorts\/|v=|youtu\.be\/|\/v\/|embed\/)([a-zA-Z0-9_-]{11})/);
     if (ytMatch && ytMatch[1]) {
-      setShortThumbnail(`https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`);
+      setShortThumbnail(`https://img.youtube.com/vi/${ytMatch[1]}/oar2.jpg`);
       setShortDuration('0:45');
     } else if (targetPlatform.includes('Rumble')) {
       if (!shortThumbnail || shortThumbnail.startsWith('/images/shorts-reels/')) {
@@ -3397,7 +3397,7 @@ export default function AdminDashboardContent() {
               className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-[#059669] hover:bg-[#047857] text-white text-xs font-bold uppercase tracking-wider shadow-sm transition-colors cursor-pointer disabled:opacity-50"
             >
               <Check className="w-4 h-4 stroke-[2.5]" />
-              <span>UPDATE & PUBLISH</span>
+              <span>{selectedReviewArticle.status === 'published' ? 'UPDATE & PUBLISH' : 'APPROVE & PUBLISH'}</span>
             </button>
           </div>
         </header>

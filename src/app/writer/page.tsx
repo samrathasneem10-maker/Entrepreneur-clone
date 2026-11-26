@@ -2777,7 +2777,7 @@ function WriterEditorMain() {
                   <span>REJECT TO TRASH</span>
                 </button>
 
-                {/* UPDATE & PUBLISH (Green Button) */}
+                {/* APPROVE & PUBLISH or UPDATE & PUBLISH (Green Button) */}
                 <button
                   type="button"
                   disabled={isSubmitting}
@@ -2785,7 +2785,7 @@ function WriterEditorMain() {
                   className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-[#059669] hover:bg-[#047857] text-white text-xs font-bold uppercase tracking-wider shadow-sm transition-colors cursor-pointer disabled:opacity-50"
                 >
                   <Check className="w-4 h-4 stroke-[2.5]" />
-                  <span>UPDATE & PUBLISH</span>
+                  <span>{loadedArticleStatus === 'published' ? 'UPDATE & PUBLISH' : 'APPROVE & PUBLISH'}</span>
                 </button>
               </>
             ) : mounted ? (
