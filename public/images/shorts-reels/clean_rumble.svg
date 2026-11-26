@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920">
+  <defs>
+    <linearGradient id="bgRumble" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B131E" />
+      <stop offset="35%" stop-color="#15232D" />
+      <stop offset="70%" stop-color="#1C3829" />
+      <stop offset="100%" stop-color="#064E3B" />
+    </linearGradient>
+    <linearGradient id="rumbleAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#85E043" />
+      <stop offset="100%" stop-color="#64A727" />
+    </linearGradient>
+  </defs>
+  <rect width="1080" height="1920" fill="url(#bgRumble)" />
+  <circle cx="540" cy="880" r="280" fill="#64A727" opacity="0.1" />
+  <circle cx="540" cy="880" r="170" fill="#64A727" opacity="0.18" />
+  <circle cx="540" cy="880" r="95" fill="url(#rumbleAccent)" />
+  <polygon points="515,830 585,880 515,930" fill="#FFFFFF" />
+  <text x="540" y="1050" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="44" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="3">RUMBLE VIDEO</text>
+  <text x="540" y="1110" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="26" font-weight="500" fill="#94A3B8" text-anchor="middle">Tap to play story</text>
+</svg>

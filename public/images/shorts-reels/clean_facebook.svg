@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920">
+  <defs>
+    <linearGradient id="bgFb" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#08101E" />
+      <stop offset="35%" stop-color="#172554" />
+      <stop offset="70%" stop-color="#1D4ED8" />
+      <stop offset="100%" stop-color="#0284C7" />
+    </linearGradient>
+    <linearGradient id="fbAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60A5FA" />
+      <stop offset="100%" stop-color="#1D4ED8" />
+    </linearGradient>
+  </defs>
+  <rect width="1080" height="1920" fill="url(#bgFb)" />
+  <circle cx="540" cy="880" r="280" fill="#3B82F6" opacity="0.12" />
+  <circle cx="540" cy="880" r="170" fill="#3B82F6" opacity="0.22" />
+  <circle cx="540" cy="880" r="95" fill="url(#fbAccent)" />
+  <polygon points="515,830 585,880 515,930" fill="#FFFFFF" />
+  <text x="540" y="1050" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="44" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="3">FACEBOOK REEL</text>
+  <text x="540" y="1110" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="26" font-weight="500" fill="#DBEAFE" text-anchor="middle">Tap to play story</text>
+</svg>

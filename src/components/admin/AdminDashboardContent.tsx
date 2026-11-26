@@ -1020,17 +1020,17 @@ export default function AdminDashboardContent() {
       setShortDuration('0:45');
     } else if (targetPlatform.includes('Rumble')) {
       if (!shortThumbnail || shortThumbnail.startsWith('/images/shorts-reels/')) {
-        setShortThumbnail('/images/shorts-reels/reel_1.png');
+        setShortThumbnail('/images/shorts-reels/clean_rumble.svg');
       }
       setShortDuration('0:45');
     } else if (targetPlatform.includes('Instagram')) {
       if (!shortThumbnail || shortThumbnail.startsWith('/images/shorts-reels/')) {
-        setShortThumbnail('/images/shorts-reels/reel_2.png');
+        setShortThumbnail('/images/shorts-reels/clean_instagram.svg');
       }
       setShortDuration('0:30');
     } else if (targetPlatform.includes('Facebook')) {
       if (!shortThumbnail || shortThumbnail.startsWith('/images/shorts-reels/')) {
-        setShortThumbnail('/images/shorts-reels/reel_3.png');
+        setShortThumbnail('/images/shorts-reels/clean_facebook.svg');
       }
       setShortDuration('0:45');
     }
@@ -1104,12 +1104,12 @@ export default function AdminDashboardContent() {
       : `https://${cleanUrl}`;
 
     let finalThumbnail = shortThumbnail.trim();
-    if (!finalThumbnail) {
+    if (!finalThumbnail || finalThumbnail.startsWith('/images/shorts-reels/reel_')) {
       if (shortPlatform.includes('YouTube')) finalThumbnail = '/images/shorts-reels/reel_1.png';
-      else if (shortPlatform.includes('Rumble')) finalThumbnail = '/images/shorts-reels/reel_1.png';
-      else if (shortPlatform.includes('Instagram')) finalThumbnail = '/images/shorts-reels/reel_2.png';
-      else if (shortPlatform.includes('Facebook')) finalThumbnail = '/images/shorts-reels/reel_3.png';
-      else finalThumbnail = '/images/shorts-reels/reel_1.png';
+      else if (shortPlatform.includes('Rumble')) finalThumbnail = '/images/shorts-reels/clean_rumble.svg';
+      else if (shortPlatform.includes('Instagram')) finalThumbnail = '/images/shorts-reels/clean_instagram.svg';
+      else if (shortPlatform.includes('Facebook')) finalThumbnail = '/images/shorts-reels/clean_facebook.svg';
+      else finalThumbnail = '/images/shorts-reels/clean_rumble.svg';
     }
 
     setIsSavingShort(true);
@@ -6259,7 +6259,7 @@ export default function AdminDashboardContent() {
 
                                 {/* Edit pencil icon */}
                                 <Link
-                                  href={`/writer?id=${art.slug || art.id}`}
+                                  href={`/writer?id=${art.slug || art.id}&from=published`}
                                   className="p-1.5 rounded-md text-blue-600 hover:text-blue-800 bg-blue-50/70 hover:bg-blue-100 border border-blue-200/80 transition-colors cursor-pointer shadow-2xs"
                                   title="Edit Article"
                                 >
@@ -6544,9 +6544,9 @@ export default function AdminDashboardContent() {
                           const chosen = e.target.value;
                           setShortPlatform(chosen);
                           if (!shortThumbnail || shortThumbnail.startsWith('/images/shorts-reels/')) {
-                            if (chosen.includes('Instagram')) setShortThumbnail('/images/shorts-reels/reel_2.png');
-                            else if (chosen.includes('Facebook')) setShortThumbnail('/images/shorts-reels/reel_3.png');
-                            else if (chosen.includes('Rumble')) setShortThumbnail('/images/shorts-reels/reel_1.png');
+                            if (chosen.includes('Instagram')) setShortThumbnail('/images/shorts-reels/clean_instagram.svg');
+                            else if (chosen.includes('Facebook')) setShortThumbnail('/images/shorts-reels/clean_facebook.svg');
+                            else if (chosen.includes('Rumble')) setShortThumbnail('/images/shorts-reels/clean_rumble.svg');
                           }
                           if (shortVideoUrl.trim()) {
                             autoDetectMetadata(shortVideoUrl, chosen);

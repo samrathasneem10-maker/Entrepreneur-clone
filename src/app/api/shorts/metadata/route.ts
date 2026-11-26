@@ -47,10 +47,10 @@ export async function GET(request: Request) {
     }
   } else if (lower.includes('rumble')) {
     platform = 'Rumble Video';
-    thumbnail = '/images/shorts-reels/reel_1.png';
+    thumbnail = '/images/shorts-reels/clean_rumble.svg';
   } else if (lower.includes('instagram') || lower.includes('instagr.am')) {
     platform = 'Instagram Reel';
-    thumbnail = '/images/shorts-reels/reel_2.png';
+    thumbnail = '/images/shorts-reels/clean_instagram.svg';
     duration = '0:30';
     try {
       const parsed = new URL(rawUrl.startsWith('http') ? rawUrl : `https://${rawUrl}`);
@@ -68,7 +68,7 @@ export async function GET(request: Request) {
     } catch {}
   } else if (lower.includes('facebook') || lower.includes('fb.watch') || lower.includes('fb.com')) {
     platform = 'Facebook Reel';
-    thumbnail = '/images/shorts-reels/reel_3.png';
+    thumbnail = '/images/shorts-reels/clean_facebook.svg';
     duration = '0:45';
     try {
       const parsed = new URL(rawUrl.startsWith('http') ? rawUrl : `https://${rawUrl}`);

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920">
+  <defs>
+    <linearGradient id="bgIg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2D0B4E" />
+      <stop offset="35%" stop-color="#4C1D95" />
+      <stop offset="70%" stop-color="#831843" />
+      <stop offset="100%" stop-color="#9A3412" />
+    </linearGradient>
+    <linearGradient id="igAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FA7E1E" />
+      <stop offset="50%" stop-color="#D62976" />
+      <stop offset="100%" stop-color="#962FBF" />
+    </linearGradient>
+  </defs>
+  <rect width="1080" height="1920" fill="url(#bgIg)" />
+  <circle cx="540" cy="880" r="280" fill="#D62976" opacity="0.12" />
+  <circle cx="540" cy="880" r="170" fill="#D62976" opacity="0.22" />
+  <circle cx="540" cy="880" r="95" fill="url(#igAccent)" />
+  <polygon points="515,830 585,880 515,930" fill="#FFFFFF" />
+  <text x="540" y="1050" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="44" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="3">INSTAGRAM REEL</text>
+  <text x="540" y="1110" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="26" font-weight="500" fill="#F1F5F9" text-anchor="middle">Tap to play story</text>
+</svg>

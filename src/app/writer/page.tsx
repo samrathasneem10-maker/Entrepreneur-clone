@@ -2627,9 +2627,20 @@ function WriterEditorMain() {
       const data = await res.json();
       if (data?.success) {
         localStorage.removeItem('entrepreneur_writer_draft');
-        showToast('Article approved and published successfully! Redirecting...', 'success');
+        const fromTab = searchParams.get('from');
+        const isFromPublished = fromTab === 'published' || loadedArticleStatus === 'published';
+        showToast(
+          isFromPublished
+            ? 'Article updated and published successfully! Redirecting...'
+            : 'Article approved and published successfully! Redirecting...',
+          'success'
+        );
         setTimeout(() => {
-          router.push('/admin');
+          if (isFromPublished) {
+            router.push('/admin?tab=published');
+          } else {
+            router.push('/admin');
+          }
         }, 800);
       } else {
         showToast(data?.error || 'Failed to publish article.', 'error');
@@ -2723,8 +2734,13 @@ function WriterEditorMain() {
           <div className="flex items-center gap-3 sm:gap-4 min-w-0">
             <button
               onClick={() => {
-                if (user?.role === 'admin' && (loadedArticleStatus === 'published' || loadedArticleStatus === 'pending_review' || !loadedArticleStatus)) {
-                  router.push('/admin');
+                const fromTab = searchParams.get('from');
+                if (user?.role === 'admin') {
+                  if (fromTab === 'published' || loadedArticleStatus === 'published') {
+                    router.push('/admin?tab=published');
+                  } else {
+                    router.push('/admin');
+                  }
                 } else if (loadedArticleStatus === 'rejected') {
                   router.push('/writer/dashboard?tab=rejected');
                 } else if (loadedArticleStatus === 'draft') {
