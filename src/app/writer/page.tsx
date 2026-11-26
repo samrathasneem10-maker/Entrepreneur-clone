@@ -1366,75 +1366,15 @@ function WriterEditorMain() {
   // Requirement 6: Numbered and Bullet List toggle functions & selection handling
   const applyListFormatting = (listType: 'ol' | 'ul') => {
     if (!editorRef.current) return;
-    const sel = ensureEditorSelection();
+    ensureEditorSelection();
+    const command = listType === 'ol' ? 'insertOrderedList' : 'insertUnorderedList';
+    document.execCommand(command, false);
 
-    if (!sel || sel.rangeCount === 0) {
-      const listTag = listType === 'ol' ? 'ol' : 'ul';
-      const fallbackHtml = `<${listTag} class="${listType === 'ol' ? 'editor-ordered-list' : 'editor-unordered-list'}"><li>Numbered item</li></${listTag}><p><br></p>`;
-      document.execCommand('insertHTML', false, fallbackHtml);
-      handleEditorInput();
-      setTimeout(updateActiveFormats, 50);
-      return;
-    }
-
-    const range = sel.getRangeAt(0);
-    let node: Node | null = range.startContainer;
-    if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
-    const currentLi = (node as HTMLElement)?.closest?.('li');
-    const currentList = currentLi?.parentElement;
-
-    if (currentList) {
-      const currentTag = currentList.tagName.toLowerCase();
-      if (currentTag === listType) {
-        // Toggle OFF: convert li back to paragraph
-        document.execCommand(listType === 'ol' ? 'insertOrderedList' : 'insertUnorderedList', false);
-        // Fallback if not unwrapped by execCommand
-        if (currentLi && currentLi.parentElement) {
-          const p = document.createElement('p');
-          p.innerHTML = currentLi.innerHTML || '<br>';
-          currentLi.replaceWith(p);
-          if (currentList.children.length === 0) currentList.remove();
-        }
-      } else {
-        // Switch between ol and ul
-        const newList = document.createElement(listType);
-        newList.className = listType === 'ol' ? 'editor-ordered-list' : 'editor-unordered-list';
-        newList.innerHTML = currentList.innerHTML;
-        currentList.replaceWith(newList);
-      }
-      handleEditorInput();
-      setTimeout(updateActiveFormats, 50);
-      return;
-    }
-
-    // Direct conversion of selected word or entire paragraph:
-    let parentBlock = range.commonAncestorContainer as HTMLElement;
-    if (parentBlock.nodeType === Node.TEXT_NODE) parentBlock = parentBlock.parentElement as HTMLElement;
-    while (parentBlock && parentBlock !== editorRef.current && !['P', 'DIV', 'H1', 'H2', 'H3'].includes(parentBlock.tagName)) {
-      parentBlock = parentBlock.parentElement as HTMLElement;
-    }
-
-    const selectedText = range.toString().trim();
-
-    if (parentBlock && parentBlock !== editorRef.current && (parentBlock.tagName === 'P' || parentBlock.tagName === 'DIV')) {
-      const list = document.createElement(listType);
-      list.className = listType === 'ol' ? 'editor-ordered-list' : 'editor-unordered-list';
-      const li = document.createElement('li');
-      li.innerHTML = parentBlock.innerHTML || '<br>';
-      list.appendChild(li);
-      parentBlock.replaceWith(list);
-    } else if (selectedText) {
-      const list = document.createElement(listType);
-      list.className = listType === 'ol' ? 'editor-ordered-list' : 'editor-unordered-list';
-      const li = document.createElement('li');
-      li.textContent = selectedText;
-      list.appendChild(li);
-      range.deleteContents();
-      range.insertNode(list);
-    } else {
-      const command = listType === 'ol' ? 'insertOrderedList' : 'insertUnorderedList';
-      document.execCommand(command, false);
-    }
+    // Ensure generated ol/ul have appropriate list classes
+    const lists = editorRef.current.querySelectorAll(listType);
+    lists.forEach((l) => {
+      l.classList.add(listType === 'ol' ? 'editor-ordered-list' : 'editor-unordered-list');
+    });
 
     handleEditorInput();
     setTimeout(updateActiveFormats, 50);
