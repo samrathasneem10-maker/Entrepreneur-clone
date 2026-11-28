@@ -199,10 +199,10 @@ export const HeroNewsSection: React.FC<HeroNewsSectionProps> = ({
   const currentHero = heroSlides[activeSlide] || heroSlides[0] || HERO_GROWTH_DECISION_ARTICLE;
 
   return (
-    <section className="bg-white pt-2.5 sm:pt-3.5 2xl:pt-4 pb-6 sm:pb-8 2xl:pb-10 w-full border-b border-slate-200/80 mb-6 sm:mb-8">
+    <section className="bg-white pt-5 sm:pt-6 2xl:pt-7 pb-6 sm:pb-8 2xl:pb-10 w-full border-b border-slate-200/80 mb-6 sm:mb-8">
       <div className="w-full">
-        {/* Main 3-Column Layout: dynamic height with stretch alignment across latest, middle, and right parts */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_1.65fr_1.25fr] xl:grid-cols-[1.2fr_1.75fr_1.3fr] gap-4 sm:gap-5 xl:gap-6 items-stretch">
+        {/* Main 3-Column Layout: increased gap between columns for spacious editorial look */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_1.65fr_1.25fr] xl:grid-cols-[1.2fr_1.75fr_1.3fr] gap-6 sm:gap-7 xl:gap-8 items-stretch">
           
           {/* ========================================================= */}
           {/* 1. LEFT COLUMN: Latest (Mobile: order-2, Desktop: order-1) */}
@@ -278,8 +278,8 @@ export const HeroNewsSection: React.FC<HeroNewsSectionProps> = ({
           {/* ========================================================= */}
           <div className="order-1 lg:order-2 flex flex-col justify-between h-full bg-white">
             <div className="flex flex-col justify-between h-full group">
-              {/* Top Text Content: Category, Title, Author Byline (Matching User Image 2) */}
-              <div className="text-center px-2 pt-1 pb-2">
+              {/* Top Text Content: Trimmed margins left and right matching user Image 2 */}
+              <div className="text-center px-4 sm:px-6 md:px-8 lg:px-6 xl:px-8 pt-1 pb-2">
                 {/* Category Link */}
                 <Link
                   href="/topic/startups-entrepreneurship"
@@ -288,9 +288,9 @@ export const HeroNewsSection: React.FC<HeroNewsSectionProps> = ({
                   {currentHero.category}
                 </Link>
 
-                {/* Main Headline */}
+                {/* Main Headline: Trimmed within comfortable left/right bounds */}
                 <h1
-                  className="font-serif font-bold text-xl sm:text-2xl lg:text-[26px] xl:text-[29px] leading-[1.22] tracking-tight text-[#020618] my-1 group-hover:underline text-center line-clamp-3"
+                  className="font-serif font-bold text-lg sm:text-xl lg:text-[23px] xl:text-[25px] leading-[1.24] tracking-tight text-[#020618] my-1 group-hover:underline text-center line-clamp-3 max-w-[90%] mx-auto"
                   style={{
                     display: '-webkit-box',
                     WebkitLineClamp: 3,
