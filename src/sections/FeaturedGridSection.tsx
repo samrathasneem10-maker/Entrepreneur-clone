@@ -53,10 +53,10 @@ export const FeaturedGridSection: React.FC<FeaturedGridSectionProps> = ({ initia
   }, []);
 
   return (
-    <section className="bg-white pt-4 sm:pt-4.5 pb-2 sm:pb-3 w-full">
+    <section className="bg-white pt-3 sm:pt-4 pb-2 sm:pb-3 w-full">
       <div className="w-full">
-        {/* 4 Dedicated Slots Grid: Increased gap between cards, reduced card height, padded content */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-6 lg:gap-7 xl:gap-8 items-stretch">
+        {/* 4 Dedicated Slots Grid: Tight clean gap (gap-3.5 sm:gap-4 md:gap-4.5 lg:gap-5) matching Entrepreneur */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4 md:gap-4.5 lg:gap-5 items-stretch">
           {gridArticles.slice(0, 4).map((article, idx) => {
             const articleUrl = getArticleUrl(article);
             const authorSlug = (article.author?.name || 'author')
@@ -65,12 +65,12 @@ export const FeaturedGridSection: React.FC<FeaturedGridSectionProps> = ({ initia
               .replace(/^-+|-+$/g, '');
 
             return (
-              <article key={article.id || `grid-${idx}`} className="group flex flex-col justify-between w-full h-full px-2 sm:px-2.5">
+              <article key={article.id || `grid-${idx}`} className="group flex flex-col justify-between w-full h-full">
                 <div className="flex flex-col justify-between h-full no-underline text-inherit">
-                  {/* Card Image: Reduced image aspect ratio (16/9.5) and max-height */}
+                  {/* Card Image: Aspect ratio 16/10 with sharp edges, tight gap between cards */}
                   <figure
-                    className="relative w-full aspect-[16/9.5] max-h-[175px] sm:max-h-[185px] overflow-hidden rounded-none mb-3 border border-slate-200/90 bg-slate-100 flex-shrink-0"
-                    style={{ aspectRatio: '16 / 9.5' }}
+                    className="relative w-full aspect-[16/10] max-h-[195px] overflow-hidden rounded-none mb-2.5 border border-slate-200/90 bg-slate-100 flex-shrink-0"
+                    style={{ aspectRatio: '16 / 10' }}
                   >
                     <Link href={articleUrl} className="block w-full h-full cursor-pointer">
                       <img
@@ -84,13 +84,13 @@ export const FeaturedGridSection: React.FC<FeaturedGridSectionProps> = ({ initia
                             target.src = '/images/home-hero/grid-card-1.png';
                           }
                         }}
-                        className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 rounded-none"
+                        className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300 rounded-none"
                       />
                     </Link>
                   </figure>
 
-                  {/* Text Content: Inward padding so text does not hit edges, smaller title font */}
-                  <div className="flex flex-col justify-between flex-1 min-w-0 text-center px-1.5 sm:px-2">
+                  {/* Text Content */}
+                  <div className="flex flex-col justify-between flex-1 min-w-0 text-center px-1">
                     <div>
                       {/* Category Badge - Centered */}
                       <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-[#c61830] mb-1 text-center block no-underline hover:no-underline active:no-underline focus:no-underline truncate h-4 leading-4">
