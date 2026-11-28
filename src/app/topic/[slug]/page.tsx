@@ -991,56 +991,72 @@ export default function DynamicTopicPage() {
       {/* 1. Header Navigation */}
       <Header />
 
-      {/* Breadcrumb Bar - Left-aligned, positioned downward closer to the category heading level */}
-      <div className="bg-white pt-3.5 sm:pt-4 lg:pt-5 xl:pt-6 pb-0 px-4 sm:px-6 lg:px-8 xl:px-10 text-xs text-slate-600 font-sans">
-        <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 flex items-center gap-2 overflow-x-auto no-scrollbar">
-          <Link href="/" className="hover:text-[#1642D0] transition-colors shrink-0 inline-flex items-center gap-1.5 font-medium">
-            <Home className="w-3.5 h-3.5 text-slate-500 hover:text-[#1642D0]" />
-            <span>Home</span>
-          </Link>
-          <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-          {topicData.parentTitle && topicData.parentSlug && (
-            <>
-              <Link href={`/topic/${topicData.parentSlug}`} className="hover:text-[#1642D0] transition-colors whitespace-nowrap shrink-0">
-                {topicData.parentTitle}
-              </Link>
-              <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-            </>
-          )}
-          <span className="text-slate-900 font-bold uppercase tracking-wider whitespace-nowrap truncate">
-            {displayTitle || 'TOPICS'}
-          </span>
-        </div>
-      </div>
-
-      {/* Category Header - Centered heading with slightly increased prominent font size */}
-      <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pt-1.5 sm:pt-2 lg:pt-2 pb-2 sm:pb-2.5 lg:pb-3 text-center">
-        <h1 className="text-2xl sm:text-3xl lg:text-[35px] xl:text-[38px] 2xl:text-[42px] font-serif font-black text-[#020618] tracking-tight my-0 text-center">
-          {displayTitle}
-        </h1>
-      </div>
-
-      {/* 2-Column Section: 1 Featured Article on Left & 2 Stacked Articles on Right (Desktop & Laptop refined proportions) */}
-      <section className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pt-4 sm:pt-5 lg:pt-5 xl:pt-5.5 pb-6 sm:pb-7 lg:pb-7 xl:pb-8 2xl:pb-9">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-7 xl:gap-9 2xl:gap-10 items-start">
-          
-          {/* Left Column: 1 Featured Article - taller image on Desktop and Laptop */}
-          <article className="group flex flex-col justify-start w-full text-left">
-            <div className="flex flex-col">
-              <div className="w-full aspect-[16/10] sm:aspect-[16/9.5] lg:aspect-[16/9.5] xl:aspect-[16/9.5] 2xl:aspect-[16/9.5] max-h-[280px] sm:max-h-[320px] lg:max-h-[285px] xl:max-h-[315px] 2xl:max-h-[365px] overflow-hidden bg-slate-100 mb-2.5 lg:mb-3 border border-slate-200/80 rounded-none shadow-2xs flex-shrink-0">
-                <Link href={heroFeatured.link} className="block w-full h-full cursor-pointer">
-                  <img
-                    src={heroFeatured.image}
-                    alt={heroFeatured.title}
-                    className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300 rounded-none"
-                  />
+      {/* Main Container Trimmed with side padding matching home and article pages */}
+      <main className="flex-1 w-full max-w-[1536px] mx-auto px-6 sm:px-10 md:px-14 lg:px-20 xl:px-24">
+        {/* Breadcrumb Bar */}
+        <div className="bg-white pt-4 sm:pt-5 pb-1 text-xs text-slate-600 font-sans">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+            <Link href="/" className="hover:text-[#c61830] transition-colors shrink-0 inline-flex items-center gap-1.5 font-medium">
+              <Home className="w-3.5 h-3.5 text-slate-500 hover:text-[#c61830]" />
+              <span>Home</span>
+            </Link>
+            <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+            {topicData.parentTitle && topicData.parentSlug && (
+              <>
+                <Link href={`/topic/${topicData.parentSlug}`} className="hover:text-[#c61830] transition-colors whitespace-nowrap shrink-0">
+                  {topicData.parentTitle}
                 </Link>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+              </>
+            )}
+            <span className="text-slate-900 font-bold uppercase tracking-wider whitespace-nowrap truncate">
+              {displayTitle || 'TOPICS'}
+            </span>
+          </div>
+        </div>
+
+        {/* Category Header */}
+        <div className="pt-2 pb-4 text-center">
+          <h1 className="text-2xl sm:text-3xl lg:text-[34px] xl:text-[38px] font-serif font-black text-[#020618] tracking-tight my-0 text-center">
+            {displayTitle}
+          </h1>
+        </div>
+
+        {/* 2-Column Section: 1 Featured Article on Left & 2 Stacked Articles on Right */}
+        <section className="pt-2 pb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
+            
+            {/* Left Column: 1 Featured Article */}
+            <article className="group flex flex-col justify-start w-full text-left">
+              <div className="flex flex-col">
+                <div className="w-full aspect-[16/10] sm:aspect-[16/9.5] max-h-[280px] sm:max-h-[320px] lg:max-h-[320px] overflow-hidden bg-slate-100 mb-2.5 lg:mb-3 border border-slate-200/80 rounded-none shadow-2xs flex-shrink-0">
+                  <Link href={heroFeatured.link} className="block w-full h-full cursor-pointer">
+                    <img
+                      src={heroFeatured.image}
+                      alt={heroFeatured.title}
+                      className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300 rounded-none"
+                    />
+                  </Link>
+                </div>
+                <span className="text-[11px] font-bold text-[#c61830] uppercase tracking-wider font-sans mb-1 block">
+                  {heroFeatured.category}
+                </span>
+                <h2
+                  className="font-serif font-bold text-xl sm:text-2xl lg:text-[22px] tracking-tight text-[#020618] leading-[1.25] group-hover:underline decoration-1 underline-offset-2 my-0.5 lg:my-1 line-clamp-2"
+                  style={{
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <Link href={heroFeatured.link} className="hover:text-[#c61830] transition-colors">
+                    {heroFeatured.title}
+                  </Link>
+                </h2>
               </div>
-              <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-1 lg:mb-1.5 block">
-                {heroFeatured.category}
-              </span>
-              <h2
-                className="font-serif font-bold text-xl sm:text-2xl lg:text-[21px] xl:text-[23px] 2xl:text-[25px] tracking-tight text-[#020618] leading-[1.25] group-hover:underline decoration-1 underline-offset-2 my-0.5 lg:my-1 line-clamp-2"
+              <p
+                className="font-serif text-slate-600 sm:text-slate-700 text-sm sm:text-[14.5px] leading-relaxed mt-1.5 my-0 w-full line-clamp-2"
                 style={{
                   display: '-webkit-box',
                   WebkitLineClamp: 2,
@@ -1048,244 +1064,222 @@ export default function DynamicTopicPage() {
                   overflow: 'hidden',
                 }}
               >
-                <Link href={heroFeatured.link} className="hover:text-[#1642D0] transition-colors">
-                  {heroFeatured.title}
-                </Link>
-              </h2>
-            </div>
-            <p
-              className="font-serif text-slate-600 sm:text-slate-700 text-sm sm:text-base lg:text-[13.5px] xl:text-[14px] 2xl:text-[14.5px] leading-relaxed mt-1.5 lg:mt-2 my-0 w-full line-clamp-2"
-              style={{
-                display: '-webkit-box',
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden',
-              }}
-            >
-              {heroFeatured.description}
-            </p>
-          </article>
-
-          {/* Right Column: 2 Stacked Articles with equal taller images and top-aligned text matching image top */}
-          <div className="flex flex-col justify-start w-full gap-4 sm:gap-4.5 lg:gap-5 xl:gap-5.5 2xl:gap-6">
-            
-            {/* Right Column - Article 1 (Top Level) */}
-            <article className="group flex flex-col sm:flex-row gap-3.5 sm:gap-4 lg:gap-3.5 xl:gap-4 items-start text-left w-full">
-              <div className="w-full sm:w-[280px] md:w-[290px] lg:w-[250px] xl:w-[270px] 2xl:w-[320px] aspect-[16/10] sm:aspect-[4/3] lg:aspect-[4/3] xl:aspect-[4/3] 2xl:aspect-[4/3] max-h-[220px] sm:max-h-none lg:max-h-[195px] xl:max-h-[212px] 2xl:max-h-[245px] shrink-0 overflow-hidden bg-slate-100 border border-slate-200/80 rounded-none shadow-2xs">
-                <Link href={heroSub1.link} className="block w-full h-full cursor-pointer">
-                  <img
-                    src={heroSub1.image}
-                    alt={heroSub1.title}
-                    className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300 rounded-none"
-                  />
-                </Link>
-              </div>
-              <div className="flex-1 min-w-0">
-                <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-0.5 lg:mb-1 block leading-tight">
-                  {heroSub1.category}
-                </span>
-                <h3
-                  className="font-serif font-bold text-[15px] sm:text-[16px] lg:text-[15px] xl:text-[16px] 2xl:text-[17px] tracking-tight text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-0.5 lg:my-1 line-clamp-3"
-                  style={{
-                    display: '-webkit-box',
-                    WebkitLineClamp: 3,
-                    WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden',
-                  }}
-                >
-                  <Link href={heroSub1.link} className="hover:text-[#1642D0] transition-colors">
-                    {heroSub1.title}
-                  </Link>
-                </h3>
-                <p className="font-serif text-slate-600 text-xs sm:text-[13px] lg:text-[12px] xl:text-[12.5px] 2xl:text-[13px] leading-relaxed mt-1 my-0 line-clamp-3">
-                  {heroSub1.description}
-                </p>
-              </div>
+                {heroFeatured.description}
+              </p>
             </article>
 
-            {/* Right Column - Article 2 (Bottom Level) */}
-            <article className="group flex flex-col sm:flex-row gap-3.5 sm:gap-4 lg:gap-3.5 xl:gap-4 items-start text-left w-full">
-              <div className="w-full sm:w-[280px] md:w-[290px] lg:w-[250px] xl:w-[270px] 2xl:w-[320px] aspect-[16/10] sm:aspect-[4/3] lg:aspect-[4/3] xl:aspect-[4/3] 2xl:aspect-[4/3] max-h-[220px] sm:max-h-none lg:max-h-[195px] xl:max-h-[212px] 2xl:max-h-[245px] shrink-0 overflow-hidden bg-slate-100 border border-slate-200/80 rounded-none shadow-2xs">
-                <Link href={heroSub2.link} className="block w-full h-full cursor-pointer">
-                  <img
-                    src={heroSub2.image}
-                    alt={heroSub2.title}
-                    className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300 rounded-none"
-                  />
-                </Link>
-              </div>
-              <div className="flex-1 min-w-0">
-                <span className="text-xs font-bold text-[#1642D0] uppercase tracking-wider font-sans mb-0.5 lg:mb-1 block leading-tight">
-                  {heroSub2.category}
-                </span>
-                <h3
-                  className="font-serif font-bold text-[15px] sm:text-[16px] lg:text-[15px] xl:text-[16px] 2xl:text-[17px] tracking-tight text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-0.5 lg:my-1 line-clamp-3"
-                  style={{
-                    display: '-webkit-box',
-                    WebkitLineClamp: 3,
-                    WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden',
-                  }}
-                >
-                  <Link href={heroSub2.link} className="hover:text-[#1642D0] transition-colors">
-                    {heroSub2.title}
-                  </Link>
-                </h3>
-                <p className="font-serif text-slate-600 text-xs sm:text-[13px] lg:text-[12px] xl:text-[12.5px] 2xl:text-[13px] leading-relaxed mt-1 my-0 line-clamp-3">
-                  {heroSub2.description}
-                </p>
-              </div>
-            </article>
-
-          </div>
-        </div>
-      </section>
-
-      {/* Bottom Section: Left Stream (10 Articles per page + NEXT/PREVIOUS Controls) & Right Sidebar (Large Ad + Laptop Image) */}
-      <div id="articles-list-section" className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pb-16 scroll-mt-20">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-          
-          {/* Left Column: MORE NEWS heading + Bordered box with 10 articles per page */}
-          <div className="lg:col-span-7 flex flex-col h-full">
-            {/* MORE NEWS Heading and Line */}
-            <div className="flex items-center justify-between mb-4 sm:mb-5 h-[32px]">
-              <h2 className="text-xl sm:text-2xl font-serif font-bold text-slate-900 tracking-tight uppercase my-0 leading-none">
-                MORE NEWS
-              </h2>
-            </div>
-
-            {/* Bordered box with 10 articles per page */}
-            <div className="bg-white border border-slate-200 p-5 sm:p-6 shadow-2xs flex-1 flex flex-col justify-between">
-            <div className="space-y-6 divide-y divide-slate-100">
-              {currentArticles.map((art, index) => (
-                <article
-                  key={art.id}
-                  className={`flex gap-4 sm:gap-5 items-start ${index === 0 ? 'pt-0' : 'pt-6'}`}
-                >
-                  <Link
-                    href={art.link || `/article/${art.id}`}
-                    className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 overflow-hidden bg-slate-100 block cursor-pointer group/thumb"
-                  >
+            {/* Right Column: 2 Stacked Articles */}
+            <div className="flex flex-col justify-start w-full gap-5">
+              
+              {/* Right Column - Article 1 */}
+              <article className="group flex flex-col sm:flex-row gap-4 items-start text-left w-full">
+                <div className="w-full sm:w-[240px] md:w-[260px] lg:w-[240px] xl:w-[270px] aspect-[16/10] sm:aspect-[4/3] shrink-0 overflow-hidden bg-slate-100 border border-slate-200/80 rounded-none shadow-2xs">
+                  <Link href={heroSub1.link} className="block w-full h-full cursor-pointer">
                     <img
-                      src={art.image}
-                      alt={art.title}
-                      className="w-full h-full object-cover group-hover/thumb:scale-105 transition-transform duration-300"
+                      src={heroSub1.image}
+                      alt={heroSub1.title}
+                      className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300 rounded-none"
                     />
                   </Link>
-                  <div className="flex-1 min-w-0">
-                    <span className="text-[11px] font-bold text-[#1642D0] uppercase tracking-wider font-sans block mb-1">
-                      {art.category || displayTitle.toUpperCase()}
-                    </span>
-                    <h3 className="font-serif font-bold text-sm sm:text-base text-[#020618] leading-snug hover:underline my-1">
-                      <Link href={art.link || `/article/${art.id}`}>
-                        {art.title}
-                      </Link>
-                    </h3>
-                    <p className="font-serif text-slate-600 text-xs sm:text-[12.5px] leading-relaxed line-clamp-2 my-0">
-                      {art.excerpt}
-                    </p>
-                  </div>
-                </article>
-              ))}
-            </div>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <span className="text-[11px] font-bold text-[#c61830] uppercase tracking-wider font-sans mb-1 block leading-tight">
+                    {heroSub1.category}
+                  </span>
+                  <h3
+                    className="font-serif font-bold text-[15px] sm:text-[16px] tracking-tight text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-0.5 line-clamp-3"
+                    style={{
+                      display: '-webkit-box',
+                      WebkitLineClamp: 3,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <Link href={heroSub1.link} className="hover:text-[#c61830] transition-colors">
+                      {heroSub1.title}
+                    </Link>
+                  </h3>
+                  <p className="font-serif text-slate-600 text-xs sm:text-[13px] leading-relaxed mt-1 my-0 line-clamp-3">
+                    {heroSub1.description}
+                  </p>
+                </div>
+              </article>
 
-            {/* Pagination Controls formatted like Image 2:
-                - Horizontal divider line above
-                - Left: < PREVIOUS (rectangular button with border, disabled on page 1)
-                - Center: PAGE 1 OF 11 (bold uppercase text)
-                - Right: NEXT > (rectangular button with border, disabled on last page)
-            */}
-            <div className="flex items-center justify-between w-full pt-6 mt-6 border-t border-slate-200 font-sans">
-              <button
-                type="button"
-                disabled={currentPage === 1}
-                onClick={() => {
-                  if (currentPage > 1) {
-                    setCurrentPage((p) => p - 1);
-                    const el = document.getElementById('articles-list-section');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  }
-                }}
-                className={`flex items-center gap-1.5 px-4 sm:px-5 py-2 sm:py-2.5 rounded border font-sans text-xs sm:text-[13px] font-bold uppercase tracking-wider transition-colors select-none ${
-                  currentPage === 1
-                    ? 'border-slate-200 text-slate-400 bg-white cursor-not-allowed opacity-80'
-                    : 'border-slate-300 text-slate-700 bg-white hover:text-[#1642D0] hover:border-[#1642D0] cursor-pointer'
-                }`}
-                aria-label="Previous articles"
-              >
-                <ChevronLeft className="w-3.5 h-3.5 stroke-[2.5]" />
-                <span>PREVIOUS</span>
-              </button>
+              {/* Right Column - Article 2 */}
+              <article className="group flex flex-col sm:flex-row gap-4 items-start text-left w-full">
+                <div className="w-full sm:w-[240px] md:w-[260px] lg:w-[240px] xl:w-[270px] aspect-[16/10] sm:aspect-[4/3] shrink-0 overflow-hidden bg-slate-100 border border-slate-200/80 rounded-none shadow-2xs">
+                  <Link href={heroSub2.link} className="block w-full h-full cursor-pointer">
+                    <img
+                      src={heroSub2.image}
+                      alt={heroSub2.title}
+                      className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300 rounded-none"
+                    />
+                  </Link>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <span className="text-[11px] font-bold text-[#c61830] uppercase tracking-wider font-sans mb-1 block leading-tight">
+                    {heroSub2.category}
+                  </span>
+                  <h3
+                    className="font-serif font-bold text-[15px] sm:text-[16px] tracking-tight text-[#020618] leading-snug group-hover:underline decoration-1 underline-offset-2 my-0.5 line-clamp-3"
+                    style={{
+                      display: '-webkit-box',
+                      WebkitLineClamp: 3,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <Link href={heroSub2.link} className="hover:text-[#c61830] transition-colors">
+                      {heroSub2.title}
+                    </Link>
+                  </h3>
+                  <p className="font-serif text-slate-600 text-xs sm:text-[13px] leading-relaxed mt-1 my-0 line-clamp-3">
+                    {heroSub2.description}
+                  </p>
+                </div>
+              </article>
 
-              <span className="text-xs sm:text-[13px] font-sans font-bold uppercase tracking-wider text-slate-700 select-none text-center">
-                PAGE {currentPage} OF {totalPages}
-              </span>
-
-              <button
-                type="button"
-                disabled={currentPage >= totalPages}
-                onClick={() => {
-                  if (currentPage < totalPages) {
-                    setCurrentPage((p) => p + 1);
-                    const el = document.getElementById('articles-list-section');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  }
-                }}
-                className={`flex items-center gap-1.5 px-4 sm:px-5 py-2 sm:py-2.5 rounded border font-sans text-xs sm:text-[13px] font-bold uppercase tracking-wider transition-colors select-none ${
-                  currentPage >= totalPages
-                    ? 'border-slate-200 text-slate-400 bg-white cursor-not-allowed opacity-80'
-                    : 'border-slate-300 text-slate-700 bg-white hover:text-[#1642D0] hover:border-[#1642D0] cursor-pointer'
-                }`}
-                aria-label="Next articles"
-              >
-                <span>NEXT</span>
-                <ChevronRight className="w-3.5 h-3.5 stroke-[2.5]" />
-              </button>
             </div>
           </div>
-          </div>
+        </section>
 
-          {/* Right Column: Sidebar with 2 Advertisements (Neatly aligned at top with MORE NEWS box) */}
-          <div className="lg:col-span-5 flex flex-col h-full gap-6">
+        {/* Bottom Section: Left Stream & Right Sidebar */}
+        <div id="articles-list-section" className="w-full pb-16 scroll-mt-20">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
             
-            {/* Aligned Advertisement Header matching MORE NEWS header height */}
-            <div className="flex items-center justify-between mb-4 sm:mb-5 h-[32px]">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-400 font-sans my-0 leading-none">
-                ADVERTISEMENT
-              </span>
-            </div>
+            {/* Left Column: MORE NEWS heading + Bordered box with 10 articles per page */}
+            <div className="lg:col-span-7 flex flex-col h-full">
+              {/* MORE NEWS Heading and Line */}
+              <div className="flex items-center justify-between mb-4 sm:mb-5 h-[32px]">
+                <h2 className="text-xl sm:text-2xl font-serif font-bold text-slate-900 tracking-tight uppercase my-0 leading-none">
+                  MORE NEWS
+                </h2>
+              </div>
 
-            {/* 1st Sidebar Advertisement: 300 × 400 */}
-            <div className="w-full text-center flex-shrink-0">
-              <div className="w-full h-[400px] min-h-[400px] bg-[#edf2f7] border border-slate-300 flex flex-col items-center justify-center p-6 text-center shadow-2xs">
-                <span className="text-xs sm:text-[13px] font-semibold text-slate-600 font-sans">
-                  300 × 400 Banner
-                </span>
-                <span className="text-[11px] text-slate-400 font-sans mt-0.5">
-                  Your Advertisement Here
-                </span>
+              {/* Bordered box with 10 articles per page */}
+              <div className="bg-white border border-slate-200 p-5 sm:p-6 shadow-2xs flex-1 flex flex-col justify-between">
+                <div className="space-y-6 divide-y divide-slate-100">
+                  {currentArticles.map((art, index) => (
+                    <article
+                      key={art.id}
+                      className={`flex gap-4 sm:gap-5 items-start ${index === 0 ? 'pt-0' : 'pt-6'}`}
+                    >
+                      <Link
+                        href={art.link || `/article/${art.id}`}
+                        className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 overflow-hidden bg-slate-100 block cursor-pointer group/thumb rounded-none"
+                      >
+                        <img
+                          src={art.image}
+                          alt={art.title}
+                          className="w-full h-full object-cover group-hover/thumb:scale-105 transition-transform duration-300 rounded-none"
+                        />
+                      </Link>
+                      <div className="flex-1 min-w-0">
+                        <span className="text-[11px] font-bold text-[#c61830] uppercase tracking-wider font-sans block mb-1">
+                          {art.category || displayTitle.toUpperCase()}
+                        </span>
+                        <h3 className="font-serif font-bold text-sm sm:text-base text-[#020618] leading-snug hover:underline my-1">
+                          <Link href={art.link || `/article/${art.id}`} className="hover:text-[#c61830]">
+                            {art.title}
+                          </Link>
+                        </h3>
+                        <p className="font-serif text-slate-600 text-xs sm:text-[12.5px] leading-relaxed line-clamp-2 my-0">
+                          {art.excerpt}
+                        </p>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+
+                {/* Pagination Controls */}
+                <div className="flex items-center justify-between w-full pt-6 mt-6 border-t border-slate-200 font-sans">
+                  <button
+                    type="button"
+                    disabled={currentPage === 1}
+                    onClick={() => {
+                      if (currentPage > 1) {
+                        setCurrentPage((p) => p - 1);
+                        const el = document.getElementById('articles-list-section');
+                        if (el) el.scrollIntoView({ behavior: 'smooth' });
+                      }
+                    }}
+                    className={`flex items-center gap-1.5 px-4 sm:px-5 py-2 sm:py-2.5 rounded-none border font-sans text-xs sm:text-[13px] font-bold uppercase tracking-wider transition-colors select-none ${
+                      currentPage === 1
+                        ? 'border-slate-200 text-slate-400 bg-white cursor-not-allowed opacity-80'
+                        : 'border-slate-300 text-slate-700 bg-white hover:text-[#c61830] hover:border-[#c61830] cursor-pointer'
+                    }`}
+                    aria-label="Previous articles"
+                  >
+                    <ChevronLeft className="w-3.5 h-3.5 stroke-[2.5]" />
+                    <span>PREVIOUS</span>
+                  </button>
+
+                  <span className="text-xs sm:text-[13px] font-sans font-bold uppercase tracking-wider text-slate-700 select-none text-center">
+                    PAGE {currentPage} OF {totalPages}
+                  </span>
+
+                  <button
+                    type="button"
+                    disabled={currentPage >= totalPages}
+                    onClick={() => {
+                      if (currentPage < totalPages) {
+                        setCurrentPage((p) => p + 1);
+                        const el = document.getElementById('articles-list-section');
+                        if (el) el.scrollIntoView({ behavior: 'smooth' });
+                      }
+                    }}
+                    className={`flex items-center gap-1.5 px-4 sm:px-5 py-2 sm:py-2.5 rounded-none border font-sans text-xs sm:text-[13px] font-bold uppercase tracking-wider transition-colors select-none ${
+                      currentPage >= totalPages
+                        ? 'border-slate-200 text-slate-400 bg-white cursor-not-allowed opacity-80'
+                        : 'border-slate-300 text-slate-700 bg-white hover:text-[#c61830] hover:border-[#c61830] cursor-pointer'
+                    }`}
+                    aria-label="Next articles"
+                  >
+                    <span>NEXT</span>
+                    <ChevronRight className="w-3.5 h-3.5 stroke-[2.5]" />
+                  </button>
+                </div>
               </div>
             </div>
 
-            {/* 2nd Sidebar Advertisement: Expands to match bottom alignment of left column */}
-            <div className="w-full text-center flex-1 flex flex-col">
-              <span className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-400 block mb-2 flex-shrink-0">
-                ADVERTISEMENT
-              </span>
-              <div className="w-full flex-1 min-h-[700px] bg-[#edf2f7] border border-slate-300 flex flex-col items-center justify-center p-6 text-center shadow-2xs">
-                <span className="text-xs sm:text-[13px] font-semibold text-slate-600 font-sans">
-                  300 × 700 Banner
-                </span>
-                <span className="text-[11px] text-slate-400 font-sans mt-0.5">
-                  Your Advertisement Here
+            {/* Right Column: Sidebar Advertisements */}
+            <div className="lg:col-span-5 flex flex-col h-full gap-6">
+              <div className="flex items-center justify-between mb-4 sm:mb-5 h-[32px]">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400 font-sans my-0 leading-none">
+                  ADVERTISEMENT
                 </span>
               </div>
+
+              <div className="w-full text-center flex-shrink-0">
+                <div className="w-full h-[400px] min-h-[400px] bg-[#edf2f7] border border-slate-300 flex flex-col items-center justify-center p-6 text-center shadow-2xs rounded-none">
+                  <span className="text-xs sm:text-[13px] font-semibold text-slate-600 font-sans">
+                    300 × 400 Banner
+                  </span>
+                  <span className="text-[11px] text-slate-400 font-sans mt-0.5">
+                    Your Advertisement Here
+                  </span>
+                </div>
+              </div>
+
+              <div className="w-full text-center flex-1 flex flex-col">
+                <span className="text-[10px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-slate-400 block mb-2 flex-shrink-0">
+                  ADVERTISEMENT
+                </span>
+                <div className="w-full flex-1 min-h-[700px] bg-[#edf2f7] border border-slate-300 flex flex-col items-center justify-center p-6 text-center shadow-2xs rounded-none">
+                  <span className="text-xs sm:text-[13px] font-semibold text-slate-600 font-sans">
+                    300 × 700 Banner
+                  </span>
+                  <span className="text-[11px] text-slate-400 font-sans mt-0.5">
+                    Your Advertisement Here
+                  </span>
+                </div>
+              </div>
+
             </div>
 
           </div>
-
         </div>
-      </div>
+      </main>
 
       {/* 2. Footer Navigation */}
       <Footer />
