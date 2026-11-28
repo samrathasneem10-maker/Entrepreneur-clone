@@ -992,7 +992,7 @@ export default function DynamicTopicPage() {
       <Header />
 
       {/* Main Container Trimmed with side padding matching home and article pages */}
-      <main className="flex-1 w-full max-w-[1536px] mx-auto px-6 sm:px-10 md:px-14 lg:px-20 xl:px-24">
+      <main className="flex-1 w-full max-w-[1400px] 2xl:max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
         {/* Breadcrumb Bar */}
         <div className="bg-white pt-4 sm:pt-5 pb-1 text-xs text-slate-600 font-sans">
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">

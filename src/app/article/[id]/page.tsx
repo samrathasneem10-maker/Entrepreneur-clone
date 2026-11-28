@@ -650,8 +650,8 @@ export default function ArticleDetailPage() {
       {/* 1. Header with Sticky Reading Progress Bar */}
       {!isPreview && <Header showProgressBar={true} />}
 
-      {/* Main Article Container trimmed to match homepage layout (max-w-[1536px], px-6 sm:px-10 md:px-14 lg:px-20 xl:px-24) */}
-      <main className="flex-1 w-full max-w-[1536px] mx-auto px-6 sm:px-10 md:px-14 lg:px-20 xl:px-24 pt-4 pb-12">
+      {/* Main Article Container trimmed to match homepage layout */}
+      <main className="flex-1 w-full max-w-[1400px] 2xl:max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pt-4 pb-12">
         
         {/* Top < BACK TO HOME bar + horizontal line matching reference image 1 */}
         <div className="w-full mb-6">

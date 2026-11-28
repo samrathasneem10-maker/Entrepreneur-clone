@@ -33,8 +33,8 @@ export default async function Home() {
       {/* Sticky Top Header Navigation */}
       <Header />
 
-      {/* Main Page Body: wide screen layout with comfortable side margins trimming edges */}
-      <main className="flex-1 w-full max-w-[1536px] mx-auto px-6 sm:px-10 md:px-14 lg:px-20 xl:px-24">
+      {/* Main Page Body: aligned with navigation bar bounds */}
+      <main className="flex-1 w-full max-w-[1400px] 2xl:max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
         {/* 1. Hero News Section */}
         <HeroNewsSection
           initialLatest={data.heroLatest}

@@ -121,7 +121,7 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
       <header className={`sticky top-0 z-40 bg-white border-b border-slate-200 transition-shadow relative ${isScrolled ? 'shadow-md' : 'shadow-xs'}`}>
 
         {/* Upper Header Bar: Logo (Left) and SEARCH, PROFILE/SIGN IN, NEWSLETTERS (Right) */}
-        <div className="w-full max-w-[1840px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 py-3 sm:py-3.5">
+        <div className="w-full max-w-[1400px] 2xl:max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 py-3 sm:py-3.5">
           <div className="w-full flex items-center justify-between">
             
             {/* Left: 3-Line Menu Icon + Logo */}
@@ -336,7 +336,7 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
 
         {/* Lower Header Bar: Category Navigation matching Reference Image */}
         <div className="border-t border-slate-200 bg-white">
-          <div className="w-full max-w-[1840px] mx-auto px-3 sm:px-4 md:px-3 lg:px-4 xl:px-6 2xl:px-8">
+          <div className="w-full max-w-[1400px] 2xl:max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
             <nav className="overflow-x-auto no-scrollbar font-sans py-2 sm:py-2.5">
               <ul className="flex items-center justify-between gap-2 md:gap-1.5 lg:gap-2 xl:gap-3 2xl:gap-5 whitespace-nowrap min-w-max md:min-w-0 w-full">
                 {NAVIGATION_STRUCTURE.primary.map((item) => {
@@ -370,7 +370,7 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
 
         {/* Red Growth Tool Newsletter Bar (matching Reference Images 3 & 4) */}
         <div className="w-full bg-[#c61830] text-white py-2 select-none shadow-2xs">
-          <div className="w-full max-w-[1536px] mx-auto px-6 sm:px-10 md:px-14 lg:px-20 xl:px-24 text-center">
+          <div className="w-full max-w-[1400px] 2xl:max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 text-center">
             <Link
               href="/newsletters"
               className="inline-block text-xs sm:text-[13px] font-sans font-bold text-white hover:text-white/90 underline decoration-white/60 hover:decoration-white underline-offset-2 transition-all tracking-wide"
