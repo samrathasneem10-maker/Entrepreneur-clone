@@ -211,7 +211,7 @@ export const HeroNewsSection: React.FC<HeroNewsSectionProps> = ({
             {/* Header: Latest + See All [->] */}
             <div className="flex items-center justify-between pb-1.5 mb-1 flex-shrink-0">
               <h2 className="font-serif font-black text-xl sm:text-2xl text-[#020618] leading-none my-0 flex items-center">
-                <span className="inline-block w-2.5 sm:w-3 h-5 sm:h-5.5 border-2 border-[#c61830] bg-[#c61830] rounded-none mr-2 shrink-0 self-center" aria-hidden="true" />
+                <span className="inline-block w-4 h-5 sm:w-4.5 sm:h-5.5 border-2 border-[#c61830] bg-transparent rounded-none mr-2.5 shrink-0 self-center" aria-hidden="true" />
                 <Link href="/latest" className="no-underline hover:no-underline active:no-underline focus:no-underline">
                   Latest
                 </Link>

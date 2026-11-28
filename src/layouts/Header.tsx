@@ -369,13 +369,15 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
         </div>
 
         {/* Red Growth Tool Newsletter Bar (matching Reference Images 3 & 4) */}
-        <div className="w-full bg-[#c61830] text-white py-2 text-center select-none shadow-2xs">
-          <Link
-            href="/newsletters"
-            className="inline-block text-xs sm:text-[13px] font-sans font-bold text-white hover:text-white/90 underline decoration-white/60 hover:decoration-white underline-offset-2 transition-all tracking-wide"
-          >
-            Turn Your Inbox Into a Growth Tool
-          </Link>
+        <div className="w-full bg-[#c61830] text-white py-2 select-none shadow-2xs">
+          <div className="w-full max-w-[1536px] mx-auto px-6 sm:px-10 md:px-14 lg:px-20 xl:px-24 text-center">
+            <Link
+              href="/newsletters"
+              className="inline-block text-xs sm:text-[13px] font-sans font-bold text-white hover:text-white/90 underline decoration-white/60 hover:decoration-white underline-offset-2 transition-all tracking-wide"
+            >
+              Turn Your Inbox Into a Growth Tool
+            </Link>
+          </div>
         </div>
 
         {/* Reading Progress Bar (Article Detail Pages Only) */}
