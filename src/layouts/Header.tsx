@@ -368,17 +368,19 @@ export const Header: React.FC<HeaderProps> = ({ showProgressBar = false }) => {
           </div>
         </div>
 
-        {/* Red Growth Tool Newsletter Bar (matching Reference Images 3 & 4) */}
-        <div className="w-full bg-[#c61830] text-white py-2 select-none shadow-2xs">
-          <div className="w-full max-w-[1400px] 2xl:max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 text-center">
-            <Link
-              href="/newsletters"
-              className="inline-block text-xs sm:text-[13px] font-sans font-bold text-white hover:text-white/90 underline decoration-white/60 hover:decoration-white underline-offset-2 transition-all tracking-wide"
-            >
-              Turn Your Inbox Into a Growth Tool
-            </Link>
+        {/* Red Growth Tool Newsletter Bar: Only visible when at top of page, hidden when scrolling */}
+        {!isScrolled && (
+          <div className="w-full bg-[#c61830] text-white py-2 select-none shadow-2xs transition-all duration-200">
+            <div className="w-full max-w-[1400px] 2xl:max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 text-center">
+              <Link
+                href="/newsletters"
+                className="inline-block text-xs sm:text-[13px] font-sans font-bold text-white hover:text-white/90 underline decoration-white/60 hover:decoration-white underline-offset-2 transition-all tracking-wide"
+              >
+                Turn Your Inbox Into a Growth Tool
+              </Link>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Reading Progress Bar (Article Detail Pages Only) */}
         {showProgressBar && (
