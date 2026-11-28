@@ -21,7 +21,6 @@ export default function NewslettersPage() {
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
-  const [statusMsg, setStatusMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -106,23 +105,62 @@ export default function NewslettersPage() {
       const data = await res.json();
       if (res.ok && data.success) {
         setIsSubscribed(true);
-        setStatusMsg(`Subscribed successfully to ${selectedIds.length} newsletter${selectedIds.length === 1 ? '' : 's'}!`);
       } else {
         setIsSubscribed(true);
-        setStatusMsg(`Subscribed successfully to ${selectedIds.length} newsletter${selectedIds.length === 1 ? '' : 's'}!`);
       }
     } catch (err) {
       console.warn('Subscription submission note:', err);
       setIsSubscribed(true);
-      setStatusMsg(`Subscribed successfully to ${selectedIds.length} newsletter${selectedIds.length === 1 ? '' : 's'}!`);
     } finally {
       setIsSubmitting(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   const totalSelected = selectedIds.length;
   const isAllSelected = totalSelected > 0 && totalSelected === newsletters.length;
 
+  // SUCCESS CONFIRMATION VIEW (Matching user uploaded screenshot media_1795888295706_0cf853fe.png)
+  if (isSubscribed) {
+    return (
+      <div className="min-h-screen flex flex-col bg-white font-sans antialiased text-slate-900">
+        <Header />
+
+        <main className="flex-1 flex flex-col items-center justify-center px-4 py-20 sm:py-28 text-center">
+          <div className="max-w-xl mx-auto space-y-6">
+            {/* Green Circular Checkmark Icon matching reference */}
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 border-[#0D9488] sm:border-[#10B981] flex items-center justify-center mx-auto text-[#0D9488] sm:text-[#10B981]">
+              <Check className="w-9 h-9 sm:w-11 sm:h-11 stroke-[3]" />
+            </div>
+
+            {/* Serif Heading: You're all signed up! */}
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-slate-900 my-0">
+              You&apos;re all signed up!
+            </h1>
+
+            {/* Subtitle text */}
+            <p className="text-sm sm:text-base text-slate-500 font-sans max-w-md mx-auto leading-relaxed my-0">
+              Thanks for subscribing. Check your inbox to confirm your subscription and start receiving the best of our reporting.
+            </p>
+
+            {/* BACK TO HOME Button (Red Theme) */}
+            <div className="pt-2">
+              <Link
+                href="/"
+                className="inline-block px-8 py-3.5 bg-[#C61830] hover:bg-[#A31225] text-white font-bold text-xs uppercase tracking-widest rounded-xs transition-colors shadow-xs"
+              >
+                BACK TO HOME
+              </Link>
+            </div>
+          </div>
+        </main>
+
+        <Footer />
+      </div>
+    );
+  }
+
+  // DEFAULT NEWSLETTERS SELECTION & SIGN UP VIEW
   return (
     <div className="min-h-screen flex flex-col bg-white font-sans antialiased text-slate-900">
       {/* Site Header */}
@@ -273,47 +311,36 @@ export default function NewslettersPage() {
             </p>
           </div>
 
-          {isSubscribed ? (
-            <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-sm font-bold shadow-2xs space-y-1">
-              <div className="flex items-center justify-center gap-2 text-base">
-                <Check className="w-5 h-5 text-emerald-600" /> Subscription Confirmed!
+          <form onSubmit={handleSignUp} className="space-y-3 pt-2">
+            <div className="flex flex-col sm:flex-row items-center gap-3">
+              <div className="relative w-full flex-1">
+                <Mail className="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="email"
+                  placeholder="Enter your email address"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setErrorMsg('');
+                  }}
+                  className="w-full pl-11 pr-4 py-3 bg-white border border-slate-300 rounded-md text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#C61830] focus:ring-1 focus:ring-[#C61830] transition-colors"
+                />
               </div>
-              <p className="text-xs font-normal text-emerald-700 font-sans my-0">
-                {statusMsg || `Thank you! Your selected newsletters will be delivered to ${email}.`}
-              </p>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full sm:w-auto px-8 py-3 bg-[#C61830] hover:bg-[#A31225] disabled:opacity-60 text-white font-bold text-xs uppercase tracking-wider rounded-md transition-colors cursor-pointer whitespace-nowrap shadow-xs"
+              >
+                {isSubmitting ? 'Signing Up...' : 'Sign Up Now'}
+              </button>
             </div>
-          ) : (
-            <form onSubmit={handleSignUp} className="space-y-3 pt-2">
-              <div className="flex flex-col sm:flex-row items-center gap-3">
-                <div className="relative w-full flex-1">
-                  <Mail className="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="email"
-                    placeholder="Enter your email address"
-                    value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      setErrorMsg('');
-                    }}
-                    className="w-full pl-11 pr-4 py-3 bg-white border border-slate-300 rounded-md text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#C61830] focus:ring-1 focus:ring-[#C61830] transition-colors"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full sm:w-auto px-8 py-3 bg-[#C61830] hover:bg-[#A31225] disabled:opacity-60 text-white font-bold text-xs uppercase tracking-wider rounded-md transition-colors cursor-pointer whitespace-nowrap shadow-xs"
-                >
-                  {isSubmitting ? 'Signing Up...' : 'Sign Up Now'}
-                </button>
-              </div>
 
-              {errorMsg && (
-                <p className="text-xs text-rose-600 font-medium text-left sm:text-center pl-1 my-0">
-                  {errorMsg}
-                </p>
-              )}
-            </form>
-          )}
+            {errorMsg && (
+              <p className="text-xs text-rose-600 font-medium text-left sm:text-center pl-1 my-0">
+                {errorMsg}
+              </p>
+            )}
+          </form>
 
           <p className="text-[11px] text-slate-500 font-sans leading-relaxed my-0 pt-2">
             You can unsubscribe at any time. By signing up you agree to United States Today&apos;s{' '}
