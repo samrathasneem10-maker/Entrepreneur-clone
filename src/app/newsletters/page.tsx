@@ -218,18 +218,13 @@ export default function NewslettersPage() {
                     />
                   </div>
 
-                  {/* Newsletter Content: Bold text Main Category, followed by Normal text Subcategories */}
+                  {/* Newsletter Content: Bold text Main Category, followed below by Frequency, then Normal text Subcategories */}
                   <div className="space-y-1.5 flex-1">
-                    {/* Header Line: Bold Main Category + Normal text Subcategories */}
+                    {/* Header Line: Bold Main Category */}
                     <div className="leading-snug">
-                      <h3 className="inline text-xl sm:text-[22px] font-serif font-bold text-[#020618] group-hover:underline decoration-[#020618] decoration-1 underline-offset-[3px] transition-all my-0">
+                      <h3 className="text-xl sm:text-[22px] font-serif font-bold text-[#020618] group-hover:underline decoration-[#020618] decoration-1 underline-offset-[3px] transition-all my-0">
                         {item.categoryName}
                       </h3>
-                      {item.subcategoriesList && (
-                        <span className="text-[13px] sm:text-sm font-sans font-normal text-slate-600 ml-2">
-                          &bull; {item.subcategoriesList}
-                        </span>
-                      )}
                     </div>
 
                     {/* Frequency in italics / small font */}
@@ -237,9 +232,9 @@ export default function NewslettersPage() {
                       {item.frequency}
                     </div>
 
-                    {/* Description */}
+                    {/* Subcategories in Normal Text (replaces the description line marked by arrow) */}
                     <p className="text-xs sm:text-[13.5px] text-slate-600 font-serif leading-relaxed my-0 pt-0.5">
-                      {item.description}
+                      {item.subcategoriesList}
                     </p>
                   </div>
                 </div>
