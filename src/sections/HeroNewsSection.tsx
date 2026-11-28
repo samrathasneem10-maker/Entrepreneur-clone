@@ -276,10 +276,10 @@ export const HeroNewsSection: React.FC<HeroNewsSectionProps> = ({
           {/* ========================================================= */}
           {/* 2. CENTER COLUMN: Main Featured Hero Card (Mobile: order-1, Desktop: order-2) */}
           {/* ========================================================= */}
-          <div className="order-1 lg:order-2 flex flex-col justify-between h-full bg-white">
+          <div className="order-1 lg:order-2 flex flex-col justify-between h-full bg-[#f8fafc]/50 border border-slate-200/70 p-4 sm:p-5 lg:p-6 shadow-xs">
             <div className="flex flex-col justify-between h-full group">
-              {/* Top Text Content: Trimmed margins left and right matching user Image 2 */}
-              <div className="text-center px-4 sm:px-6 md:px-8 lg:px-6 xl:px-8 pt-1 pb-2">
+              {/* Top Text Content: Trimmed margins left and right matching Entrepreneur layout */}
+              <div className="text-center px-2 sm:px-4 md:px-6 pt-1 pb-3">
                 {/* Category Link */}
                 <Link
                   href="/topic/startups-entrepreneurship"
@@ -288,9 +288,9 @@ export const HeroNewsSection: React.FC<HeroNewsSectionProps> = ({
                   {currentHero.category}
                 </Link>
 
-                {/* Main Headline: Trimmed within comfortable left/right bounds */}
+                {/* Main Headline: Bold, prominent, trimmed within comfortable left/right bounds */}
                 <h1
-                  className="font-serif font-bold text-lg sm:text-xl lg:text-[23px] xl:text-[25px] leading-[1.24] tracking-tight text-[#020618] my-1 group-hover:underline text-center line-clamp-3 max-w-[90%] mx-auto"
+                  className="font-serif font-black text-xl sm:text-2xl lg:text-[27px] xl:text-[30px] leading-[1.2] tracking-tight text-[#020618] my-2 group-hover:underline text-center line-clamp-3 max-w-[95%] mx-auto"
                   style={{
                     display: '-webkit-box',
                     WebkitLineClamp: 3,
@@ -307,7 +307,7 @@ export const HeroNewsSection: React.FC<HeroNewsSectionProps> = ({
                 </h1>
 
                 {/* Author Byline: BY AUTHOR NAME */}
-                <div className="text-center mt-1 text-[11px] sm:text-xs font-sans uppercase tracking-wider text-slate-500 font-medium">
+                <div className="text-center mt-2 text-[11px] sm:text-xs font-sans uppercase tracking-wider text-slate-500 font-medium">
                   <span className="text-slate-500">BY </span>
                   <span className="text-[#c61830] font-bold underline underline-offset-2">
                     {currentHero.author?.name || 'Sherin Shibu'}
@@ -316,7 +316,7 @@ export const HeroNewsSection: React.FC<HeroNewsSectionProps> = ({
               </div>
 
               {/* Center Image: Square / Portrait Card with crisp non-rounded borders */}
-              <div className="relative w-full aspect-[4/3] sm:aspect-[1/1] max-h-[380px] lg:max-h-[420px] my-2 overflow-hidden rounded-none border border-slate-200/80 bg-slate-100 flex-shrink-0">
+              <div className="relative w-full aspect-[16/11] sm:aspect-[4/3] lg:aspect-[16/12] max-h-[350px] lg:max-h-[390px] my-2 overflow-hidden rounded-none border border-slate-200/80 bg-slate-100 flex-shrink-0">
                 <Link
                   href={`/article/${currentHero.slug || currentHero.id}`}
                   className="block w-full h-full cursor-pointer"
@@ -357,10 +357,10 @@ export const HeroNewsSection: React.FC<HeroNewsSectionProps> = ({
           <div className="order-3 lg:order-3 flex flex-col justify-between h-full">
             
             {/* Top Featured Card: Hero Slot 5 */}
-            <article className="rounded-none overflow-hidden bg-[#070b19] text-white group cursor-pointer flex flex-col shadow-xs flex-shrink-0 mb-2">
+            <article className="rounded-none overflow-hidden bg-white text-[#020618] group cursor-pointer flex flex-col shadow-xs flex-shrink-0 mb-3 border border-slate-200/80">
               <Link
                 href={`/article/${rightCard.slug || rightCard.id}`}
-                className="w-full aspect-[16/9] max-h-[145px] lg:max-h-[160px] xl:max-h-[172px] 2xl:max-h-[218px] overflow-hidden bg-slate-900 block"
+                className="w-full aspect-[16/9] max-h-[155px] lg:max-h-[170px] xl:max-h-[185px] 2xl:max-h-[225px] overflow-hidden bg-slate-100 block"
               >
                 <img
                   src={rightCard.imageUrl}
@@ -368,12 +368,12 @@ export const HeroNewsSection: React.FC<HeroNewsSectionProps> = ({
                   className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300 rounded-none"
                 />
               </Link>
-              <div className="p-2.5 sm:p-3 2xl:p-3.5">
-                <span className="inline-block bg-[#c61830] text-white text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-xs w-fit font-sans no-underline hover:no-underline active:no-underline focus:no-underline">
+              <div className="p-3 sm:p-3.5">
+                <span className="text-[10px] sm:text-[10.5px] font-bold text-[#c61830] uppercase tracking-wider block font-sans mb-1 no-underline">
                   {rightCard.category}
                 </span>
                 <h3
-                  className="font-serif font-bold text-[14.5px] sm:text-[15.5px] 2xl:text-[17.5px] leading-snug text-white group-hover:underline mt-1 my-0 line-clamp-2"
+                  className="font-serif font-bold text-[15px] sm:text-[16px] 2xl:text-[17.5px] leading-snug text-[#020618] group-hover:underline mt-0.5 my-0 line-clamp-2"
                   style={{
                     display: '-webkit-box',
                     WebkitLineClamp: 2,
@@ -381,7 +381,7 @@ export const HeroNewsSection: React.FC<HeroNewsSectionProps> = ({
                     overflow: 'hidden',
                   }}
                 >
-                  <Link href={`/article/${rightCard.slug || rightCard.id}`} className="hover:underline text-white no-underline">
+                  <Link href={`/article/${rightCard.slug || rightCard.id}`} className="hover:underline text-[#020618] no-underline">
                     {rightCard.title}
                   </Link>
                 </h3>
